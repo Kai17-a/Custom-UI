@@ -56,3 +56,36 @@ document.addEventListener('click', event => {
     result.textContent = fail ? '保存に失敗しました（デモ）。「保存を試す」で再試行できます。' : '保存しました（デモ）。';
   }, 300);
 });
+
+// Replay only the optional CSS animation. No timers or application API needed.
+document.addEventListener('click', event => {
+  const trigger = event.target.closest('[data-demo-animation-replay]');
+  if (!trigger) return;
+  const target = document.querySelector(trigger.dataset.demoAnimationReplay);
+  if (!target) return;
+  target.classList.remove('ui-animate');
+  // Flush the removed animation so repeated clicks reliably start a new run.
+  void target.offsetWidth;
+  target.classList.add('ui-animate');
+});
+
+// Search the statically embedded MDI previews. SVG rendering never needs JS.
+(() => {
+  const search = document.querySelector('[data-mdi-search]');
+  if (!search) return;
+  const groups = [...document.querySelectorAll('[data-mdi-group]')];
+  const icons = [...document.querySelectorAll('[data-mdi-icon]')];
+  search.addEventListener('input', () => {
+    const words = search.value.normalize('NFKC').toLowerCase().trim().split(/\s+/).filter(Boolean);
+    let count = 0;
+    for (const icon of icons) {
+      const text = icon.dataset.mdiSearchText.normalize('NFKC').toLowerCase();
+      icon.hidden = !words.every(word => text.includes(word));
+      if (!icon.hidden) count++;
+    }
+    for (const group of groups) group.hidden = ![...group.querySelectorAll('[data-mdi-icon]')].some(icon => !icon.hidden);
+    document.getElementById('mdi-result').textContent = count + ' / ' + icons.length + ' アイコン';
+    document.querySelector('[data-mdi-empty]').hidden = count > 0;
+    document.dispatchEvent(new Event('catalog:filterchange'));
+  });
+})();

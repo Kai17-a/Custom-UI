@@ -24,11 +24,13 @@
 @import url("components/tips.css");
 @import url("components/flex.css");
 @import url("components/cards.css");
+@import url("components/page-layout.css");
 @import url("components/calendar.css");
 @import url("components/datepicker.css");
 @import url("components/loading.css");
 @import url("components/clipboard.css");
 @import url("runtime.css");
 @import url("motion.css");
+@import url("components/animation-presets.css");
 @import url("spacing-utilities.css");
 @import url("themes.css");

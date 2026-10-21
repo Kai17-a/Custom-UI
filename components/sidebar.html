@@ -36,6 +36,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 
 
 <script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
 <script defer src="../assets/js/ui.js"></script>
 <script defer src="../assets/js/catalog-demo.js"></script>
 
@@ -53,12 +54,13 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/theme-switcher.html">Theme switcher</a></li>
       <li><a href="../components/typography.html">Typography</a></li>
       <li><a href="../components/spacing.html">Spacing</a></li>
-      <li><a href="../components/icons.html">Icons</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="../components/mdi-icons.html">MDIアイコン</a></li><li><a href="../components/icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
     <h2>レイアウト</h2>
     <ul>
+      <li><a href="../components/layouts.html">Layouts</a></li>
       <li><a href="../components/flex.html">Flexbox</a></li>
       <li><a href="../components/flex-grid.html">Flex grid</a></li>
       <li><a href="../components/cards.html">Cards</a></li>
@@ -104,7 +106,14 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <ul>
       <li><a href="../components/loading.html">Loading</a></li>
       <li><a href="../components/states.html">States</a></li>
-      <li><a href="../components/animations.html">Animations</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="../components/animations.html">一覧・使い方</a></li>
+        <li><a href="../components/animations-entrances.html">表示・非表示</a></li>
+        <li><a href="../components/animations-movement.html">移動・回転</a></li>
+        <li><a href="../components/animations-attention.html">強調・揺れ</a></li>
+        <li><a href="../components/animations-interactions.html">操作時の動き</a></li>
+        <li><a href="../components/animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
     </ul>
   </div>
 </nav><a class="overview-link" href="../components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
@@ -134,7 +143,29 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </div>
 </div>
 </section>
+<section class="specimen" id="sidebar-icons"><h2>アイコン・ラベル・件数・子メニュー</h2>
+<p>アイコンには<code>sidebar-icon</code>、文字には<code>sidebar-label</code>、右側の件数や補足には<code>sidebar-meta</code>を指定します。アイコンは文字色を引き継ぎ、選択中の色にも連動します。</p>
+<div class="example" data-example>
+<div class="app-shell">
+  <aside class="app-sidebar" aria-label="アイコン付きメニュー">
+    <h2 class="app-sidebar-title">My workspace</h2>
+    <nav class="app-sidebar-group" aria-label="アイコン付きワークスペース">
+      <a href="sidebar.html" aria-current="page"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"></path></svg><span class="sidebar-label">概要</span></a>
+      <a href="board.html"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M7,5H21V7H7V5M7,13V11H21V13H7M4,4.5A1.5,1.5 0 0,1 5.5,6A1.5,1.5 0 0,1 4,7.5A1.5,1.5 0 0,1 2.5,6A1.5,1.5 0 0,1 4,4.5M4,10.5A1.5,1.5 0 0,1 5.5,12A1.5,1.5 0 0,1 4,13.5A1.5,1.5 0 0,1 2.5,12A1.5,1.5 0 0,1 4,10.5M7,19V17H21V19H7M4,16.5A1.5,1.5 0 0,1 5.5,18A1.5,1.5 0 0,1 4,19.5A1.5,1.5 0 0,1 2.5,18A1.5,1.5 0 0,1 4,16.5Z"></path></svg><span class="sidebar-label">タスク</span><span class="sidebar-meta" aria-label="未完了5件">5</span></a>
+      <a href="table.html"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z"></path></svg><span class="sidebar-label">共有プロジェクトとチームの資料</span><span class="sidebar-meta">12</span></a>
+      <details open><summary><svg class="sidebar-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"></path></svg><span class="sidebar-label">設定</span></summary>
+        <a href="forms.html"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"></path></svg><span class="sidebar-label">基本設定</span></a>
+        <a href="tips.html"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M15.07,11.25L14.17,12.17C13.45,12.89 13,13.5 13,15H11V14.5C11,13.39 11.45,12.39 12.17,11.67L13.41,10.41C13.78,10.05 14,9.55 14,9C14,7.89 13.1,7 12,7A2,2 0 0,0 10,9H8A4,4 0 0,1 12,5A4,4 0 0,1 16,9C16,9.88 15.64,10.67 15.07,11.25M13,19H11V17H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z"></path></svg><span class="sidebar-label">ヘルプ</span></a>
+      </details>
+    </nav>
+    <p class="app-sidebar-footer">個人用ワークスペース</p>
+  </aside>
+  <section class="app-content" aria-labelledby="sidebar-icons-title"><h2 class="type-heading" id="sidebar-icons-title">アイコン付きサイドバー</h2><p class="type-body">アイコンの幅を揃え、文字は残りの幅を使います。長い名前は折り返し、件数と開閉矢印は右に配置します。</p><p class="type-caption">Tab・Enterでリンクの移動と子メニューの開閉ができます。</p></section>
+</div>
+</div>
+<p><a href="mdi-icons.html">MDIアイコンのSVG</a>や、<code>span.sidebar-icon</code>で囲ったアイコンも使えます。装飾アイコンには<code>aria-hidden="true"</code>を付け、リンク名は文字で指定してください。塗りのSVGには<code>fill="currentColor"</code>、線のSVGには<code>fill="none" stroke="currentColor"</code>を指定します。JavaScriptの追加設定は不要です。</p>
+</section>
 <details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
-&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/css/ui.css">ui.css</a> / <a href="../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/css/ui.css">ui.css</a> / <a href="../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
 
 </body></html>

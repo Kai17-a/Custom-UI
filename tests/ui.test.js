@@ -472,16 +472,11 @@ window.uiTestsDone = (async () => {
     assert(!spinner.hidden && getComputedStyle(spinner).animationName==='ui-spinner-turn','出現の演出で回転を置き換えない');
     assert(spinner.getAnimations().some(animation=>animation.animationName==='ui-spinner-turn'),'スピナーが実際に回転し続ける');
   });
-  await test('ページ送りとカレンダーは状態を即座に変えてから動く', () => {
-    mount('<div data-ui-pagination data-ui-page-size="1"><p data-ui-page-item>1</p><p data-ui-page-item>2</p><button data-ui-page="2">2</button></div><div data-ui-calendar data-ui-month="2026-10"></div>');
+  await test('ページ送りは状態を即座に変えてから動く', () => {
+    mount('<div data-ui-pagination data-ui-page-size="1"><p data-ui-page-item>1</p><p data-ui-page-item>2</p><button data-ui-page="2">2</button></div>');
     find('[data-ui-page]').click();
     const visible=many('[data-ui-page-item]')[1];
     assert(!visible.hidden && many('[data-ui-page-item]')[0].hidden && visible.getAnimations().length,'ページ状態を待たずに反映し、表示をアニメーション');
-    find('[data-ui-calendar-action="next"]').click();
-    const root=find('[data-ui-calendar]');
-    assert(root.dataset.uiMonth==='2026-11' && root.querySelector('[data-ui-calendar-view]').getAnimations().length,'月を即座に変えて表示を動かす');
-    root.querySelector('[data-ui-calendar-date="2026-11-10"]').click();
-    assert(root.dataset.uiValue==='2026-11-10' && root.querySelector('[aria-pressed="true"]').getAnimations().length,'選択を反映し、選択した日を強調');
   });
   await test('不正・不存在のターゲットで例外を出さない', () => {
     mount('<button data-ui-toggle="dialog" data-ui-target="[">不正</button><button data-ui-toggle="collapse" data-ui-target="#absent">不存在</button>');
@@ -686,6 +681,25 @@ window.uiTestsDone = (async () => {
     dialog.querySelector('button').click();await wait(0);
     root.dataset.uiCalendarModal='false';root.querySelector('[data-ui-calendar-date="2026-10-22"]').click();assert(!dialog.open && !root.querySelector('.ui-calendar-agenda').hidden,'falseで従来表示');
     root.dataset.uiCalendarModal='#missing-dialog';root.querySelector('[data-ui-calendar-date="2026-10-21"]').click();assert(!dialog.open && !root.querySelector('.ui-calendar-agenda').hidden && root.querySelector('[role=status]').textContent.includes('見つかりません'),'参照不備でも予定を確認できる');
+  });
+  await test('カレンダーの月・日付切り替えは動かさず、状態・フォーカス・通知を維持', () => {
+    mount('<div data-ui-calendar data-ui-month="2026-10" data-ui-value="2026-10-21"></div>'+dateField('still-date','value="2026-10-21"'));
+    const root=find('[data-ui-calendar]');let months=0,dates=0;
+    root.addEventListener('ui:monthchange',()=>months++);root.addEventListener('ui:datechange',()=>dates++);
+    root.querySelector('[data-ui-calendar-action=next]').click();
+    assert(root.dataset.uiMonth==='2026-11' && months===1,'月とイベントを即時更新');
+    assert(!root.getAnimations({subtree:true}).length,'月切り替えで移動・フェードしない');
+    root.querySelector('[data-ui-calendar-date="2026-11-10"]').click();
+    assert(root.dataset.uiValue==='2026-11-10' && dates===1 && document.activeElement.dataset.uiCalendarDate==='2026-11-10','選択とフォーカスを維持');
+    assert(!root.getAnimations({subtree:true}).length,'選択日に拡縮を付けない');
+    document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'PageDown',bubbles:true,cancelable:true}));
+    assert(root.dataset.uiMonth==='2026-12' && !root.getAnimations({subtree:true}).length,'キーボードの月切り替えも即時');
+    find('[data-ui-datepicker-action=toggle]').click();
+    const calendar=find('.ui-datepicker-popup [data-ui-calendar]');
+    calendar.querySelector('[data-ui-calendar-action=next]').click();
+    assert(calendar.dataset.uiMonth==='2026-11' && !calendar.getAnimations({subtree:true}).length,'フォーム用も同じ表示方式');
+    calendar.querySelector('[data-ui-calendar-date="2026-11-11"]').click();
+    assert(find('#still-date').value==='2026-11-11' && document.activeElement===find('#still-date'),'フォームへの反映とフォーカス復帰を維持');
   });
   document.title = failures.length ? 'FAIL — UI tests' : 'PASS — UI tests';
   return {passed, failures};

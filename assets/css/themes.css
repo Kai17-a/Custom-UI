@@ -73,7 +73,7 @@ body[data-ui-theme="soft"] {
   background:var(--bs-tertiary-bg);
 }
 body:is([data-ui-theme="glass"], [data-ui-theme="glassmorphism"], [data-ui-theme="flat"], [data-ui-theme="soft"]) { min-height:100vh; }
-body:is([data-ui-theme="glass"], [data-ui-theme="glassmorphism"], [data-ui-theme="flat"], [data-ui-theme="soft"]) :is(.ui-card, .app-sidebar, .ui-calendar, .navbar, .catalog-header, .catalog-sidebar, .catalog-card) {
+body:is([data-ui-theme="glass"], [data-ui-theme="glassmorphism"], [data-ui-theme="flat"], [data-ui-theme="soft"]) :is(.ui-card, .app-sidebar, .ui-calendar, .navbar, .ui-header, .ui-footer, .ui-toolbar, .catalog-header, .catalog-sidebar, .catalog-card) {
   background:var(--ui-theme-surface);
   -webkit-backdrop-filter:var(--ui-theme-blur);
   backdrop-filter:var(--ui-theme-blur);
@@ -92,7 +92,7 @@ body[data-ui-theme="flat"] :is(.ui-card, .ui-dialog, .ui-toast, .ui-tooltip, .ui
 /* Notifications keep semantic success / danger / info / warning colors. */
 body:is([data-ui-theme="glass"], [data-ui-theme="glassmorphism"]) .ui-toast { -webkit-backdrop-filter:var(--ui-theme-blur); backdrop-filter:var(--ui-theme-blur); }
 body[data-ui-theme="soft"] .ui-toast { box-shadow:var(--bs-box-shadow-lg); }
-body[data-ui-theme="glassmorphism"] :is(.ui-card, .catalog-card, .catalog-header, .catalog-sidebar, .app-sidebar, .ui-calendar, .navbar, .ui-dialog, .ui-datepicker-popup, .ui-select-menu, .ui-input-popup) {
+body[data-ui-theme="glassmorphism"] :is(.ui-card, .catalog-card, .catalog-header, .catalog-sidebar, .app-sidebar, .ui-calendar, .navbar, .ui-header, .ui-footer, .ui-toolbar, .ui-dialog, .ui-datepicker-popup, .ui-select-menu, .ui-input-popup) {
   background-image:linear-gradient(135deg, var(--ui-glass-sheen), transparent 60%);
   border-color:var(--ui-glass-highlight);
 }

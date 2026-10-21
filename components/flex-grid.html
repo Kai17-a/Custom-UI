@@ -37,6 +37,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 <link rel="stylesheet" href="../assets/css/flex-demos.css">
 
 <script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
 <script defer src="../assets/js/ui.js"></script>
 <script defer src="../assets/js/catalog-demo.js"></script>
 
@@ -53,12 +54,13 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/theme-switcher.html">Theme switcher</a></li>
       <li><a href="../components/typography.html">Typography</a></li>
       <li><a href="../components/spacing.html">Spacing</a></li>
-      <li><a href="../components/icons.html">Icons</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="../components/mdi-icons.html">MDIアイコン</a></li><li><a href="../components/icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
     <h2>レイアウト</h2>
     <ul>
+      <li><a href="../components/layouts.html">Layouts</a></li>
       <li><a href="../components/flex.html">Flexbox</a></li>
       <li><a href="../components/flex-grid.html" aria-current="page">Flex grid</a></li>
       <li><a href="../components/cards.html">Cards</a></li>
@@ -104,7 +106,14 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <ul>
       <li><a href="../components/loading.html">Loading</a></li>
       <li><a href="../components/states.html">States</a></li>
-      <li><a href="../components/animations.html">Animations</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="../components/animations.html">一覧・使い方</a></li>
+        <li><a href="../components/animations-entrances.html">表示・非表示</a></li>
+        <li><a href="../components/animations-movement.html">移動・回転</a></li>
+        <li><a href="../components/animations-attention.html">強調・揺れ</a></li>
+        <li><a href="../components/animations-interactions.html">操作時の動き</a></li>
+        <li><a href="../components/animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
     </ul>
   </div>
 </nav><a class="overview-link" href="../components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
@@ -358,6 +367,6 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </div>
 </section>
 <section class="specimen"><h2>クラスと使い分け</h2><div class="example"><table class="flex-reference"><caption>FlexグリッドのAPI</caption><thead><tr><th scope="col">クラス・変数</th><th scope="col">用途</th></tr></thead><tbody><tr><th scope="row"><code>fx-grid</code></th><td>折り返す行。標準は全幅です。</td></tr><tr><th scope="row"><code>fx-grid-{1,2,3,4,6,12}</code></th><td>全画面幅で指定の均等列数にします。</td></tr><tr><th scope="row"><code>fx-grid-md-{1,2,3,4,6,12}</code><br><code>fx-grid-lg-{1,2,3,4,6,12}</code></th><td>768px / 1024px以上の均等列数です。</td></tr><tr><th scope="row"><code>fx-col-{1…12}</code><br><code>fx-col-md-{1…12}</code><br><code>fx-col-lg-{1…12}</code></th><td>子要素に指定する12分割の幅。均等列より優先します。</td></tr><tr><th scope="row"><code>--fx-gap / --fx-column-gap / --fx-row-gap</code></th><td>全体・横・縦の間隔。横のgapを列幅の計算にも使います。</td></tr><tr><th scope="row"><code>fx-justify-{start,center,end,between,around,evenly}</code></th><td>親に指定。横方向の余白を配分します。</td></tr><tr><th scope="row"><code>fx-items-{start,center,end,baseline,stretch}</code></th><td>親に指定。行の中の項目を縦方向に揃えます。</td></tr><tr><th scope="row"><code>fx-self-{auto,start,center,end,baseline,stretch}</code></th><td>子に指定。項目単位でalign-itemsを上書きします。</td></tr><tr><th scope="row"><code>fx-content-{start,center,end,between,around,evenly,stretch}</code></th><td>親に指定。複数行を縦方向に配分します。</td></tr><tr><th scope="row"><code>fx-md-justify-center</code>など<br><code>fx-lg-items-end</code>など</th><td>768px / 1024px以上で配置を変更。justify / items / content / selfの全指定に対応します。</td></tr><tr><th scope="row"><code>fx-auto-grid / --fx-min</code></th><td>最小幅を基準に折り返し、残りの幅を埋めます。</td></tr></tbody></table></div><p class="dim small">各行の幅を揃えたい場合は均等グリッドを使います。縦横の罫線や行をまたぐ配置が必要な場合はCSS Gridが適しています。このページはFlexboxによる配置に絞っています。</p></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
-&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/css/ui.css">ui.css</a> / <a href="../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/css/ui.css">ui.css</a> / <a href="../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
 
 </body></html>

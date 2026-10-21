@@ -674,7 +674,6 @@
     if(state)state.focus=calendarISO(clamped);
     renderCalendar(root,restore);
     if(old!==root.dataset.uiMonth) {
-      motion(state.view,[{opacity:.35,translate:(old < root.dataset.uiMonth ? '6px 0' : '-6px 0')},{opacity:1,translate:'0 0'}]);
       state.status.textContent=root.dataset.uiMonth.replace('-','年')+'月を表示';
       emit(root,'monthchange',{month:root.dataset.uiMonth});
     }
@@ -719,7 +718,6 @@
     root.dataset.uiValue=value;
     changeCalendarMonth(root,date,true);
     const state=calendarStates.get(root);
-    motion(state.view.querySelector('[aria-pressed="true"]'),[{scale:.9},{scale:1}],160);
     state.status.textContent=calendarLabel(date)+'を選択しました';
     emit(root,'dateselect',{value,previousValue});
     if(previousValue!==value) {

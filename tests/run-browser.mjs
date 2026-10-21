@@ -57,11 +57,12 @@ async function navigate(path) {
 }
 async function key(key,code=key) { const vk={Escape:27,ArrowRight:39,ArrowLeft:37,Tab:9,Enter:13,ArrowDown:40,ArrowUp:38,' ':32}[key] || 0; await send('Input.dispatchKeyEvent',{type:key==='Enter'?'keyDown':'rawKeyDown',key,code,windowsVirtualKeyCode:vk,...(key==='Enter'?{text:'\r',unmodifiedText:'\r'}:{})}); await send('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode:vk}); }
 async function click(selector) {
-  const box=await evaluate(`(()=>{const el=document.querySelector(${JSON.stringify(selector)});el.scrollIntoView({block:'center'});const r=el.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
+  // Deliver programmatic scroll events before opening a scroll-sensitive popup.
+  const box=await evaluate(`(async()=>{const el=document.querySelector(${JSON.stringify(selector)});el.scrollIntoView({block:'center'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));const r=el.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
   await send('Input.dispatchMouseEvent',{type:'mousePressed',...box,button:'left',clickCount:1});
   await send('Input.dispatchMouseEvent',{type:'mouseReleased',...box,button:'left',clickCount:1});
 }
-const timeout=setTimeout(()=>{console.error('Browser checks timed out');child.kill();process.exitCode=1;},90000);
+const timeout=setTimeout(()=>{console.error('Browser checks timed out');child.kill();process.exitCode=1;},120000);
 try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
@@ -150,6 +151,13 @@ try {
         const expected=width>=1024?'32px':width>=768?'24px':'8px';
         if(padding!==expected)throw new Error('Responsive spacing @'+width+': '+padding);
       }
+      if(path!=='starter.html') {
+        const navigation=await evaluate(`(()=>{const nav=document.querySelector('.catalog-sidebar nav[aria-label="コンポーネント"]');const links=[...nav.querySelectorAll('a')];const toc=[...document.querySelectorAll('.catalog-toc-link')];return {paths:links.map(a=>a.href.split('/').pop()),active:links.filter(a=>a.getAttribute('aria-current')==='page').map(a=>a.href.split('/').pop()),tocValid:toc.every(a=>!!document.getElementById(decodeURIComponent(a.hash.slice(1)))),menuOpen:document.querySelector('.catalog-navigation').open,branch:document.querySelector('[data-catalog-family="animations"]').open};})()`);
+        if(navigation.paths.length!==34 || new Set(navigation.paths).size!==34 || !navigation.tocValid || navigation.menuOpen!==(width>700))throw new Error('Catalog navigation '+path+' '+width+': '+JSON.stringify(navigation));
+        const filename=path.split('/').pop();
+        if(path.startsWith('components/') && filename!=='preview.html' && (navigation.active.length!==1 || navigation.active[0]!==filename))throw new Error('Current page destination: '+path);
+        if(filename.startsWith('animations') && !navigation.branch)throw new Error('Current animation branch must open');
+      }
       if(width===1440) {
         const sources=await evaluate(`(()=>{
           const examples=[...document.querySelectorAll('[data-example]')];
@@ -163,6 +171,144 @@ try {
   }
   console.log('Source blocks checked:',sourceChecks);
   console.log('Responsive file:// checks:',checks,'pages/widths without document overflow or missing stylesheets');
+  await send('Emulation.setDeviceMetricsOverride',{width:320,height:1000,deviceScaleFactor:1,mobile:false});
+  await navigate('components/flex.html');
+  if(!await evaluate('!document.querySelector(".catalog-page-toc").open'))throw new Error('Mobile TOC must start compact');
+  await click('.catalog-page-toc > summary');
+  await evaluate('document.querySelectorAll(".catalog-toc-link")[5].focus()');
+  await key('Enter');await delay(80);
+  if(!await evaluate('document.activeElement.id===decodeURIComponent(location.hash.slice(1)) && document.querySelector(".catalog-toc-link[aria-current=location]").hash===location.hash'))throw new Error('TOC keyboard anchor/focus/location');
+  await send('Page.reload');await delay(200);
+  if(!await evaluate('!!document.getElementById(decodeURIComponent(location.hash.slice(1))) && Math.abs(document.getElementById(decodeURIComponent(location.hash.slice(1))).getBoundingClientRect().top-20)<3'))throw new Error('TOC bookmark reload');
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await delay(80);
+  if(!await evaluate('document.querySelector(".catalog-navigation").open && document.querySelector(".catalog-page-toc").open && Math.abs(document.querySelector(".catalog-sidebar").getBoundingClientRect().top)<2'))throw new Error('Desktop sticky navigation/media sync');
+  console.log('Catalog navigation: consistent 34 destinations; current page, mobile disclosure, keyboard section focus, scroll location, bookmark reload and sticky sidebar');
+  const openCategories=await evaluate('[...document.querySelectorAll(".catalog-nav-category")].map(el=>el.open)');
+  await evaluate(`(()=>{const input=document.querySelector('.catalog-sidebar-search input');input.value='heartbeat';input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  // Destinations are searched by page name/label, never by hidden source code.
+  if(!await evaluate('!document.querySelector(".catalog-search-empty").hidden'))throw new Error('Sidebar empty search result');
+  await evaluate(`(()=>{const input=document.querySelector('.catalog-sidebar-search input');input.value='animations';input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  if(!await evaluate('document.querySelectorAll(".catalog-nav-group:not([hidden])").length===1 && [...document.querySelectorAll("[data-catalog-family=animations] a")].every(a=>!a.closest("li").hidden) && document.querySelector("[data-catalog-family=animations]").open'))throw new Error('Sidebar nested search results');
+  await evaluate(`(()=>{const input=document.querySelector('.catalog-sidebar-search input');input.value='';input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  if(JSON.stringify(await evaluate('[...document.querySelectorAll(".catalog-nav-category")].map(el=>el.open)'))!==JSON.stringify(openCategories))throw new Error('Sidebar search did not restore categories');
+  await click('.catalog-nav-category > summary');
+  await key('Enter');
+  if(!await evaluate('!document.querySelector(".catalog-nav-category").open'))throw new Error('Sidebar category keyboard toggle');
+  console.log('Sidebar design: header/footer, nested page search, empty/clear restoration and native category keyboard toggle');
+
+  await navigate('components/sidebar.html');
+  await evaluate(`(()=>{const a=document.createElement('a');a.href='#sidebar-icons-title';a.id='sidebar-outline-demo';a.innerHTML='<span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h16"/></svg></span><span class="sidebar-label">線のアイコン</span>';document.querySelector('#sidebar-icons .app-sidebar-group').append(a)})()`);
+  for(const width of [320,1440])for(const mode of ['light','dark'])for(const design of ['default','glass','glassmorphism']) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    await evaluate('OrchtopUI.setColorTheme('+JSON.stringify(mode)+');OrchtopUI.setDesignTheme('+JSON.stringify(design)+')');
+    const icons=await evaluate(`(()=>{
+      const root=document.querySelector('#sidebar-icons');
+      const active=root.querySelector('a[aria-current=page]'),icon=active.querySelector('.sidebar-icon'),label=active.querySelector('.sidebar-label');
+      const task=root.querySelector('a[href="board.html"]'),meta=task.querySelector('.sidebar-meta'),taskLabel=task.querySelector('.sidebar-label');
+      const a=icon.getBoundingClientRect(),b=label.getBoundingClientRect(),m=meta.getBoundingClientRect(),l=taskLabel.getBoundingClientRect();
+      const outline=document.querySelector('#sidebar-outline-demo svg');
+      return {size:a.width,aligned:Math.abs(a.top+a.height/2-(b.top+b.height/2))<1,ordered:a.right<=b.left && l.right<=m.left,metaInside:m.right<=task.getBoundingClientRect().right,fill:getComputedStyle(icon).fill,color:getComputedStyle(active).color,stroke:getComputedStyle(outline).stroke,outlineFill:getComputedStyle(outline).fill,outlineColor:getComputedStyle(outline.closest('a')).color,overflow:document.documentElement.scrollWidth>innerWidth+1};
+    })()`);
+    if(icons.size!==18||!icons.aligned||!icons.ordered||!icons.metaInside||icons.fill!==icons.color||icons.outlineFill!=='none'||icons.stroke!==icons.outlineColor||icons.overflow)throw new Error('Sidebar icon layout/theme '+[width,mode,design]+JSON.stringify(icons));
+  }
+  await click('#sidebar-icons summary .sidebar-icon');
+  if(!await evaluate('!document.querySelector("#sidebar-icons details").open'))throw new Error('Summary SVG click did not collapse');
+  await key('Enter');
+  if(!await evaluate('document.querySelector("#sidebar-icons details").open'))throw new Error('Summary keyboard reopen');
+  await click('#sidebar-icons a[href="board.html"] .sidebar-icon');
+  for(let i=0;i<100;i++){await delay(20);if(await evaluate('location.pathname.endsWith("board.html") && document.readyState==="complete"'))break;}
+  if(!await evaluate('location.pathname.endsWith("board.html")'))throw new Error('Sidebar SVG link navigation');
+  console.log('Sidebar icons: aligned SVG/label/count, outlined SVG wrapper, inherited color and long-label bounds at 320/1440 × light/dark × 3 designs; SVG click and keyboard disclosure');
+  let presetCount=0;
+  for(const page of ['animations-entrances','animations-movement','animations-attention']) {
+  await navigate('components/'+page+'.html');
+  const presetButtons=await evaluate('[...document.querySelectorAll("[data-demo-animation-replay]")].map(button=>button.dataset.demoAnimationReplay)');
+  if(presetButtons.length!==6)throw new Error('Missing animation group demos: '+page);
+  presetCount+=presetButtons.length;
+  for(const target of presetButtons) {
+    const selector='[data-demo-animation-replay='+JSON.stringify(target)+']';
+    await click(selector);
+    const first=await evaluate(`(()=>{const el=document.querySelector(${JSON.stringify(target)});const animation=el.getAnimations().find(a=>a.animationName?.startsWith('ui-fx-'));if(!animation)return false;window.__presetAnimation=animation;const timing=animation.effect.getTiming();animation.finish();return timing.duration===600 && timing.iterations===1;})()`);
+    if(!first)throw new Error('Preset did not run: '+target);
+    if(target.endsWith('fade-out')||target.endsWith('zoom-out')) {
+      if(!await evaluate('getComputedStyle(document.querySelector('+JSON.stringify(target)+')).opacity==="0"'))throw new Error('Exit preset final frame: '+target);
+    }
+    await click(selector);
+    if(!await evaluate(`(()=>{const el=document.querySelector(${JSON.stringify(target)});const animation=el.getAnimations().find(a=>a.animationName?.startsWith('ui-fx-'));return animation && animation!==window.__presetAnimation && animation.playState==='running' && document.activeElement.dataset.demoAnimationReplay===${JSON.stringify(target)};})()`))throw new Error('Preset replay/focus: '+target);
+  }
+  await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+  if(!await evaluate('[...document.querySelectorAll(".animation-demo-target")].every(el=>getComputedStyle(el).opacity==="1" && !el.getAnimations().length)'))throw new Error('Reduced motion group: '+page);
+  await send('Emulation.setEmulatedMedia',{features:[]});
+  }
+  if(presetCount!==18)throw new Error('Missing animation presets after page split');
+  await evaluate(`(()=>{const el=document.querySelector('#animation-pulse');el.classList.add('ui-animate-slow','ui-animate-delay-500','ui-animate-repeat');document.querySelector('[data-demo-animation-replay="#animation-pulse"]').click()})()`);
+  const timing=await evaluate(`(()=>{const el=document.querySelector('#animation-pulse'),a=el.getAnimations()[0],t=a.effect.getTiming();el.classList.add('ui-animate-paused');return {duration:t.duration,delay:t.delay,infinite:t.iterations===Infinity};})()`);
+  if(timing.duration!==1200||timing.delay!==500||!timing.infinite)throw new Error('Preset speed/delay/repeat');
+  await delay(40);
+  const pausedAt=await evaluate('document.querySelector("#animation-pulse").getAnimations()[0].currentTime');
+  await delay(60);
+  if(!await evaluate('Math.abs(document.querySelector("#animation-pulse").getAnimations()[0].currentTime-'+pausedAt+')<2'))throw new Error('Preset pause');
+  await evaluate('document.querySelector("#animation-pulse").classList.remove("ui-animate-paused")');
+  if(!await evaluate('document.querySelector("#animation-pulse").getAnimations()[0].playState==="running"'))throw new Error('Preset resume');
+  // The OS preference must also cancel a running/repeating effect and reveal exit examples.
+  await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+  if(!await evaluate('[...document.querySelectorAll(".animation-demo-target")].every(el=>!el.getAnimations().some(a=>a.animationName?.startsWith("ui-fx-")) && getComputedStyle(el).opacity==="1")'))throw new Error('Preset reduced motion visibility');
+  await send('Emulation.setEmulatedMedia',{features:[]});
+  await evaluate("delete window.__presetAnimation");
+  console.log('Animation presets: 18 effects, native pointer replay/focus, exit final frames, speed/delay/repeat, pause/resume and live reduced motion');
+  // Verify reusable layout CSS without the catalog stylesheet, at real viewport widths.
+  await navigate('components/layouts.html');
+  const layoutMarkup=await evaluate(`JSON.stringify({columns:document.querySelector('#layout-columns-demo').outerHTML,dashboard:document.querySelector('#layout-dashboard [data-example]').innerHTML})`);
+  await evaluate(`(()=>{
+    document.querySelector('link[rel=stylesheet]').href='../assets/css/ui.css';
+    const markup=JSON.parse(${JSON.stringify(layoutMarkup)});
+    document.body.className='ui-app';
+    document.body.innerHTML='<header class="ui-header ui-header-sticky"><div class="ui-container ui-header-inner"><a class="ui-brand" href="#layout-main">My workspace</a><nav class="ui-header-nav" aria-label="メイン"><a href="#layout-main" aria-current="page">概要</a><a href="#layout-dashboard-sidebar">メニュー</a></nav></div></header><main id="layout-main" class="ui-app-main"><div class="ui-container">'+markup.columns+markup.dashboard+'</div></main><footer class="ui-footer"><div class="ui-container ui-footer-inner"><p>© My workspace</p><a href="#layout-main">ページの先頭へ</a></div></footer>';
+    OrchtopUI.init(document.body);
+  })()`);
+  await delay(150);
+  for(const width of [320,768,1024,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    for(const mode of ['light','dark']) for(const design of ['default','glass','glassmorphism','flat','soft']) {
+      await evaluate('OrchtopUI.setColorTheme('+JSON.stringify(mode)+');OrchtopUI.setDesignTheme('+JSON.stringify(design)+')');
+      const state=await evaluate(`(()=>{
+        const page=document.querySelector('.ui-page');const [left,body,right]=[...page.children].map(el=>el.getBoundingClientRect());
+        const container=document.querySelector('.ui-container');const footer=document.querySelector('.ui-footer').getBoundingClientRect();
+        return {overflow:document.documentElement.scrollWidth>innerWidth+1,cols:getComputedStyle(page).gridTemplateColumns.split(' ').length,left:left.toJSON(),body:body.toJSON(),right:right.toJSON(),footer:footer.bottom,container:container.getBoundingClientRect().width};
+      })()`);
+      const cols=width>=1056?3:width>=800?2:1;
+      if(state.overflow || state.cols!==cols || state.footer<1000-1)throw new Error('Standalone layout geometry '+[width,mode,design]+': '+JSON.stringify(state));
+      if(cols===3 && (Math.abs(state.left.top-state.body.top)>1 || Math.abs(state.right.top-state.body.top)>1))throw new Error('Three-column alignment');
+      if(cols===2 && (Math.abs(state.left.top-state.body.top)>1 || state.right.top<=state.body.top))throw new Error('Two-column rail placement');
+      if(cols===1 && (state.body.top<=state.left.top || state.right.top<=state.body.top))throw new Error('Stacked reading order');
+      // No hidden navigation links remain in the keyboard path after collapse.
+      await click('[data-ui-target="#layout-dashboard-sidebar"]');
+      if(!await evaluate('document.querySelector("#layout-dashboard-sidebar").hidden && document.querySelector("[data-ui-toggle=sidebar]").getAttribute("aria-expanded")==="false"'))throw new Error('Layout sidebar collapse');
+      await key('Enter');
+      if(!await evaluate('!document.querySelector("#layout-dashboard-sidebar").hidden'))throw new Error('Layout sidebar keyboard reopen');
+      if(design==='glassmorphism' && ((width===320 && mode==='dark') || (width===1440 && mode==='light'))) {
+        await evaluate('scrollTo(0,0)'); await delay(300);
+        const {data}=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});
+        writeFileSync(join(artifacts,'layout-standalone-'+width+'-'+mode+'.png'),Buffer.from(data,'base64'));
+      }
+    }
+  }
+  for(const variant of ['ui-page-with-aside','ui-page-with-rail','']) {
+    await evaluate('document.querySelector(".ui-page").className="ui-page "+'+JSON.stringify(variant));
+    const count=await evaluate('getComputedStyle(document.querySelector(".ui-page")).gridTemplateColumns.split(" ").length');
+    if(count!==(variant?2:1))throw new Error('Single aside/rail variant: '+variant);
+  }
+  await evaluate('document.querySelector(".ui-page").className="ui-page ui-page-with-aside ui-page-with-rail"');
+  // A narrow embedded container must stack even on a wide desktop viewport.
+  await evaluate(`document.querySelector('#layout-columns-demo').style.maxWidth='400px'`);
+  if(!await evaluate('getComputedStyle(document.querySelector(".ui-page")).gridTemplateColumns.split(" ").length===1'))throw new Error('Embedded layout must follow its container width');
+  // Short content keeps the footer at the viewport bottom; long content pushes it down.
+  await evaluate('document.querySelector("main").innerHTML="<div class=ui-container>短い本文</div>"');
+  if(!await evaluate('Math.abs(document.querySelector(".ui-footer").getBoundingClientRect().bottom-innerHeight)<2'))throw new Error('Short page footer');
+  await evaluate('document.querySelector("main").style.minHeight="1500px"');
+  if(!await evaluate('document.querySelector(".ui-footer").getBoundingClientRect().top>=1500'))throw new Error('Long page footer');
+  console.log('Standalone layouts: 4 widths × light/dark × 5 designs; responsive column geometry, embedded width, sidebar pointer/keyboard, short/long footer');
   await navigate('starter.html');
   await click('[data-ui-target="#starter-project"]');
   if(!await evaluate('document.querySelector("#starter-project").open'))throw new Error('Pointer did not open dialog');
@@ -423,11 +569,12 @@ try {
   console.log('Custom select: native pointer, End/Enter, Escape, button synchronization, viewport bounds @320/1440 light/dark; select/input popups preserve parent modal');
   await evaluate('OrchtopUI.setDesignTheme("default",{persist:true})');
   console.log('Design themes: custom select, synchronization, reload/navigation persistence, all 10 designs/modes @320 and1440; modal, tooltip, date picker and toast');
-  await navigate('components/animations.html');
+  await navigate('components/animations-interactions.html');
   await click('[data-ui-target="#motion-dialog"]');await delay(180);
   await key('Escape');await delay(20);
   if(!await evaluate('!document.querySelector("#motion-dialog").open && !!document.querySelector("[data-ui-motion-ghost]")'))throw new Error('Native dialog exit motion or immediate close failed');
-  await delay(180);
+  // Animation completion depends on browser frames, not the Node timer alone.
+  for(let attempt=0;attempt<40 && await evaluate('!!document.querySelector("[data-ui-motion-ghost]")');attempt++)await delay(25);
   if(!await evaluate('!document.querySelector("[data-ui-motion-ghost]")'))throw new Error('Exit visual was not cleaned up');
   await click('[data-ui-target="#motion-panel"]');await delay(180);
   await click('[data-ui-target="#motion-panel"]');
@@ -465,6 +612,30 @@ try {
   await click('.ui-toast [data-ui-copy]');await delay(150);
   if(!await evaluate('document.querySelector(".ui-toast [data-ui-copy-status]").dataset.uiCopyState==="success"'))throw new Error('Toast clipboard write failed');
   console.log('Clipboard: native copy/paste, SVG click, checkmark and reset, keyboard and focus, toast copy action');
+  await navigate('components/mdi-icons.html');
+  if(!await evaluate(`(()=>{const icons=[...document.querySelectorAll('[data-mdi-icon]')];return icons.length===128 && icons.every(card=>{const template=document.createElement('template');template.innerHTML=card.querySelector('code').textContent;const svg=template.content.firstElementChild;return svg?.localName==='svg' && svg.querySelector('path[d]') && !svg.querySelector('use, image, script, foreignObject') && !svg.querySelector('[href]') && svg.getAttribute('fill')==='currentColor' && svg.getAttribute('width')==='24';});})()`))throw new Error('MDI SVG snippets must be self-contained');
+  for(const width of [320,768,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    for(const [query,count] of [['ＭＤＩ－ＨＯＭＥ',2],['設定',2],['再生',1],['radiobox',2],['no-such-icon-name',0],['',128]]) {
+      await evaluate(`(()=>{const input=document.querySelector('[data-mdi-search]');input.value=${JSON.stringify(query)};input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+      await delay(20);
+      if(!await evaluate(`document.querySelectorAll('[data-mdi-icon]:not([hidden])').length===${count} && document.querySelector('[data-mdi-empty]').hidden===${count>0} && document.documentElement.scrollWidth<=innerWidth+1`))throw new Error('MDI search/overflow '+[width,query]);
+    }
+  }
+  await click('[data-ui-copy-target="#mdi-code-home"]');await delay(80);
+  const copiedSVG=await evaluate('navigator.clipboard.readText()');
+  if(copiedSVG!==await evaluate('document.getElementById("mdi-code-home").textContent'))throw new Error('MDI copied SVG differs from displayed source');
+  await send('Page.navigate',{url:'about:blank'});
+  for(let i=0;i<100;i++){await delay(10);if(await evaluate('location.href==="about:blank" && document.readyState==="complete"'))break;}
+  await evaluate('document.body.style.color="rgb(47,111,196)";document.body.innerHTML='+JSON.stringify(copiedSVG));
+  if(!await evaluate('document.querySelector("svg").getBoundingClientRect().width===24 && document.querySelector("path").getBBox().width>0 && getComputedStyle(document.querySelector("path")).fill==="rgb(47, 111, 196)" && !document.styleSheets.length && typeof OrchtopUI==="undefined"'))throw new Error('Copied SVG must render alone without CSS or JS');
+  await send('Network.enable');await send('Network.setBlockedURLs',{urls:['*assets/js/*','https://*','http://*']});
+  await send('Page.navigate',{url:pathToFileURL(join(root,'components/mdi-icons.html')).href});
+  for(let i=0;i<100;i++){await delay(20);if(await evaluate('document.readyState==="complete" && !!document.querySelector("[data-mdi-search]")'))break;}
+  if(!await evaluate('typeof OrchtopUI==="undefined" && document.querySelectorAll(".mdi-icon-preview > svg").length===128 && [...document.querySelectorAll(".mdi-icon-preview path")].every(path=>path.getBBox().width>0)'))throw new Error('MDI gallery SVGs must render with scripts/network blocked');
+  await send('Network.setBlockedURLs',{urls:[]});
+  console.log('MDI: 128 self-contained SVGs, English/Japanese search at 3 widths, native clipboard copy, standalone rendering with no CSS/JS, all previews with scripts/network blocked');
+
   for(const [path,width,theme] of [['starter.html',1440,'light'],['starter.html',320,'dark'],['components/flex-grid.html',1440,'light'],['components/flex-grid.html',320,'dark'],['components/toasts.html',1440,'light'],['components/toasts.html',320,'dark'],['components/cards.html',1440,'light'],['components/calendar.html',1440,'light'],['components/calendar.html',320,'dark'],['components/datepicker.html',1440,'light'],['components/datepicker.html',320,'dark'],['components/loading.html',1440,'light'],['components/loading.html',320,'dark'],['components/clipboard.html',1440,'light'],['components/clipboard.html',320,'dark'],['components/buttons.html',1440,'light'],['components/buttons.html',320,'dark'],['components/animations.html',1440,'light'],['components/animations.html',320,'dark'],['components/theme-switcher.html',1440,'light'],['components/theme-switcher.html',320,'dark'],['components/forms.html',1440,'light'],['components/spacing.html',1440,'light'],['components/spacing.html',320,'dark']]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     await navigate(path);await evaluate('if (document.documentElement.dataset.bsTheme !== '+JSON.stringify(theme)+') document.querySelector("[data-ui-toggle=theme]").click()');

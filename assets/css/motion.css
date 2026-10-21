@@ -20,6 +20,9 @@ progress[value]::-webkit-progress-value { transition:width 200ms ease-out, backg
 progress[value]::-moz-progress-bar { transition:width 200ms ease-out, background-color 160ms ease; }
 [data-ui-card] { transition:opacity 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
 [data-ui-column] { transition:background-color 160ms ease, outline-color 160ms ease; }
+/* Calendar redraws are immediate, including calendars embedded in date pickers. */
+.ui-calendar :is(.btn, .ui-calendar-day, .ui-calendar-nav) { transition:none; }
+.ui-calendar .btn:active:not(:disabled):not([aria-disabled="true"]) { scale:none; }
 @keyframes ui-content-enter { from { translate:0 4px; } to { translate:0 0; } }
 @keyframes ui-check-pop { from { scale:.75; } to { scale:1; } }
 @media (prefers-reduced-motion:reduce) {
