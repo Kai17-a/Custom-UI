@@ -5,37 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Service templates — Kav-UI design catalog</title>
     <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-    <style>
-html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
-html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
-</style>
-    <script>
-(() => {
-  let mode = null, design = null, palette = null;
-  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
-  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
-  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
-  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
-  document.documentElement.dataset.uiColorPreference = selected;
-  document.documentElement.dataset.bsTheme = selected === 'system'
-    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  const restore = () => {
-    if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
-      document.body.dataset.uiTheme = design;
-    }
-    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
-      document.documentElement.dataset.uiPalette = palette;
-    }
-    return true;
-  };
-  if (!restore()) {
-    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
-    observer.observe(document.documentElement, {childList:true, subtree:true});
-  }
-})();
-</script>
+    <script src="assets/js/theme-init.js"></script>
     <link rel="stylesheet" href="assets/css/catalog.css">
     <script defer src="assets/js/catalog.js"></script>
     <script defer src="assets/js/catalog-navigation.js"></script>
@@ -122,6 +92,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
               <li>
                 <a href="components/layouts.html">Layouts</a>
               </li>
+      <li><a href="components/splitter.html">Splitter</a></li>
               <li>
                 <a href="components/flex.html">Flexbox</a>
               </li>
@@ -211,6 +182,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
               <li>
                 <a href="components/alerts.html">Alerts</a>
               </li>
+      <li><a href="components/banner.html">Banner</a></li>
               <li>
                 <a href="components/toasts.html">Toasts & alerts</a>
               </li>
@@ -280,6 +252,18 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
             <a class="catalog-card" href="templates/changelog.html"><h3>Changelog</h3><p>日付・バージョン・更新内容。種類とキーワードによる絞り込み。</p><span class="card-link">テンプレートを開く →</span></a>
           </div>
         </section>
+        <section class="specimen" id="template-errors">
+          <h2>エラー画面</h2>
+          <p>原因に合った案内と復帰先を持つ独立したHTMLです。既存のテーマ・カラーパレット・ライト／ダークと、PC・タブレット・スマートフォンに対応します。</p>
+          <div class="catalog-grid">
+            <a class="catalog-card" href="templates/error-404.html"><h3>404 · ページが見つからない</h3><p>URLの確認、ホームとドキュメントへの導線。</p><span class="card-link">画面を開く →</span></a>
+            <a class="catalog-card" href="templates/error-403.html"><h3>403 · アクセス権限がない</h3><p>アカウント・権限の確認と、管理者への依頼を案内。</p><span class="card-link">画面を開く →</span></a>
+            <a class="catalog-card" href="templates/error-500.html"><h3>500 · 予期しないエラー</h3><p>再読み込みとホームへの復帰、解決しない場合の案内。</p><span class="card-link">画面を開く →</span></a>
+            <a class="catalog-card" href="templates/error-503.html"><h3>503 · 一時的に利用できない</h3><p>メンテナンス・混雑時の案内と手動での再読み込み。</p><span class="card-link">画面を開く →</span></a>
+          </div>
+          <p>コピー後は、サービス名・文面・ホームやヘルプへのリンクを自分のアプリへ変更してください。500・503の再読み込みにはtemplates.jsを使用します。JavaScriptが無効な場合もホームへのリンクは利用できます。</p>
+          <p>このHTMLは表示用テンプレートです。HTTPステータスの返却や、エラー発生時にこの画面を表示する処理は、サーバーやアプリ側で設定してください。配布用のCSS/JS ZIPには画面テンプレートを含めていないため、このリポジトリからHTMLとtemplates.css / templates.jsを取得します。</p>
+        </section>
         <section class="specimen" id="template-use">
           <h2>アプリへ取り込む</h2>
           <ol>
@@ -292,7 +276,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 &lt;script defer src="../assets/js/ui.js"&gt;&lt;/script&gt;
 &lt;script defer src="../assets/js/templates.js"&gt;&lt;/script&gt;</code></pre>
           <p><a href="assets/css/templates.css">templates.css</a>は画面構成、<a href="assets/js/templates.js">templates.js</a>はテンプレート固有の操作です。共通UIはui.css / ui.jsが提供します。カタログ専用ファイルは読み込みません。</p>
-          <p>head内のテーマ復元処理も引き継ぐと、遷移時の白いフラッシュを抑えられます。サンプルの初期化スクリプトはデザインテーマとライト・ダーク設定を共通UIと同じキーで復元します。</p>
+          <p>head内のtheme-init.jsも引き継ぐと、遷移時の白いフラッシュを抑えられます。サンプルの初期化スクリプトはデザインテーマとライト・ダーク設定を共通UIと同じキーで復元します。</p>
         </section>
         <section class="specimen" id="template-interactions">
           <h2>動く部分</h2>

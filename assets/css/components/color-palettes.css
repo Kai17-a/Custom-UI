@@ -10,3 +10,13 @@
 .ui-color-role-container { background:var(--bs-primary-bg-subtle); color:var(--bs-primary-text-emphasis,var(--bs-primary)); }
 .ui-color-role-secondary { background:var(--md-sys-color-secondary-container,var(--bs-secondary-bg)); color:var(--md-sys-color-on-secondary-container,var(--bs-body-color)); }
 .ui-color-role-tertiary { background:var(--md-sys-color-tertiary-container,var(--bs-info-bg-subtle)); color:var(--md-sys-color-on-tertiary-container,var(--bs-info-text-emphasis)); }
+
+.ui-palette-editor { display:grid; gap:var(--space-4); min-width:0; }
+.ui-palette-editor-fields { display:grid; grid-template-columns:minmax(10rem,1fr) minmax(0,2fr); gap:var(--space-4); align-items:start; }
+.ui-palette-editor-fields > * { min-width:0; }
+.ui-palette-editor .form-label { display:block; margin-bottom:var(--space-2); }
+.ui-palette-editor .form-control[type="color"] { width:100%; }
+.ui-palette-editor .type-caption { margin:var(--space-2) 0 0; }
+.ui-palette-editor-status { margin:0; min-height:1.6em; color:var(--bs-secondary-color); font-size:var(--text-sm); }
+.ui-palette-editor-status[data-ui-error] { color:var(--bs-danger-text-emphasis); }
+@media (width < 768px) { .ui-palette-editor-fields { grid-template-columns:minmax(0,1fr); } }

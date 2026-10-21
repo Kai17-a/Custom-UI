@@ -7,6 +7,9 @@
     const measure=()=>doc.body.style.setProperty('--template-header-height',header.getBoundingClientRect().height+'px');
     measure();if(window.ResizeObserver)new ResizeObserver(measure).observe(header);
   }
+  doc.querySelectorAll('[data-template-reload]').forEach(button=>{
+    button.hidden=false;button.addEventListener('click',()=>location.reload());
+  });
   const normalize=value=>value.normalize('NFKC').toLocaleLowerCase('ja-JP');
   const menu=doc.querySelector('.template-doc-menu');
   if(menu) {

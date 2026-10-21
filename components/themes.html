@@ -5,37 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UI themes — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<style>
-html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
-html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
-</style>
-<script>
-(() => {
-  let mode = null, design = null, palette = null;
-  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
-  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
-  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
-  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
-  document.documentElement.dataset.uiColorPreference = selected;
-  document.documentElement.dataset.bsTheme = selected === 'system'
-    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  const restore = () => {
-    if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
-      document.body.dataset.uiTheme = design;
-    }
-    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
-      document.documentElement.dataset.uiPalette = palette;
-    }
-    return true;
-  };
-  if (!restore()) {
-    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
-    observer.observe(document.documentElement, {childList:true, subtree:true});
-  }
-})();
-</script>
+<script src="../assets/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
@@ -65,6 +35,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <h2>レイアウト</h2>
     <ul>
       <li><a href="../components/layouts.html">Layouts</a></li>
+      <li><a href="../components/splitter.html">Splitter</a></li>
       <li><a href="../components/flex.html">Flexbox</a></li>
       <li><a href="../components/flex-grid.html">Flex grid</a></li>
       <li><a href="../components/cards.html">Cards</a></li>
@@ -112,6 +83,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <h2>通知・補足</h2>
     <ul>
       <li><a href="../components/alerts.html">Alerts</a></li>
+      <li><a href="../components/banner.html">Banner</a></li>
       <li><a href="../components/toasts.html">Toasts & alerts</a></li>
       <li><a href="../components/tips.html">Tips & tooltips</a></li>
 
@@ -140,6 +112,49 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
   <select class="form-select form-select-sm" data-ui-theme-select style="width:auto"><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select>
 </label>
 </div><p>ヘッダーの選択欄と連動します。カタログでは選択をブラウザに保存します。右上のライト／ダーク切り替えと組み合わせて、5種類×2通りの表示を確認できます。</p></section>
+<section class="specimen" id="theme-background">
+  <h2>ガラスの背景に画像を設定する（任意）</h2>
+  <p>glass・glassmorphismでは、背景画像をテーマの色と重ねて薄く表示できます。画像は画面に固定され、長いページをスクロールしても途切れません。画像を指定しなければ従来のグラデーション背景になります。ライト・ダークやカラーパレットにも追従します。</p>
+  <h3>カタログで見え方を試す</h3>
+  <div class="example" data-demo-theme-background>
+    <div class="ui-stack">
+      <div class="ui-cluster">
+        <button class="btn btn-primary" type="button" data-demo-background-action="sample">サンプル画像を表示</button>
+        <button class="btn btn-outline-secondary" type="button" data-demo-background-action="clear">画像を解除</button>
+      </div>
+      <div class="ui-file-drop" data-ui-file-drop>
+        <input class="form-control" id="theme-background-file" type="file" accept="image/*" aria-describedby="theme-background-file-help theme-background-status">
+        <label class="ui-file-dropzone" data-ui-file-zone for="theme-background-file"><span icon="mdi-image" aria-hidden="true"></span><strong>手元の画像をドロップ</strong><span>またはクリックして選択</span><span class="ui-file-hint" id="theme-background-file-help">このページ内だけでプレビューします。アップロード・保存はしません。</span></label>
+      </div>
+      <label class="field" for="theme-background-opacity">画像の濃さ：<output for="theme-background-opacity">18%</output><input class="form-range" id="theme-background-opacity" type="range" min="0" max="100" step="1" value="18"></label>
+      <p class="type-caption" id="theme-background-status" role="status" data-demo-background-status>画像は未設定です。サンプルまたは手元の画像を選んでください。</p>
+    </div>
+  </div>
+  <p>ガラス以外のテーマで画像を選ぶと、プレビューではグラスモーフィズムへ切り替えます。画像を設定したまま標準・フラット・ソフトに変えると画像は表示されず、ガラスへ戻すと再表示されます。再読み込み時は画像なしに戻ります。</p>
+  <h3>アプリではCSSクラスで指定する</h3>
+  <pre class="setup-code"><code>/* アプリのCSSへ追加。URLは使用する画像の場所に変更してください。 */
+.app-glass-background {
+  --ui-theme-background-image: url("/images/background.jpg");
+  --ui-theme-background-opacity: 18%;
+  --ui-theme-background-position: center;
+  --ui-theme-background-size: cover;
+}</code></pre>
+  <pre class="setup-code"><code>&lt;body class="app-glass-background" data-ui-theme="glassmorphism"&gt;
+  ...
+&lt;/body&gt;
+
+&lt;!-- ガラスでも同じクラスを使用できます。 --&gt;
+&lt;body class="app-glass-background" data-ui-theme="glass"&gt;
+  ...
+&lt;/body&gt;</code></pre>
+  <p>この指定はui.cssだけで動きます。opacityは0%で見えなくなり、100%で元の濃さになります（既存の装飾グラデーションは重なります）。既定値は18%。positionはcenter、sizeはcoverが既定値です。例のURLはWebサーバーのルートからのパスです。</p>
+  <h3>画像を使わない・一時的に外す</h3>
+  <pre class="setup-code"><code>/* クラスを付けない場合は画像なし。付けたまま外す場合も指定できます。 */
+.app-glass-background.is-background-off {
+  --ui-theme-background-image: none;
+}</code></pre>
+  <p>画像が読み込めない場合も、テーマの背景色とグラデーションが残ります。高コントラスト表示では画像を表示しません。サンプルのプレビュー操作はcatalog-demo.js専用で、アプリの配布に取り込む必要はありません。</p>
+</section>
 <section class="specimen"><h2>カード・フォーム・サイドバー</h2><div class="example" data-example>
 <div class="app-shell">
   <aside class="app-sidebar" aria-label="テーマ見本のメニュー">

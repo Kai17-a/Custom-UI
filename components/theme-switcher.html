@@ -5,37 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Theme switcher — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<style>
-html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
-html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
-</style>
-<script>
-(() => {
-  let mode = null, design = null, palette = null;
-  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
-  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
-  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
-  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
-  document.documentElement.dataset.uiColorPreference = selected;
-  document.documentElement.dataset.bsTheme = selected === 'system'
-    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  const restore = () => {
-    if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
-      document.body.dataset.uiTheme = design;
-    }
-    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
-      document.documentElement.dataset.uiPalette = palette;
-    }
-    return true;
-  };
-  if (!restore()) {
-    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
-    observer.observe(document.documentElement, {childList:true, subtree:true});
-  }
-})();
-</script>
+<script src="../assets/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
@@ -65,6 +35,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <h2>レイアウト</h2>
     <ul>
       <li><a href="../components/layouts.html">Layouts</a></li>
+      <li><a href="../components/splitter.html">Splitter</a></li>
       <li><a href="../components/flex.html">Flexbox</a></li>
       <li><a href="../components/flex-grid.html">Flex grid</a></li>
       <li><a href="../components/cards.html">Cards</a></li>
@@ -112,6 +83,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <h2>通知・補足</h2>
     <ul>
       <li><a href="../components/alerts.html">Alerts</a></li>
+      <li><a href="../components/banner.html">Banner</a></li>
       <li><a href="../components/toasts.html">Toasts & alerts</a></li>
       <li><a href="../components/tips.html">Tips & tooltips</a></li>
 
@@ -134,7 +106,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     </ul>
   </div>
 </nav><a class="overview-link" href="../components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Theme switcher</h1></header><p class="lede">タグと属性だけで使えるテーマ切り替えです。ライト・ダーク・システムを選べます。デザインの質感とカラーパレットは独立して切り替えられます。</p>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Theme switcher</h1></header><p><a href="themes.html#theme-background">ガラス・グラスモーフィズムに任意の背景画像を設定する →</a></p><p class="lede">タグと属性だけで使えるテーマ切り替えです。ライト・ダーク・システムを選べます。デザインの質感とカラーパレットは独立して切り替えられます。</p>
 <section class="specimen" id="palette-switcher"><h2>カラーパレットを選ぶ</h2><p>Material 3に基づく低彩度の6配色を、質感・明暗とは独立して選べます。</p><div class="example" data-example><div class="ui-palette-switcher" role="group" aria-label="カラーパレット">
 <button class="btn btn-sm btn-outline-secondary" type="button" data-ui-palette-value="default"><span class="ui-palette-swatch" data-ui-palette-swatch="default" aria-hidden="true"></span>標準</button>
 <button class="btn btn-sm btn-outline-secondary" type="button" data-ui-palette-value="slate"><span class="ui-palette-swatch" data-ui-palette-swatch="slate" aria-hidden="true"></span>スレート</button>
@@ -143,7 +115,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 <button class="btn btn-sm btn-outline-secondary" type="button" data-ui-palette-value="mauve"><span class="ui-palette-swatch" data-ui-palette-swatch="mauve" aria-hidden="true"></span>モーブ</button>
 <button class="btn btn-sm btn-outline-secondary" type="button" data-ui-palette-value="sand"><span class="ui-palette-swatch" data-ui-palette-swatch="sand" aria-hidden="true"></span>サンド</button>
 <button class="btn btn-sm btn-outline-secondary" type="button" data-ui-palette-value="clay"><span class="ui-palette-swatch" data-ui-palette-swatch="clay" aria-hidden="true"></span>クレイ</button>
-</div></div><p><a href="color-palettes.html">配色の比較・select・設定と保存方法 →</a></p></section><section class="specimen" id="color-mode-toggle-icon"><h2>ライト・ダークを1つのアイコンで切り替え</h2><p>カタログ上部と同じ切り替えです。ライト時は月、ダーク時は太陽を表示します。読み上げラベルとツールチップは次の切り替え先を案内します。</p><div class="example" data-example>
+</div></div><p><a href="color-palettes.html">配色の比較・自分の色で作る・設定と保存方法 →</a></p></section><section class="specimen" id="color-mode-toggle-icon"><h2>ライト・ダークを1つのアイコンで切り替え</h2><p>カタログ上部と同じ切り替えです。ライト時は月、ダーク時は太陽を表示します。読み上げラベルとツールチップは次の切り替え先を案内します。</p><div class="example" data-example>
 <button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button>
 </div></section><section class="specimen" id="color-mode-buttons"><h2>ライト・ダーク・システム</h2><p>そのまま配置できる3択の切り替えです。「システム」はOSの明暗設定に追従します。OSの設定が変わっても、選択中のボタンは「システム」のままです。</p><div class="example" data-example>
 <div class="ui-color-switcher" role="group" aria-label="表示モード">

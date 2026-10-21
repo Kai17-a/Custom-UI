@@ -13,6 +13,7 @@
 @import url("components/color-palettes.css");
 @import url("components/navigation.css");
 @import url("components/alerts.css");
+@import url("components/banner.css");
 @import url("components/badges.css");
 @import url("components/table.css");
 @import url("utilities.css");
@@ -29,6 +30,7 @@
 @import url("components/flex.css");
 @import url("components/cards.css");
 @import url("components/page-layout.css");
+@import url("components/splitter.css");
 @import url("components/calendar.css");
 @import url("components/datepicker.css");
 @import url("components/loading.css");
