@@ -1,0 +1,12 @@
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  line-height: 1.6;
+  font-family: var(--bs-body-font-family);
+  font-size: .875rem;
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+h2 { font-size: 1rem; margin: 1.2rem 0 .5rem; letter-spacing: .01em; }
+.row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .5rem 0; }

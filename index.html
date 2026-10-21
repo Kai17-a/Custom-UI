@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design catalog — orchtop design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<style>
+html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
+html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
+</style>
+<script>
+(() => {
+  let mode = null, design = null;
+  try { mode = localStorage.getItem('orchtop-theme'); } catch { /* Storage is optional. */ }
+  try { design = localStorage.getItem('orchtop-design-theme'); } catch { /* Storage is optional. */ }
+  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
+  document.documentElement.dataset.uiColorPreference = selected;
+  document.documentElement.dataset.bsTheme = selected === 'system'
+    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
+  if (!['default','glass','glassmorphism','flat','soft'].includes(design)) return;
+  const restore = () => {
+    if (!document.body) return false;
+    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme')) {
+      document.body.dataset.uiTheme = design;
+    }
+    return true;
+  };
+  if (!restore()) {
+    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
+    observer.observe(document.documentElement, {childList:true, subtree:true});
+  }
+})();
+</script>
+<link rel="stylesheet" href="assets/css/catalog.css">
+
+
+<script defer src="assets/js/catalog.js"></script>
+<script defer src="assets/js/ui.js"></script>
+<script defer src="assets/js/catalog-demo.js"></script>
+
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="index.html">orchtop <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="theme">テーマ切替</button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="index.html">カタログ一覧</a><a class="overview-link" href="getting-started.html">導入・属性一覧</a><a class="overview-link" href="starter.html">アプリ用サンプル ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="components/foundations.html">Foundations</a></li>
+      <li><a href="components/themes.html">UI themes</a></li>
+      <li><a href="components/theme-switcher.html">Theme switcher</a></li>
+      <li><a href="components/typography.html">Typography</a></li>
+      <li><a href="components/spacing.html">Spacing</a></li>
+      <li><a href="components/icons.html">Icons</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="components/flex.html">Flexbox</a></li>
+      <li><a href="components/flex-grid.html">Flex grid</a></li>
+      <li><a href="components/cards.html">Cards</a></li>
+      <li><a href="components/sidebar.html">Sidebar</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="components/buttons.html">Buttons</a></li>
+      <li><a href="components/forms.html">Forms</a></li>
+      <li><a href="components/datepicker.html">Date picker</a></li>
+      <li><a href="components/dialog.html">Dialog</a></li>
+      <li><a href="components/clipboard.html">Clipboard</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="components/navigation.html">Navigation</a></li>
+      <li><a href="components/disclosure.html">Accordion</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="components/badges.html">Badges</a></li>
+      <li><a href="components/table.html">Table</a></li>
+      <li><a href="components/board.html">Kanban board</a></li>
+      <li><a href="components/calendar.html">Calendar</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="components/alerts.html">Alerts</a></li>
+      <li><a href="components/toasts.html">Toasts & alerts</a></li>
+      <li><a href="components/tips.html">Tips & tooltips</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="components/loading.html">Loading</a></li>
+      <li><a href="components/states.html">States</a></li>
+      <li><a href="components/animations.html">Animations</a></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">ORCHTOP / DESIGN SYSTEM</p><h1>Design catalog</h1></header><p class="lede">自作アプリのための、静かでコンパクトなUIパーツ集。<br>ライト／ダーク両方で確認し、必要なパーツをアプリに取り込めます。</p><div class="index-tools"><label for="catalog-search">コンポーネントを探す</label><input id="catalog-search" type="search" class="form-control form-control-sm" placeholder="名前・用途で検索（例：フォーム、通知）" aria-describedby="search-result"><p id="search-result" class="dim small" role="status">26 コンポーネント</p></div><div class="catalog-grid"><a class="catalog-card" href="components/foundations.html" data-catalog-item><span class="card-number">01</span><h2>Foundations</h2><p>色・文字・余白の基準</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/buttons.html" data-catalog-item><span class="card-number">02</span><h2>Buttons</h2><p>ボタンとアクション</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/forms.html" data-catalog-item><span class="card-number">03</span><h2>Forms</h2><p>入力・選択・バリデーション</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/badges.html" data-catalog-item><span class="card-number">04</span><h2>Badges</h2><p>ステータスとラベル</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/animations.html" data-catalog-item><span class="card-number">05</span><h2>Animations</h2><p>処理中のバナーとカード</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/toasts.html" data-catalog-item><span class="card-number">06</span><h2>Toasts & alerts</h2><p>通知・成功・エラー</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/dialog.html" data-catalog-item><span class="card-number">07</span><h2>Dialog</h2><p>確認・入力ダイアログ</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/table.html" data-catalog-item><span class="card-number">08</span><h2>Table</h2><p>一覧表示</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/board.html" data-catalog-item><span class="card-number">09</span><h2>Kanban board</h2><p>タスクと進捗管理</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/navigation.html" data-catalog-item><span class="card-number">10</span><h2>Navigation</h2><p>タブ・パンくず・ページ送り</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/disclosure.html" data-catalog-item><span class="card-number">11</span><h2>Accordion</h2><p>詳細情報の開閉</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/states.html" data-catalog-item><span class="card-number">12</span><h2>States</h2><p>読み込み・空・エラー</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/icons.html" data-catalog-item><span class="card-number">13</span><h2>Icons</h2><p>MDIアイコン・サイズ・セマンティックカラー</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/sidebar.html" data-catalog-item><span class="card-number">14</span><h2>Sidebar</h2><p>サイドバー・メニュー・折りたたみ</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/alerts.html" data-catalog-item><span class="card-number">15</span><h2>Alerts</h2><p>アラート・成功・情報・警告・エラー</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/tips.html" data-catalog-item><span class="card-number">16</span><h2>Tips & tooltips</h2><p>ヒント・チップ・ツールチップ・補足</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/typography.html" data-catalog-item><span class="card-number">17</span><h2>Typography</h2><p>文字・フォントサイズ・太さ・行間</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/spacing.html" data-catalog-item><span class="card-number">18</span><h2>Spacing</h2><p>スペース・余白・padding・margin・gap</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/cards.html" data-catalog-item><span class="card-number">19</span><h2>Cards</h2><p>カード・リンク・選択・統計・メディア</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/flex.html" data-catalog-item><span class="card-number">20</span><h2>Flexbox</h2><p>フレックス・方向・折り返し・整列・伸縮・order</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/flex-grid.html" data-catalog-item><span class="card-number">21</span><h2>Flex grid</h2><p>flex グリッド・12カラム・レスポンシブ・入れ子</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/calendar.html" data-catalog-item><span class="card-number">22</span><h2>Calendar</h2><p>カレンダー・月切替・日付選択・予定</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/datepicker.html" data-catalog-item><span class="card-number">23</span><h2>Date picker</h2><p>日付フォーム・日付入力・選択・必須・範囲指定</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/loading.html" data-catalog-item><span class="card-number">24</span><h2>Loading</h2><p>ローディング・スピナーアーク・ボタン・枠線・進捗バー</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/clipboard.html" data-catalog-item><span class="card-number">25</span><h2>Clipboard</h2><p>クリップボード・コピー・テキスト・コード</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/themes.html" data-catalog-item><span class="card-number">26</span><h2>UI themes</h2><p>デザインテーマ・ガラス・グラスモーフィズム・フラット・ソフト</p><span class="card-link">サンプルを見る →</span></a><a class="catalog-card" href="components/theme-switcher.html" data-catalog-item><span class="card-number">27</span><h2>Theme switcher</h2><p>テーマ切り替え・デザイン選択・ライト／ダーク</p><span class="card-link">サンプルを見る →</span></a></div><p id="search-empty" hidden>一致するコンポーネントがありません。別のキーワードを試してください。</p><section class="usage"><h2>使い方</h2><ol><li>assetsフォルダをアプリにコピーします。</li><li>ui.css と ui.js を読み込みます。</li><li>各ページの「HTMLを表示」からサンプルをコピーします。</li><li>見た目はclass、動作はdata-ui-*属性で指定します。</li></ol><p><a href="getting-started.html">導入手順・属性一覧 →</a> / <a href="starter.html">共通2ファイルだけで動くサンプル →</a></p><p class="dim">npm・ビルド・サーバーは不要です。保存・送信・通信などアプリ固有の処理は共通UIに含めません。</p></section></main></div>
+
+</body></html>

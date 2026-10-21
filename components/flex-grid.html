@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flex grid — orchtop design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<style>
+html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
+html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
+</style>
+<script>
+(() => {
+  let mode = null, design = null;
+  try { mode = localStorage.getItem('orchtop-theme'); } catch { /* Storage is optional. */ }
+  try { design = localStorage.getItem('orchtop-design-theme'); } catch { /* Storage is optional. */ }
+  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
+  document.documentElement.dataset.uiColorPreference = selected;
+  document.documentElement.dataset.bsTheme = selected === 'system'
+    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
+  if (!['default','glass','glassmorphism','flat','soft'].includes(design)) return;
+  const restore = () => {
+    if (!document.body) return false;
+    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme')) {
+      document.body.dataset.uiTheme = design;
+    }
+    return true;
+  };
+  if (!restore()) {
+    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
+    observer.observe(document.documentElement, {childList:true, subtree:true});
+  }
+})();
+</script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+<link rel="stylesheet" href="../assets/css/flex-demos.css">
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">orchtop <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="theme">テーマ切替</button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../getting-started.html">導入・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="../components/foundations.html">Foundations</a></li>
+      <li><a href="../components/themes.html">UI themes</a></li>
+      <li><a href="../components/theme-switcher.html">Theme switcher</a></li>
+      <li><a href="../components/typography.html">Typography</a></li>
+      <li><a href="../components/spacing.html">Spacing</a></li>
+      <li><a href="../components/icons.html">Icons</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="../components/flex.html">Flexbox</a></li>
+      <li><a href="../components/flex-grid.html" aria-current="page">Flex grid</a></li>
+      <li><a href="../components/cards.html">Cards</a></li>
+      <li><a href="../components/sidebar.html">Sidebar</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="../components/buttons.html">Buttons</a></li>
+      <li><a href="../components/forms.html">Forms</a></li>
+      <li><a href="../components/datepicker.html">Date picker</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/clipboard.html">Clipboard</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="../components/navigation.html">Navigation</a></li>
+      <li><a href="../components/disclosure.html">Accordion</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="../components/badges.html">Badges</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/board.html">Kanban board</a></li>
+      <li><a href="../components/calendar.html">Calendar</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="../components/alerts.html">Alerts</a></li>
+      <li><a href="../components/toasts.html">Toasts & alerts</a></li>
+      <li><a href="../components/tips.html">Tips & tooltips</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="../components/loading.html">Loading</a></li>
+      <li><a href="../components/states.html">States</a></li>
+      <li><a href="../components/animations.html">Animations</a></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="../components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">ORCHTOP / DESIGN SYSTEM</p><h1>Flex grid</h1></header><p class="lede">Flexboxで作る均等グリッド、12カラム、入れ子、固定幅と可変幅。gapを含めて幅を計算します。横・縦・複数行の配置もクラス指定で選べます。</p>
+<nav class="flex-page-nav" aria-label="関連ページ"><a href="flex.html">Flexboxのプロパティ一覧</a><a href="cards.html">カードのサンプル</a></nav><section class="specimen">
+<h2>レスポンシブ：1列 → 2列 → 3列</h2>
+<div class="example" data-example>
+<div class="fx-grid fx-grid-md-2 fx-grid-lg-3"><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">プロジェクト 1</h3><p class="ui-card-description">768px以上で2列、1024px以上で3列になります。</p></div></article><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">プロジェクト 2</h3><p class="ui-card-description">768px以上で2列、1024px以上で3列になります。</p></div></article><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">プロジェクト 3</h3><p class="ui-card-description">768px以上で2列、1024px以上で3列になります。</p></div></article><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">プロジェクト 4</h3><p class="ui-card-description">768px以上で2列、1024px以上で3列になります。</p></div></article><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">プロジェクト 5</h3><p class="ui-card-description">768px以上で2列、1024px以上で3列になります。</p></div></article><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">プロジェクト 6</h3><p class="ui-card-description">768px以上で2列、1024px以上で3列になります。</p></div></article></div>
+</div>
+</section>
+<section class="specimen">
+<h2>均等な2列（gapを差し引く）</h2>
+<div class="example" data-example>
+<div class="fx-grid fx-grid-2 fx-gap-2"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>均等な3列（gapを差し引く）</h2>
+<div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>均等な4列（gapを差し引く）</h2>
+<div class="example" data-example>
+<div class="fx-grid fx-grid-4 fx-gap-2"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div><div class="flex-demo-item ">5</div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>均等な6列（gapを差し引く）</h2>
+<div class="example" data-example>
+<div class="fx-grid fx-grid-6 fx-gap-2"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div><div class="flex-demo-item ">5</div><div class="flex-demo-item ">6</div><div class="flex-demo-item ">7</div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>12カラム：8 + 4 / 6 + 6 / 3 + 9</h2>
+<div class="example" data-example>
+<div class="fx-grid fx-gap-3"><div class="flex-demo-item fx-col-12 fx-col-md-8">8 / 12</div><div class="flex-demo-item fx-col-12 fx-col-md-4">4 / 12</div><div class="flex-demo-item fx-col-12 fx-col-md-6">6 / 12</div><div class="flex-demo-item fx-col-12 fx-col-md-6">6 / 12</div><div class="flex-demo-item fx-col-12 fx-col-md-3">3 / 12</div><div class="flex-demo-item fx-col-12 fx-col-md-9">9 / 12</div></div><p class="type-caption">モバイルは全幅。768pxから列幅を分けます。gapも含めて各行が親の幅に収まります。</p>
+</div>
+</section>
+<section class="specimen">
+<h2>入れ子：カラムの内側に別のグリッド</h2>
+<div class="example" data-example>
+<div class="fx-grid"><div class="fx-col-12 fx-col-md-8"><div class="fx-grid fx-grid-2 fx-gap-2"><div class="flex-demo-item ">内側 1</div><div class="flex-demo-item ">内側 2</div></div></div><div class="fx-col-12 fx-col-md-4"><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">右側の内容</h3><p class="ui-card-description">入れ子はカラム用のラッパーを挟み、内側のgapを独立させます。</p></div></article></div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>自動折り返し：最小幅を基準に伸ばす</h2>
+<div class="example" data-example>
+<div class="fx-auto-grid sp-gap-4" style="--fx-min:14rem"><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">カード 1</h3><p class="ui-card-description">flex: 1 1 14rem。最後の行は余った幅を使って広がります。</p></div></article><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">カード 2</h3><p class="ui-card-description">flex: 1 1 14rem。最後の行は余った幅を使って広がります。</p></div></article><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">カード 3</h3><p class="ui-card-description">flex: 1 1 14rem。最後の行は余った幅を使って広がります。</p></div></article><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">カード 4</h3><p class="ui-card-description">flex: 1 1 14rem。最後の行は余った幅を使って広がります。</p></div></article><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">カード 5</h3><p class="ui-card-description">flex: 1 1 14rem。最後の行は余った幅を使って広がります。</p></div></article></div>
+</div>
+</section>
+<section class="specimen">
+<h2>均等グリッドと自動折り返しの違い</h2>
+<div class="example" data-example>
+<div class="stack"><div><p class="type-caption">均等グリッド：最終行の項目も同じ列幅</p><div class="fx-grid fx-grid-3 fx-gap-2"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div><div class="flex-demo-item ">5</div></div></div><div><p class="type-caption">自動折り返し：最終行は伸びて行を埋める</p><div class="fx-auto-grid sp-gap-2" style="--fx-min:8rem"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div><div class="flex-demo-item ">5</div></div></div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>列と行で間隔を変える</h2>
+<div class="example" data-example>
+<div class="fx-grid fx-grid-2 sp-gap-x-2 sp-gap-y-8"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div><div class="flex-demo-item ">5</div><div class="flex-demo-item ">6</div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>中央寄せと空きカラム</h2>
+<div class="example" data-example>
+<div class="fx-grid fx-justify-center"><div class="flex-demo-item fx-col-12 fx-col-md-6">中央に6カラム</div></div><br><div class="fx-grid"><div class="flex-demo-item fx-col-12 fx-col-md-4">左に4カラム</div><div class="flex-demo-item fx-col-12 fx-col-md-4 fx-ms-auto">右端に4カラム</div></div>
+</div>
+</section>
+<section class="specimen"><h2>横方向の配置：justify-content</h2><p class="dim">標準の横並びでは、親のfx-gridにfx-justify-*を追加して横方向に配置します。4列分の幅に3項目を置き、余ったスペースの配分を比較しています。</p><div class="flex-demo-compare">
+<section><h3>左寄せ <code>fx-justify-start</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-4 fx-gap-2 fx-justify-start">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+</div>
+</div></section>
+<section><h3>中央寄せ <code>fx-justify-center</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-4 fx-gap-2 fx-justify-center">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+</div>
+</div></section>
+<section><h3>右寄せ <code>fx-justify-end</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-4 fx-gap-2 fx-justify-end">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+</div>
+</div></section>
+<section><h3>両端に配置 <code>fx-justify-between</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-4 fx-gap-2 fx-justify-between">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+</div>
+</div></section>
+<section><h3>項目の左右に余白 <code>fx-justify-around</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-4 fx-gap-2 fx-justify-around">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+</div>
+</div></section>
+<section><h3>すべて等間隔 <code>fx-justify-evenly</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-4 fx-gap-2 fx-justify-evenly">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+</div>
+</div></section>
+</div></section>
+<section class="specimen"><h2>最終行も中央に寄せる</h2><p class="dim">justify-contentは折り返した各行に適用されます。列幅は変えず、最後の行の空きスペースを左右に配分します。</p><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-justify-center">
+<div class="flex-demo-item">1</div>
+<div class="flex-demo-item">2</div>
+<div class="flex-demo-item">3</div>
+<div class="flex-demo-item">4</div>
+<div class="flex-demo-item">5</div>
+</div>
+</div><p class="dim small">列で横幅をすべて埋めている行や、fx-auto-gridで子要素が余白いっぱいに伸びる行では、justify-contentによる配置の違いは見えません。</p></section>
+<section class="specimen"><h2>縦方向の揃え方：align-items</h2><p class="dim">親にfx-items-*を指定して、行の中の子要素を揃えます。下の例では行の高さを8rem確保しています。</p><div class="flex-demo-compare">
+<section><h3>上揃え <code>fx-items-start</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-items-start" style="height:8rem">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item"><span style="font-size:1.25rem">B</span><br>2行目</div>
+<div class="flex-demo-item">C<br>2行目<br>3行目</div>
+</div>
+</div></section>
+<section><h3>中央揃え <code>fx-items-center</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-items-center" style="height:8rem">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item"><span style="font-size:1.25rem">B</span><br>2行目</div>
+<div class="flex-demo-item">C<br>2行目<br>3行目</div>
+</div>
+</div></section>
+<section><h3>下揃え <code>fx-items-end</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-items-end" style="height:8rem">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item"><span style="font-size:1.25rem">B</span><br>2行目</div>
+<div class="flex-demo-item">C<br>2行目<br>3行目</div>
+</div>
+</div></section>
+<section><h3>文字の基準線 <code>fx-items-baseline</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-items-baseline" style="height:8rem">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item"><span style="font-size:1.25rem">B</span><br>2行目</div>
+<div class="flex-demo-item">C<br>2行目<br>3行目</div>
+</div>
+</div></section>
+<section><h3>高さを伸ばす <code>fx-items-stretch</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-items-stretch" style="height:8rem">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item"><span style="font-size:1.25rem">B</span><br>2行目</div>
+<div class="flex-demo-item">C<br>2行目<br>3行目</div>
+</div>
+</div></section>
+</div></section>
+<section class="specimen"><h2>項目ごとに揃える：align-self</h2><p class="dim">子要素のfx-self-*で、その項目だけ親のalign-itemsを上書きできます。</p><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-items-start" style="height:9rem">
+  <div class="flex-demo-item fx-self-end">A：下</div>
+  <div class="flex-demo-item fx-self-center">B：中央</div>
+  <div class="flex-demo-item fx-self-stretch">C：伸ばす</div>
+</div>
+</div></section>
+<section class="specimen"><h2>複数行の配分：align-content</h2><p class="dim">親にfx-content-*を指定すると、複数行全体を縦方向に配置できます。2行分の項目に対して14remの高さを確保しています。行が複数あり、高さに余りがあるときに効果が出ます。</p><div class="flex-demo-compare">
+<section><h3>上にまとめる <code>fx-content-start</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-content-start" style="height:14rem">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+<div class="flex-demo-item">D</div>
+<div class="flex-demo-item">E</div>
+<div class="flex-demo-item">F</div>
+</div>
+</div></section>
+<section><h3>中央にまとめる <code>fx-content-center</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-content-center" style="height:14rem">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+<div class="flex-demo-item">D</div>
+<div class="flex-demo-item">E</div>
+<div class="flex-demo-item">F</div>
+</div>
+</div></section>
+<section><h3>下にまとめる <code>fx-content-end</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-content-end" style="height:14rem">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+<div class="flex-demo-item">D</div>
+<div class="flex-demo-item">E</div>
+<div class="flex-demo-item">F</div>
+</div>
+</div></section>
+<section><h3>上下の両端に配置 <code>fx-content-between</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-content-between" style="height:14rem">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+<div class="flex-demo-item">D</div>
+<div class="flex-demo-item">E</div>
+<div class="flex-demo-item">F</div>
+</div>
+</div></section>
+<section><h3>各行の上下に余白 <code>fx-content-around</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-content-around" style="height:14rem">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+<div class="flex-demo-item">D</div>
+<div class="flex-demo-item">E</div>
+<div class="flex-demo-item">F</div>
+</div>
+</div></section>
+<section><h3>行間と外側を等間隔 <code>fx-content-evenly</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-content-evenly" style="height:14rem">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+<div class="flex-demo-item">D</div>
+<div class="flex-demo-item">E</div>
+<div class="flex-demo-item">F</div>
+</div>
+</div></section>
+<section><h3>行を伸ばす <code>fx-content-stretch</code></h3><div class="example" data-example>
+<div class="fx-grid fx-grid-3 fx-gap-2 fx-content-stretch" style="height:14rem">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+<div class="flex-demo-item">D</div>
+<div class="flex-demo-item">E</div>
+<div class="flex-demo-item">F</div>
+</div>
+</div></section>
+</div></section>
+<section class="specimen" id="responsive-alignment"><h2>画面幅で配置を切り替える</h2><p class="dim">通常は中央寄せ、768px以上では両端に配分し、1024px以上では右寄せにします。fx-md-* / fx-lg-*はjustify・items・content・selfに対応します。</p><div class="example" data-example>
+<div class="fx-grid fx-grid-4 fx-gap-2 fx-justify-center fx-md-justify-between fx-lg-justify-end">
+<div class="flex-demo-item">A</div>
+<div class="flex-demo-item">B</div>
+<div class="flex-demo-item">C</div>
+</div>
+</div></section>
+<section class="specimen">
+<h2>固定幅＋可変幅：サイド領域と本文</h2>
+<div class="example" data-example>
+<div class="fx-responsive"><aside class="flex-demo-item fx-shrink-0 fx-basis" style="--fx-basis:10rem"><strong>メニュー</strong><p>768px以上で横並び</p></aside><section class="flex-demo-item fx-flex-1 fx-min-0"><h3 class="type-heading">残りの幅を使用する本文</h3><p class="type-wrap">長いファイル名やURLが入っても、min-width: 0 と折り返しで親の幅に収めます。</p></section></div>
+</div>
+</section>
+<section class="specimen"><h2>クラスと使い分け</h2><div class="example"><table class="flex-reference"><caption>FlexグリッドのAPI</caption><thead><tr><th scope="col">クラス・変数</th><th scope="col">用途</th></tr></thead><tbody><tr><th scope="row"><code>fx-grid</code></th><td>折り返す行。標準は全幅です。</td></tr><tr><th scope="row"><code>fx-grid-{1,2,3,4,6,12}</code></th><td>全画面幅で指定の均等列数にします。</td></tr><tr><th scope="row"><code>fx-grid-md-{1,2,3,4,6,12}</code><br><code>fx-grid-lg-{1,2,3,4,6,12}</code></th><td>768px / 1024px以上の均等列数です。</td></tr><tr><th scope="row"><code>fx-col-{1…12}</code><br><code>fx-col-md-{1…12}</code><br><code>fx-col-lg-{1…12}</code></th><td>子要素に指定する12分割の幅。均等列より優先します。</td></tr><tr><th scope="row"><code>--fx-gap / --fx-column-gap / --fx-row-gap</code></th><td>全体・横・縦の間隔。横のgapを列幅の計算にも使います。</td></tr><tr><th scope="row"><code>fx-justify-{start,center,end,between,around,evenly}</code></th><td>親に指定。横方向の余白を配分します。</td></tr><tr><th scope="row"><code>fx-items-{start,center,end,baseline,stretch}</code></th><td>親に指定。行の中の項目を縦方向に揃えます。</td></tr><tr><th scope="row"><code>fx-self-{auto,start,center,end,baseline,stretch}</code></th><td>子に指定。項目単位でalign-itemsを上書きします。</td></tr><tr><th scope="row"><code>fx-content-{start,center,end,between,around,evenly,stretch}</code></th><td>親に指定。複数行を縦方向に配分します。</td></tr><tr><th scope="row"><code>fx-md-justify-center</code>など<br><code>fx-lg-items-end</code>など</th><td>768px / 1024px以上で配置を変更。justify / items / content / selfの全指定に対応します。</td></tr><tr><th scope="row"><code>fx-auto-grid / --fx-min</code></th><td>最小幅を基準に折り返し、残りの幅を埋めます。</td></tr></tbody></table></div><p class="dim small">各行の幅を揃えたい場合は均等グリッドを使います。縦横の罫線や行をまたぐ配置が必要な場合はCSS Gridが適しています。このページはFlexboxによる配置に絞っています。</p></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/css/ui.css">ui.css</a> / <a href="../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+
+</body></html>

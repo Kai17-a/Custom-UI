@@ -1,0 +1,26 @@
+/* Presentation for the catalog examples only. */
+.flex-demo { border:1px dashed var(--bs-primary-border-subtle); background:var(--bs-tertiary-bg); padding:var(--space-3); min-width:0; }
+.flex-demo-item { padding:var(--space-2) var(--space-3); background:var(--bs-primary-bg-subtle); border:1px solid var(--bs-primary-border-subtle); border-radius:var(--bs-border-radius); color:var(--bs-body-color); overflow-wrap:anywhere; }
+.flex-demo-item > p { margin:0; }
+.flex-demo-tall { min-height:150px; }
+.flex-demo-lines { height:220px; max-width:360px; }
+.flex-demo-lines > * { flex-basis:28%; }
+.flex-demo-column { min-height:240px; }
+.flex-demo-fixed { flex-basis:9rem; }
+.flex-demo-compare { display:flex; flex-wrap:wrap; gap:var(--space-4); }
+.flex-demo-compare > section { flex:1 1 17rem; min-width:0; }
+.flex-demo-compare h3 { margin:0 0 var(--space-2); font-size:var(--text-sm); }
+.flex-demo-clip { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.flex-demo-avatar { display:flex; align-items:center; justify-content:center; width:40px; height:40px; background:var(--bs-secondary-bg); border-radius:50%; }
+.flex-demo-viewport { max-width:100%; width:var(--preview-width,640px); overflow:auto; padding:var(--space-2); border:1px solid var(--bs-border-color); }
+.flex-playground { display:flex; min-height:240px; gap:12px; padding:12px; border:1px dashed var(--bs-primary-border-subtle); background:var(--bs-tertiary-bg); }
+.flex-playground > * { flex-basis:84px; padding:12px; border:1px solid var(--bs-primary-border-subtle); background:var(--bs-primary-bg-subtle); border-radius:var(--bs-border-radius); }
+.flex-controls { display:flex; flex-wrap:wrap; gap:var(--space-3); margin:0 0 var(--space-4); padding:var(--space-4); border:1px solid var(--bs-border-color); }
+.flex-controls legend { font-size:var(--text-sm); padding:0 var(--space-2); }
+.flex-control { display:flex; flex-direction:column; gap:var(--space-1); flex:1 1 10rem; min-width:0; font-size:var(--text-xs); }
+.flex-reference { width:100%; border-collapse:collapse; font-size:var(--text-sm); }
+.flex-reference caption { text-align:left; font-weight:600; padding-bottom:var(--space-3); }
+.flex-reference th, .flex-reference td { text-align:left; vertical-align:top; padding:var(--space-2); border-bottom:1px solid var(--bs-border-color); overflow-wrap:anywhere; }
+.flex-reference code { font-size:var(--text-xs); }
+.flex-page-nav { display:flex; flex-wrap:wrap; gap:var(--space-2) var(--space-4); margin-block:var(--space-4); }
+@media (prefers-reduced-motion:reduce) { .flex-playground { transition:none; } }

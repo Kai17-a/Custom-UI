@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theme switcher — orchtop design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<style>
+html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
+html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
+</style>
+<script>
+(() => {
+  let mode = null, design = null;
+  try { mode = localStorage.getItem('orchtop-theme'); } catch { /* Storage is optional. */ }
+  try { design = localStorage.getItem('orchtop-design-theme'); } catch { /* Storage is optional. */ }
+  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
+  document.documentElement.dataset.uiColorPreference = selected;
+  document.documentElement.dataset.bsTheme = selected === 'system'
+    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
+  if (!['default','glass','glassmorphism','flat','soft'].includes(design)) return;
+  const restore = () => {
+    if (!document.body) return false;
+    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme')) {
+      document.body.dataset.uiTheme = design;
+    }
+    return true;
+  };
+  if (!restore()) {
+    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
+    observer.observe(document.documentElement, {childList:true, subtree:true});
+  }
+})();
+</script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">orchtop <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm w-auto" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="theme">テーマ切替</button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../getting-started.html">導入・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="../components/foundations.html">Foundations</a></li>
+      <li><a href="../components/themes.html">UI themes</a></li>
+      <li><a href="../components/theme-switcher.html" aria-current="page">Theme switcher</a></li>
+      <li><a href="../components/typography.html">Typography</a></li>
+      <li><a href="../components/spacing.html">Spacing</a></li>
+      <li><a href="../components/icons.html">Icons</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="../components/flex.html">Flexbox</a></li>
+      <li><a href="../components/flex-grid.html">Flex grid</a></li>
+      <li><a href="../components/cards.html">Cards</a></li>
+      <li><a href="../components/sidebar.html">Sidebar</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="../components/buttons.html">Buttons</a></li>
+      <li><a href="../components/forms.html">Forms</a></li>
+      <li><a href="../components/datepicker.html">Date picker</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/clipboard.html">Clipboard</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="../components/navigation.html">Navigation</a></li>
+      <li><a href="../components/disclosure.html">Accordion</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="../components/badges.html">Badges</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/board.html">Kanban board</a></li>
+      <li><a href="../components/calendar.html">Calendar</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="../components/alerts.html">Alerts</a></li>
+      <li><a href="../components/toasts.html">Toasts & alerts</a></li>
+      <li><a href="../components/tips.html">Tips & tooltips</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="../components/loading.html">Loading</a></li>
+      <li><a href="../components/states.html">States</a></li>
+      <li><a href="../components/animations.html">Animations</a></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="../components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">ORCHTOP / DESIGN SYSTEM</p><h1>Theme switcher</h1></header><p class="lede">タグと属性だけで使えるテーマ切り替えです。ライト・ダーク・システムを選べます。デザインの質感は独立して切り替えられます。</p>
+<section class="specimen" id="color-mode-buttons"><h2>ライト・ダーク・システム</h2><p>そのまま配置できる3択の切り替えです。「システム」はOSの明暗設定に追従します。OSの設定が変わっても、選択中のボタンは「システム」のままです。</p><div class="example" data-example>
+<div class="ui-color-switcher" role="group" aria-label="表示モード">
+  <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-color-mode="light"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>ライト</button>
+  <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-color-mode="dark"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 14A8 8 0 0 1 10 4a8.5 8.5 0 1 0 10 10Z"/></svg>ダーク</button>
+  <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-color-mode="system"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>システム</button>
+</div>
+</div></section>
+<section class="specimen" id="color-mode-icons"><h2>アイコンだけで配置する</h2><div class="example" data-example>
+<div class="ui-color-switcher" role="group" aria-label="表示モード">
+  <button type="button" class="btn btn-sm btn-ghost-secondary btn-icon-only" data-ui-color-mode="light" aria-label="ライト"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>
+  <button type="button" class="btn btn-sm btn-ghost-secondary btn-icon-only" data-ui-color-mode="dark" aria-label="ダーク"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 14A8 8 0 0 1 10 4a8.5 8.5 0 1 0 10 10Z"/></svg></button>
+  <button type="button" class="btn btn-sm btn-ghost-secondary btn-icon-only" data-ui-color-mode="system" aria-label="システム"><svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg></button>
+</div>
+</div></section>
+<section class="specimen" id="color-mode-select"><h2>選択ボックスで配置する</h2><div class="example" data-example>
+<label class="fx fx-wrap fx-items-center fx-gap-2"><span class="fx-shrink-0">表示モード</span>
+  <select class="form-select form-select-sm w-auto" data-ui-color-select>
+    <option value="light">ライト</option>
+    <option value="dark">ダーク</option>
+    <option value="system">システム</option>
+  </select>
+</label>
+</div><p>ボタン式・アイコン式・選択ボックスは自動で同期します。HTMLのclassとdata属性だけで利用でき、アプリ側の切り替え処理は不要です。</p></section>
+<section class="specimen"><h2>デザインをボタンで選ぶ</h2><p>ボタンの <code>data-ui-design</code> にテーマ名を指定します。選択状態と他の切り替え欄は自動で同期します。</p><div class="example" data-example>
+<div class="ui-theme-switcher">
+  <div class="ui-theme-options" role="group" aria-label="デザインテーマ">
+    <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-design="default"><span class="ui-theme-swatch" aria-hidden="true"></span>標準</button>
+    <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-design="glass"><span class="ui-theme-swatch" data-swatch="glass" aria-hidden="true"></span>ガラス</button>
+    <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-design="glassmorphism"><span class="ui-theme-swatch" data-swatch="glassmorphism" aria-hidden="true"></span>グラスモーフィズム</button>
+    <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-design="flat"><span class="ui-theme-swatch" data-swatch="flat" aria-hidden="true"></span>フラット</button>
+    <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-design="soft"><span class="ui-theme-swatch" data-swatch="soft" aria-hidden="true"></span>ソフト</button>
+  </div>
+</div>
+</div></section>
+<section class="specimen"><h2>コンパクトな選択式</h2><div class="example" data-example>
+<div class="ui-theme-switcher">
+  <label class="fx fx-wrap fx-items-center fx-gap-2"><span class="fx-shrink-0">デザイン</span>
+    <select class="form-select form-select-sm w-auto" data-ui-theme-select>
+      <option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option>
+    </select>
+  </label>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="theme">明暗を切り替え</button>
+</div>
+</div></section>
+<section class="specimen"><h2>保存・JavaScriptからの切り替え</h2><p>選択を保存する場合は <code>&lt;body data-ui-theme-persist&gt;</code> を指定します。このページでは有効です。デザインボタンと明暗ボタンの選択は <code>aria-pressed</code> で伝えます。</p><pre class="setup-code"><code>OrchtopUI.setDesignTheme('glass', { persist: true });
+OrchtopUI.setColorTheme('system', { persist: true });
+// 固定表示にする場合は 'light' または 'dark' を指定します。</code></pre><p>APIはpersist省略時には保存しません。表示モードはlight / dark / systemの3値を保存し、保存がない場合はsystemになります。現在の選択はhtmlのdata-ui-color-preference、実際の明暗はdata-bs-themeに反映します。変更時はui:colorchangeイベントでdetail.modeとdetail.themeを通知します。既存の <code>data-ui-toggle="theme"</code> ボタンは従来どおり明暗の2択を切り替え、固定表示として保存します。</p><p><a href="themes.html">各テーマの見た目と設定 →</a> / <a href="forms.html#select-box">selectの操作・設定 →</a></p></section>
+<section class="specimen"><h2>使用ファイル・取り込み方</h2><p><code>assets/css/ui.css</code> と <code>assets/js/ui.js</code> を読み込み、上記のHTMLを配置してください。npmや追加のJavaScriptは不要です。</p></section>
+</main></div></body></html>

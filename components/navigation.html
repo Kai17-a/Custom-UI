@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navigation — orchtop design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<style>
+html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
+html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
+</style>
+<script>
+(() => {
+  let mode = null, design = null;
+  try { mode = localStorage.getItem('orchtop-theme'); } catch { /* Storage is optional. */ }
+  try { design = localStorage.getItem('orchtop-design-theme'); } catch { /* Storage is optional. */ }
+  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
+  document.documentElement.dataset.uiColorPreference = selected;
+  document.documentElement.dataset.bsTheme = selected === 'system'
+    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
+  if (!['default','glass','glassmorphism','flat','soft'].includes(design)) return;
+  const restore = () => {
+    if (!document.body) return false;
+    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme')) {
+      document.body.dataset.uiTheme = design;
+    }
+    return true;
+  };
+  if (!restore()) {
+    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
+    observer.observe(document.documentElement, {childList:true, subtree:true});
+  }
+})();
+</script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">orchtop <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="theme">テーマ切替</button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../getting-started.html">導入・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="../components/foundations.html">Foundations</a></li>
+      <li><a href="../components/themes.html">UI themes</a></li>
+      <li><a href="../components/theme-switcher.html">Theme switcher</a></li>
+      <li><a href="../components/typography.html">Typography</a></li>
+      <li><a href="../components/spacing.html">Spacing</a></li>
+      <li><a href="../components/icons.html">Icons</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="../components/flex.html">Flexbox</a></li>
+      <li><a href="../components/flex-grid.html">Flex grid</a></li>
+      <li><a href="../components/cards.html">Cards</a></li>
+      <li><a href="../components/sidebar.html">Sidebar</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="../components/buttons.html">Buttons</a></li>
+      <li><a href="../components/forms.html">Forms</a></li>
+      <li><a href="../components/datepicker.html">Date picker</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/clipboard.html">Clipboard</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="../components/navigation.html" aria-current="page">Navigation</a></li>
+      <li><a href="../components/disclosure.html">Accordion</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="../components/badges.html">Badges</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/board.html">Kanban board</a></li>
+      <li><a href="../components/calendar.html">Calendar</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="../components/alerts.html">Alerts</a></li>
+      <li><a href="../components/toasts.html">Toasts & alerts</a></li>
+      <li><a href="../components/tips.html">Tips & tooltips</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="../components/loading.html">Loading</a></li>
+      <li><a href="../components/states.html">States</a></li>
+      <li><a href="../components/animations.html">Animations</a></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="../components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">ORCHTOP / DESIGN SYSTEM</p><h1>Navigation</h1></header><p class="lede">現在地と表示内容を切り替えるためのパーツです。</p><section class="specimen"><h2>ナビゲーションピル</h2><div class="example" data-example><nav aria-label="関連コンポーネント"><ul class="nav nav-pills"><li><a class="nav-link active" href="navigation.html" aria-current="page">Navigation</a></li><li><a class="nav-link" href="buttons.html">Buttons</a></li><li><a class="nav-link" href="forms.html">Forms</a></li></ul></nav></div></section><section class="specimen"><h2>パンくず</h2><div class="example" data-example><nav aria-label="パンくず"><ol class="breadcrumb"><li><a href="../index.html">カタログ</a></li><li aria-current="page">Navigation</li></ol></nav></div></section><section class="specimen"><h2>タブ：左右矢印・Home・Endで移動</h2><div class="example" data-example>
+<div data-ui-tabs><div class="tabs" role="tablist" aria-label="プロジェクト"><button type="button" data-ui-toggle="tab" data-ui-target="overview" aria-selected="true">概要</button><button type="button" data-ui-toggle="tab" data-ui-target="activity">アクティビティ</button><button type="button" data-ui-toggle="tab" data-ui-target="settings">設定</button></div><div class="tab-panel" data-ui-panel="overview">プロジェクトの概要です。</div><div class="tab-panel" data-ui-panel="activity" hidden>10:30 — ドキュメントを更新しました。</div><div class="tab-panel" data-ui-panel="settings" hidden>通知や公開範囲を設定できます。</div></div>
+</div></section><section class="specimen"><h2>独立した2つ目のタブ</h2><div class="example" data-example>
+<div data-ui-tabs><div class="tabs" role="tablist" aria-label="チーム"><button type="button" data-ui-toggle="tab" data-ui-target="overview" aria-selected="true">概要</button><button type="button" data-ui-toggle="tab" data-ui-target="activity">アクティビティ</button><button type="button" data-ui-toggle="tab" data-ui-target="settings">設定</button></div><div class="tab-panel" data-ui-panel="overview">チームの概要です。</div><div class="tab-panel" data-ui-panel="activity" hidden>10:30 — ドキュメントを更新しました。</div><div class="tab-panel" data-ui-panel="settings" hidden>通知や公開範囲を設定できます。</div></div>
+</div></section><section class="specimen"><h2>ページ送り：実際の項目を分割表示</h2><div class="example" data-example>
+<div data-ui-pagination data-ui-page-size="4"><ul><li data-ui-page-item>タスク 1</li><li data-ui-page-item>タスク 2</li><li data-ui-page-item>タスク 3</li><li data-ui-page-item>タスク 4</li><li data-ui-page-item>タスク 5</li><li data-ui-page-item>タスク 6</li><li data-ui-page-item>タスク 7</li><li data-ui-page-item>タスク 8</li><li data-ui-page-item>タスク 9</li><li data-ui-page-item>タスク 10</li><li data-ui-page-item>タスク 11</li><li data-ui-page-item>タスク 12</li></ul><p data-ui-page-status role="status">全12件</p><nav class="pagination" aria-label="タスク一覧のページ送り"><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-page-step="-1">前へ</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-page="1">1</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-page="2">2</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-page="3">3</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-page-step="1">次へ</button></nav></div>
+</div></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/css/ui.css">ui.css</a> / <a href="../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+
+</body></html>

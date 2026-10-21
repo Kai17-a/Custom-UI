@@ -1,0 +1,60 @@
+:root { --accent-primary:var(--bs-primary); --accent-success:var(--bs-success); --accent-danger:var(--bs-danger); --accent-warning:var(--bs-warning); --accent-info:var(--bs-info); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: .75rem; }
+.tile { border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius); background: var(--bs-tertiary-bg);
+  padding: .8rem .5rem .55rem; display: flex; flex-direction: column; align-items: center; gap: .5rem; text-align: center; }
+.tile .glyph { color: var(--bs-body-color); }
+.tile .glyph svg { width: 28px; height: 28px; fill: currentColor; display: block; }
+.tile .name { font-family: var(--bs-font-monospace); font-size: .68rem; color: var(--bs-secondary-color); word-break: break-all; line-height: 1.3; }
+.tile .use { font-size: .68rem; color: var(--bs-secondary-color); }
+.ramp { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; padding: .8rem 1rem; border: 1px dashed var(--bs-border-color); border-radius: var(--bs-border-radius); }
+.ramp .item { display: flex; flex-direction: column; align-items: center; gap: .3rem; color: var(--bs-body-color); }
+.ramp .item span { font-size: .65rem; color: var(--bs-secondary-color); }
+.ramp svg { fill: currentColor; }
+.s16 { width: 16px; height: 16px; } .s20 { width: 20px; height: 20px; } .s24 { width: 24px; height: 24px; } .s32 { width: 32px; height: 32px; } .s48 { width: 48px; height: 48px; }
+.states { display: flex; gap: 1.2rem; flex-wrap: wrap; padding: .8rem 1rem; border: 1px dashed var(--bs-border-color); border-radius: var(--bs-border-radius); }
+.states .s { display: flex; flex-direction: column; align-items: center; gap: .3rem; font-size: .68rem; color: var(--bs-secondary-color); }
+.states svg { width: 24px; height: 24px; fill: currentColor; }
+  /* --- icon tints: one class per semantic colour. The glyph never
+     changes; only the colour it inherits changes (fill: currentColor). --- */
+  .i-primary { color: var(--accent-primary); }
+  .i-success { color: var(--accent-success); }
+  .i-danger  { color: var(--accent-danger); }
+  .i-warning { color: var(--accent-warning); }
+  .i-info    { color: var(--accent-info); }
+  .i-default { color: var(--bs-body-color); }
+  .i-dim     { color: var(--bs-secondary-color); }
+  .c-default { color: var(--bs-body-color); }
+  .c-primary { color: var(--bs-primary); }
+  .c-success { color: var(--bs-success); }
+  .c-danger  { color: var(--accent-danger); }
+  .c-warning { color: var(--accent-warning); }
+  .c-info    { color: var(--accent-info); }
+  .c-dim { color: var(--bs-secondary-color); }
+  /* tinted tiles: the colour is the subject, so no grey panel, and the
+     corner twin keeps today's single-colour look visible for comparison */
+  .tile.tinted { position: relative; background: none; }
+  .tinted .glyph svg, .twin svg { width: 30px; height: 30px; display: block; }
+  .twin { position: absolute; top: .45rem; right: .45rem; opacity: .38; }
+  .twin svg { width: 18px; height: 18px; }
+  .twin svg, .twin use { fill: currentColor; }
+  /* palette legend */
+  .legend { display: flex; flex-wrap: wrap; gap: .9rem; align-items: center; margin: 0 0 1rem; }
+  .legend .swatch { display: inline-flex; align-items: center; gap: .4rem;
+    font-family: var(--bs-font-monospace); font-size: .68rem; color: var(--bs-secondary-color); }
+  .legend .chip { width: 1.15rem; height: 1.15rem; border-radius: var(--bs-border-radius-sm); display: inline-block; }
+  /* side-by-side: current (mono) against the tinted variant */
+  .vs { display: flex; flex-wrap: wrap; gap: 1.6rem; padding: .9rem 1rem;
+    border: 1px dashed var(--bs-border-color); border-radius: var(--bs-border-radius); }
+  .vs .pair { display: flex; flex-direction: column; align-items: center; gap: .4rem; }
+  .vs .row { display: flex; align-items: center; gap: .45rem;
+    font-size: .68rem; color: var(--bs-secondary-color); }
+  .vs svg { width: 24px; height: 24px; fill: currentColor; flex: none; }
+.ctx { display: flex; flex-direction: column; gap: .5rem; max-width: 60rem; }
+.ctx .row { display: flex; align-items: center; gap: .5rem; padding: .45rem .6rem; border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius-sm); }
+.ctx svg { width: 20px; height: 20px; fill: currentColor; flex: none; }
+.ctx .lbl { font-weight: 600; }
+.ctx .desc { color: var(--bs-secondary-color); font-size: .8rem; }
+details.code { margin-top: 1.5rem; border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius); padding: .6rem .8rem; }
+details.code summary { cursor: pointer; font-weight: 600; }
+details.code pre { overflow: auto; font-family: var(--bs-font-monospace); font-size: .72rem; line-height: 1.5; background: var(--bs-tertiary-bg); padding: .6rem; border-radius: var(--bs-border-radius-sm); }
+

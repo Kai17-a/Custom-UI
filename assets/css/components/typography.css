@@ -1,0 +1,14 @@
+.type-title { font-size:var(--text-2xl); font-weight:600; line-height:var(--leading-tight); margin:0 0 var(--space-4); letter-spacing:-.02em; }
+.type-heading { font-size:var(--text-xl); font-weight:600; line-height:var(--leading-tight); margin:0 0 var(--space-3); }
+.type-body { font-size:var(--text-base); line-height:var(--leading-normal); margin:0 0 var(--space-3); }
+.type-small { font-size:var(--text-sm); line-height:var(--leading-normal); }
+.type-caption { font-size:var(--text-xs); color:var(--bs-secondary-color); line-height:var(--leading-normal); }
+.type-mono { font-family:var(--bs-font-monospace); font-size:var(--text-sm); overflow-wrap:anywhere; }
+.type-prose { max-width:65ch; font-size:var(--text-base); line-height:var(--leading-relaxed); overflow-wrap:anywhere; }
+.type-prose p { margin:0 0 var(--space-4); }
+.type-truncate { display:block; max-width:22rem; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.type-wrap { overflow-wrap:anywhere; }
+.type-numeric { font-variant-numeric:tabular-nums; }
+.type-sample { display:grid; gap:var(--space-2); padding-block:var(--space-4); border-bottom:1px solid var(--bs-border-color); }
+.type-sample:last-child { border-bottom:0; }
+.type-sample > :last-child { margin:0; }

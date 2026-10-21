@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Catalog formatting tests</title><link rel="stylesheet" href="../assets/css/catalog.css"><script defer src="../assets/js/catalog.js"></script><script defer src="../assets/js/ui.js"></script><script defer src="catalog.test.js"></script></head><body><main class="inset"><h1>HTML表示の整形テスト</h1><ol id="results"></ol>
+<div data-example data-case="nested"><div class="fx-grid"><article class="ui-card"><div class="ui-card-body"><h2>見出し</h2><p>本文</p></div></article></div></div>
+<div data-example data-case="attributes"><button type="button" class="btn btn-primary" data-ui-toast data-ui-title="保存しました" data-ui-body="1行目&#10;2行目 &quot;引用&quot; &amp; &lt;記号&gt;">通知</button></div>
+<div data-example data-case="mixed"><p><a href="#results">リンク</a>と<strong>強調</strong>、<code>a &lt; b</code>。</p></div>
+<div data-example data-case="whitespace"><textarea aria-label="文章">1行目
+  2行目</textarea><pre>  const value = 1;
+    console.log(value);</pre><div style="white-space:pre-wrap">  空白を
+    保持</div></div>
+<div data-example data-case="void"><label>名前<input required value="A &amp; B"></label><br><svg viewBox="0 0 24 24" aria-label="見本"><path d="M0 0 L24 24"></path></svg><!-- メモ --></div>
+</main></body></html>
