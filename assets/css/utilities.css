@@ -1,4 +1,4 @@
-/* --- utilities (only what orchtop uses) --- */
+/* --- utilities (only what Kav-UI uses) --- */
 .d-flex { display: flex !important; }
 .d-block { display: block !important; }
 .gap-1 { gap: .25rem !important; } .gap-2 { gap: .5rem !important; } .gap-3 { gap: 1rem !important; }

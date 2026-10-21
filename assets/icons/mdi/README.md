@@ -17,3 +17,8 @@ Paste the complete SVG into HTML. No imports, icon fonts, external sprite,
 JavaScript, CDN or network request are required to render the pasted SVG.
 
 The catalog and searchable copy controls are in components/mdi-icons.html.
+
+With the shared ui.css and ui.js loaded, `<span icon="mdi-home"></span>`
+also renders an inline SVG. All 128 paths are embedded in ui.js for offline and
+file:// use. If updating these assets, update the mdiPaths table in ui.js too.
+The generated SVG is decorative; put accessible labels on its host/button.

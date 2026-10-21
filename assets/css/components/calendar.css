@@ -33,7 +33,7 @@
 .ui-calendar-compact { max-width:360px; }
 .ui-calendar-compact .ui-calendar-day { min-height:38px; padding:.35rem; }
 .ui-calendar-compact .ui-calendar-event { display:none; }
-@media (max-width:600px) {
+@media (width < 768px) {
   .ui-calendar-toolbar { padding:.75rem; }
   .ui-calendar-hint { padding-inline:.75rem; }
   .ui-calendar-day { min-height:50px; padding:.25rem; }

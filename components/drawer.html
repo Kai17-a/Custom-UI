@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drawer — Kav-UI design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<style>
+html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
+html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
+</style>
+<script>
+(() => {
+  let mode = null, design = null, palette = null;
+  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
+  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
+  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
+  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
+  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
+  document.documentElement.dataset.uiColorPreference = selected;
+  document.documentElement.dataset.bsTheme = selected === 'system'
+    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
+  const restore = () => {
+    if (!document.body) return false;
+    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
+      document.body.dataset.uiTheme = design;
+    }
+    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
+      document.documentElement.dataset.uiPalette = palette;
+    }
+    return true;
+  };
+  if (!restore()) {
+    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
+    observer.observe(document.documentElement, {childList:true, subtree:true});
+  }
+})();
+</script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
+<script defer src="../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../getting-started.html">導入・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="../components/foundations.html">Foundations</a></li>
+      <li><a href="../components/themes.html">UI themes</a></li>
+      <li><a href="../components/theme-switcher.html">Theme switcher</a></li>
+      <li><a href="../components/color-palettes.html">Color palettes</a></li>
+      <li><a href="../components/typography.html">Typography</a></li>
+      <li><a href="../components/spacing.html">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="../components/mdi-icons.html">MDIアイコン</a></li><li><a href="../components/icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="../components/layouts.html">Layouts</a></li>
+      <li><a href="../components/flex.html">Flexbox</a></li>
+      <li><a href="../components/flex-grid.html">Flex grid</a></li>
+      <li><a href="../components/cards.html">Cards</a></li>
+      <li><a href="../components/sidebar.html">Sidebar</a></li>
+
+      <li><a href="../components/drawer.html" aria-current="page">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="../components/buttons.html">Buttons</a></li>
+      <li><a href="../components/forms.html">Forms</a></li>
+      <li><a href="../components/datepicker.html">Date picker</a></li>
+      <li><a href="../components/dialog.html">Dialog</a></li>
+      <li><a href="../components/clipboard.html">Clipboard</a></li>
+
+      <li><a href="../components/input-group.html">Input group</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="../components/navigation.html">Navigation</a></li>
+      <li><a href="../components/disclosure.html">Accordion</a></li>
+
+      <li><a href="../components/dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="../components/badges.html">Badges</a></li>
+      <li><a href="../components/table.html">Table</a></li>
+      <li><a href="../components/board.html">Kanban board</a></li>
+      <li><a href="../components/calendar.html">Calendar</a></li>
+
+      <li><a href="../components/list-group.html">List group</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/chart.html">Chart</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="../components/alerts.html">Alerts</a></li>
+      <li><a href="../components/toasts.html">Toasts & alerts</a></li>
+      <li><a href="../components/tips.html">Tips & tooltips</a></li>
+
+      <li><a href="../components/popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="../components/loading.html">Loading</a></li>
+      <li><a href="../components/states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="../components/animations.html">一覧・使い方</a></li>
+        <li><a href="../components/animations-entrances.html">表示・非表示</a></li>
+        <li><a href="../components/animations-movement.html">移動・回転</a></li>
+        <li><a href="../components/animations-attention.html">強調・揺れ</a></li>
+        <li><a href="../components/animations-interactions.html">操作時の動き</a></li>
+        <li><a href="../components/animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="../components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Drawer</h1></header><p class="lede">左右上下のサイドパネル・背景スクロール停止・フォーカス復帰。既存の色・角丸・余白・テーマを引き継ぎます。</p>
+<section class="specimen" id="drawer-end-example"><h2>右から開く</h2><p><code>dialog.ui-dialog.ui-drawer</code>に位置のクラスを追加します。start・endは文字方向に応じて左右が入れ替わります。</p><div class="example" data-example>
+<button type="button" class="btn btn-outline-secondary" data-ui-toggle="dialog" data-ui-target="#drawer-end">右から開く</button>
+<dialog id="drawer-end" class="ui-dialog ui-drawer ui-drawer-end" data-ui-dialog aria-labelledby="drawer-end-title">
+  <header class="ui-drawer-header"><h2 id="drawer-end-title">プロジェクトの設定</h2><button type="button" class="btn btn-outline-secondary btn-icon-only" data-ui-dismiss="dialog" aria-label="閉じる"><span icon="mdi-close" aria-hidden="true"></span></button></header>
+  <div class="ui-drawer-body"><div class="ui-stack"><p>画面の端から設定パネルを開きます。背景の操作は停止し、このパネル内で操作できます。</p><label for="drawer-end-name">プロジェクト名</label><input class="form-control" id="drawer-end-name" value="Design catalog"><label for="drawer-end-scope">公開範囲</label><select class="form-select" id="drawer-end-scope"><option>自分のみ</option><option>チーム</option></select><p>内容が長い場合は、この領域をスクロールできます。</p></div></div>
+  <footer class="ui-drawer-footer"><button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button></footer>
+</dialog>
+</div></section>
+<section class="specimen" id="drawer-start-example"><h2>左から開く</h2><div class="example" data-example>
+<button type="button" class="btn btn-outline-secondary" data-ui-toggle="dialog" data-ui-target="#drawer-start">左から開く</button>
+<dialog id="drawer-start" class="ui-dialog ui-drawer ui-drawer-start" data-ui-dialog aria-labelledby="drawer-start-title">
+  <header class="ui-drawer-header"><h2 id="drawer-start-title">プロジェクトの設定</h2><button type="button" class="btn btn-outline-secondary btn-icon-only" data-ui-dismiss="dialog" aria-label="閉じる"><span icon="mdi-close" aria-hidden="true"></span></button></header>
+  <div class="ui-drawer-body"><div class="ui-stack"><p>画面の端から設定パネルを開きます。背景の操作は停止し、このパネル内で操作できます。</p><label for="drawer-start-name">プロジェクト名</label><input class="form-control" id="drawer-start-name" value="Design catalog"><label for="drawer-start-scope">公開範囲</label><select class="form-select" id="drawer-start-scope"><option>自分のみ</option><option>チーム</option></select><p>内容が長い場合は、この領域をスクロールできます。</p></div></div>
+  <footer class="ui-drawer-footer"><button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button></footer>
+</dialog>
+</div></section>
+<section class="specimen" id="drawer-bottom-example"><h2>下から開く</h2><div class="example" data-example>
+<button type="button" class="btn btn-outline-secondary" data-ui-toggle="dialog" data-ui-target="#drawer-bottom">下から開く</button>
+<dialog id="drawer-bottom" class="ui-dialog ui-drawer ui-drawer-bottom" data-ui-dialog aria-labelledby="drawer-bottom-title">
+  <header class="ui-drawer-header"><h2 id="drawer-bottom-title">プロジェクトの設定</h2><button type="button" class="btn btn-outline-secondary btn-icon-only" data-ui-dismiss="dialog" aria-label="閉じる"><span icon="mdi-close" aria-hidden="true"></span></button></header>
+  <div class="ui-drawer-body"><div class="ui-stack"><p>画面の端から設定パネルを開きます。背景の操作は停止し、このパネル内で操作できます。</p><label for="drawer-bottom-name">プロジェクト名</label><input class="form-control" id="drawer-bottom-name" value="Design catalog"><label for="drawer-bottom-scope">公開範囲</label><select class="form-select" id="drawer-bottom-scope"><option>自分のみ</option><option>チーム</option></select><p>内容が長い場合は、この領域をスクロールできます。</p></div></div>
+  <footer class="ui-drawer-footer"><button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button></footer>
+</dialog>
+</div></section>
+<section class="specimen" id="drawer-top-example"><h2>上から開く</h2><div class="example" data-example>
+<button type="button" class="btn btn-outline-secondary" data-ui-toggle="dialog" data-ui-target="#drawer-top">上から開く</button>
+<dialog id="drawer-top" class="ui-dialog ui-drawer ui-drawer-top" data-ui-dialog aria-labelledby="drawer-top-title">
+  <header class="ui-drawer-header"><h2 id="drawer-top-title">プロジェクトの設定</h2><button type="button" class="btn btn-outline-secondary btn-icon-only" data-ui-dismiss="dialog" aria-label="閉じる"><span icon="mdi-close" aria-hidden="true"></span></button></header>
+  <div class="ui-drawer-body"><div class="ui-stack"><p>画面の端から設定パネルを開きます。背景の操作は停止し、このパネル内で操作できます。</p><label for="drawer-top-name">プロジェクト名</label><input class="form-control" id="drawer-top-name" value="Design catalog"><label for="drawer-top-scope">公開範囲</label><select class="form-select" id="drawer-top-scope"><option>自分のみ</option><option>チーム</option></select><p>内容が長い場合は、この領域をスクロールできます。</p></div></div>
+  <footer class="ui-drawer-footer"><button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button></footer>
+</dialog>
+</div></section>
+<section class="specimen" id="drawer-accessibility"><h2>操作・幅・高さ</h2><p>既存Dialogと同じdata-ui-toggle="dialog"／data-ui-dismiss="dialog"、KavUI.show／hideを使います。Escape・背景クリックで閉じ、開いたボタンへフォーカスを戻します。開いている間は背景スクロールを止めます。内容にはui-drawer-bodyを使ってください。幅は--ui-drawer-width（標準24rem）、上下の高さは--ui-drawer-height（標準20rem）で調整できます。画面を超えません。</p><pre class="setup-code"><code>#drawer-end { --ui-drawer-width: 28rem; }
+#drawer-bottom { --ui-drawer-height: 24rem; }</code></pre></section>
+<details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/css/ui.css">ui.css</a> / <a href="../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+
+</body></html>

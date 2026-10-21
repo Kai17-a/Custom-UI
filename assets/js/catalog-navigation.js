@@ -2,6 +2,7 @@
 (() => {
   const sidebar = document.querySelector('.catalog-sidebar');
   const main = document.querySelector('.catalog-main');
+  const pageHeader = document.querySelector('.catalog-header');
   const navigation = sidebar?.querySelector('nav[aria-label="コンポーネント"]');
   if (!sidebar || !main || !navigation) return;
 
@@ -14,11 +15,12 @@
   menu.append(menuLabel, navigation);
 
   const headings = [...main.querySelectorAll(':scope > h2, :scope > section > h2')];
-  let toc;
+  let toc, tocRail;
   if (headings.length >= 4) {
-    toc = document.createElement('details');
+    toc = document.createElement('div');
     toc.className = 'catalog-page-toc';
-    const label = document.createElement('summary');
+    const label = document.createElement('p');
+    label.className = 'catalog-toc-heading';
     label.textContent = 'このページの目次';
     const title = document.createElement('p');
     title.className = 'catalog-toc-title';
@@ -49,7 +51,14 @@
       return {target, link};
     });
     nav.append(list); toc.append(label, title, nav);
-    sidebar.insertBefore(toc, sidebar.querySelector('.eyebrow'));
+    const content = document.createElement('div');
+    content.className = 'catalog-content';
+    tocRail = document.createElement('aside');
+    tocRail.className = 'catalog-toc-rail';
+    tocRail.setAttribute('aria-label', 'ページ内ナビゲーション');
+    tocRail.append(toc);
+    main.before(content);
+    content.append(tocRail, main);
 
     let frame = 0;
     const updateLocation = () => {
@@ -58,14 +67,15 @@
       const visible = entries.filter(entry => entry.target.getClientRects().length > 0);
       for (const entry of entries) entry.link.closest('li').hidden = !visible.includes(entry);
       let current = visible[0];
+      const threshold = (pageHeader?.getBoundingClientRect().bottom || 0) + 40;
       for (const entry of visible) {
-        if (entry.target.getBoundingClientRect().top <= 100) current = entry;
+        if (entry.target.getBoundingClientRect().top <= threshold) current = entry;
       }
       for (const entry of entries) {
         if (entry === current) entry.link.setAttribute('aria-current', 'location');
         else entry.link.removeAttribute('aria-current');
       }
-      if (toc.open && current) {
+      if (current) {
         const linkBounds = current.link.getBoundingClientRect();
         const listBounds = list.getBoundingClientRect();
         if (linkBounds.top < listBounds.top) list.scrollTop += linkBounds.top - listBounds.top;
@@ -104,7 +114,6 @@
   searchLabel.append(searchText, search); header.append(searchLabel);
   const body = document.createElement('div');
   body.className = 'catalog-sidebar-body';
-  if (toc) body.append(toc);
   const eyebrow = sidebar.querySelector(':scope > .eyebrow');
   if (eyebrow) body.append(eyebrow);
   body.append(menu);
@@ -174,22 +183,23 @@
       menu.open = savedMenuOpen; savedOpen = null;
     }
   });
-  const pageHeader = document.querySelector('.catalog-header');
   let fitFrame = 0;
   const fitSidebar = () => {
     fitFrame = 0;
-    const offset = Math.max(0, pageHeader?.getBoundingClientRect().bottom || 0);
+    const headerBox = pageHeader?.getBoundingClientRect();
+    const offset = Math.max(0, headerBox?.bottom || 0);
+    document.documentElement.style.setProperty('--catalog-header-height', (headerBox?.height || 0) + 'px');
     sidebar.style.setProperty('--catalog-sidebar-offset', offset + 'px');
+    tocRail?.style.setProperty('--catalog-sidebar-offset', offset + 'px');
   };
   const scheduleFit = () => { if (!fitFrame) fitFrame = requestAnimationFrame(fitSidebar); };
   window.addEventListener('scroll', scheduleFit, {passive:true});
   window.addEventListener('resize', scheduleFit);
   if (pageHeader) new ResizeObserver(scheduleFit).observe(pageHeader);
   fitSidebar();
-  const compact = matchMedia('(max-width:700px)');
+  const compact = matchMedia('(width < 768px)');
   const sync = () => {
     menu.open = !compact.matches;
-    if (toc) toc.open = !compact.matches;
   };
   compact.addEventListener('change', sync);
   sync();

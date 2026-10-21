@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Toasts & alerts — orchtop design catalog</title>
+<title>Toasts & alerts — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
 <style>
 html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
@@ -11,18 +11,22 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </style>
 <script>
 (() => {
-  let mode = null, design = null;
-  try { mode = localStorage.getItem('orchtop-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('orchtop-design-theme'); } catch { /* Storage is optional. */ }
+  let mode = null, design = null, palette = null;
+  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
+  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
+  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
+  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
   const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
   document.documentElement.dataset.uiColorPreference = selected;
   document.documentElement.dataset.bsTheme = selected === 'system'
     ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  if (!['default','glass','glassmorphism','flat','soft'].includes(design)) return;
   const restore = () => {
     if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme')) {
+    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
       document.body.dataset.uiTheme = design;
+    }
+    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
+      document.documentElement.dataset.uiPalette = palette;
     }
     return true;
   };
@@ -43,14 +47,15 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </head>
 <body data-ui-theme-persist>
 <a class="skip-link" href="#main">コンテンツへ移動</a>
-<header class="catalog-header"><a class="brand" href="../index.html">orchtop <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="theme">テーマ切替</button></div></header>
-<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../getting-started.html">導入・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../getting-started.html">導入・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
   <div class="catalog-nav-group">
     <h2>基本スタイル</h2>
     <ul>
       <li><a href="../components/foundations.html">Foundations</a></li>
       <li><a href="../components/themes.html">UI themes</a></li>
       <li><a href="../components/theme-switcher.html">Theme switcher</a></li>
+      <li><a href="../components/color-palettes.html">Color palettes</a></li>
       <li><a href="../components/typography.html">Typography</a></li>
       <li><a href="../components/spacing.html">Spacing</a></li>
       <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="../components/mdi-icons.html">MDIアイコン</a></li><li><a href="../components/icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
@@ -64,6 +69,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/flex-grid.html">Flex grid</a></li>
       <li><a href="../components/cards.html">Cards</a></li>
       <li><a href="../components/sidebar.html">Sidebar</a></li>
+
+      <li><a href="../components/drawer.html">Drawer</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -74,6 +81,9 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/datepicker.html">Date picker</a></li>
       <li><a href="../components/dialog.html">Dialog</a></li>
       <li><a href="../components/clipboard.html">Clipboard</a></li>
+
+      <li><a href="../components/input-group.html">Input group</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -81,6 +91,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <ul>
       <li><a href="../components/navigation.html">Navigation</a></li>
       <li><a href="../components/disclosure.html">Accordion</a></li>
+
+      <li><a href="../components/dropdown.html">Dropdown</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -90,6 +102,10 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/board.html">Kanban board</a></li>
       <li><a href="../components/calendar.html">Calendar</a></li>
+
+      <li><a href="../components/list-group.html">List group</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/chart.html">Chart</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -98,6 +114,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/alerts.html">Alerts</a></li>
       <li><a href="../components/toasts.html" aria-current="page">Toasts & alerts</a></li>
       <li><a href="../components/tips.html">Tips & tooltips</a></li>
+
+      <li><a href="../components/popover.html">Popover</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -116,7 +134,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     </ul>
   </div>
 </nav><a class="overview-link" href="../components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">ORCHTOP / DESIGN SYSTEM</p><h1>Toasts & alerts</h1></header><p class="lede">標準幅は360px。長いタイトル・本文・URLは折り返し、狭い画面では画面幅に収めます。タイトル・本文・補足を属性またはJavaScriptで指定できます。</p><section class="specimen"><h2>本文だけの通知（従来の書き方）</h2><div class="example" data-example>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Toasts & alerts</h1></header><p class="lede">標準幅は360px。長いタイトル・本文・URLは折り返し、狭い画面では画面幅に収めます。タイトル・本文・補足を属性またはJavaScriptで指定できます。</p><section class="specimen"><h2>本文だけの通知（従来の書き方）</h2><div class="example" data-example>
   <div class="row">
     <button class="btn btn-sm btn-success" data-ui-toast="保存しました。" data-ui-variant="success">成功通知を表示</button>
     <button class="btn btn-sm btn-outline-danger" data-ui-toast="接続が切れたため保存できませんでした。" data-ui-variant="danger">エラー通知を表示</button>
@@ -134,21 +152,21 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
   <button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="共有URL" data-ui-body="https://example.test/projects/design-catalog" data-ui-toast-copy data-ui-duration="0">本文をコピーできる通知</button>
   <button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="処理に失敗しました" data-ui-body="お問い合わせの際は、エラーIDをお伝えください。" data-ui-variant="danger" data-ui-toast-copy data-ui-copy-text="ERR-2026-001" data-ui-copy-label="エラーIDをコピー">別の文字列をコピーできる通知</button>
 </div>
-</div><p>data-ui-copy-textでコピー対象を、data-ui-copy-labelで読み上げ名・ホバー時の説明を変更できます。成功時はチェックマークに切り替わり、2秒後に元に戻ります。コピー中・フォーカス中・マウスが重なっている間は自動消去を止めます。</p><pre class="setup-code"><code>OrchtopUI.toast({
+</div><p>data-ui-copy-textでコピー対象を、data-ui-copy-labelで読み上げ名・ホバー時の説明を変更できます。成功時はチェックマークに切り替わり、2秒後に元に戻ります。コピー中・フォーカス中・マウスが重なっている間は自動消去を止めます。</p><pre class="setup-code"><code>KavUI.toast({
   title: '共有URL',
   body: 'https://example.test/projects/design-catalog',
   copy: true,
   duration: 0
 });
 
-OrchtopUI.toast({
+KavUI.toast({
   title: '処理に失敗しました',
   body: 'エラーIDをお問い合わせ時にお伝えください。',
   variant: 'danger',
   copy: true,
   copyText: 'ERR-2026-001',
   copyLabel: 'エラーIDをコピー'
-});</code></pre><p><a href="clipboard.html">単独で使えるクリップボードコンポーネント →</a></p></section><section class="specimen"><h2>JavaScriptから表示</h2><pre class="setup-code"><code>OrchtopUI.toast({
+});</code></pre><p><a href="clipboard.html">単独で使えるクリップボードコンポーネント →</a></p></section><section class="specimen"><h2>JavaScriptから表示</h2><pre class="setup-code"><code>KavUI.toast({
   title: &#x27;保存しました&#x27;,
   body: &#x27;プロジェクトの変更を保存しました。&#x27;,
   meta: &#x27;たった今&#x27;,
@@ -157,7 +175,7 @@ OrchtopUI.toast({
 });
 
 // 従来の書き方も利用できます。
-OrchtopUI.toast(&#x27;変更を保存しました。&#x27;, { title: &#x27;保存完了&#x27; });</code></pre></section><section class="specimen"><h2>幅を変更する</h2><p>全通知の幅はCSS変数で指定できます。スマートフォンでは左右16pxを確保し、高さは本文に合わせて伸びます。通知が画面の高さを超える場合は、通知領域をスクロールできます。</p><pre class="setup-code"><code>:root { --ui-toast-width: 420px; }</code></pre></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+KavUI.toast(&#x27;変更を保存しました。&#x27;, { title: &#x27;保存完了&#x27; });</code></pre></section><section class="specimen"><h2>幅を変更する</h2><p>全通知の幅はCSS変数で指定できます。スマートフォンでは左右16pxを確保し、高さは本文に合わせて伸びます。通知が画面の高さを超える場合は、通知領域をスクロールできます。</p><pre class="setup-code"><code>:root { --ui-toast-width: 420px; }</code></pre></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
 &lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/css/ui.css">ui.css</a> / <a href="../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
 
 </body></html>

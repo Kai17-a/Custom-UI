@@ -2,9 +2,9 @@
 .form-check { display:flex; align-items:center; gap:.55rem; min-height:1.75rem; width:fit-content; max-width:100%; cursor:pointer; }
 .form-check-input {
   --ui-check-color:var(--bs-primary);
-  --ui-check-dot:#fff;
-  --ui-check-tick:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.6' d='m4 10 4 4 8-8'/%3e%3c/svg%3e");
-  --ui-check-dash:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath stroke='%23fff' stroke-width='2.6' stroke-linecap='round' d='M5 10h10'/%3e%3c/svg%3e");
+  --ui-check-dot:var(--ui-on-primary,#fff);
+  --ui-check-tick:var(--ui-palette-check-tick,url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.6' d='m4 10 4 4 8-8'/%3e%3c/svg%3e"));
+  --ui-check-dash:var(--ui-palette-check-dash,url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath stroke='%23fff' stroke-width='2.6' stroke-linecap='round' d='M5 10h10'/%3e%3c/svg%3e"));
   appearance:none; -webkit-appearance:none; display:inline-block; box-sizing:border-box; flex:none;
   width:1.125rem; height:1.125rem; margin:0; vertical-align:middle;
   border:1.5px solid color-mix(in srgb,var(--bs-body-color) 55%,var(--bs-body-bg)); border-radius:.3rem;
@@ -26,9 +26,9 @@
 .form-check-danger .form-check-input, .form-check-input.form-check-danger { --ui-check-color:var(--bs-danger); }
 .form-check-label { cursor:inherit; min-width:0; }
 [data-bs-theme="dark"] .form-check-input {
-  --ui-check-dot:var(--bs-body-bg);
-  --ui-check-tick:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%231b1c1e' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.6' d='m4 10 4 4 8-8'/%3e%3c/svg%3e");
-  --ui-check-dash:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath stroke='%231b1c1e' stroke-width='2.6' stroke-linecap='round' d='M5 10h10'/%3e%3c/svg%3e");
+  --ui-check-dot:var(--ui-on-primary,var(--bs-body-bg));
+  --ui-check-tick:var(--ui-palette-check-tick,url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%231b1c1e' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.6' d='m4 10 4 4 8-8'/%3e%3c/svg%3e"));
+  --ui-check-dash:var(--ui-palette-check-dash,url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath stroke='%231b1c1e' stroke-width='2.6' stroke-linecap='round' d='M5 10h10'/%3e%3c/svg%3e"));
 }
 @media (forced-colors:active) {
   .form-check-input { appearance:auto; -webkit-appearance:auto; background-image:none !important; background-color:Canvas; border-color:ButtonText; forced-color-adjust:auto; }

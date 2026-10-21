@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Getting started — orchtop design catalog</title>
+<title>Getting started — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
 <style>
 html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
@@ -11,18 +11,22 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </style>
 <script>
 (() => {
-  let mode = null, design = null;
-  try { mode = localStorage.getItem('orchtop-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('orchtop-design-theme'); } catch { /* Storage is optional. */ }
+  let mode = null, design = null, palette = null;
+  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
+  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
+  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
+  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
   const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
   document.documentElement.dataset.uiColorPreference = selected;
   document.documentElement.dataset.bsTheme = selected === 'system'
     ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  if (!['default','glass','glassmorphism','flat','soft'].includes(design)) return;
   const restore = () => {
     if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme')) {
+    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
       document.body.dataset.uiTheme = design;
+    }
+    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
+      document.documentElement.dataset.uiPalette = palette;
     }
     return true;
   };
@@ -43,14 +47,15 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </head>
 <body data-ui-theme-persist>
 <a class="skip-link" href="#main">コンテンツへ移動</a>
-<header class="catalog-header"><a class="brand" href="index.html">orchtop <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="theme">テーマ切替</button></div></header>
-<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="index.html">カタログ一覧</a><a class="overview-link" href="getting-started.html">導入・属性一覧</a><a class="overview-link" href="starter.html">アプリ用サンプル ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+<header class="catalog-header"><a class="brand" href="index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="index.html">カタログ一覧</a><a class="overview-link" href="getting-started.html">導入・属性一覧</a><a class="overview-link" href="starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="templates.html">サービステンプレート ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
   <div class="catalog-nav-group">
     <h2>基本スタイル</h2>
     <ul>
       <li><a href="components/foundations.html">Foundations</a></li>
       <li><a href="components/themes.html">UI themes</a></li>
       <li><a href="components/theme-switcher.html">Theme switcher</a></li>
+      <li><a href="components/color-palettes.html">Color palettes</a></li>
       <li><a href="components/typography.html">Typography</a></li>
       <li><a href="components/spacing.html">Spacing</a></li>
       <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="components/mdi-icons.html">MDIアイコン</a></li><li><a href="components/icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
@@ -64,6 +69,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="components/flex-grid.html">Flex grid</a></li>
       <li><a href="components/cards.html">Cards</a></li>
       <li><a href="components/sidebar.html">Sidebar</a></li>
+
+      <li><a href="components/drawer.html">Drawer</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -74,6 +81,9 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="components/datepicker.html">Date picker</a></li>
       <li><a href="components/dialog.html">Dialog</a></li>
       <li><a href="components/clipboard.html">Clipboard</a></li>
+
+      <li><a href="components/input-group.html">Input group</a></li>
+      <li><a href="components/button-group.html">Button group</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -81,6 +91,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <ul>
       <li><a href="components/navigation.html">Navigation</a></li>
       <li><a href="components/disclosure.html">Accordion</a></li>
+
+      <li><a href="components/dropdown.html">Dropdown</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -90,6 +102,10 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="components/table.html">Table</a></li>
       <li><a href="components/board.html">Kanban board</a></li>
       <li><a href="components/calendar.html">Calendar</a></li>
+
+      <li><a href="components/list-group.html">List group</a></li>
+      <li><a href="components/avatar.html">Avatar</a></li>
+      <li><a href="components/chart.html">Chart</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -98,6 +114,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="components/alerts.html">Alerts</a></li>
       <li><a href="components/toasts.html">Toasts & alerts</a></li>
       <li><a href="components/tips.html">Tips & tooltips</a></li>
+
+      <li><a href="components/popover.html">Popover</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -116,7 +134,15 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     </ul>
   </div>
 </nav><a class="overview-link" href="components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">ORCHTOP / UI TOOLKIT</p><h1>Getting started</h1></header><p class="lede">classで見た目を、data-ui-*属性で動作を指定します。専用の初期化コードは通常不要です。</p><section class="usage"><h2>1. assetsフォルダをコピーする</h2><p>ui.css は同じフォルダ内のCSSを相対参照します。assetsフォルダの構造を保ってコピーしてください。npm・ビルド・CDN・サーバーは不要です。</p><h2>2. 共通2ファイルを読み込む</h2><pre class="setup-code"><code>&lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/ui.css&quot;&gt;
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / UI TOOLKIT</p><h1>Getting started</h1></header><p class="lede">Kav-UIはclassで見た目を、data-ui-*属性で動作を指定する共通UIです。専用の初期化コードは通常不要です。JavaScriptから操作する場合は<code>KavUI</code>を使用します。</p><section class="specimen" id="color-palettes"><h2>カラーパレット</h2><p><a href="components/color-palettes.html">Material 3に基づく6種類の低彩度パレット</a>を追加しています。htmlにdata-ui-palette="sage"を付けると、CSSだけで全体に反映します。切り替え部品はdata-ui-palette-select、ボタンはdata-ui-palette-value="sage"、APIはKavUI.setPalette()です。質感のdata-ui-theme、明暗のdata-bs-themeとは独立します。</p></section><section class="specimen" id="service-templates"><h2>サービス画面・チャート</h2><p><a href="templates.html">3種類のサービステンプレート</a>は、ドキュメント・ダッシュボード・changelogの独立したHTMLです。画面固有のtemplates.css / templates.jsと共通のui.css / ui.jsで動きます。</p><p><a href="components/chart.html">Chart</a>は共通UIに含まれ、data-ui-chart属性とJSONで折れ線・面・棒・ドーナツを描画できます。データ表も自動で付きます。更新はKavUI.chart(element, config)を使います。</p></section><section class="specimen" id="more-components"><h2>メニュー・パネル・連結コンポーネント</h2><p>追加の汎用コンポーネントも共通のui.cssとui.jsだけで使えます。Dropdown・PopoverはPopover API、Drawerはdialogを使用します。Input group・Button group・List group・Avatarの見た目にはJavaScriptは不要です。</p><ul><li><a href="components/dropdown.html">Dropdown</a>：操作メニュー・上下配置・キーボード・選択イベント</li><li><a href="components/popover.html">Popover</a>：操作を含む補足パネル・フォーム・画面端補正</li><li><a href="components/drawer.html">Drawer</a>：左右上下のサイドパネル・背景スクロール停止・フォーカス復帰</li><li><a href="components/input-group.html">Input group</a>：入力欄と接頭辞・接尾辞・ボタン・selectの連結</li><li><a href="components/button-group.html">Button group</a>：ボタンの連結・縦並び・radio／checkboxの選択</li><li><a href="components/list-group.html">List group</a>：一覧・操作・現在地・件数・チェック付きリスト</li><li><a href="components/avatar.html">Avatar</a>：イニシャル・画像・サイズ・ステータス・グループ</li></ul><p>追加対象の参考：<a href="https://getbootstrap.com/docs/5.3/components/dropdowns/">BootstrapのDropdown</a>・<a href="https://getbootstrap.com/docs/5.3/components/offcanvas/">Offcanvas</a>・<a href="https://getbootstrap.com/docs/5.3/forms/input-group/">Input group</a>、<a href="https://bulma.io/documentation/components/dropdown/">BulmaのDropdown</a>、<a href="https://daisyui.com/components/avatar/">daisyUIのAvatar</a>。コードと見た目はKav-UIの構成に合わせて実装しています。</p></section><section class="specimen" id="responsive-devices"><h2>PC・タブレット・スマートフォン</h2><p>PC（1024px以上）の指定を基本に、タブレット（768px以上1024px未満）は<code>tablet:</code>、スマートフォン（768px未満）は<code>mobile:</code>を付けて調整できます。共通のui.cssだけで使え、npmやビルドは不要です。</p><pre class="setup-code"><code>&lt;div class="fx-grid fx-grid-3 tablet:fx-grid-2 mobile:fx-grid-1 fx-gap-4"&gt;
+  &lt;div class="ui-card"&gt;…&lt;/div&gt;
+  &lt;div class="ui-card"&gt;…&lt;/div&gt;
+  &lt;div class="ui-card"&gt;…&lt;/div&gt;
+&lt;/div&gt;</code></pre><p>余白は<code>sp-p-6 tablet:sp-p-4 mobile:sp-p-3</code>、文字は<code>type-size-2xl tablet:type-size-xl mobile:type-size-lg</code>のように指定します。<a href="components/layouts.html#responsive-devices">使い方・表示切り替え・横スクロール →</a></p></section><section class="specimen" id="file-drop"><h2>ファイルのドラッグ＆ドロップ</h2><p>ファイルinputを<code>data-ui-file-drop</code>で囲み、対応するlabelに<code>data-ui-file-zone</code>を指定します。クリック選択・ドロップ・一覧・個別削除に対応し、通常のFileListやFormDataとして扱えます。</p><p><a href="components/forms.html#file-drop">HTML・複数選択・形式／サイズ制限・イベントの例 →</a></p></section><section class="specimen" id="typography-utilities"><h2>文字色・サイズ・太さ</h2><p>ui.cssを読み込むと、クラスなしのh1〜h6・p・リンク・リスト・引用・コードにも共通の基本スタイルが適用されます。classは標準から変更したい箇所に指定します。<a href="components/typography.html#type-defaults">クラスなしのHTMLの見本 →</a></p><p>ui.cssだけで、役割クラスと文字のユーティリティを組み合わせられます。同じプロパティの指定は1つだけ選んでください。</p><pre class="setup-code"><code>&lt;h2 class="type-heading type-size-2xl type-weight-bold type-color-primary"&gt;見出し&lt;/h2&gt;
+&lt;p class="type-body type-leading-relaxed"&gt;本文&lt;/p&gt;
+&lt;p class="type-color-danger type-weight-semibold"&gt;入力内容を確認してください。&lt;/p&gt;</code></pre><p><a href="components/typography.html">色・サイズ・太さ・行間・装飾・省略の一覧 →</a></p></section><section class="specimen" id="icon-attributes"><h2>名前でMDIアイコンを表示する</h2><p>共通のui.cssとui.jsだけで、同梱128種類のSVGを名前で表示できます。追加・属性変更も自動反映します。</p><pre class="setup-code"><code>&lt;button class=&quot;btn btn-primary&quot; type=&quot;button&quot;&gt;
+  &lt;span icon=&quot;mdi-content-save&quot; class=&quot;btn-icon&quot;&gt;&lt;/span&gt;保存
+&lt;/button&gt;</code></pre><p><a href="components/mdi-icons.html#mdi-attributes">サイズ・アクセシビリティ・使い方 →</a></p></section><section class="usage"><h2>1. assetsフォルダをコピーする</h2><p>ui.css は同じフォルダ内のCSSを相対参照します。assetsフォルダの構造を保ってコピーしてください。npm・ビルド・CDN・サーバーは不要です。</p><h2>2. 共通2ファイルを読み込む</h2><pre class="setup-code"><code>&lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/ui.css&quot;&gt;
 &lt;script defer src=&quot;assets/js/ui.js&quot;&gt;&lt;/script&gt;</code></pre><p>scriptにはdeferを付けます。ライト／ダーク切替は <code>data-ui-toggle="theme"</code> のボタンで利用できます。</p><p><a href="starter.html">実際に2ファイルだけで動くstarter.htmlを開く →</a></p></section><section class="specimen"><h2>閉じられるアラート</h2><pre class="setup-code"><code>&lt;div class=&quot;alert alert-success&quot;&gt;
   保存しました。
   &lt;button type=&quot;button&quot; class=&quot;btn-close&quot; data-ui-dismiss=&quot;alert&quot; aria-label=&quot;閉じる&quot;&gt;&lt;/button&gt;
@@ -141,16 +167,16 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 &lt;/form&gt;</code></pre></section><section class="specimen"><h2>カレンダー</h2><pre class="setup-code"><code>&lt;div class=&quot;ui-calendar&quot; data-ui-calendar data-ui-name=&quot;scheduled_date&quot;&gt;&lt;/div&gt;</code></pre><p><a href="components/calendar.html">予定表示・日付範囲などの設定 →</a></p></section><section class="specimen"><h2>日付フォーム</h2><pre class="setup-code"><code>&lt;label for=&quot;due-date&quot;&gt;締切日&lt;/label&gt;
 &lt;div class=&quot;ui-datepicker&quot; data-ui-datepicker&gt;
   &lt;input id=&quot;due-date&quot; class=&quot;form-control&quot; type=&quot;date&quot; name=&quot;due_date&quot; required&gt;
-&lt;/div&gt;</code></pre><p>アイコンボタンを使う場合は、ラッパーに <code>data-ui-datepicker-button="icon"</code> を追加します。</p><p><a href="components/datepicker.html">日付フォームの使い方 →</a></p></section><section class="specimen"><h2>ローディング</h2><p>スピナーは<code>ui-spinner</code>、進捗バーは<code>&lt;progress class="ui-progress"&gt;</code>で使えます。ボタンは<code>ui-loading-button</code>を付け、<code>OrchtopUI.loading(button, true)</code>で開始、<code>OrchtopUI.loading(button, false)</code>で終了します。</p><p>スケルトンシマーは<code>class="skeleton skeleton-shimmer"</code>で表示できます。JavaScriptは不要です。</p><p><a href="components/loading.html">HTMLの組み方・サイズ・ボーダー・進捗・スケルトンシマーのサンプル →</a></p></section><p>開閉・タブ・ページ送り・カード移動・カレンダー・入力操作・進捗更新などには、短いアニメーションが自動で付きます。追加指定は不要です。動きを減らすOS設定ではアニメーションを無効にします。<a href="components/animations.html">動作サンプル →</a></p><section class="specimen"><h2>ライト・ダーク・システムの切り替え</h2><p><code>data-ui-color-mode="light" / "dark" / "system"</code> を付けたボタンで切り替えます。選択ボックスには <code>data-ui-color-select</code> を指定します。システムを選ぶとOSの明暗設定に追従します。選択を保存する場合はbodyにdata-ui-theme-persistを付けてください。</p><pre class="setup-code"><code>OrchtopUI.setColorTheme('system', { persist: true });</code></pre><p><a href="components/theme-switcher.html#color-mode-buttons">配置済みのボタン式・アイコン式・選択式のサンプル →</a></p></section><section class="specimen"><h2>カレンダーの日付詳細モーダル</h2><p>データ表示用のカレンダーに <code>data-ui-calendar-modal</code> を追加すると、選んだ日の予定をモーダルで開きます。既存のdialogを使う場合は <code>data-ui-calendar-modal="#対象ID"</code> を指定してください。</p><p><a href="components/calendar.html#calendar-modal">自動生成・カスタムモーダルのサンプル →</a></p></section><section class="specimen"><h2>フォームの選択パネル</h2><p>時刻・日時・月・週・色は、<code>input.form-control</code> に <code>type="time" / "datetime-local" / "month" / "week" / "color"</code> を指定すると共通の選択パネルを使えます。ui.cssとui.jsの読み込みが必要です。元のinputのname・値・required・min・max・stepを利用し、適用ボタンで確定します。スライダーはform-range、ラジオはform-check-inputを指定してください。</p><p><a href="components/forms.html#input-types">入力タイプごとのサンプル →</a> / <a href="components/forms.html#checkbox-radio">Checkbox・Radioのカスタム表示 →</a></p></section><section class="specimen"><h2>余白をクラスで指定する</h2><p><code>sp-p-6</code> で内側24px相当、<code>sp-mt-8</code> で上側の外余白32px相当、<code>sp-gap-4</code> で要素間16px相当を指定できます。<code>md:sp-p-6</code> は768px以上、<code>lg:sp-p-8</code> は1024px以上で有効です。ui.cssだけで動作し、npmは不要です。従来のgap-3・px-3などは変更していません。</p><p><a href="components/spacing.html#spacing-classes">余白クラスの一覧・使用例 →</a></p></section><section class="specimen" id="theme-first-paint"><h2>テーマを最初の描画から適用する</h2><p>ダークテーマでページを移動する際の白いちらつきを防ぐには、次の処理をhead内のCSS読み込みより前に配置します。このカタログとstarter.htmlには設定済みです。保存した明暗とデザインを先に復元し、保存が使えない場合はOSの明暗設定を使います。デザインの復元にはbodyのdata-ui-theme-persistが必要です。bodyに直接指定したdata-ui-themeは優先されます。</p><pre class="setup-code"><code>&lt;!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. --&gt;
+&lt;/div&gt;</code></pre><p>アイコンボタンを使う場合は、ラッパーに <code>data-ui-datepicker-button="icon"</code> を追加します。</p><p><a href="components/datepicker.html">日付フォームの使い方 →</a></p></section><section class="specimen"><h2>ローディング</h2><p>スピナーは<code>ui-spinner</code>、進捗バーは<code>&lt;progress class="ui-progress"&gt;</code>で使えます。ボタンは<code>ui-loading-button</code>を付け、<code>KavUI.loading(button, true)</code>で開始、<code>KavUI.loading(button, false)</code>で終了します。</p><p>スケルトンシマーは<code>class="skeleton skeleton-shimmer"</code>で表示できます。JavaScriptは不要です。</p><p><a href="components/loading.html">HTMLの組み方・サイズ・ボーダー・進捗・スケルトンシマーのサンプル →</a></p></section><p>開閉・タブ・ページ送り・カード移動・カレンダー・入力操作・進捗更新などには、短いアニメーションが自動で付きます。追加指定は不要です。動きを減らすOS設定ではアニメーションを無効にします。<a href="components/animations.html">動作サンプル →</a></p><section class="specimen"><h2>ライト・ダーク・システムの切り替え</h2><p><code>data-ui-color-mode="light" / "dark" / "system"</code> を付けたボタンで切り替えます。選択ボックスには <code>data-ui-color-select</code> を指定します。システムを選ぶとOSの明暗設定に追従します。選択を保存する場合はbodyにdata-ui-theme-persistを付けてください。</p><pre class="setup-code"><code>KavUI.setColorTheme('system', { persist: true });</code></pre><p><a href="components/theme-switcher.html#color-mode-buttons">配置済みのボタン式・アイコン式・選択式のサンプル →</a></p></section><section class="specimen"><h2>カレンダーの日付詳細モーダル</h2><p>データ表示用のカレンダーに <code>data-ui-calendar-modal</code> を追加すると、選んだ日の予定をモーダルで開きます。既存のdialogを使う場合は <code>data-ui-calendar-modal="#対象ID"</code> を指定してください。</p><p><a href="components/calendar.html#calendar-modal">自動生成・カスタムモーダルのサンプル →</a></p></section><section class="specimen"><h2>フォームの選択パネル</h2><p>時刻・日時・月・週・色は、<code>input.form-control</code> に <code>type="time" / "datetime-local" / "month" / "week" / "color"</code> を指定すると共通の選択パネルを使えます。ui.cssとui.jsの読み込みが必要です。元のinputのname・値・required・min・max・stepを利用し、適用ボタンで確定します。スライダーはform-range、ラジオはform-check-inputを指定してください。</p><p><a href="components/forms.html#input-types">入力タイプごとのサンプル →</a> / <a href="components/forms.html#checkbox-radio">Checkbox・Radioのカスタム表示 →</a></p></section><section class="specimen"><h2>余白をクラスで指定する</h2><p><code>sp-p-6</code> で内側24px相当、<code>sp-mt-8</code> で上側の外余白32px相当、<code>sp-gap-4</code> で要素間16px相当を指定できます。<code>md:sp-p-6</code> は768px以上、<code>lg:sp-p-8</code> は1024px以上で有効です。ui.cssだけで動作し、npmは不要です。従来のgap-3・px-3などは変更していません。</p><p><a href="components/spacing.html#spacing-classes">余白クラスの一覧・使用例 →</a></p></section><section class="specimen" id="theme-first-paint"><h2>テーマを最初の描画から適用する</h2><p>ダークテーマでページを移動する際の白いちらつきを防ぐには、次の処理をhead内のCSS読み込みより前に配置します。このカタログとstarter.htmlには設定済みです。保存した明暗とデザインを先に復元し、保存が使えない場合はOSの明暗設定を使います。デザインの復元にはbodyのdata-ui-theme-persistが必要です。bodyに直接指定したdata-ui-themeは優先されます。</p><pre class="setup-code"><code>&lt;!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. --&gt;
 &lt;style&gt;
 html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
 html[data-bs-theme=&quot;dark&quot;] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
 &lt;/style&gt;
 &lt;script&gt;
 (() =&gt; {
-  let mode = null, design = null;
-  try { mode = localStorage.getItem(&#x27;orchtop-theme&#x27;); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem(&#x27;orchtop-design-theme&#x27;); } catch { /* Storage is optional. */ }
+  let mode = null, design = null, palette = null;
+  try { mode = localStorage.getItem(&#x27;kav-ui-theme&#x27;); } catch { /* Storage is optional. */ }
+  try { design = localStorage.getItem(&#x27;kav-ui-design-theme&#x27;); } catch { /* Storage is optional. */ }
   const selected = [&#x27;light&#x27;,&#x27;dark&#x27;,&#x27;system&#x27;].includes(mode) ? mode : &#x27;system&#x27;;
   document.documentElement.dataset.uiColorPreference = selected;
   document.documentElement.dataset.bsTheme = selected === &#x27;system&#x27;
@@ -181,18 +207,18 @@ document.addEventListener('ui:move', event =&gt; {
   // persistMove(card.dataset.uiCard, from, to);
 });
 
-OrchtopUI.toast({
+KavUI.toast({
   title: '保存しました',
   body: 'プロジェクトの変更を保存しました。',
   meta: 'たった今',
   variant: 'success'
 });
 // 従来の文字列形式も利用できます。
-OrchtopUI.toast('保存しました。', { variant: 'success' });
-OrchtopUI.show('#my-dialog');
-OrchtopUI.hide('#help-panel');
+KavUI.toast('保存しました。', { variant: 'success' });
+KavUI.show('#my-dialog');
+KavUI.hide('#help-panel');
 
 // 動的に追加したHTMLのARIA・初期表示を整える場合：
-OrchtopUI.init(container);</code></pre><p>initは繰り返し実行できます。操作のイベントは委譲しているため、後から追加したボタンも動作します。</p><h2>カタログ固有のファイル</h2><p>catalog.css / layout.css / catalog.js / catalog-navigation.js / catalog-demo.js と Flexbox playground は見本画面専用です。アプリでは ui.css / ui.js を使ってください。HTMLのdata-demo-*は送信を止めたり結果を模擬表示するための属性です。アプリに取り込む際は外してください。</p></section><section class="usage"><h2>動作テスト</h2><p><a href="tests/ui.html">ブラウザテストを開く</a>と、自動で共通UIの動作を検証します。Chromiumがインストールされている環境では <code>node tests/run-browser.mjs</code> でも実行できます。npmのインストールは不要です。</p></section></main></div>
+KavUI.init(container);</code></pre><p>initは繰り返し実行できます。操作のイベントは委譲しているため、後から追加したボタンも動作します。</p><h2>カタログ固有のファイル</h2><p>catalog.css / layout.css / catalog.js / catalog-navigation.js / catalog-demo.js と Flexbox playground は見本画面専用です。アプリでは ui.css / ui.js を使ってください。HTMLのdata-demo-*は送信を止めたり結果を模擬表示するための属性です。アプリに取り込む際は外してください。</p></section><section class="usage"><h2>動作テスト</h2><p><a href="tests/ui.html">ブラウザテストを開く</a>と、自動で共通UIの動作を検証します。Chromiumがインストールされている環境では <code>node tests/run-browser.mjs</code> でも実行できます。npmのインストールは不要です。</p></section></main></div>
 
 </body></html>

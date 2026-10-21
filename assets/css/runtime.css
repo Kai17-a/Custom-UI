@@ -5,7 +5,7 @@
 [data-ui-field] > [data-ui-error] { grid-column:1 / -1; }
 .ui-tooltip { position:fixed; z-index:1200; top:0; left:0; width:max-content; max-width:min(20rem,calc(100vw - 16px)); padding:var(--space-2) var(--space-3); border-radius:var(--bs-border-radius); background:var(--bs-body-color); color:var(--bs-body-bg); box-shadow:var(--bs-box-shadow-sm); font:var(--text-xs)/var(--leading-normal) var(--bs-body-font-family); overflow-wrap:anywhere; }
 .ui-dialog { width:min(34em,92vw); min-width:0; }
-@media (max-width:480px) { .ui-dialog form { grid-template-columns:1fr; } }
+@media (width < 768px) { .ui-dialog form { grid-template-columns:1fr; } }
 .field [data-ui-error] { color:var(--bs-danger-text-emphasis); }
 .ui-dialog form > .field { grid-column:1 / -1; }
 
@@ -37,4 +37,4 @@
 html[data-ui-focus-modality="pointer"] :is(button, a[href], summary, select, [role="button"], input[type="checkbox"], input[type="radio"], input[type="range"], input[type="button"], input[type="submit"], input[type="reset"], input[type="image"]):focus { outline:0; }
 html[data-ui-focus-modality="pointer"] .btn:focus:not(:active) { box-shadow:var(--ui-pointer-button-shadow,none); }
 html[data-ui-focus-modality="pointer"] :is(button.form-control, .form-select, .form-check-input):focus { box-shadow:none; }
-html[data-ui-focus-modality="pointer"] :is(button.form-control, .form-select):focus:not([aria-invalid="true"]) { border-color:var(--bs-border-color); }
+html[data-ui-focus-modality="pointer"] :is(button.form-control, .form-select):focus:not([aria-invalid="true"]) { border-color:var(--ui-control-outline,var(--bs-border-color)); }

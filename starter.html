@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" data-bs-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Orchtop UI starter</title>
+<html lang="ja" data-bs-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Kav-UI starter</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
 <style>
 html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
@@ -7,18 +7,22 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </style>
 <script>
 (() => {
-  let mode = null, design = null;
-  try { mode = localStorage.getItem('orchtop-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('orchtop-design-theme'); } catch { /* Storage is optional. */ }
+  let mode = null, design = null, palette = null;
+  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
+  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
+  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
+  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
   const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
   document.documentElement.dataset.uiColorPreference = selected;
   document.documentElement.dataset.bsTheme = selected === 'system'
     ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  if (!['default','glass','glassmorphism','flat','soft'].includes(design)) return;
   const restore = () => {
     if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme')) {
+    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
       document.body.dataset.uiTheme = design;
+    }
+    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
+      document.documentElement.dataset.uiPalette = palette;
     }
     return true;
   };
@@ -31,7 +35,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 <link rel="stylesheet" href="assets/css/ui.css">
 <script defer src="assets/js/ui.js"></script>
 </head><body data-ui-theme-persist>
-<header class="fx fx-wrap fx-items-center fx-gap-3 inset" style="border-bottom:1px solid var(--bs-border-color)"><strong>My app</strong><a href="getting-started.html">使い方</a><a href="index.html">カタログ</a><label class="fx fx-items-center fx-gap-2 fx-ms-auto"><span>デザイン</span><select class="form-select form-select-sm" style="width:auto" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="theme">テーマ切替</button></header>
+<header class="fx fx-wrap fx-items-center fx-gap-3 inset" style="border-bottom:1px solid var(--bs-border-color)"><strong>My app</strong><a href="getting-started.html">使い方</a><a href="index.html">カタログ</a><label class="fx fx-items-center fx-gap-2 fx-ms-auto"><span>デザイン</span><select class="form-select form-select-sm" style="width:auto" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="fx fx-wrap fx-items-center fx-gap-2"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="theme">テーマ切替</button></header>
 <main class="inset sp-mx-auto" style="max-width:960px">
 <h1 class="type-title">共通2ファイルだけで動くサンプル</h1><p class="type-body">外部ファイルはui.cssとui.jsだけを読み込みます。ちらつき防止の初期テーマ処理はhead内に配置しています。</p>
 <div class="stack">

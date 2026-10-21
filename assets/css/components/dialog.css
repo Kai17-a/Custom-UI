@@ -10,3 +10,7 @@
 .ui-dialog .note { grid-column: 1 / -1; color: var(--bs-secondary-color); }
 .ui-dialog .error { grid-column: 1 / -1; color: var(--bs-danger); min-height: 1.4em; }
 
+
+.ui-dialog { max-height:86dvh; }
+.ui-dialog form > * { min-width:0; }
+.ui-dialog .buttons { flex-wrap:wrap; }

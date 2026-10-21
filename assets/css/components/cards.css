@@ -16,7 +16,7 @@
 .ui-card-horizontal { flex-direction:row; }
 .ui-card-horizontal > .ui-card-media { width:32%; align-self:stretch; aspect-ratio:auto; border-radius:var(--bs-border-radius-lg) 0 0 var(--bs-border-radius-lg); }
 .ui-card-stat { margin:var(--space-2) 0; font-size:var(--text-2xl); font-weight:600; font-variant-numeric:tabular-nums; line-height:var(--leading-tight); }
-@media (max-width:480px) {
+@media (width < 768px) {
   .ui-card-horizontal { flex-direction:column; }
   .ui-card-horizontal > .ui-card-media { width:100%; aspect-ratio:16/9; border-radius:var(--bs-border-radius-lg) var(--bs-border-radius-lg) 0 0; }
 }

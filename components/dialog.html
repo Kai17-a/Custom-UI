@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dialog — orchtop design catalog</title>
+<title>Dialog — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
 <style>
 html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
@@ -11,18 +11,22 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </style>
 <script>
 (() => {
-  let mode = null, design = null;
-  try { mode = localStorage.getItem('orchtop-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('orchtop-design-theme'); } catch { /* Storage is optional. */ }
+  let mode = null, design = null, palette = null;
+  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
+  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
+  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
+  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
   const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
   document.documentElement.dataset.uiColorPreference = selected;
   document.documentElement.dataset.bsTheme = selected === 'system'
     ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  if (!['default','glass','glassmorphism','flat','soft'].includes(design)) return;
   const restore = () => {
     if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme')) {
+    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
       document.body.dataset.uiTheme = design;
+    }
+    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
+      document.documentElement.dataset.uiPalette = palette;
     }
     return true;
   };
@@ -43,14 +47,15 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </head>
 <body data-ui-theme-persist>
 <a class="skip-link" href="#main">コンテンツへ移動</a>
-<header class="catalog-header"><a class="brand" href="../index.html">orchtop <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="theme">テーマ切替</button></div></header>
-<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../getting-started.html">導入・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../getting-started.html">導入・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
   <div class="catalog-nav-group">
     <h2>基本スタイル</h2>
     <ul>
       <li><a href="../components/foundations.html">Foundations</a></li>
       <li><a href="../components/themes.html">UI themes</a></li>
       <li><a href="../components/theme-switcher.html">Theme switcher</a></li>
+      <li><a href="../components/color-palettes.html">Color palettes</a></li>
       <li><a href="../components/typography.html">Typography</a></li>
       <li><a href="../components/spacing.html">Spacing</a></li>
       <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="../components/mdi-icons.html">MDIアイコン</a></li><li><a href="../components/icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
@@ -64,6 +69,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/flex-grid.html">Flex grid</a></li>
       <li><a href="../components/cards.html">Cards</a></li>
       <li><a href="../components/sidebar.html">Sidebar</a></li>
+
+      <li><a href="../components/drawer.html">Drawer</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -74,6 +81,9 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/datepicker.html">Date picker</a></li>
       <li><a href="../components/dialog.html" aria-current="page">Dialog</a></li>
       <li><a href="../components/clipboard.html">Clipboard</a></li>
+
+      <li><a href="../components/input-group.html">Input group</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -81,6 +91,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <ul>
       <li><a href="../components/navigation.html">Navigation</a></li>
       <li><a href="../components/disclosure.html">Accordion</a></li>
+
+      <li><a href="../components/dropdown.html">Dropdown</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -90,6 +102,10 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/board.html">Kanban board</a></li>
       <li><a href="../components/calendar.html">Calendar</a></li>
+
+      <li><a href="../components/list-group.html">List group</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/chart.html">Chart</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -98,6 +114,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/alerts.html">Alerts</a></li>
       <li><a href="../components/toasts.html">Toasts & alerts</a></li>
       <li><a href="../components/tips.html">Tips & tooltips</a></li>
+
+      <li><a href="../components/popover.html">Popover</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -116,7 +134,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     </ul>
   </div>
 </nav><a class="overview-link" href="../components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">ORCHTOP / DESIGN SYSTEM</p><h1>Dialog</h1></header><p class="lede">確認・入力ダイアログ。下の「HTMLを表示」からマークアップをコピーできます。</p><section class="specimen"><h2>ダイアログ：開閉・入力検証</h2><div class="example" data-example>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Dialog</h1></header><p class="lede">確認・入力ダイアログ。下の「HTMLを表示」からマークアップをコピーできます。</p><section class="specimen"><h2>ダイアログ：開閉・入力検証</h2><div class="example" data-example>
 <button type="button" class="btn btn-sm btn-primary" data-ui-toggle="dialog" data-ui-target="#project-dialog">プロジェクトの確認を開く</button>
 <dialog class="ui-dialog" data-ui-dialog id="project-dialog" aria-label="プロジェクトの確認">
   <h2>プロジェクトの確認</h2>

@@ -1,7 +1,7 @@
-/* Orchtop UI: dependency-free data attributes. Load once with defer. */
+/* Kav-UI: dependency-free data attributes. Load once with defer. */
 (() => {
   'use strict';
-  if (window.OrchtopUI) return;
+  if (window.KavUI) return;
   const doc = document;
   const openers = new WeakMap();
   const timers = new WeakMap();
@@ -153,11 +153,15 @@
   function show(panel, opener) {
     if (typeof panel === 'string') panel = query(panel);
     if (!panel) return;
+    if (isPopup(panel)) {openPopup(panel,opener || doc.activeElement);return;}
     cancelExit(panel);
     if (panel.tagName === 'DIALOG') {
       if (panel.open) return;
       hideTooltip();
-      openers.set(panel, opener || doc.activeElement);
+      const original = opener || doc.activeElement;
+      // Menu items become hidden after selection; return to their visible trigger.
+      const popup = original?.closest?.('[data-ui-dropdown], [data-ui-popover]');
+      openers.set(panel, popupStates.get(popup)?.trigger || original);
       panel.showModal();
     } else {
       const opening = panel.hidden;
@@ -173,6 +177,8 @@
   function hide(panel, trigger) {
     if (typeof panel === 'string') panel = query(panel);
     if (!panel) return;
+    if (isPopup(panel)) {closePopup(panel,true);return;}
+    for (const popup of openPopups) if (panel.contains(popup)) closePopup(popup);
     if (tooltip && panel.contains(tooltip.trigger)) hideTooltip();
     if (activeInputPicker && panel.contains(activeInputPicker.root)) activeInputPicker.close();
     if (panel.tagName === 'DIALOG') {
@@ -1291,7 +1297,481 @@
     const initial=input.dataset.uiIndeterminate!=='false';input.indeterminate=initial;
     input.form?.addEventListener('reset',event=>setTimeout(()=>{if(!event.defaultPrevented)input.indeterminate=initial;},0));
   }
+  // MDI 7.4.47: paths from assets/icons/mdi/*.svg; see its LICENSE and README.
+  // Embedded deliberately: file:// does not need fetch, imports or a server.
+  const mdiPaths = Object.freeze({
+    "mdi-account-circle-outline": "M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7.07,18.28C7.5,17.38 10.12,16.5 12,16.5C13.88,16.5 16.5,17.38 16.93,18.28C15.57,19.36 13.86,20 12,20C10.14,20 8.43,19.36 7.07,18.28M18.36,16.83C16.93,15.09 13.46,14.5 12,14.5C10.54,14.5 7.07,15.09 5.64,16.83C4.62,15.5 4,13.82 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,13.82 19.38,15.5 18.36,16.83M12,6C10.06,6 8.5,7.56 8.5,9.5C8.5,11.44 10.06,13 12,13C13.94,13 15.5,11.44 15.5,9.5C15.5,7.56 13.94,6 12,6M12,11A1.5,1.5 0 0,1 10.5,9.5A1.5,1.5 0 0,1 12,8A1.5,1.5 0 0,1 13.5,9.5A1.5,1.5 0 0,1 12,11Z",
+    "mdi-account-circle": "M12,19.2C9.5,19.2 7.29,17.92 6,16C6.03,14 10,12.9 12,12.9C14,12.9 17.97,14 18,16C16.71,17.92 14.5,19.2 12,19.2M12,5A3,3 0 0,1 15,8A3,3 0 0,1 12,11A3,3 0 0,1 9,8A3,3 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z",
+    "mdi-account-group-outline": "M12,5A3.5,3.5 0 0,0 8.5,8.5A3.5,3.5 0 0,0 12,12A3.5,3.5 0 0,0 15.5,8.5A3.5,3.5 0 0,0 12,5M12,7A1.5,1.5 0 0,1 13.5,8.5A1.5,1.5 0 0,1 12,10A1.5,1.5 0 0,1 10.5,8.5A1.5,1.5 0 0,1 12,7M5.5,8A2.5,2.5 0 0,0 3,10.5C3,11.44 3.53,12.25 4.29,12.68C4.65,12.88 5.06,13 5.5,13C5.94,13 6.35,12.88 6.71,12.68C7.08,12.47 7.39,12.17 7.62,11.81C6.89,10.86 6.5,9.7 6.5,8.5C6.5,8.41 6.5,8.31 6.5,8.22C6.2,8.08 5.86,8 5.5,8M18.5,8C18.14,8 17.8,8.08 17.5,8.22C17.5,8.31 17.5,8.41 17.5,8.5C17.5,9.7 17.11,10.86 16.38,11.81C16.5,12 16.63,12.15 16.78,12.3C16.94,12.45 17.1,12.58 17.29,12.68C17.65,12.88 18.06,13 18.5,13C18.94,13 19.35,12.88 19.71,12.68C20.47,12.25 21,11.44 21,10.5A2.5,2.5 0 0,0 18.5,8M12,14C9.66,14 5,15.17 5,17.5V19H19V17.5C19,15.17 14.34,14 12,14M4.71,14.55C2.78,14.78 0,15.76 0,17.5V19H3V17.07C3,16.06 3.69,15.22 4.71,14.55M19.29,14.55C20.31,15.22 21,16.06 21,17.07V19H24V17.5C24,15.76 21.22,14.78 19.29,14.55M12,16C13.53,16 15.24,16.5 16.23,17H7.77C8.76,16.5 10.47,16 12,16Z",
+    "mdi-account-group": "M12,5.5A3.5,3.5 0 0,1 15.5,9A3.5,3.5 0 0,1 12,12.5A3.5,3.5 0 0,1 8.5,9A3.5,3.5 0 0,1 12,5.5M5,8C5.56,8 6.08,8.15 6.53,8.42C6.38,9.85 6.8,11.27 7.66,12.38C7.16,13.34 6.16,14 5,14A3,3 0 0,1 2,11A3,3 0 0,1 5,8M19,8A3,3 0 0,1 22,11A3,3 0 0,1 19,14C17.84,14 16.84,13.34 16.34,12.38C17.2,11.27 17.62,9.85 17.47,8.42C17.92,8.15 18.44,8 19,8M5.5,18.25C5.5,16.18 8.41,14.5 12,14.5C15.59,14.5 18.5,16.18 18.5,18.25V20H5.5V18.25M0,20V18.5C0,17.11 1.89,15.94 4.45,15.6C3.86,16.28 3.5,17.22 3.5,18.25V20H0M24,20H20.5V18.25C20.5,17.22 20.14,16.28 19.55,15.6C22.11,15.94 24,17.11 24,18.5V20Z",
+    "mdi-account-outline": "M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,6A2,2 0 0,0 10,8A2,2 0 0,0 12,10A2,2 0 0,0 14,8A2,2 0 0,0 12,6M12,13C14.67,13 20,14.33 20,17V20H4V17C4,14.33 9.33,13 12,13M12,14.9C9.03,14.9 5.9,16.36 5.9,17V18.1H18.1V17C18.1,16.36 14.97,14.9 12,14.9Z",
+    "mdi-account-plus": "M15,14C12.33,14 7,15.33 7,18V20H23V18C23,15.33 17.67,14 15,14M6,10V7H4V10H1V12H4V15H6V12H9V10M15,12A4,4 0 0,0 19,8A4,4 0 0,0 15,4A4,4 0 0,0 11,8A4,4 0 0,0 15,12Z",
+    "mdi-account": "M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z",
+    "mdi-alert-outline": "M12,2L1,21H23M12,6L19.53,19H4.47M11,10V14H13V10M11,16V18H13V16",
+    "mdi-alert": "M13 14H11V9H13M13 18H11V16H13M1 21H23L12 2L1 21Z",
+    "mdi-arrow-collapse-all": "M19.5,3.09L20.91,4.5L16.41,9H20V11H13V4H15V7.59L19.5,3.09M20.91,19.5L19.5,20.91L15,16.41V20H13V13H20V15H16.41L20.91,19.5M4.5,3.09L9,7.59V4H11V11H4V9H7.59L3.09,4.5L4.5,3.09M3.09,19.5L7.59,15H4V13H11V20H9V16.41L4.5,20.91L3.09,19.5Z",
+    "mdi-arrow-down": "M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z",
+    "mdi-arrow-expand-all": "M9.5,13.09L10.91,14.5L6.41,19H10V21H3V14H5V17.59L9.5,13.09M10.91,9.5L9.5,10.91L5,6.41V10H3V3H10V5H6.41L10.91,9.5M14.5,13.09L19,17.59V14H21V21H14V19H17.59L13.09,14.5L14.5,13.09M13.09,9.5L17.59,5H14V3H21V10H19V6.41L14.5,10.91L13.09,9.5Z",
+    "mdi-arrow-left": "M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z",
+    "mdi-arrow-right": "M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z",
+    "mdi-arrow-up": "M13,20H11V8L5.5,13.5L4.08,12.08L12,4.16L19.92,12.08L18.5,13.5L13,8V20Z",
+    "mdi-attachment": "M7.5,18A5.5,5.5 0 0,1 2,12.5A5.5,5.5 0 0,1 7.5,7H18A4,4 0 0,1 22,11A4,4 0 0,1 18,15H9.5A2.5,2.5 0 0,1 7,12.5A2.5,2.5 0 0,1 9.5,10H17V11.5H9.5A1,1 0 0,0 8.5,12.5A1,1 0 0,0 9.5,13.5H18A2.5,2.5 0 0,0 20.5,11A2.5,2.5 0 0,0 18,8.5H7.5A4,4 0 0,0 3.5,12.5A4,4 0 0,0 7.5,16.5H17V18H7.5Z",
+    "mdi-bell-outline": "M10 21H14C14 22.1 13.1 23 12 23S10 22.1 10 21M21 19V20H3V19L5 17V11C5 7.9 7 5.2 10 4.3V4C10 2.9 10.9 2 12 2S14 2.9 14 4V4.3C17 5.2 19 7.9 19 11V17L21 19M17 11C17 8.2 14.8 6 12 6S7 8.2 7 11V18H17V11Z",
+    "mdi-bell": "M21,19V20H3V19L5,17V11C5,7.9 7.03,5.17 10,4.29C10,4.19 10,4.1 10,4A2,2 0 0,1 12,2A2,2 0 0,1 14,4C14,4.1 14,4.19 14,4.29C16.97,5.17 19,7.9 19,11V17L21,19M14,21A2,2 0 0,1 12,23A2,2 0 0,1 10,21",
+    "mdi-bookmark": "M17,3H7A2,2 0 0,0 5,5V21L12,18L19,21V5C19,3.89 18.1,3 17,3Z",
+    "mdi-calendar-month": "M9,10V12H7V10H9M13,10V12H11V10H13M17,10V12H15V10H17M19,3A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5A2,2 0 0,1 5,3H6V1H8V3H16V1H18V3H19M19,19V8H5V19H19M9,14V16H7V14H9M13,14V16H11V14H13M17,14V16H15V14H17Z",
+    "mdi-calendar": "M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z",
+    "mdi-camera": "M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z",
+    "mdi-cellphone": "M17,19H7V5H17M17,1H7C5.89,1 5,1.89 5,3V21A2,2 0 0,0 7,23H17A2,2 0 0,0 19,21V3C19,1.89 18.1,1 17,1Z",
+    "mdi-chart-bar": "M22,21H2V3H4V19H6V10H10V19H12V6H16V19H18V14H22V21Z",
+    "mdi-chart-line": "M16,11.78L20.24,4.45L21.97,5.45L16.74,14.5L10.23,10.75L5.46,19H22V21H2V3H4V17.54L9.5,8L16,11.78Z",
+    "mdi-check-circle-outline": "M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M12 20C7.59 20 4 16.41 4 12S7.59 4 12 4 20 7.59 20 12 16.41 20 12 20M16.59 7.58L10 14.17L7.41 11.59L6 13L10 17L18 9L16.59 7.58Z",
+    "mdi-check-circle": "M12 2C6.5 2 2 6.5 2 12S6.5 22 12 22 22 17.5 22 12 17.5 2 12 2M10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z",
+    "mdi-check": "M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z",
+    "mdi-checkbox-blank-outline": "M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z",
+    "mdi-checkbox-marked-circle-outline": "M20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4C12.76,4 13.5,4.11 14.2,4.31L15.77,2.74C14.61,2.26 13.34,2 12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12M7.91,10.08L6.5,11.5L11,16L21,6L19.59,4.58L11,13.17L7.91,10.08Z",
+    "mdi-checkbox-marked": "M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z",
+    "mdi-chevron-double-down": "M16.59,5.59L18,7L12,13L6,7L7.41,5.59L12,10.17L16.59,5.59M16.59,11.59L18,13L12,19L6,13L7.41,11.59L12,16.17L16.59,11.59Z",
+    "mdi-chevron-double-left": "M18.41,7.41L17,6L11,12L17,18L18.41,16.59L13.83,12L18.41,7.41M12.41,7.41L11,6L5,12L11,18L12.41,16.59L7.83,12L12.41,7.41Z",
+    "mdi-chevron-double-right": "M5.59,7.41L7,6L13,12L7,18L5.59,16.59L10.17,12L5.59,7.41M11.59,7.41L13,6L19,12L13,18L11.59,16.59L16.17,12L11.59,7.41Z",
+    "mdi-chevron-double-up": "M7.41,18.41L6,17L12,11L18,17L16.59,18.41L12,13.83L7.41,18.41M7.41,12.41L6,11L12,5L18,11L16.59,12.41L12,7.83L7.41,12.41Z",
+    "mdi-chevron-down": "M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z",
+    "mdi-chevron-left": "M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z",
+    "mdi-chevron-right": "M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z",
+    "mdi-chevron-up": "M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z",
+    "mdi-clock-outline": "M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z",
+    "mdi-close-circle": "M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z",
+    "mdi-close": "M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z",
+    "mdi-cog-outline": "M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11L19.5,12L19.43,13L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z",
+    "mdi-cog": "M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z",
+    "mdi-content-copy": "M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z",
+    "mdi-content-paste": "M19,20H5V4H7V7H17V4H19M12,2A1,1 0 0,1 13,3A1,1 0 0,1 12,4A1,1 0 0,1 11,3A1,1 0 0,1 12,2M19,2H14.82C14.4,0.84 13.3,0 12,0C10.7,0 9.6,0.84 9.18,2H5A2,2 0 0,0 3,4V20A2,2 0 0,0 5,22H19A2,2 0 0,0 21,20V4A2,2 0 0,0 19,2Z",
+    "mdi-content-save-outline": "M17 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V7L17 3M19 19H5V5H16.17L19 7.83V19M12 12C10.34 12 9 13.34 9 15S10.34 18 12 18 15 16.66 15 15 13.66 12 12 12M6 6H15V10H6V6Z",
+    "mdi-content-save": "M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z",
+    "mdi-delete-outline": "M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z",
+    "mdi-delete": "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z",
+    "mdi-dots-horizontal": "M16,12A2,2 0 0,1 18,10A2,2 0 0,1 20,12A2,2 0 0,1 18,14A2,2 0 0,1 16,12M10,12A2,2 0 0,1 12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12M4,12A2,2 0 0,1 6,10A2,2 0 0,1 8,12A2,2 0 0,1 6,14A2,2 0 0,1 4,12Z",
+    "mdi-dots-vertical": "M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z",
+    "mdi-download": "M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z",
+    "mdi-drag-vertical": "M9,3H11V5H9V3M13,3H15V5H13V3M9,7H11V9H9V7M13,7H15V9H13V7M9,11H11V13H9V11M13,11H15V13H13V11M9,15H11V17H9V15M13,15H15V17H13V15M9,19H11V21H9V19M13,19H15V21H13V19Z",
+    "mdi-drag": "M7,19V17H9V19H7M11,19V17H13V19H11M15,19V17H17V19H15M7,15V13H9V15H7M11,15V13H13V15H11M15,15V13H17V15H15M7,11V9H9V11H7M11,11V9H13V11H11M15,11V9H17V11H15M7,7V5H9V7H7M11,7V5H13V7H11M15,7V5H17V7H15Z",
+    "mdi-email-outline": "M22 6C22 4.9 21.1 4 20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6M20 6L12 11L4 6H20M20 18H4V8L12 13L20 8V18Z",
+    "mdi-email": "M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z",
+    "mdi-eye-off": "M11.83,9L15,12.16C15,12.11 15,12.05 15,12A3,3 0 0,0 12,9C11.94,9 11.89,9 11.83,9M7.53,9.8L9.08,11.35C9.03,11.56 9,11.77 9,12A3,3 0 0,0 12,15C12.22,15 12.44,14.97 12.65,14.92L14.2,16.47C13.53,16.8 12.79,17 12,17A5,5 0 0,1 7,12C7,11.21 7.2,10.47 7.53,9.8M2,4.27L4.28,6.55L4.73,7C3.08,8.3 1.78,10 1,12C2.73,16.39 7,19.5 12,19.5C13.55,19.5 15.03,19.2 16.38,18.66L16.81,19.08L19.73,22L21,20.73L3.27,3M12,7A5,5 0 0,1 17,12C17,12.64 16.87,13.26 16.64,13.82L19.57,16.75C21.07,15.5 22.27,13.86 23,12C21.27,7.61 17,4.5 12,4.5C10.6,4.5 9.26,4.75 8,5.2L10.17,7.35C10.74,7.13 11.35,7 12,7Z",
+    "mdi-eye": "M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z",
+    "mdi-file-document-outline": "M6,2A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6M6,4H13V9H18V20H6V4M8,12V14H16V12H8M8,16V18H13V16H8Z",
+    "mdi-file-document": "M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M15,18V16H6V18H15M18,14V12H6V14H18Z",
+    "mdi-file-image": "M13,9H18.5L13,3.5V9M6,2H14L20,8V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V4C4,2.89 4.89,2 6,2M6,20H15L18,20V12L14,16L12,14L6,20M8,9A2,2 0 0,0 6,11A2,2 0 0,0 8,13A2,2 0 0,0 10,11A2,2 0 0,0 8,9Z",
+    "mdi-filter-outline": "M15,19.88C15.04,20.18 14.94,20.5 14.71,20.71C14.32,21.1 13.69,21.1 13.3,20.71L9.29,16.7C9.06,16.47 8.96,16.16 9,15.87V10.75L4.21,4.62C3.87,4.19 3.95,3.56 4.38,3.22C4.57,3.08 4.78,3 5,3V3H19V3C19.22,3 19.43,3.08 19.62,3.22C20.05,3.56 20.13,4.19 19.79,4.62L15,10.75V19.88M7.04,5L11,10.06V15.58L13,17.58V10.05L16.96,5H7.04Z",
+    "mdi-filter": "M14,12V19.88C14.04,20.18 13.94,20.5 13.71,20.71C13.32,21.1 12.69,21.1 12.3,20.71L10.29,18.7C10.06,18.47 9.96,18.16 10,17.87V12H9.97L4.21,4.62C3.87,4.19 3.95,3.56 4.38,3.22C4.57,3.08 4.78,3 5,3V3H19V3C19.22,3 19.43,3.08 19.62,3.22C20.05,3.56 20.13,4.19 19.79,4.62L14.03,12H14Z",
+    "mdi-folder-open-outline": "M6.1,10L4,18V8H21A2,2 0 0,0 19,6H12L10,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H19C19.9,20 20.7,19.4 20.9,18.5L23.2,10H6.1M19,18H6L7.6,12H20.6L19,18Z",
+    "mdi-folder-open": "M19,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10L12,6H19A2,2 0 0,1 21,8H21L4,8V18L6.14,10H23.21L20.93,18.5C20.7,19.37 19.92,20 19,20Z",
+    "mdi-folder-outline": "M20,18H4V8H20M20,6H12L10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6Z",
+    "mdi-folder": "M10,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V8C22,6.89 21.1,6 20,6H12L10,4Z",
+    "mdi-format-list-bulleted": "M7,5H21V7H7V5M7,13V11H21V13H7M4,4.5A1.5,1.5 0 0,1 5.5,6A1.5,1.5 0 0,1 4,7.5A1.5,1.5 0 0,1 2.5,6A1.5,1.5 0 0,1 4,4.5M4,10.5A1.5,1.5 0 0,1 5.5,12A1.5,1.5 0 0,1 4,13.5A1.5,1.5 0 0,1 2.5,12A1.5,1.5 0 0,1 4,10.5M7,19V17H21V19H7M4,16.5A1.5,1.5 0 0,1 5.5,18A1.5,1.5 0 0,1 4,19.5A1.5,1.5 0 0,1 2.5,18A1.5,1.5 0 0,1 4,16.5Z",
+    "mdi-format-list-checks": "M3,5H9V11H3V5M5,7V9H7V7H5M11,7H21V9H11V7M11,15H21V17H11V15M5,20L1.5,16.5L2.91,15.09L5,17.17L9.59,12.59L11,14L5,20Z",
+    "mdi-fullscreen-exit": "M14,14H19V16H16V19H14V14M5,14H10V19H8V16H5V14M8,5H10V10H5V8H8V5M19,8V10H14V5H16V8H19Z",
+    "mdi-fullscreen": "M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z",
+    "mdi-heart-outline": "M12.1,18.55L12,18.65L11.89,18.55C7.14,14.24 4,11.39 4,8.5C4,6.5 5.5,5 7.5,5C9.04,5 10.54,6 11.07,7.36H12.93C13.46,6 14.96,5 16.5,5C18.5,5 20,6.5 20,8.5C20,11.39 16.86,14.24 12.1,18.55M16.5,3C14.76,3 13.09,3.81 12,5.08C10.91,3.81 9.24,3 7.5,3C4.42,3 2,5.41 2,8.5C2,12.27 5.4,15.36 10.55,20.03L12,21.35L13.45,20.03C18.6,15.36 22,12.27 22,8.5C22,5.41 19.58,3 16.5,3Z",
+    "mdi-heart": "M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z",
+    "mdi-help-circle": "M15.07,11.25L14.17,12.17C13.45,12.89 13,13.5 13,15H11V14.5C11,13.39 11.45,12.39 12.17,11.67L13.41,10.41C13.78,10.05 14,9.55 14,9C14,7.89 13.1,7 12,7A2,2 0 0,0 10,9H8A4,4 0 0,1 12,5A4,4 0 0,1 16,9C16,9.88 15.64,10.67 15.07,11.25M13,19H11V17H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z",
+    "mdi-home-outline": "M12 5.69L17 10.19V18H15V12H9V18H7V10.19L12 5.69M12 3L2 12H5V20H11V14H13V20H19V12H22",
+    "mdi-home": "M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z",
+    "mdi-image": "M8.5,13.5L11,16.5L14.5,12L19,18H5M21,19V5C21,3.89 20.1,3 19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19Z",
+    "mdi-information-outline": "M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z",
+    "mdi-information": "M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z",
+    "mdi-link": "M3.9,12C3.9,10.29 5.29,8.9 7,8.9H11V7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H11V15.1H7C5.29,15.1 3.9,13.71 3.9,12M8,13H16V11H8V13M17,7H13V8.9H17C18.71,8.9 20.1,10.29 20.1,12C20.1,13.71 18.71,15.1 17,15.1H13V17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7Z",
+    "mdi-lock-open": "M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V10A2,2 0 0,1 6,8H15V6A3,3 0 0,0 12,3A3,3 0 0,0 9,6H7A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,17A2,2 0 0,0 14,15A2,2 0 0,0 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17Z",
+    "mdi-lock": "M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z",
+    "mdi-login": "M11 7L9.6 8.4L12.2 11H2V13H12.2L9.6 15.6L11 17L16 12L11 7M20 19H12V21H20C21.1 21 22 20.1 22 19V5C22 3.9 21.1 3 20 3H12V5H20V19Z",
+    "mdi-logout": "M17 7L15.59 8.41L18.17 11H8V13H18.17L15.59 15.58L17 17L22 12M4 5H12V3H4C2.9 3 2 3.9 2 5V19C2 20.1 2.9 21 4 21H12V19H4V5Z",
+    "mdi-magnify": "M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z",
+    "mdi-menu-down": "M7,10L12,15L17,10H7Z",
+    "mdi-menu": "M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z",
+    "mdi-message-text-outline": "M20,2A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H6L2,22V4C2,2.89 2.9,2 4,2H20M4,4V17.17L5.17,16H20V4H4M6,7H18V9H6V7M6,11H15V13H6V11Z",
+    "mdi-message-text": "M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M6,9H18V11H6M14,14H6V12H14M18,8H6V6H18",
+    "mdi-microphone-off": "M19,11C19,12.19 18.66,13.3 18.1,14.28L16.87,13.05C17.14,12.43 17.3,11.74 17.3,11H19M15,11.16L9,5.18V5A3,3 0 0,1 12,2A3,3 0 0,1 15,5V11L15,11.16M4.27,3L21,19.73L19.73,21L15.54,16.81C14.77,17.27 13.91,17.58 13,17.72V21H11V17.72C7.72,17.23 5,14.41 5,11H6.7C6.7,14 9.24,16.1 12,16.1C12.81,16.1 13.6,15.91 14.31,15.58L12.65,13.92L12,14A3,3 0 0,1 9,11V10.28L3,4.27L4.27,3Z",
+    "mdi-microphone": "M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z",
+    "mdi-minus": "M19,13H5V11H19V13Z",
+    "mdi-monitor": "M21,16H3V4H21M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0 3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0 23,16V4C23,2.89 22.1,2 21,2Z",
+    "mdi-open-in-new": "M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z",
+    "mdi-pause": "M14,19H18V5H14M6,19H10V5H6V19Z",
+    "mdi-pencil-outline": "M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z",
+    "mdi-pencil": "M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z",
+    "mdi-play": "M8,5.14V19.14L19,12.14L8,5.14Z",
+    "mdi-plus": "M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z",
+    "mdi-printer": "M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z",
+    "mdi-progress-clock": "M13,2.03V2.05L13,4.05C17.39,4.59 20.5,8.58 19.96,12.97C19.5,16.61 16.64,19.5 13,19.93V21.93C18.5,21.38 22.5,16.5 21.95,11C21.5,6.25 17.73,2.5 13,2.03M11,2.06C9.05,2.25 7.19,3 5.67,4.26L7.1,5.74C8.22,4.84 9.57,4.26 11,4.06V2.06M4.26,5.67C3,7.19 2.25,9.04 2.05,11H4.05C4.24,9.58 4.8,8.23 5.69,7.1L4.26,5.67M2.06,13C2.26,14.96 3.03,16.81 4.27,18.33L5.69,16.9C4.81,15.77 4.24,14.42 4.06,13H2.06M7.1,18.37L5.67,19.74C7.18,21 9.04,21.79 11,22V20C9.58,19.82 8.23,19.25 7.1,18.37M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z",
+    "mdi-qrcode": "M3,11H5V13H3V11M11,5H13V9H11V5M9,11H13V15H11V13H9V11M15,11H17V13H19V11H21V13H19V15H21V19H19V21H17V19H13V21H11V17H15V15H17V13H15V11M19,19V15H17V19H19M15,3H21V9H15V3M17,5V7H19V5H17M3,3H9V9H3V3M5,5V7H7V5H5M3,15H9V21H3V15M5,17V19H7V17H5Z",
+    "mdi-radiobox-blank": "M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z",
+    "mdi-radiobox-marked": "M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z",
+    "mdi-refresh": "M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z",
+    "mdi-send": "M2,21L23,12L2,3V10L17,12L2,14V21Z",
+    "mdi-share-variant": "M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.61 20.92,19A2.92,2.92 0 0,0 18,16.08Z",
+    "mdi-skip-next": "M16,18H18V6H16M6,18L14.5,12L6,6V18Z",
+    "mdi-skip-previous": "M6,18V6H8V18H6M9.5,12L18,6V18L9.5,12Z",
+    "mdi-sort-ascending": "M19 17H22L18 21L14 17H17V3H19M2 17H12V19H2M6 5V7H2V5M2 11H9V13H2V11Z",
+    "mdi-sort-descending": "M19 7H22L18 3L14 7H17V21H19M2 17H12V19H2M6 5V7H2V5M2 11H9V13H2V11Z",
+    "mdi-sort": "M18 21L14 17H17V7H14L18 3L22 7H19V17H22M2 19V17H12V19M2 13V11H9V13M2 7V5H6V7H2Z",
+    "mdi-star-outline": "M12,15.39L8.24,17.66L9.23,13.38L5.91,10.5L10.29,10.13L12,6.09L13.71,10.13L18.09,10.5L14.77,13.38L15.76,17.66M22,9.24L14.81,8.63L12,2L9.19,8.63L2,9.24L7.45,13.97L5.82,21L12,17.27L18.18,21L16.54,13.97L22,9.24Z",
+    "mdi-star": "M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z",
+    "mdi-stop": "M18,18H6V6H18V18Z",
+    "mdi-table": "M5,4H19A2,2 0 0,1 21,6V18A2,2 0 0,1 19,20H5A2,2 0 0,1 3,18V6A2,2 0 0,1 5,4M5,8V12H11V8H5M13,8V12H19V8H13M5,14V18H11V14H5M13,14V18H19V14H13Z",
+    "mdi-theme-light-dark": "M7.5,2C5.71,3.15 4.5,5.18 4.5,7.5C4.5,9.82 5.71,11.85 7.53,13C4.46,13 2,10.54 2,7.5A5.5,5.5 0 0,1 7.5,2M19.07,3.5L20.5,4.93L4.93,20.5L3.5,19.07L19.07,3.5M12.89,5.93L11.41,5L9.97,6L10.39,4.3L9,3.24L10.75,3.12L11.33,1.47L12,3.1L13.73,3.13L12.38,4.26L12.89,5.93M9.59,9.54L8.43,8.81L7.31,9.59L7.65,8.27L6.56,7.44L7.92,7.35L8.37,6.06L8.88,7.33L10.24,7.36L9.19,8.23L9.59,9.54M19,13.5A5.5,5.5 0 0,1 13.5,19C12.28,19 11.15,18.6 10.24,17.93L17.93,10.24C18.6,11.15 19,12.28 19,13.5M14.6,20.08L17.37,18.93L17.13,22.28L14.6,20.08M18.93,17.38L20.08,14.61L22.28,17.15L18.93,17.38M20.08,12.42L18.94,9.64L22.28,9.88L20.08,12.42M9.63,18.93L12.4,20.08L9.87,22.27L9.63,18.93Z",
+    "mdi-toggle-switch-off": "M17,7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7M7,15A3,3 0 0,1 4,12A3,3 0 0,1 7,9A3,3 0 0,1 10,12A3,3 0 0,1 7,15Z",
+    "mdi-toggle-switch": "M17,7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7M17,15A3,3 0 0,1 14,12A3,3 0 0,1 17,9A3,3 0 0,1 20,12A3,3 0 0,1 17,15Z",
+    "mdi-upload": "M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z",
+    "mdi-video": "M17,10.5V7A1,1 0 0,0 16,6H4A1,1 0 0,0 3,7V17A1,1 0 0,0 4,18H16A1,1 0 0,0 17,17V13.5L21,17.5V6.5L17,10.5Z",
+    "mdi-view-dashboard": "M13,3V9H21V3M13,21H21V11H13M3,21H11V15H3M3,13H11V3H3V13Z",
+    "mdi-view-grid": "M3,11H11V3H3M3,21H11V13H3M13,21H21V13H13M13,3V11H21V3",
+    "mdi-volume-high": "M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z",
+    "mdi-volume-mute": "M3,9H7L12,4V20L7,15H3V9M16.59,12L14,9.41L15.41,8L18,10.59L20.59,8L22,9.41L19.41,12L22,14.59L20.59,16L18,13.41L15.41,16L14,14.59L16.59,12Z",
+    "mdi-weather-night": "M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C7.79,7.9 8.75,10.87 10.95,13.06C13.14,15.26 16.1,16.22 18.97,15.95M17.33,17.97C14.5,17.81 11.7,16.64 9.53,14.5C7.36,12.31 6.2,9.5 6.04,6.68C3.23,9.82 3.34,14.64 6.35,17.66C9.37,20.67 14.19,20.78 17.33,17.97Z",
+    "mdi-weather-sunny": "M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,2L14.39,5.42C13.65,5.15 12.84,5 12,5C11.16,5 10.35,5.15 9.61,5.42L12,2M3.34,7L7.5,6.65C6.9,7.16 6.36,7.78 5.94,8.5C5.5,9.24 5.25,10 5.11,10.79L3.34,7M3.36,17L5.12,13.23C5.26,14 5.53,14.78 5.95,15.5C6.37,16.24 6.91,16.86 7.5,17.37L3.36,17M20.65,7L18.88,10.79C18.74,10 18.47,9.23 18.05,8.5C17.63,7.78 17.1,7.15 16.5,6.64L20.65,7M20.64,17L16.5,17.36C17.09,16.85 17.62,16.22 18.04,15.5C18.46,14.77 18.73,14 18.87,13.21L20.64,17M12,22L9.59,18.56C10.33,18.83 11.14,19 12,19C12.82,19 13.63,18.83 14.37,18.56L12,22Z"
+});
+  const iconStates = new WeakMap();
+  function renderIcon(host) {
+    const name = host.getAttribute('icon');
+    const path = Object.hasOwn(mdiPaths, name) ? mdiPaths[name] : null;
+    const previous = iconStates.get(host);
+    if (path && previous?.name === name && previous.svg.parentNode === host) return;
+    previous?.svg.remove();
+    iconStates.delete(host);
+    if (!path) return; // Unknown names preserve the author's text/fallback.
+    const svg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const shape = doc.createElementNS('http://www.w3.org/2000/svg', 'path');
+    for (const [key,value] of Object.entries({viewBox:'0 0 24 24',width:'24',height:'24',fill:'currentColor','aria-hidden':'true',focusable:'false',class:'ui-icon'})) svg.setAttribute(key,value);
+    shape.setAttribute('d',path);
+    svg.append(shape);
+    host.prepend(svg);
+    iconStates.set(host,{name,svg});
+  }
+  function scanIcons(scope) {
+    if (scope.matches?.('[icon]')) renderIcon(scope);
+    all(scope,'[icon]').forEach(renderIcon);
+  }
+  // Only icons auto-initialize dynamically. Other components keep the init API.
+  const iconObserver = new MutationObserver(records => {
+    for (const record of records) {
+      if (record.type === 'attributes') renderIcon(record.target);
+      else for (const node of record.addedNodes) {
+        if (node.nodeType === 1) scanIcons(node);
+      }
+    }
+  });
+  const fileDropStates = new WeakMap();
+  function initFileDrop(root) {
+    if (fileDropStates.has(root)) return;
+    const input = root.querySelector('input[type="file"]');
+    const zone = root.querySelector('[data-ui-file-zone]');
+    // Preserve the standard input when assigning FileLists is unsupported.
+    if (!input || !zone || typeof DataTransfer === 'undefined') return;
+    try { const probe=doc.createElement('input');probe.type='file';probe.files=new DataTransfer().files; } catch { return; }
+    root.classList.add('ui-file-drop');
+    root.dataset.uiFileReady = 'true';
+    const list = doc.createElement('ul');list.className='ui-file-list';list.setAttribute('role','list');list.setAttribute('aria-label','選択したファイル');
+    const status = doc.createElement('p');status.className='ui-file-status';status.setAttribute('role','status');
+    const error = doc.createElement('p');error.className='ui-file-error';error.setAttribute('role','alert');error.id=id(error);error.hidden=true;
+    root.append(list,status,error);
+    const described=(input.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+    input.setAttribute('aria-describedby',[...described,error.id].join(' '));
+    const state={files:[...input.files],depth:0};fileDropStates.set(root,state);
+    const inactive=()=>input.matches(':disabled');
+    const clearError=()=>{error.textContent='';error.hidden=true;delete root.dataset.uiFileInvalid;};
+    const reject=message=>{error.textContent=message;error.hidden=false;root.dataset.uiFileInvalid='true';emit(root,'filereject',{message});};
+    const render=()=>{
+      list.replaceChildren();list.hidden=!input.files.length;
+      for (const [index,file] of [...input.files].entries()) {
+        const item=doc.createElement('li');
+        const name=doc.createElement('span');name.className='ui-file-name';name.textContent=file.name;
+        const size=doc.createElement('span');size.className='ui-file-size';size.textContent=file.size<1024?file.size+' B':file.size<1048576?(file.size/1024).toFixed(1)+' KB':(file.size/1048576).toFixed(1)+' MB';
+        const remove=doc.createElement('button');remove.type='button';remove.className='btn btn-sm btn-outline-secondary';remove.textContent='削除';remove.disabled=inactive();remove.setAttribute('aria-label',file.name+'を削除');
+        remove.addEventListener('click',()=>{if(inactive())return;commit([...input.files].filter((_,i)=>i!==index));input.focus();});
+        item.append(name,size,remove);list.append(item);
+      }
+      status.textContent=input.files.length?input.files.length+'件のファイルを選択しました。':'ファイルは選択されていません。';
+    };
+    const assign=files=>{const transfer=new DataTransfer();files.forEach(file=>transfer.items.add(file));input.files=transfer.files;};
+    const validate=files=>{
+      if (!input.multiple && files.length>1) return '選択できるファイルは1件です。';
+      const maxCount=Number(root.dataset.uiMaxFiles),maxSize=Number(root.dataset.uiMaxSize);
+      if (maxCount>0 && files.length>maxCount) return '選択できるファイルは'+maxCount+'件までです。';
+      const accepts=input.accept.toLowerCase().split(',').map(value=>value.trim()).filter(Boolean);
+      for (const file of files) {
+        if (maxSize>0 && file.size>maxSize) return file.name+'：ファイルサイズの上限を超えています。';
+        if (accepts.length && !accepts.some(value=>value.startsWith('.')?file.name.toLowerCase().endsWith(value):value.endsWith('/*')?file.type.toLowerCase().startsWith(value.slice(0,-1)):file.type.toLowerCase()===value)) return file.name+'：選択できないファイル形式です。';
+      }
+      return '';
+    };
+    const commit=files=>{
+      const problem=validate(files);if(problem){reject(problem);return;}
+      assign(files);state.files=[...input.files];clearError();render();
+      input.dispatchEvent(new Event('input',{bubbles:true}));
+      input.dispatchEvent(new Event('change',{bubbles:true}));
+    };
+    input.addEventListener('change',()=>{
+      if(inactive()){assign(state.files);return;}
+      const problem=validate([...input.files]);
+      if(problem){assign(state.files);reject(problem);render();return;}
+      state.files=[...input.files];clearError();render();emit(root,'filechange',{files:[...input.files]});
+    });
+    const fileDrag=event=>[...(event.dataTransfer?.types || [])].includes('Files');
+    const stopDrag=()=>{state.depth=0;delete root.dataset.uiFileDragging;};
+    zone.addEventListener('dragenter',event=>{if(!fileDrag(event))return;event.preventDefault();if(!inactive()){state.depth++;root.dataset.uiFileDragging='true';}});
+    zone.addEventListener('dragover',event=>{if(!fileDrag(event))return;event.preventDefault();event.dataTransfer.dropEffect=inactive()?'none':'copy';});
+    zone.addEventListener('dragleave',event=>{if(!fileDrag(event))return;event.preventDefault();if(--state.depth<=0)stopDrag();});
+    zone.addEventListener('drop',event=>{
+      if(!fileDrag(event))return;event.preventDefault();stopDrag();if(inactive())return;
+      const items=[...(event.dataTransfer.items || [])];
+      if(items.some(item=>item.webkitGetAsEntry?.()?.isDirectory)){reject('フォルダーではなくファイルを選択してください。');return;}
+      const files=[...event.dataTransfer.files];if(files.length)commit(files);
+    });
+    zone.addEventListener('dragend',stopDrag);
+    input.form?.addEventListener('reset',event=>setTimeout(()=>{if(event.defaultPrevented)return;state.files=[...input.files];clearError();stopDrag();render();},0));
+    new MutationObserver(()=>{stopDrag();render();}).observe(input,{attributes:true,attributeFilter:['disabled']});
+    render();
+  }
+  // Shared positioning and native light dismissal for menus and rich popovers.
+  const popupStates = new WeakMap();
+  const openPopups = new Set();
+  const isPopup = panel => panel?.matches('[data-ui-dropdown], [data-ui-popover]');
+  const popupOpen = panel => typeof panel.showPopover==='function' && panel.matches(':popover-open');
+  const menuItems = panel => all(panel,'.ui-dropdown-item').filter(item=>!disabled(item) && !item.matches(':disabled') && !item.closest('[hidden], [inert]') && item.getClientRects().length);
+  function syncPopup(panel, open) {
+    for (const trigger of all(doc,'[data-ui-toggle="dropdown"], [data-ui-toggle="popover"]')) {
+      if (target(trigger)!==panel) continue;
+      trigger.setAttribute('aria-controls',id(panel));
+      trigger.setAttribute('aria-expanded',String(open));
+      trigger.setAttribute('aria-haspopup',panel.hasAttribute('data-ui-dropdown')?'menu':'dialog');
+    }
+  }
+  function placePopup(panel, trigger) {
+    if (!trigger?.isConnected) return;
+    const r=trigger.getBoundingClientRect(), box=panel.getBoundingClientRect(), margin=8, gap=6;
+    const placement=trigger.dataset.uiPlacement || 'bottom-start';
+    let above=placement.startsWith('top');
+    if (!above && innerHeight-r.bottom-gap<box.height && r.top>innerHeight-r.bottom) above=true;
+    if (above && r.top-gap<box.height && innerHeight-r.bottom>r.top) above=false;
+    const end=placement.endsWith('end') !== (getComputedStyle(trigger).direction==='rtl');
+    const left=end?r.right-box.width:r.left, top=above?r.top-gap-box.height:r.bottom+gap;
+    Object.assign(panel.style,{left:Math.max(margin,Math.min(left,innerWidth-box.width-margin))+'px',top:Math.max(margin,Math.min(top,innerHeight-box.height-margin))+'px'});
+  }
+  function initPopup(panel) {
+    if (!isPopup(panel) || typeof panel.showPopover!=='function') return null;
+    const menu=panel.hasAttribute('data-ui-dropdown');
+    if (menu) all(panel,'.ui-dropdown-item').forEach(item=>{item.setAttribute('role','menuitem');if(!item.hasAttribute('tabindex'))item.tabIndex=-1;});
+    if (popupStates.has(panel)) return popupStates.get(panel);
+    const state={trigger:null,menu};
+    popupStates.set(panel,state);
+    panel.classList.add('ui-popup',menu?'ui-dropdown-menu':'ui-popover');
+    panel.setAttribute('popover','auto');panel.tabIndex=-1;
+    if (!panel.hasAttribute('role')) panel.setAttribute('role',menu?'menu':'dialog');
+    if (menu) all(panel,'.ui-dropdown-item').forEach(item=>{item.setAttribute('role','menuitem');item.tabIndex=-1;});
+    panel.addEventListener('beforetoggle',event=>{
+      const open=event.newState==='open';
+      if (open) openPopups.add(panel);else openPopups.delete(panel);
+      syncPopup(panel,open);
+    });
+    panel.addEventListener('toggle',()=>emit(panel,popupOpen(panel)?'shown':'hidden'));
+    panel.addEventListener('click',event=>{
+      if (!menu) return;
+      const item=closest(event.target,'.ui-dropdown-item');
+      if (!item || item.closest('[data-ui-dropdown]')!==panel) return;
+      if (disabled(item) || item.matches(':disabled')) {event.preventDefault();event.stopImmediatePropagation();return;}
+      closePopup(panel,true);
+      emit(panel,'menuselect',{item,value:item.dataset.uiValue ?? item.textContent.trim()});
+    },true);
+    panel.addEventListener('keydown',event=>{
+      if (event.defaultPrevented) return;
+      if (event.key==='Escape') {event.preventDefault();event.stopPropagation();closePopup(panel,true);return;}
+      if (!menu) return;
+      if (event.key==='Tab') {closePopup(panel,true);return;}
+      if (!['ArrowDown','ArrowUp','Home','End'].includes(event.key)) return;
+      event.preventDefault();
+      const items=menuItems(panel);if(!items.length)return;
+      const index=items.indexOf(closest(event.target,'.ui-dropdown-item'));
+      const next=event.key==='Home'?0:event.key==='End'?items.length-1:(index+(event.key==='ArrowDown'?1:-1)+items.length)%items.length;
+      items.forEach((item,i)=>item.tabIndex=i===next?0:-1);items[next].focus();
+    });
+    return state;
+  }
+  function openPopup(panel, trigger, last=false) {
+    const state=initPopup(panel);
+    if (!state || !panel.isConnected || popupOpen(panel) || disabled(trigger) || trigger.matches(':disabled')) return;
+    cancelExit(panel);state.trigger=trigger;
+    if (!panel.hasAttribute('aria-label') && !panel.hasAttribute('aria-labelledby')) panel.setAttribute('aria-labelledby',id(trigger));
+    panel.showPopover();
+    if (!popupOpen(panel)) {openPopups.delete(panel);syncPopup(panel,false);return;}
+    placePopup(panel,trigger);
+    if (state.menu) {
+      const items=menuItems(panel),next=last?items.at(-1):items[0];
+      items.forEach(item=>item.tabIndex=item===next?0:-1);(next || panel).focus();
+    } else (panel.querySelector('[autofocus]') || panel.querySelector('button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]') || panel).focus();
+  }
+  function closePopup(panel, restore=false) {
+    if (!isPopup(panel)) return;
+    if (!popupOpen(panel)) {openPopups.delete(panel);syncPopup(panel,false);return;}
+    const trigger=popupStates.get(panel)?.trigger;
+    exitMotion(panel);panel.hidePopover();
+    if (restore && trigger?.isConnected && !disabled(trigger)) trigger.focus();
+  }
+  doc.addEventListener('keydown',event=>{
+    const trigger=closest(event.target,'[data-ui-toggle="dropdown"]');
+    if (!trigger || disabled(trigger) || !['ArrowDown','ArrowUp'].includes(event.key)) return;
+    const panel=target(trigger);if(!isPopup(panel))return;
+    event.preventDefault();openPopup(panel,trigger,event.key==='ArrowUp');
+  });
+  window.addEventListener('resize',()=>{for(const panel of openPopups)placePopup(panel,popupStates.get(panel)?.trigger);});
+  doc.addEventListener('scroll',event=>{
+    for (const panel of openPopups) if (!panel.contains(event.target)) closePopup(panel);
+  },true);
+  // SVG charts keep their source data and a readable table alongside the graphic.
+  const chartStates = new WeakMap();
+  const chartTypes = ['line','area','bar','donut'];
+  function chartNode(tag, attributes = {}, text) {
+    const node = doc.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (const [key,value] of Object.entries(attributes)) node.setAttribute(key, String(value));
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+  function chart(root, config) {
+    if (typeof root === 'string') { try { root = doc.querySelector(root); } catch { return false; } }
+    if (!(root instanceof Element)) return false;
+    let state = chartStates.get(root);
+    if (!state) {
+      state = {config:null, width:0, output:doc.createElement('div')};
+      state.output.className = 'ui-chart-output';
+      root.classList.add('ui-chart'); root.append(state.output); chartStates.set(root,state);
+      if (window.ResizeObserver) {
+        state.observer = new ResizeObserver(() => {
+          const width = Math.max(240,Math.floor(root.getBoundingClientRect().width || 640));
+          if (width !== state.width && state.config) drawChart(root,state);
+        });
+        state.observer.observe(root);
+      }
+    }
+    let candidate = config;
+    try {
+      if (candidate === undefined) candidate = JSON.parse([...root.children].find(node=>node.matches('script[type="application/json"][data-ui-chart-data]'))?.textContent || '{}');
+      const type = candidate.type ?? root.dataset.uiChart ?? 'line';
+      if (!chartTypes.includes(type)) throw new Error('typeはline / area / bar / donutを指定してください。');
+      if (!Array.isArray(candidate.labels) || !Array.isArray(candidate.series) || candidate.labels.length > 500 || candidate.series.length > 12) throw new Error('labelsとseriesを配列で指定してください（最大500項目・12系列）。');
+      const labels = candidate.labels.map(value=>String(value));
+      const series = candidate.series.map((item,index)=>{
+        if (!Array.isArray(item.values) || item.values.length !== labels.length || item.values.some(value=>typeof value !== 'number' || !Number.isFinite(value) || Math.abs(value)>1e12)) throw new Error('各系列にlabelsと同数の有限な数値を指定してください（絶対値は1兆以下）。');
+        if (type === 'donut' && item.values.some(value=>value<0)) throw new Error('ドーナツには0以上の値を指定してください。');
+        return {name:String(item.name ?? `系列${index+1}`),values:[...item.values]};
+      });
+      if (type === 'donut' && series.length > 1) throw new Error('ドーナツは1系列で指定してください。');
+      state.config = {type,labels,series,label:String(candidate.label ?? root.querySelector('figcaption')?.textContent ?? 'チャート'),unit:String(candidate.unit ?? '')};
+      root.dataset.uiChart = type;
+      drawChart(root,state);
+      emit(root,'chartupdate',{type,labels:[...labels],series:series.map(item=>({...item,values:[...item.values]}))});
+      return true;
+    } catch (error) {
+      state.config = null; state.output.replaceChildren();
+      const message = doc.createElement('p'); message.className='ui-chart-message'; message.setAttribute('role','status'); message.textContent='チャートを表示できません。'+error.message;
+      state.output.append(message); emit(root,'charterror',{message:error.message}); return false;
+    }
+  }
+  function drawChart(root,state) {
+    const {type,labels,series,label,unit} = state.config;
+    state.width = Math.max(240,Math.floor(root.getBoundingClientRect().width || 640));
+    const wasOpen = state.output.querySelector('details')?.open || false;
+    // Preserve the table and its focus while a resize only redraws the graphic.
+    const previousTable = state.output.querySelector('.ui-chart-data');
+    state.output.querySelectorAll(':scope > :not(.ui-chart-data)').forEach(node=>node.remove());
+    const empty = !labels.length || !series.length || (type==='donut' && !series[0].values.some(value=>value>0));
+    const number = value=>new Intl.NumberFormat('ja-JP',{maximumFractionDigits:2}).format(value);
+    const exact = value=>new Intl.NumberFormat('ja-JP',{maximumSignificantDigits:21}).format(value)+unit;
+    const color = index=>`var(--ui-chart-color-${index%6+1})`;
+    if (empty) {
+      const message=doc.createElement('p');message.className='ui-chart-message';message.setAttribute('role','status');message.textContent='表示するデータがありません。';state.output.prepend(message);
+    } else {
+      const width=state.width,height=260,svg=chartNode('svg',{viewBox:`0 0 ${width} ${height}`,role:'img','aria-labelledby':`ui-chart-title-${++sequence}`});
+      svg.classList.add('ui-chart-svg');
+      svg.append(chartNode('title',{id:`ui-chart-title-${sequence}`},label+'。正確な値は下のデータ表で確認できます。'));
+      if(type==='donut') {
+        const total=series[0].values.reduce((a,b)=>a+b,0),cx=width/2,cy=126,radius=84;
+        svg.append(chartNode('circle',{cx,cy,r:radius,fill:'none',stroke:'var(--bs-border-color)','stroke-width':30}));
+        let angle=-Math.PI/2;
+        series[0].values.forEach((value,index)=>{
+          if(!value)return;
+          const fraction=value/total,end=angle+fraction*Math.PI*2;
+          let segment;
+          if(fraction===1) segment=chartNode('circle',{cx,cy,r:radius,fill:'none',stroke:color(index),'stroke-width':30});
+          else {
+            const point=(r,a)=>`${cx+r*Math.cos(a)},${cy+r*Math.sin(a)}`;
+            const outer=radius+15,inner=radius-15,large=fraction>.5?1:0;
+            // Filled annular paths avoid closed-circle dash seams in Chromium.
+            const path=`M${point(outer,angle)} A${outer},${outer} 0 ${large} 1 ${point(outer,end)} L${point(inner,end)} A${inner},${inner} 0 ${large} 0 ${point(inner,angle)} Z`;
+            segment=chartNode('path',{d:path,fill:color(index)});
+          }
+          segment.append(chartNode('title',{},`${labels[index]}: ${exact(value)} (${number(fraction*100)}%)`));svg.append(segment);angle=end;
+        });
+        svg.append(chartNode('text',{x:cx,y:cy-4,'text-anchor':'middle',class:'ui-chart-total'},number(total)));
+        svg.append(chartNode('text',{x:cx,y:cy+20,'text-anchor':'middle'},unit || '合計'));
+      } else {
+        const left=58,right=16,top=18,bottom=42,plotWidth=width-left-right,plotHeight=height-top-bottom;
+        const values=series.flatMap(item=>item.values),low=Math.min(0,...values),high=Math.max(0,...values) || (low===0?1:0),range=high-low || 1;
+        const y=value=>top+(high-value)/range*plotHeight;
+        for(let tick=0;tick<=4;tick++) {
+          const value=high-range*tick/4,py=top+plotHeight*tick/4;
+          svg.append(chartNode('line',{x1:left,x2:width-right,y1:py,y2:py,class:'ui-chart-grid'}));
+          svg.append(chartNode('text',{x:left-8,y:py+4,'text-anchor':'end'},Math.abs(value)>0 && Math.abs(value)<.01 ? value.toExponential(1) : new Intl.NumberFormat('ja-JP',{notation:'compact',maximumFractionDigits:1}).format(value)));
+        }
+        svg.append(chartNode('line',{x1:left,x2:width-right,y1:y(0),y2:y(0),class:'ui-chart-axis'}));
+        const x=index=>type==='bar'?left+(index+.5)*plotWidth/labels.length:left+(labels.length===1?.5:index/(labels.length-1))*plotWidth;
+        const labelCount=Math.max(2,Math.floor(plotWidth/68)),step=Math.max(1,Math.ceil(labels.length/labelCount));
+        labels.forEach((text,index)=>{
+          if(index%step && index!==labels.length-1)return;
+          const displayed=text.length>9?text.slice(0,8)+'…':text;
+          svg.append(chartNode('text',{x:x(index),y:height-15,'text-anchor':index===0?'start':index===labels.length-1?'end':'middle'},displayed));
+        });
+        series.forEach((item,index)=>{
+          if(type==='bar') {
+            const groupWidth=plotWidth/labels.length*.76,barWidth=groupWidth/series.length;
+            item.values.forEach((value,i)=>{
+              const rect=chartNode('rect',{x:x(i)-groupWidth/2+index*barWidth,y:Math.min(y(0),y(value)),width:Math.max(.1,barWidth-1),height:Math.abs(y(value)-y(0)),fill:color(index),rx:2});
+              rect.append(chartNode('title',{},`${labels[i]} / ${item.name}: ${exact(value)}`));svg.append(rect);
+            });
+          } else {
+            const points=item.values.map((value,i)=>`${x(i)},${y(value)}`).join(' ');
+            if(type==='area') svg.append(chartNode('polygon',{points:`${x(0)},${y(0)} ${points} ${x(labels.length-1)},${y(0)}`,fill:color(index),opacity:.13}));
+            svg.append(chartNode('polyline',{points,fill:'none',stroke:color(index),'stroke-width':2.5,'stroke-dasharray':index%3===1?'7 4':index%3===2?'2 3':'none','stroke-linejoin':'round'}));
+            if(labels.length<=40) item.values.forEach((value,i)=>{
+              const point=chartNode('circle',{cx:x(i),cy:y(value),r:3.5,fill:color(index)});point.append(chartNode('title',{},`${labels[i]} / ${item.name}: ${exact(value)}`));svg.append(point);
+            });
+          }
+        });
+      }
+      state.output.prepend(svg);
+      const legend=doc.createElement('ul');legend.className='ui-chart-legend';legend.setAttribute('aria-label','凡例');
+      (type==='donut'?labels:series.map(item=>item.name)).forEach((name,index)=>{
+        const item=doc.createElement('li'),swatch=doc.createElement('span');swatch.className='ui-chart-swatch';swatch.style.background=color(index);swatch.setAttribute('aria-hidden','true');
+        item.append(swatch,doc.createTextNode(name+(type==='donut'?' · '+exact(series[0].values[index]):'')));legend.append(item);
+      });
+      if(previousTable)state.output.insertBefore(legend,previousTable);else state.output.append(legend);
+    }
+    // New data replaces the table; width changes leave the existing table intact.
+    if(previousTable && previousTable._chartConfig === state.config)return;
+    previousTable?.remove();
+    if(!labels.length || !series.length)return;
+    const details=doc.createElement('details');details.className='ui-chart-data';details.open=wasOpen;details._chartConfig=state.config;
+    const summary=doc.createElement('summary');summary.textContent='データを表で確認';
+    const scroll=doc.createElement('div');scroll.className='ui-table-scroll';scroll.tabIndex=0;scroll.setAttribute('role','region');scroll.setAttribute('aria-label',label+'のデータ表');
+    const table=doc.createElement('table');table.className='table';
+    const caption=table.createCaption();caption.textContent=label+(unit?'（'+unit+'）':'');
+    const head=table.createTHead().insertRow();
+    ['項目',...series.map(item=>item.name)].forEach(name=>{const cell=doc.createElement('th');cell.scope='col';cell.textContent=name;head.append(cell);});
+    const body=table.createTBody();
+    labels.forEach((name,index)=>{const row=body.insertRow(),heading=doc.createElement('th');heading.scope='row';heading.textContent=name;row.append(heading);series.forEach(item=>{const cell=row.insertCell();cell.textContent=exact(item.values[index]);});});
+    scroll.append(table);details.append(summary,scroll);state.output.append(details);
+  }
+  function initChart(root) { if(!chartStates.has(root))chart(root); }
+
   function init(scope = doc) {
+    scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)];
     scan('[data-ui-tabs]').forEach(group => {
       const {tabs} = tabData(group);
@@ -1301,6 +1781,11 @@
     scan('[data-ui-pagination]').forEach(group => {
       renderPage(group, pageStates.get(group) || 1, false);
     });
+    scan('[data-ui-file-drop]').forEach(initFileDrop);
+    scan('[data-ui-chart]').forEach(initChart);
+    scan('[data-ui-dropdown], [data-ui-popover]').forEach(initPopup);
+    scan('[data-ui-toggle="dropdown"], [data-ui-toggle="popover"]').forEach(trigger=>{const panel=target(trigger);if(initPopup(panel))syncPopup(panel,popupOpen(panel));});
+    scan('[data-ui-toggle="theme"]').forEach(syncThemeToggle);
     scan('input[type="checkbox"][data-ui-indeterminate]').forEach(initMixedCheckbox);
     scan('form[data-ui-validate]').forEach(form => { form.noValidate = true; });
     scan('[data-ui-board]').forEach(updateBoard);
@@ -1310,7 +1795,8 @@
     scan('button[data-ui-copy], button[data-ui-copy-target]').forEach(initCopyIcon);
     syncDesignThemeControls(scope);
     syncColorThemeControls(scope);
-    scan('select.form-select, select[data-ui-theme-select], select[data-ui-color-select]').forEach(initSelect);
+    syncPaletteControls(scope);
+    scan('select.form-select, select[data-ui-theme-select], select[data-ui-color-select], select[data-ui-palette-select]').forEach(initSelect);
     scan('[data-ui-toggle="collapse"], [data-ui-toggle="sidebar"]').forEach(button => {
       const panel = target(button);
       if (panel) sync(panel);
@@ -1334,7 +1820,7 @@
     if (!designThemes.includes(theme)) return false;
     applyDesignTheme(theme);
     if (persist) {
-      try { localStorage.setItem('orchtop-design-theme', theme); } catch { /* Theme selection still works without storage. */ }
+      try { localStorage.setItem('kav-ui-design-theme', theme); } catch { /* Theme selection still works without storage. */ }
     }
     return true;
   }
@@ -1344,11 +1830,37 @@
     setDesignTheme(select.value, {persist:doc.body.hasAttribute('data-ui-theme-persist')});
     syncDesignThemeControls();
   });
+  // Palette hue is independent from light/dark preference and surface design.
+  const colorPalettes = ['default','slate','sage','teal','mauve','sand','clay'];
+  function syncPaletteControls(scope = doc) {
+    const palette=doc.documentElement.dataset.uiPalette || 'default';
+    [...(scope.matches?.('select[data-ui-palette-select]')?[scope]:[]),...all(scope,'select[data-ui-palette-select]')].forEach(select=>{select.value=palette;syncSelect(select);});
+    [...(scope.matches?.('button[data-ui-palette-value]')?[scope]:[]),...all(scope,'button[data-ui-palette-value]')].forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.uiPaletteValue===palette)));
+  }
+  function applyPalette(palette, notify = true) {
+    const before=doc.documentElement.dataset.uiPalette || 'default';
+    doc.documentElement.dataset.uiPalette=palette;syncPaletteControls();
+    if(notify && before!==palette)emit(doc.body,'palettechange',{palette});
+  }
+  function setPalette(palette, {persist = false} = {}) {
+    if(!colorPalettes.includes(palette))return false;
+    applyPalette(palette);
+    if(persist)try {localStorage.setItem('kav-ui-palette',palette);} catch { /* Storage is optional. */ }
+    return true;
+  }
+  doc.addEventListener('change',event=>{
+    const select=closest(event.target,'select[data-ui-palette-select]');
+    if(select && !disabled(select))setPalette(select.value,{persist:doc.body.hasAttribute('data-ui-theme-persist')});
+  });
+  doc.addEventListener('click',event=>{
+    const button=closest(event.target,'button[data-ui-palette-value]');
+    if(button && !disabled(button))setPalette(button.dataset.uiPaletteValue,{persist:doc.body.hasAttribute('data-ui-theme-persist')});
+  });
   // Store the selected preference separately from the resolved light/dark palette.
   const preference = window.matchMedia('(prefers-color-scheme: dark)');
   const colorModes = ['light','dark','system'];
   let chosen = null;
-  try { chosen = localStorage.getItem('orchtop-theme'); } catch { /* Storage is optional. */ }
+  try { chosen = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
   if (!colorModes.includes(chosen)) chosen = 'system';
   const resolvedColorTheme = () => chosen === 'system' ? (preference.matches ? 'dark' : 'light') : chosen;
   function syncColorThemeControls(scope = doc) {
@@ -1358,7 +1870,7 @@
   function setColorTheme(mode, {persist = false} = {}) {
     if(!colorModes.includes(mode))return false;
     chosen=mode;const theme=resolvedColorTheme();applyTheme(theme,doc.documentElement.dataset.bsTheme!==theme);
-    if(persist)try {localStorage.setItem('orchtop-theme',mode);} catch { /* Storage is optional. */ }
+    if(persist)try {localStorage.setItem('kav-ui-theme',mode);} catch { /* Storage is optional. */ }
     return true;
   }
   doc.addEventListener('change',event=>{
@@ -1372,16 +1884,23 @@
     if(button.hasAttribute('data-ui-design'))setDesignTheme(button.dataset.uiDesign,{persist});
     else setColorTheme(button.dataset.uiColorMode,{persist});
   });
+  function syncThemeToggle(button) {
+    const dark = doc.documentElement.dataset.bsTheme === 'dark';
+    const label = dark ? 'ライトに切替' : 'ダークに切替';
+    if (button.hasAttribute('data-ui-theme-icon')) {
+      button.setAttribute('icon', dark ? 'mdi-weather-sunny' : 'mdi-weather-night');
+      renderIcon(button);
+      button.setAttribute('title', label);
+    } else button.textContent = label;
+    button.setAttribute('aria-label', label);
+  }
   function applyTheme(theme, animate = false, notify = true) {
     const before=doc.documentElement.dataset.bsTheme,previousMode=doc.documentElement.dataset.uiColorPreference;
     doc.documentElement.dataset.bsTheme = theme;
     doc.documentElement.dataset.uiColorPreference = chosen;
     syncColorThemeControls();
     if (animate) enterMotion(doc.body);
-    all(doc, '[data-ui-toggle="theme"]').forEach(button => {
-      button.textContent = theme === 'dark' ? 'ライトに切替' : 'ダークに切替';
-      button.setAttribute('aria-label',button.textContent);
-    });
+    all(doc, '[data-ui-toggle="theme"]').forEach(syncThemeToggle);
     if(notify && (before!==theme || previousMode!==chosen))emit(doc.body,'colorchange',{mode:chosen,theme});
   }
   preference.addEventListener('change', () => { if (chosen==='system') applyTheme(resolvedColorTheme(), true); });
@@ -1396,7 +1915,7 @@
     }
     if (button.hasAttribute('data-ui-dismiss')) {
       const kind = button.dataset.uiDismiss;
-      const panel = target(button) || (kind === 'dialog' ? button.closest('dialog') : button.closest(kind === 'toast' ? '.ui-toast' : '.alert'));
+      const panel = target(button) || (kind === 'dialog' ? button.closest('dialog') : kind === 'popover' ? button.closest('[data-ui-popover]') : kind === 'dropdown' ? button.closest('[data-ui-dropdown]') : button.closest(kind === 'toast' ? '.ui-toast' : '.alert'));
       if (panel) {
         event.preventDefault();
         hide(panel, button);
@@ -1406,6 +1925,9 @@
     if (action === 'theme') {
       event.preventDefault();
       setColorTheme(doc.documentElement.dataset.bsTheme === 'dark' ? 'light' : 'dark', {persist:true});
+    } else if (['dropdown','popover'].includes(action)) {
+      const panel=target(button);if(!isPopup(panel))return;
+      event.preventDefault();if(popupOpen(panel))closePopup(panel,true);else openPopup(panel,button);
     } else if (action === 'tab') {
       event.preventDefault(); activateTab(button);
     } else if (['collapse','sidebar','dialog','show','hide'].includes(action)) {
@@ -1553,16 +2075,19 @@
     event.preventDefault(); moveCard(dragging.card, column); endDrag();
   });
   doc.addEventListener('dragend', endDrag);
-  window.OrchtopUI = Object.freeze({init, show, hide, toast, loading, copy, setDesignTheme, setColorTheme});
+  window.KavUI = Object.freeze({init, show, hide, toast, loading, copy, chart, setDesignTheme, setColorTheme, setPalette});
   function boot() {
     applyTheme(resolvedColorTheme(), false, false);
-    let savedDesign = null;
+    let savedDesign = null, savedPalette = null;
     if (doc.body.hasAttribute('data-ui-theme-persist')) {
-      try { savedDesign = localStorage.getItem('orchtop-design-theme'); } catch { /* Storage is optional. */ }
+      try { savedDesign = localStorage.getItem('kav-ui-design-theme'); savedPalette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
     }
+    const explicitPalette = doc.documentElement.getAttribute('data-ui-palette');
+    applyPalette(colorPalettes.includes(explicitPalette) ? explicitPalette : colorPalettes.includes(savedPalette) ? savedPalette : 'default', false);
     const explicitDesign = doc.body.getAttribute('data-ui-theme');
     applyDesignTheme(designThemes.includes(explicitDesign) ? explicitDesign : designThemes.includes(savedDesign) ? savedDesign : 'default', false);
     init();
+    iconObserver.observe(doc.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['icon']});
   }
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
 })();

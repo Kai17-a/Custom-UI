@@ -39,8 +39,8 @@ document.addEventListener('click', event => {
   const percent = root.querySelector('[data-demo-loading-percent]');
   const result = root.querySelector('[data-demo-loading-result]');
   const fail = button.dataset.demoLoadingStart === 'error';
-  buttons.forEach(item => OrchtopUI.loading(item, true));
-  OrchtopUI.loading(panel, true);
+  buttons.forEach(item => KavUI.loading(item, true));
+  KavUI.loading(panel, true);
   progress.classList.remove('ui-progress-success', 'ui-progress-danger');
   progress.value = 0;
   percent.textContent = progress.textContent = '0%';
@@ -50,8 +50,8 @@ document.addEventListener('click', event => {
     percent.textContent = progress.textContent = progress.value + '%';
     if (progress.value < (fail ? 60 : 100)) return;
     clearInterval(timer);
-    buttons.forEach(item => OrchtopUI.loading(item, false));
-    OrchtopUI.loading(panel, false);
+    buttons.forEach(item => KavUI.loading(item, false));
+    KavUI.loading(panel, false);
     progress.classList.add(fail ? 'ui-progress-danger' : 'ui-progress-success');
     result.textContent = fail ? '保存に失敗しました（デモ）。「保存を試す」で再試行できます。' : '保存しました（デモ）。';
   }, 300);
@@ -89,3 +89,11 @@ document.addEventListener('click', event => {
     document.dispatchEvent(new Event('catalog:filterchange'));
   });
 })();
+
+// Chart source is illustrative; updates stay local to this catalog example.
+document.addEventListener('click',event=>{
+  const button=event.target.closest('[data-demo-chart]');if(!button)return;
+  const updated=button.dataset.demoChart==='updated';button.dataset.demoChart=updated?'initial':'updated';
+  KavUI.chart('#chart-live',{type:'bar',label:'チームの完了件数',unit:'件',labels:['Aチーム','Bチーム','Cチーム'],series:[{name:'完了件数',values:updated?[12,18,9]:[18,25,14]}]});
+  document.querySelector('[data-demo-chart-status]').textContent=updated?'初期データ':'更新後のデータ（サンプル）';
+});

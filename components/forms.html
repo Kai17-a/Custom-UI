@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Forms — orchtop design catalog</title>
+<title>Forms — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
 <style>
 html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
@@ -11,18 +11,22 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </style>
 <script>
 (() => {
-  let mode = null, design = null;
-  try { mode = localStorage.getItem('orchtop-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('orchtop-design-theme'); } catch { /* Storage is optional. */ }
+  let mode = null, design = null, palette = null;
+  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
+  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
+  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
+  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
   const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
   document.documentElement.dataset.uiColorPreference = selected;
   document.documentElement.dataset.bsTheme = selected === 'system'
     ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  if (!['default','glass','glassmorphism','flat','soft'].includes(design)) return;
   const restore = () => {
     if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme')) {
+    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
       document.body.dataset.uiTheme = design;
+    }
+    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
+      document.documentElement.dataset.uiPalette = palette;
     }
     return true;
   };
@@ -43,14 +47,15 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </head>
 <body data-ui-theme-persist>
 <a class="skip-link" href="#main">コンテンツへ移動</a>
-<header class="catalog-header"><a class="brand" href="../index.html">orchtop <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="theme">テーマ切替</button></div></header>
-<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../getting-started.html">導入・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../getting-started.html">導入・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
   <div class="catalog-nav-group">
     <h2>基本スタイル</h2>
     <ul>
       <li><a href="../components/foundations.html">Foundations</a></li>
       <li><a href="../components/themes.html">UI themes</a></li>
       <li><a href="../components/theme-switcher.html">Theme switcher</a></li>
+      <li><a href="../components/color-palettes.html">Color palettes</a></li>
       <li><a href="../components/typography.html">Typography</a></li>
       <li><a href="../components/spacing.html">Spacing</a></li>
       <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="../components/mdi-icons.html">MDIアイコン</a></li><li><a href="../components/icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
@@ -64,6 +69,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/flex-grid.html">Flex grid</a></li>
       <li><a href="../components/cards.html">Cards</a></li>
       <li><a href="../components/sidebar.html">Sidebar</a></li>
+
+      <li><a href="../components/drawer.html">Drawer</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -74,6 +81,9 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/datepicker.html">Date picker</a></li>
       <li><a href="../components/dialog.html">Dialog</a></li>
       <li><a href="../components/clipboard.html">Clipboard</a></li>
+
+      <li><a href="../components/input-group.html">Input group</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -81,6 +91,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <ul>
       <li><a href="../components/navigation.html">Navigation</a></li>
       <li><a href="../components/disclosure.html">Accordion</a></li>
+
+      <li><a href="../components/dropdown.html">Dropdown</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -90,6 +102,10 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/board.html">Kanban board</a></li>
       <li><a href="../components/calendar.html">Calendar</a></li>
+
+      <li><a href="../components/list-group.html">List group</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/chart.html">Chart</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -98,6 +114,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/alerts.html">Alerts</a></li>
       <li><a href="../components/toasts.html">Toasts & alerts</a></li>
       <li><a href="../components/tips.html">Tips & tooltips</a></li>
+
+      <li><a href="../components/popover.html">Popover</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -116,7 +134,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     </ul>
   </div>
 </nav><a class="overview-link" href="../components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">ORCHTOP / DESIGN SYSTEM</p><h1>Forms</h1></header><p class="lede">入力・選択・バリデーション。下の「HTMLを表示」からマークアップをコピーできます。</p><p><a href="datepicker.html">フォーム用の日付入力・Date pickerはこちら →</a></p><section class="specimen"><h2>Form controls</h2><div class="example" data-example>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Forms</h1></header><p class="lede">入力・選択・バリデーション。下の「HTMLを表示」からマークアップをコピーできます。</p><p><a href="datepicker.html">フォーム用の日付入力・Date pickerはこちら →</a></p><section class="specimen"><h2>Form controls</h2><div class="example" data-example>
   <div class="row sp-gap-4 fx-items-start">
     <input type="search" class="form-control form-control-sm" aria-label="タスクを検索" placeholder="search ( / )" style="max-width:18rem;">
     <select class="form-select form-select-sm w-auto" aria-label="tool">
@@ -135,7 +153,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
   <div class="field"><label for="select-disabled">変更不可</label><select id="select-disabled" class="form-select" disabled><option>現在は選択できません</option></select></div>
   <button type="reset" class="btn btn-sm btn-outline-secondary">選択をリセット</button>
 </form>
-</div><p>既存の <code>name</code>・<code>required</code>・<code>disabled</code>・<code>optgroup</code> とフォーム送信を利用できます。値をJavaScriptで変えた場合は <code>change</code> イベントを発行するか <code>OrchtopUI.init(select)</code> で表示を同期してください。複数選択・リスト表示（multiple / size）はHTML標準の表示を維持します。JavaScriptやPopover APIが利用できない場合も標準selectを使えます。</p></section><section class="specimen"><h2>入力状態とバリデーション</h2><div class="example" data-example><form data-ui-validate data-demo-form novalidate>
+</div><p>既存の <code>name</code>・<code>required</code>・<code>disabled</code>・<code>optgroup</code> とフォーム送信を利用できます。値をJavaScriptで変えた場合は <code>change</code> イベントを発行するか <code>KavUI.init(select)</code> で表示を同期してください。複数選択・リスト表示（multiple / size）はHTML標準の表示を維持します。JavaScriptやPopover APIが利用できない場合も標準selectを使えます。</p></section><section class="specimen"><h2>入力状態とバリデーション</h2><div class="example" data-example><form data-ui-validate data-demo-form novalidate>
 <div class="field" data-ui-field><label>プロジェクト名（必須）<input name="project" class="form-control form-control-sm" required maxlength="80" pattern=".*\S.*" data-ui-message="プロジェクト名を1〜80文字で入力してください。" placeholder="例：My app"></label><small>80文字以内で入力してください。</small><small class="ui-invalid-feedback" data-ui-error hidden></small></div>
 <div class="field"><label>プロジェクトID（読み取り専用）<input class="form-control form-control-sm" value="project_001" readonly></label></div>
 <div class="field"><label>プラン<input class="form-control form-control-sm" value="Free" disabled></label><small>このデモではプランを変更できません。</small></div>
@@ -183,7 +201,66 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
   </div>
 </div>
 </div><p>基本の見た目はui.cssだけで動作します。ライト・ダークと各デザインテーマに対応し、キーボードでのフォーカスを枠で示します。</p></section>
-<section class="specimen" id="input-types"><h2>input type 全種類</h2><p>各 <code>input type</code> を共通UIのクラス・コンポーネントでそろえた見本です。<code>required</code>・<code>min</code>・<code>max</code>・<code>pattern</code>・<code>placeholder</code> などのHTML標準属性がそのまま機能します。</p><div class="example" data-example><form class="stack" data-ui-validate data-demo-form novalidate><div class="field" data-ui-field><label>テキスト (text)<input type="text" class="form-control form-control-sm" name="text" placeholder="任意のテキスト"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>パスワード (password)<input type="password" class="form-control form-control-sm" name="password" placeholder="••••••••"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>メールアドレス (email)<input type="email" class="form-control form-control-sm" name="email" placeholder="user@example.com" required></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>電話番号 (tel)<input type="tel" class="form-control form-control-sm" name="tel" placeholder="090-1234-5678"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>URL (url)<input type="url" class="form-control form-control-sm" name="url" placeholder="https://example.com"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>検索 (search)<input type="search" class="form-control form-control-sm" name="search" placeholder="検索キーワード"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>数値 (number)<input type="number" class="form-control form-control-sm" name="number" min="1" max="100" value="10"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label for="all-types-date">日付 (date)</label><div class="ui-datepicker" data-ui-datepicker><input type="date" class="form-control form-control-sm" id="all-types-date" name="date"></div><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>時刻 (time)<input type="time" class="form-control form-control-sm" name="time"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>日時 (datetime-local)<input type="datetime-local" class="form-control form-control-sm" name="datetime-local"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>月 (month)<input type="month" class="form-control form-control-sm" name="month"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>週 (week)<input type="week" class="form-control form-control-sm" name="week"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>色 (color)<input type="color" class="form-control" name="color" value="#007bff"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>スライダー (range)<input type="range" class="form-range" name="range" min="0" max="100" value="50"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>ファイル (file)<input type="file" class="form-control form-control-sm" name="file"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label class="form-check"><input type="checkbox" class="form-check-input" name="checkbox" checked><span class="form-check-label">同意します</span></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><fieldset class="choice-list" data-ui-field><legend>ラジオボタン (radio)</legend><label class="form-check"><input type="radio" class="form-check-input" name="radio" value="a" checked> A</label><label class="form-check"><input type="radio" class="form-check-input" name="radio" value="b"> B</label><small class="ui-invalid-feedback" data-ui-error hidden></small></fieldset><div class="buttons fx fx-wrap sp-gap-2"><button type="submit" class="btn btn-sm btn-primary">送信 (submit)</button><button type="reset" class="btn btn-sm btn-outline-secondary">リセット (reset)</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast="汎用ボタンが押されました" data-ui-variant="info">汎用 (button)</button></div><input type="hidden" name="hidden" value="hidden-value"><p class="dim small">type="hidden" は送信時に値（hidden-value）がフォームデータに含まれます。</p><p data-demo-result role="status"></p></form></div><p>日付は既存のDate picker、時刻・日時・月・週・色は共通の選択パネルを使います。<code>input.form-control</code> にそれぞれのtypeを指定し、ui.jsを読み込むと自動で適用されます。選択して「適用」で確定し、キャンセル・Escapeでは元の値を維持します。色は候補と任意の6桁カラーコードで指定できます。<code>min</code>・<code>max</code>・<code>step</code> に合わない値はパネル内でエラーを表示します。</p><p>スライダーは <code>form-range</code>、チェックボックスとラジオは <code>form-check-input</code> を使います。ファイル選択ボタンの見た目は共通UI、ファイルを開く画面はOSのものを利用します。Popover APIが利用できない場合は標準inputを維持します。</p><p><code>data-ui-validate</code> を付けたフォームでは送信時にバリデーション結果を表示します。<code>data-demo-*</code> はカタログ専用で、実際の保存や通信はアプリ側で実装してください。</p></section>
+<section class="specimen" id="file-drop"><h2>ファイルのドラッグ＆ドロップ</h2>
+<p>通常のファイル入力を<code>data-ui-file-drop</code>で囲みます。枠へのドロップ、クリック、Tabで移動してEnterまたはSpaceで選択できます。選択したファイルは一覧から個別に削除できます。</p>
+<div class="example" data-example>
+<form class="stack sp-gap-4" data-ui-validate data-demo-form>
+  <div class="ui-file-drop" data-ui-file-drop data-ui-max-size="5242880" data-ui-max-files="5">
+    <input type="file" class="form-control" id="drop-documents" name="documents" accept=".pdf,.txt,image/*" multiple aria-describedby="drop-documents-help">
+    <label class="ui-file-dropzone" data-ui-file-zone for="drop-documents">
+      <span icon="mdi-upload" aria-hidden="true"></span>
+      <strong>ファイルをドラッグ＆ドロップ</strong>
+      <span>またはクリックして選択</span>
+      <span class="ui-file-hint" id="drop-documents-help">PDF・TXT・画像 / 1件5MBまで / 最大5件</span>
+    </label>
+  </div>
+  <div class="buttons fx fx-wrap sp-gap-2"><button class="btn btn-primary" type="submit">入力を確認</button><button class="btn btn-outline-secondary" type="reset">選択をリセット</button></div>
+  <p data-demo-result role="status"></p>
+</form>
+</div>
+<p>新しい選択は一覧を置き換えます。形式・サイズ・件数に合わない選択はまとめて受け付けず、直前の選択を維持して理由を表示します。フォルダーの選択には対応していません。</p>
+</section>
+<section class="specimen" id="file-drop-single"><h2>ファイル1件・必須・無効状態</h2>
+<div class="example" data-example>
+<form class="stack sp-gap-4" data-ui-validate data-demo-form>
+  <div class="field" data-ui-field>
+    <div class="ui-file-drop" data-ui-file-drop>
+      <input type="file" class="form-control" id="drop-single" name="attachment" accept=".pdf" required>
+      <label class="ui-file-dropzone" data-ui-file-zone for="drop-single"><span icon="mdi-file-document" aria-hidden="true"></span><strong>PDFを1件選択（必須）</strong><span class="ui-file-hint">ドロップまたはクリックで選択</span></label>
+    </div>
+    <small class="ui-invalid-feedback" data-ui-error hidden></small>
+  </div>
+  <button class="btn btn-primary" type="submit">入力を確認</button><p data-demo-result role="status"></p>
+</form>
+<div class="ui-file-drop" data-ui-file-drop>
+  <input type="file" class="form-control" id="drop-disabled" name="disabled-attachment" disabled>
+  <label class="ui-file-dropzone" data-ui-file-zone for="drop-disabled"><span icon="mdi-lock" aria-hidden="true"></span><strong>ファイルを選択できません</strong><span class="ui-file-hint">disabledによる無効状態</span></label>
+</div>
+</div>
+</section>
+<section class="specimen" id="file-drop-options"><h2>ファイル入力の指定・イベント</h2>
+<p><code>ui.css</code>と<code>ui.js</code>を読み込みます。<code>data-ui-file-zone</code>はinputに対応するlabelに付け、forとidを一致させます。inputはラッパーの直下に配置してください。JavaScriptが使えない場合は通常のファイル入力が表示されます。</p>
+<ul><li><code>multiple</code>：複数選択。省略すると1件のみ。</li><li><code>accept</code>：拡張子、MIMEタイプ、<code>image/*</code>など。クリック選択とドロップの両方に適用。</li><li><code>data-ui-max-size</code>：ファイル1件の最大バイト数。省略すると制限なし。</li><li><code>data-ui-max-files</code>：1回に選択できる最大件数。省略するとmultipleの指定に従う。</li><li><code>required</code>・<code>disabled</code>・<code>name</code>：通常のinputと同じ意味。</li></ul>
+<p>ファイルの種類は拡張子またはブラウザが提供するMIMEタイプで判定します。MIMEタイプが空のファイルも選択したい場合は、acceptに拡張子を指定してください。実際の送信とサーバーでの検証はアプリ側で実装します。</p>
+<pre class="setup-code"><code>const form = document.querySelector('form');
+const input = document.getElementById('drop-documents');
+const files = input.files; // 通常のFileList
+const data = new FormData(form); // nameでファイルを取得可能
+
+input.addEventListener('change', () =&gt; {
+  console.log([...input.files].map(file =&gt; file.name));
+});
+
+const drop = document.querySelector('[data-ui-file-drop]');
+drop.addEventListener('ui:filechange', event =&gt; {
+  console.log(event.detail.files); // Fileの配列
+});
+drop.addEventListener('ui:filereject', event =&gt; {
+  console.log(event.detail.message);
+});</code></pre>
+<p>ドロップ・個別削除ではinputの<code>input</code>と<code>change</code>も発火します。フォームのリセットで一覧とエラーも戻ります。動的に配置した場合は<code>KavUI.init(element)</code>で初期化してください。</p>
+</section>
+<section class="specimen" id="input-types"><h2>input type 全種類</h2><p>各 <code>input type</code> を共通UIのクラス・コンポーネントでそろえた見本です。<code>required</code>・<code>min</code>・<code>max</code>・<code>pattern</code>・<code>placeholder</code> などのHTML標準属性がそのまま機能します。</p><div class="example" data-example><form class="stack" data-ui-validate data-demo-form novalidate><div class="field" data-ui-field><label>テキスト (text)<input type="text" class="form-control form-control-sm" name="text" placeholder="任意のテキスト"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>パスワード (password)<input type="password" class="form-control form-control-sm" name="password" placeholder="••••••••"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>メールアドレス (email)<input type="email" class="form-control form-control-sm" name="email" placeholder="user@example.com" required></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>電話番号 (tel)<input type="tel" class="form-control form-control-sm" name="tel" placeholder="090-1234-5678"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>URL (url)<input type="url" class="form-control form-control-sm" name="url" placeholder="https://example.com"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>検索 (search)<input type="search" class="form-control form-control-sm" name="search" placeholder="検索キーワード"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>数値 (number)<input type="number" class="form-control form-control-sm" name="number" min="1" max="100" value="10"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label for="all-types-date">日付 (date)</label><div class="ui-datepicker" data-ui-datepicker><input type="date" class="form-control form-control-sm" id="all-types-date" name="date"></div><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>時刻 (time)<input type="time" class="form-control form-control-sm" name="time"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>日時 (datetime-local)<input type="datetime-local" class="form-control form-control-sm" name="datetime-local"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>月 (month)<input type="month" class="form-control form-control-sm" name="month"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>週 (week)<input type="week" class="form-control form-control-sm" name="week"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>色 (color)<input type="color" class="form-control" name="color" value="#007bff"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>スライダー (range)<input type="range" class="form-range" name="range" min="0" max="100" value="50"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>ファイル (file)<input type="file" class="form-control form-control-sm" name="file"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label class="form-check"><input type="checkbox" class="form-check-input" name="checkbox" checked><span class="form-check-label">同意します</span></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><fieldset class="choice-list" data-ui-field><legend>ラジオボタン (radio)</legend><label class="form-check"><input type="radio" class="form-check-input" name="radio" value="a" checked> A</label><label class="form-check"><input type="radio" class="form-check-input" name="radio" value="b"> B</label><small class="ui-invalid-feedback" data-ui-error hidden></small></fieldset><div class="buttons fx fx-wrap sp-gap-2"><button type="submit" class="btn btn-sm btn-primary">送信 (submit)</button><button type="reset" class="btn btn-sm btn-outline-secondary">リセット (reset)</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast="汎用ボタンが押されました" data-ui-variant="info">汎用 (button)</button></div><input type="hidden" name="hidden" value="hidden-value"><p class="dim small">type="hidden" は送信時に値（hidden-value）がフォームデータに含まれます。</p><p data-demo-result role="status"></p></form></div><p>日付は既存のDate picker、時刻・日時・月・週・色は共通の選択パネルを使います。<code>input.form-control</code> にそれぞれのtypeを指定し、ui.jsを読み込むと自動で適用されます。選択して「適用」で確定し、キャンセル・Escapeでは元の値を維持します。色は候補と任意の6桁カラーコードで指定できます。<code>min</code>・<code>max</code>・<code>step</code> に合わない値はパネル内でエラーを表示します。</p><p>スライダーは <code>form-range</code>、チェックボックスとラジオは <code>form-check-input</code> を使います。ファイル選択ボタンの見た目は共通UI、ファイルを開く画面はOSのものを利用します。ドラッグ＆ドロップは<a href="#file-drop">専用のファイル入力</a>で利用できます。Popover APIが利用できない場合は標準inputを維持します。</p><p><code>data-ui-validate</code> を付けたフォームでは送信時にバリデーション結果を表示します。<code>data-demo-*</code> はカタログ専用で、実際の保存や通信はアプリ側で実装してください。</p></section>
 <details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
 &lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/css/ui.css">ui.css</a> / <a href="../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
 

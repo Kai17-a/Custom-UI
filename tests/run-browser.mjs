@@ -1,7 +1,7 @@
 /* node tests/run-browser.mjs — uses an installed Chromium, no npm dependencies.
    Set CHROME_BIN if Chromium is not installed in one of the detected locations. */
 import {spawn} from 'node:child_process';
-import {existsSync, mkdtempSync, readdirSync, writeFileSync, rmSync} from 'node:fs';
+import {existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync, rmSync} from 'node:fs';
 import {homedir, tmpdir} from 'node:os';
 import {join, resolve, dirname} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
@@ -10,14 +10,15 @@ const cache = join(homedir(), '.cache/ms-playwright');
 const cached = existsSync(cache) ? readdirSync(cache).filter(name => name.startsWith('chromium_headless_shell-')).sort().reverse().map(name=>join(cache,name,'chrome-headless-shell-linux64/chrome-headless-shell')) : [];
 const executable = [process.env.CHROME_BIN, '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome', ...cached].find(path=>path && existsSync(path));
 if (!executable) throw new Error('Chromiumがありません。インストール済みブラウザの実行ファイルをCHROME_BINで指定してください。');
-const profile = mkdtempSync(join(tmpdir(), 'orchtop-browser-'));
-const artifacts = mkdtempSync(join(tmpdir(), 'orchtop-screenshots-'));
+const profile = mkdtempSync(join(tmpdir(), 'kav-ui-browser-'));
+const artifacts = mkdtempSync(join(tmpdir(), 'kav-ui-screenshots-'));
 const child = spawn(executable, ['--no-sandbox','--disable-dev-shm-usage','--disable-background-networking','--remote-debugging-pipe','--user-data-dir='+profile], {stdio:['ignore','ignore','pipe','pipe','pipe']});
 let buffer = '';
 let sequence = 0;
 let session;
 const pending = new Map();
 const errors = [];
+let fileChooserEvents = 0;
 let stderr = '';
 child.stderr.on('data',chunk=>{stderr=(stderr+chunk.toString()).slice(-2000);});
 for (const pipe of [child.stdio[3],child.stdio[4]]) pipe.on('error',()=>{});
@@ -29,6 +30,8 @@ child.stdio[4].on('data',chunk=>{
     if (message.id) {
       const callback=pending.get(message.id);pending.delete(message.id);
       if (message.error) callback?.reject(new Error(JSON.stringify(message.error))); else callback?.resolve(message.result);
+    } else if (message.method==='Page.fileChooserOpened') {
+      fileChooserEvents++;
     } else if (message.method==='Runtime.exceptionThrown') {
       errors.push(message.params.exceptionDetails.exception?.description || message.params.exceptionDetails.text);
     }
@@ -50,7 +53,7 @@ async function navigate(path) {
   await send('Page.navigate',{url:pathToFileURL(join(root,path)).href});
   for(let i=0;i<150;i++) {
     await delay(30);
-    const loaded=await evaluate('document.readyState === "complete" && typeof OrchtopUI !== "undefined"');
+    const loaded=await evaluate('document.readyState === "complete" && typeof KavUI !== "undefined"');
     if(loaded)return;
   }
   throw new Error('Page load timed out: '+path);
@@ -62,7 +65,7 @@ async function click(selector) {
   await send('Input.dispatchMouseEvent',{type:'mousePressed',...box,button:'left',clickCount:1});
   await send('Input.dispatchMouseEvent',{type:'mouseReleased',...box,button:'left',clickCount:1});
 }
-const timeout=setTimeout(()=>{console.error('Browser checks timed out');child.kill();process.exitCode=1;},120000);
+const timeout=setTimeout(()=>{console.error('Browser checks timed out');child.kill();process.exitCode=1;},300000);
 try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
@@ -80,28 +83,28 @@ try {
     throw new Error('First-paint load timeout: '+path);
   }
   for(const mode of ['light','dark']) {
-    const {identifier}=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('orchtop-theme',${JSON.stringify(mode)});localStorage.setItem('orchtop-design-theme','glass');`});
+    const {identifier}=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-theme',${JSON.stringify(mode)});localStorage.setItem('kav-ui-design-theme','glass');`});
     await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:mode==='dark'?'light':'dark'}]});
     for(const path of ['index.html','getting-started.html','components/toasts.html','components/theme-switcher.html','starter.html']) {
       await firstPaintPage(path);
-      const state=await evaluate('({mode:document.documentElement.dataset.bsTheme,design:document.body.dataset.uiTheme,background:getComputedStyle(document.documentElement).backgroundColor,ui:typeof OrchtopUI})');
+      const state=await evaluate('({mode:document.documentElement.dataset.bsTheme,design:document.body.dataset.uiTheme,background:getComputedStyle(document.documentElement).backgroundColor,ui:typeof KavUI})');
       if(state.mode!==mode || state.design!=='glass' || state.background!==(mode==='dark'?'rgb(27, 28, 30)':'rgb(250, 249, 247)') || state.ui!=='undefined')throw new Error('Theme before UI: '+path+' '+JSON.stringify(state));
     }
     const {data}=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
     writeFileSync(join(artifacts,'first-paint-'+mode+'.png'),Buffer.from(data,'base64'));
     await send('Page.removeScriptToEvaluateOnNewDocument',{identifier});
   }
-  const systemSeed=await send('Page.addScriptToEvaluateOnNewDocument',{source:"localStorage.setItem('orchtop-theme','system');"});
+  const systemSeed=await send('Page.addScriptToEvaluateOnNewDocument',{source:"localStorage.setItem('kav-ui-theme','system');"});
   for(const os of ['light','dark']) {
     await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:os}]});
     await firstPaintPage('components/theme-switcher.html');
-    if(!await evaluate('document.documentElement.dataset.uiColorPreference===\"system\" && document.documentElement.dataset.bsTheme==='+JSON.stringify(os)+' && typeof OrchtopUI===\"undefined\"'))throw new Error('System preference before first paint: '+os);
+    if(!await evaluate('document.documentElement.dataset.uiColorPreference===\"system\" && document.documentElement.dataset.bsTheme==='+JSON.stringify(os)+' && typeof KavUI===\"undefined\"'))throw new Error('System preference before first paint: '+os);
   }
   await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:systemSeed.identifier});
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'dark'}]});
   for(const source of [
-    "localStorage.removeItem('orchtop-theme');localStorage.removeItem('orchtop-design-theme');",
-    "localStorage.setItem('orchtop-theme','unknown');localStorage.setItem('orchtop-design-theme','unknown');",
+    "localStorage.removeItem('kav-ui-theme');localStorage.removeItem('kav-ui-design-theme');",
+    "localStorage.setItem('kav-ui-theme','unknown');localStorage.setItem('kav-ui-design-theme','unknown');",
     "Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Storage unavailable','SecurityError');}});"
   ]) {
     const {identifier}=await send('Page.addScriptToEvaluateOnNewDocument',{source});
@@ -112,7 +115,7 @@ try {
   await send('Network.setBlockedURLs',{urls:[]});
   await send('Emulation.setEmulatedMedia',{features:[]});
   await navigate('starter.html');
-  await evaluate("localStorage.removeItem('orchtop-theme');localStorage.removeItem('orchtop-design-theme')");
+  await evaluate("localStorage.removeItem('kav-ui-theme');localStorage.removeItem('kav-ui-design-theme')");
   console.log('First paint with UI blocked: saved light/dark before rendering across 5 pages, glass restoration, OS fallback with absent/invalid/blocked storage');
   for (const width of [320,768,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
@@ -123,7 +126,7 @@ try {
   }
   for (const timezoneId of ['Asia/Tokyo','America/New_York']) {
     await send('Emulation.setTimezoneOverride',{timezoneId});
-    const value=await evaluate(`(()=>{const root=document.createElement('div');root.dataset.uiCalendar='';root.dataset.uiMonth='2026-03';document.body.append(root);OrchtopUI.init(root);root.querySelector('[data-ui-calendar-date="2026-03-08"]').click();const value=root.dataset.uiValue;root.remove();return value;})()`);
+    const value=await evaluate(`(()=>{const root=document.createElement('div');root.dataset.uiCalendar='';root.dataset.uiMonth='2026-03';document.body.append(root);KavUI.init(root);root.querySelector('[data-ui-calendar-date="2026-03-08"]').click();const value=root.dataset.uiValue;root.remove();return value;})()`);
     if(value!=='2026-03-08')throw new Error('Calendar timezone shifted: '+timezoneId);
   }
   await send('Emulation.setTimezoneOverride',{timezoneId:''});
@@ -133,9 +136,9 @@ try {
   console.log('Source formatting tests:',JSON.stringify(formatting));
   if(formatting.failures.length)throw new Error(formatting.failures.join('\n'));
   // Audit file:// loading and responsive overflow across every catalog page.
-  const pages=['index.html','getting-started.html','starter.html',...readdirSync(join(root,'components')).filter(name=>name.endsWith('.html')).map(name=>'components/'+name)];
+  const pages=['index.html','getting-started.html','templates.html','starter.html',...readdirSync(join(root,'templates')).filter(name=>name.endsWith('.html')).map(name=>'templates/'+name),...readdirSync(join(root,'components')).filter(name=>name.endsWith('.html')).map(name=>'components/'+name)];
   let checks=0; let sourceChecks=0;
-  for(const width of [320,768,1440]) {
+  for(const width of [320,767,768,1023,1024,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     for(const path of pages) {
       await navigate(path);
@@ -151,9 +154,11 @@ try {
         const expected=width>=1024?'32px':width>=768?'24px':'8px';
         if(padding!==expected)throw new Error('Responsive spacing @'+width+': '+padding);
       }
-      if(path!=='starter.html') {
+      if(path!=='starter.html' && !path.startsWith('templates/')) {
         const navigation=await evaluate(`(()=>{const nav=document.querySelector('.catalog-sidebar nav[aria-label="コンポーネント"]');const links=[...nav.querySelectorAll('a')];const toc=[...document.querySelectorAll('.catalog-toc-link')];return {paths:links.map(a=>a.href.split('/').pop()),active:links.filter(a=>a.getAttribute('aria-current')==='page').map(a=>a.href.split('/').pop()),tocValid:toc.every(a=>!!document.getElementById(decodeURIComponent(a.hash.slice(1)))),menuOpen:document.querySelector('.catalog-navigation').open,branch:document.querySelector('[data-catalog-family="animations"]').open};})()`);
-        if(navigation.paths.length!==34 || new Set(navigation.paths).size!==34 || !navigation.tocValid || navigation.menuOpen!==(width>700))throw new Error('Catalog navigation '+path+' '+width+': '+JSON.stringify(navigation));
+        if(navigation.paths.length!==43 || new Set(navigation.paths).size!==43 || !navigation.tocValid || navigation.menuOpen!==(width>=768))throw new Error('Catalog navigation '+path+' '+width+': '+JSON.stringify(navigation));
+        const tocLayout=await evaluate(`(()=>{const toc=document.querySelector('.catalog-page-toc');if(!toc)return null;const rail=toc.closest('.catalog-toc-rail').getBoundingClientRect(),article=document.querySelector('.catalog-main').getBoundingClientRect();return {outside:!toc.closest('.catalog-sidebar'),expanded:!toc.matches("details") && !toc.querySelector("summary") && !!toc.querySelector("a")?.getClientRects().length,unlined:[toc,toc.closest(".catalog-toc-rail"),toc.querySelector("ol")].every(el=>getComputedStyle(el).borderInlineStartWidth==="0px" && getComputedStyle(el).borderBottomWidth==="0px"),right:rail.left>=article.right-1,above:rail.bottom<=article.top+1};})()`);
+        if(tocLayout && (!tocLayout.outside || !tocLayout.expanded || !tocLayout.unlined || !(width>=1280?tocLayout.right:tocLayout.above)))throw new Error('Catalog TOC rail placement '+path+' '+width+': '+JSON.stringify(tocLayout));
         const filename=path.split('/').pop();
         if(path.startsWith('components/') && filename!=='preview.html' && (navigation.active.length!==1 || navigation.active[0]!==filename))throw new Error('Current page destination: '+path);
         if(filename.startsWith('animations') && !navigation.branch)throw new Error('Current animation branch must open');
@@ -173,17 +178,22 @@ try {
   console.log('Responsive file:// checks:',checks,'pages/widths without document overflow or missing stylesheets');
   await send('Emulation.setDeviceMetricsOverride',{width:320,height:1000,deviceScaleFactor:1,mobile:false});
   await navigate('components/flex.html');
-  if(!await evaluate('!document.querySelector(".catalog-page-toc").open'))throw new Error('Mobile TOC must start compact');
-  await click('.catalog-page-toc > summary');
+  if(!await evaluate('!document.querySelector(".catalog-page-toc summary") && !!document.querySelector(".catalog-toc-link").getClientRects().length'))throw new Error('Mobile TOC must remain visible');
   await evaluate('document.querySelectorAll(".catalog-toc-link")[5].focus()');
   await key('Enter');await delay(80);
   if(!await evaluate('document.activeElement.id===decodeURIComponent(location.hash.slice(1)) && document.querySelector(".catalog-toc-link[aria-current=location]").hash===location.hash'))throw new Error('TOC keyboard anchor/focus/location');
   await send('Page.reload');await delay(200);
-  if(!await evaluate('!!document.getElementById(decodeURIComponent(location.hash.slice(1))) && Math.abs(document.getElementById(decodeURIComponent(location.hash.slice(1))).getBoundingClientRect().top-20)<3'))throw new Error('TOC bookmark reload');
+  if(!await evaluate('!!document.getElementById(decodeURIComponent(location.hash.slice(1))) && Math.abs(document.getElementById(decodeURIComponent(location.hash.slice(1))).getBoundingClientRect().top-document.querySelector(".catalog-header").getBoundingClientRect().bottom-20)<3'))throw new Error('TOC bookmark reload');
   await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await delay(80);
-  if(!await evaluate('document.querySelector(".catalog-navigation").open && document.querySelector(".catalog-page-toc").open && Math.abs(document.querySelector(".catalog-sidebar").getBoundingClientRect().top)<2'))throw new Error('Desktop sticky navigation/media sync');
-  console.log('Catalog navigation: consistent 34 destinations; current page, mobile disclosure, keyboard section focus, scroll location, bookmark reload and sticky sidebar');
+  if(!await evaluate('document.querySelector(".catalog-navigation").open && !!document.querySelector(".catalog-toc-link").getClientRects().length && Math.abs(document.querySelector(".catalog-sidebar").getBoundingClientRect().top-document.querySelector(".catalog-header").getBoundingClientRect().bottom)<2'))throw new Error('Desktop sticky navigation/media sync');
+  if(!await evaluate('Math.abs(document.querySelector(".catalog-toc-rail").getBoundingClientRect().top-document.querySelector(".catalog-header").getBoundingClientRect().bottom)<2 && document.querySelector(".catalog-toc-rail").getBoundingClientRect().bottom<=innerHeight+1'))throw new Error('Right TOC sticky viewport bounds');
+  for(const width of [1279,1280]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});await delay(60);
+    if(!await evaluate('!!document.querySelector(".catalog-toc-link").getClientRects().length && document.documentElement.scrollWidth<=innerWidth+1'))throw new Error('TOC breakpoint/overflow '+width);
+  }
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});await delay(60);
+  console.log('Catalog navigation: consistent 43 destinations; independent right TOC, always-visible unlined TOC, keyboard section focus, scroll location, bookmark reload, sticky bounds and 1280px boundary');
   const openCategories=await evaluate('[...document.querySelectorAll(".catalog-nav-category")].map(el=>el.open)');
   await evaluate(`(()=>{const input=document.querySelector('.catalog-sidebar-search input');input.value='heartbeat';input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
   // Destinations are searched by page name/label, never by hidden source code.
@@ -201,7 +211,7 @@ try {
   await evaluate(`(()=>{const a=document.createElement('a');a.href='#sidebar-icons-title';a.id='sidebar-outline-demo';a.innerHTML='<span class="sidebar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 12h16"/></svg></span><span class="sidebar-label">線のアイコン</span>';document.querySelector('#sidebar-icons .app-sidebar-group').append(a)})()`);
   for(const width of [320,1440])for(const mode of ['light','dark'])for(const design of ['default','glass','glassmorphism']) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
-    await evaluate('OrchtopUI.setColorTheme('+JSON.stringify(mode)+');OrchtopUI.setDesignTheme('+JSON.stringify(design)+')');
+    await evaluate('KavUI.setColorTheme('+JSON.stringify(mode)+');KavUI.setDesignTheme('+JSON.stringify(design)+')');
     const icons=await evaluate(`(()=>{
       const root=document.querySelector('#sidebar-icons');
       const active=root.querySelector('a[aria-current=page]'),icon=active.querySelector('.sidebar-icon'),label=active.querySelector('.sidebar-label');
@@ -265,13 +275,13 @@ try {
     const markup=JSON.parse(${JSON.stringify(layoutMarkup)});
     document.body.className='ui-app';
     document.body.innerHTML='<header class="ui-header ui-header-sticky"><div class="ui-container ui-header-inner"><a class="ui-brand" href="#layout-main">My workspace</a><nav class="ui-header-nav" aria-label="メイン"><a href="#layout-main" aria-current="page">概要</a><a href="#layout-dashboard-sidebar">メニュー</a></nav></div></header><main id="layout-main" class="ui-app-main"><div class="ui-container">'+markup.columns+markup.dashboard+'</div></main><footer class="ui-footer"><div class="ui-container ui-footer-inner"><p>© My workspace</p><a href="#layout-main">ページの先頭へ</a></div></footer>';
-    OrchtopUI.init(document.body);
+    KavUI.init(document.body);
   })()`);
   await delay(150);
   for(const width of [320,768,1024,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     for(const mode of ['light','dark']) for(const design of ['default','glass','glassmorphism','flat','soft']) {
-      await evaluate('OrchtopUI.setColorTheme('+JSON.stringify(mode)+');OrchtopUI.setDesignTheme('+JSON.stringify(design)+')');
+      await evaluate('KavUI.setColorTheme('+JSON.stringify(mode)+');KavUI.setDesignTheme('+JSON.stringify(design)+')');
       const state=await evaluate(`(()=>{
         const page=document.querySelector('.ui-page');const [left,body,right]=[...page.children].map(el=>el.getBoundingClientRect());
         const container=document.querySelector('.ui-container');const footer=document.querySelector('.ui-footer').getBoundingClientRect();
@@ -325,7 +335,7 @@ try {
   for(const width of [320,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     await navigate('components/forms.html');
-    await evaluate('OrchtopUI.setDesignTheme("glassmorphism");OrchtopUI.setColorTheme('+JSON.stringify(width===320?'dark':'light')+')');
+    await evaluate('KavUI.setDesignTheme("glassmorphism");KavUI.setColorTheme('+JSON.stringify(width===320?'dark':'light')+')');
     for(const type of ['time','datetime-local','month','week','color']) {
       const input='#input-types input[name="'+type+'"]';
       const button=input+' + .ui-input-picker-trigger';
@@ -354,7 +364,7 @@ try {
     await evaluate('document.querySelector("#input-types input[type=range]").focus()');await key('ArrowRight');
     if(!await evaluate('document.querySelector("#input-types input[type=range]").value==="51"'))throw new Error('Framework range keyboard input');
   }
-  await evaluate('OrchtopUI.setDesignTheme("default")');
+  await evaluate('KavUI.setDesignTheme("default")');
   console.log('Forms input pickers: native pointer, nested select, keyboard cancel, toggle, commit and bounds for time/datetime/month/week/color @320/1440; range keyboard');
   await navigate('components/forms.html');
   await click('#checks-demo label:has(#check-report)');
@@ -365,20 +375,20 @@ try {
   if(!await evaluate('document.querySelector("#radio-team").checked && !document.querySelector("#radio-personal").checked && document.activeElement.id==="radio-team"'))throw new Error('Custom radio ArrowRight/focus');
   for(const width of [320,1440]) for(const mode of ['light','dark']) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
-    await evaluate('OrchtopUI.setDesignTheme("glassmorphism");OrchtopUI.setColorTheme('+JSON.stringify(mode)+');document.querySelector("#checkbox-radio").scrollIntoView({block:"start"})');await delay(200);
+    await evaluate('KavUI.setDesignTheme("glassmorphism");KavUI.setColorTheme('+JSON.stringify(mode)+');document.querySelector("#checkbox-radio").scrollIntoView({block:"start"})');await delay(200);
     const {data}=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
     writeFileSync(join(artifacts,'checks-'+width+'-'+mode+'.png'),Buffer.from(data,'base64'));
   }
   await send('Emulation.setEmulatedMedia',{features:[{name:'forced-colors',value:'active'}]});
   if(!await evaluate('getComputedStyle(document.querySelector("#check-report")).appearance==="auto"'))throw new Error('Custom checks forced-colors fallback');
-  await send('Emulation.setEmulatedMedia',{features:[]});await evaluate('OrchtopUI.setDesignTheme("default")');
+  await send('Emulation.setEmulatedMedia',{features:[]});await evaluate('KavUI.setDesignTheme("default")');
   console.log('Custom checkbox/radio: native label click, Space/focus, ArrowRight/radio selection, forced colors and light/dark @320/1440');
   // Verify the selected preference survives OS changes and page navigation.
   await navigate('components/theme-switcher.html');
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'light'}]});
   await click('#color-mode-buttons [data-ui-color-mode=system]');
   await delay(60);
-  if(!await evaluate('document.documentElement.dataset.bsTheme==="light" && document.documentElement.dataset.uiColorPreference==="system" && localStorage.getItem("orchtop-theme")==="system"'))throw new Error('System selection/persistence');
+  if(!await evaluate('document.documentElement.dataset.bsTheme==="light" && document.documentElement.dataset.uiColorPreference==="system" && localStorage.getItem("kav-ui-theme")==="system"'))throw new Error('System selection/persistence');
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'dark'}]});await delay(80);
   if(!await evaluate('document.documentElement.dataset.bsTheme==="dark" && [...document.querySelectorAll("[data-ui-color-mode=system]")].every(b=>b.getAttribute("aria-pressed")==="true") && document.querySelector("[data-ui-color-select]").value==="system"'))throw new Error('System did not follow OS dark');
   await navigate('components/theme-switcher.html');
@@ -392,7 +402,7 @@ try {
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:'light'}]});await delay(80);
   if(!await evaluate('document.documentElement.dataset.bsTheme==="light" && document.querySelector("#color-mode-icons [data-ui-color-mode=system]").getAttribute("aria-pressed")==="true"'))throw new Error('System did not follow OS light');
   await send('Emulation.setEmulatedMedia',{features:[]});
-  await evaluate('OrchtopUI.setColorTheme("light",{persist:true})');
+  await evaluate('KavUI.setColorTheme("light",{persist:true})');
   console.log('Light/dark/system: native buttons, icon buttons and select; live OS light/dark, explicit override, synchronization and navigation persistence');
   await navigate('components/calendar.html');
   await click('[data-ui-calendar-date="2026-10-21"]');
@@ -406,7 +416,7 @@ try {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     await navigate('components/calendar.html');
     for(const mode of ['light','dark']) for(const design of ['default','glass','glassmorphism','flat','soft']) {
-      await evaluate('OrchtopUI.setDesignTheme('+JSON.stringify(design)+');OrchtopUI.setColorTheme('+JSON.stringify(mode)+')');
+      await evaluate('KavUI.setDesignTheme('+JSON.stringify(design)+');KavUI.setColorTheme('+JSON.stringify(mode)+')');
       await click('#calendar-day-modal-demo [data-ui-calendar-date="2026-10-21"]');await delay(180);
       const state=await evaluate(`(()=>{const d=document.querySelector('#calendar-day-modal-demo > dialog');if(!d?.open)return false;const r=d.getBoundingClientRect();return r.left>=0 && r.right<=innerWidth+1 && r.top>=0 && r.bottom<=innerHeight+1 && d.contains(document.activeElement) && d.dataset.uiCalendarModalValue==='2026-10-21' && d.querySelectorAll('.ui-calendar-agenda-event').length===2;})()`);
       if(!state)throw new Error('Calendar day modal bounds/focus/content '+[width,mode,design]);
@@ -426,7 +436,7 @@ try {
   }
   await click('#calendar-custom-modal-demo [data-ui-calendar-date="2026-10-21"]');
   if(!await evaluate('document.querySelector("#calendar-custom-dialog").open && document.querySelector("#calendar-custom-dialog").dataset.uiCalendarModalValue==="2026-10-21"'))throw new Error('Calendar existing custom dialog');
-  await key('Escape');await evaluate('OrchtopUI.setDesignTheme("default")');
+  await key('Escape');await evaluate('KavUI.setDesignTheme("default")');
   console.log('Calendar day modal: pointer/Enter selection, empty dates, Escape/button close, focus return and bounds across all 10 modes/designs @320/1440; existing dialog');
 
   await navigate('components/datepicker.html');
@@ -480,11 +490,11 @@ try {
   const reducedEntrance=await evaluate(`(()=>{
     const fixture=document.querySelector('#fixture');
     fixture.innerHTML='<dialog class="ui-dialog"><button data-ui-tooltip="補足">説明</button><button>閉じる</button></dialog><div id="reduced-panel" hidden>パネル</div><div class="alert alert-info" hidden>通知</div><div class="accordion"><details open><summary>項目</summary><p>内容</p></details></div><div class="ui-datepicker" data-ui-datepicker><input type="date" aria-label="日付"></div>';
-    OrchtopUI.init(fixture);
+    KavUI.init(fixture);
     const dialog=fixture.querySelector('dialog');dialog.showModal();
-    const panel=fixture.querySelector('#reduced-panel');OrchtopUI.show(panel);
-    const alert=fixture.querySelector('.alert');OrchtopUI.show(alert);
-    const note=OrchtopUI.toast('通知',{duration:0});
+    const panel=fixture.querySelector('#reduced-panel');KavUI.show(panel);
+    const alert=fixture.querySelector('.alert');KavUI.show(alert);
+    const note=KavUI.toast('通知',{duration:0});
     fixture.querySelector('[data-ui-tooltip]').focus();
     const tooltip=document.querySelector('.ui-tooltip');
     const animations=[dialog,panel,alert,note,tooltip,fixture.querySelector('details p')].map(element=>getComputedStyle(element).animationName);
@@ -504,7 +514,7 @@ try {
   if(!await evaluate('document.querySelector(".ui-toast") && document.activeElement.matches("[data-ui-toast]")'))throw new Error('Button keyboard activation failed');
   console.log('Buttons: SVG pointer click, native Enter activation and focus');
   await navigate('components/themes.html');
-  await evaluate('OrchtopUI.setDesignTheme("default");document.querySelector("[data-ui-theme-select]").focus()');
+  await evaluate('KavUI.setDesignTheme("default");document.querySelector("[data-ui-theme-select]").focus()');
   await key('ArrowDown');await key('Enter');
   if(!await evaluate('document.body.dataset.uiTheme==="glass" && [...document.querySelectorAll("[data-ui-theme-select]")].every(select=>select.value==="glass")'))throw new Error('Custom design theme select did not synchronize');
   await navigate('components/themes.html');
@@ -516,7 +526,7 @@ try {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     for(const mode of ['light','dark']) for(const design of ['default','glass','glassmorphism','flat','soft']) {
       await navigate('components/themes.html');
-      await evaluate('if(document.documentElement.dataset.bsTheme!=='+JSON.stringify(mode)+')document.querySelector("[data-ui-toggle=theme]").click();OrchtopUI.setDesignTheme('+JSON.stringify(design)+')');
+      await evaluate('if(document.documentElement.dataset.bsTheme!=='+JSON.stringify(mode)+')document.querySelector("[data-ui-toggle=theme]").click();KavUI.setDesignTheme('+JSON.stringify(design)+')');
       await evaluate('document.querySelector(".ui-card [data-ui-toggle=dialog]").click()');
       await delay(180);
       await evaluate('document.querySelector("#theme-dialog [data-ui-tooltip]").focus({preventScroll:true})');
@@ -542,7 +552,7 @@ try {
   for(const width of [320,1440]) for(const mode of ['light','dark']) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     await navigate('components/theme-switcher.html');
-    await evaluate('OrchtopUI.setDesignTheme("glassmorphism");OrchtopUI.setColorTheme('+JSON.stringify(mode)+')');
+    await evaluate('KavUI.setDesignTheme("glassmorphism");KavUI.setColorTheme('+JSON.stringify(mode)+')');
     await click('.catalog-header .ui-select-trigger');await delay(200);
     const bounds=await evaluate(`(()=>{const p=document.querySelector('.ui-select-menu:popover-open');if(!p)return false;const r=p.getBoundingClientRect();return r.left>=0 && r.right<=innerWidth && r.top>=0 && r.bottom<=innerHeight;})()`);
     if(!bounds)throw new Error('Custom select popup bounds '+[width,mode]);
@@ -557,17 +567,17 @@ try {
   }
   await navigate('components/themes.html');
   await click('.ui-card [data-ui-toggle=dialog]');await delay(200);
-  await evaluate(`(()=>{const dialog=document.querySelector('#theme-dialog');const label=document.createElement('label');label.textContent='表示方法';const select=document.createElement('select');select.className='form-select';select.innerHTML='<option>一覧</option><option>カード</option>';label.append(select);dialog.querySelector('.buttons').before(label);OrchtopUI.init(label);})()`);
+  await evaluate(`(()=>{const dialog=document.querySelector('#theme-dialog');const label=document.createElement('label');label.textContent='表示方法';const select=document.createElement('select');select.className='form-select';select.innerHTML='<option>一覧</option><option>カード</option>';label.append(select);dialog.querySelector('.buttons').before(label);KavUI.init(label);})()`);
   await click('#theme-dialog .ui-select-trigger');await delay(180);
   if(!await evaluate('!!document.querySelector("#theme-dialog .ui-select-menu:popover-open")'))throw new Error('Custom select in modal did not open');
   await key('Escape');
   if(!await evaluate('document.querySelector("#theme-dialog").open && !document.querySelector(".ui-select-menu:popover-open") && document.activeElement.matches(".ui-select-trigger")'))throw new Error('Custom select Escape closed parent modal or lost focus');
-  await evaluate(`(()=>{const label=document.createElement('label');label.textContent='時刻';const input=document.createElement('input');input.type='time';input.className='form-control';label.append(input);document.querySelector('#theme-dialog .buttons').before(label);OrchtopUI.init(label);})()`);
+  await evaluate(`(()=>{const label=document.createElement('label');label.textContent='時刻';const input=document.createElement('input');input.type='time';input.className='form-control';label.append(input);document.querySelector('#theme-dialog .buttons').before(label);KavUI.init(label);})()`);
   await click('#theme-dialog .ui-input-picker-trigger');await delay(180);await key('Escape');
   if(!await evaluate('document.querySelector("#theme-dialog").open && !document.querySelector(".ui-input-popup:popover-open") && document.activeElement.matches(".ui-input-picker-trigger")'))throw new Error('Input picker Escape closed parent modal or lost focus');
   await key('Escape');
   console.log('Custom select: native pointer, End/Enter, Escape, button synchronization, viewport bounds @320/1440 light/dark; select/input popups preserve parent modal');
-  await evaluate('OrchtopUI.setDesignTheme("default",{persist:true})');
+  await evaluate('KavUI.setDesignTheme("default",{persist:true})');
   console.log('Design themes: custom select, synchronization, reload/navigation persistence, all 10 designs/modes @320 and1440; modal, tooltip, date picker and toast');
   await navigate('components/animations-interactions.html');
   await click('[data-ui-target="#motion-dialog"]');await delay(180);
@@ -582,13 +592,13 @@ try {
   await delay(30);
   await evaluate(`(()=>{
     const button=document.querySelector('.switch input');button.click();
-    OrchtopUI.show('#motion-panel');OrchtopUI.hide('#motion-panel');
-    OrchtopUI.setDesignTheme('soft');
+    KavUI.show('#motion-panel');KavUI.hide('#motion-panel');
+    KavUI.setDesignTheme('soft');
   })()`);
   const reducedMotionState=await evaluate(`({ghosts:document.querySelectorAll('[data-ui-motion-ghost]').length,web:document.body.getAnimations().length,switchTransition:getComputedStyle(document.querySelector('.switch input'),'::after').transitionDuration})`);
   if(reducedMotionState.ghosts || reducedMotionState.web || reducedMotionState.switchTransition!=='0s')throw new Error('Interaction reduced motion failed: '+JSON.stringify(reducedMotionState));
   await send('Emulation.setEmulatedMedia',{features:[]});
-  await evaluate('OrchtopUI.setDesignTheme("default")');
+  await evaluate('KavUI.setDesignTheme("default")');
   console.log('Interaction motion: native Escape, immediate close, exit cleanup and mid-animation reduced motion');
   // This disposable browser profile cannot display a permission prompt.
   await send('Browser.grantPermissions',{permissions:['clipboardReadWrite','clipboardSanitizedWrite']},null);
@@ -628,13 +638,316 @@ try {
   await send('Page.navigate',{url:'about:blank'});
   for(let i=0;i<100;i++){await delay(10);if(await evaluate('location.href==="about:blank" && document.readyState==="complete"'))break;}
   await evaluate('document.body.style.color="rgb(47,111,196)";document.body.innerHTML='+JSON.stringify(copiedSVG));
-  if(!await evaluate('document.querySelector("svg").getBoundingClientRect().width===24 && document.querySelector("path").getBBox().width>0 && getComputedStyle(document.querySelector("path")).fill==="rgb(47, 111, 196)" && !document.styleSheets.length && typeof OrchtopUI==="undefined"'))throw new Error('Copied SVG must render alone without CSS or JS');
+  if(!await evaluate('document.querySelector("svg").getBoundingClientRect().width===24 && document.querySelector("path").getBBox().width>0 && getComputedStyle(document.querySelector("path")).fill==="rgb(47, 111, 196)" && !document.styleSheets.length && typeof KavUI==="undefined"'))throw new Error('Copied SVG must render alone without CSS or JS');
   await send('Network.enable');await send('Network.setBlockedURLs',{urls:['*assets/js/*','https://*','http://*']});
   await send('Page.navigate',{url:pathToFileURL(join(root,'components/mdi-icons.html')).href});
   for(let i=0;i<100;i++){await delay(20);if(await evaluate('document.readyState==="complete" && !!document.querySelector("[data-mdi-search]")'))break;}
-  if(!await evaluate('typeof OrchtopUI==="undefined" && document.querySelectorAll(".mdi-icon-preview > svg").length===128 && [...document.querySelectorAll(".mdi-icon-preview path")].every(path=>path.getBBox().width>0)'))throw new Error('MDI gallery SVGs must render with scripts/network blocked');
+  if(!await evaluate('typeof KavUI==="undefined" && document.querySelectorAll(".mdi-icon-preview > svg").length===128 && [...document.querySelectorAll(".mdi-icon-preview path")].every(path=>path.getBBox().width>0)'))throw new Error('MDI gallery SVGs must render with scripts/network blocked');
   await send('Network.setBlockedURLs',{urls:[]});
   console.log('MDI: 128 self-contained SVGs, English/Japanese search at 3 widths, native clipboard copy, standalone rendering with no CSS/JS, all previews with scripts/network blocked');
+  await send('Network.setBlockedURLs',{urls:['https://*','http://*','*assets/icons/mdi/*.svg']});
+  await navigate('components/mdi-icons.html');
+  if(!await evaluate(`(async()=>{
+    const container=document.createElement('div');container.style.cssText='position:fixed;left:-9999px;color:rgb(47,111,196)';
+    const cards=[...document.querySelectorAll('[data-mdi-icon]')];
+    for(const card of cards){const icon=document.createElement('span');icon.setAttribute('icon',card.querySelector('h3').textContent);container.append(icon);}
+    document.body.append(container);await new Promise(resolve=>setTimeout(resolve,0));
+    const icons=[...container.children];
+    const ok=icons.length===128 && icons.every((host,index)=>host.querySelector('path')?.getAttribute('d')===cards[index].querySelector('.mdi-icon-preview path').getAttribute('d') && host.querySelector('path').getBBox().width>0 && getComputedStyle(host.querySelector('path')).fill==='rgb(47, 111, 196)');
+    container.remove();return ok;
+  })()`))throw new Error('All 128 attribute icons must match SVG assets and render without fetching');
+  await send('Network.setBlockedURLs',{urls:[]});
+  console.log('MDI attributes: all 128 names render matching paths with inherited color and SVG/network requests blocked');
+
+  // Newly added framework components: native pointer/keyboard and theme bounds.
+  for(const width of [320,768,1440])for(const mode of ['light','dark'])for(const design of ['default','glass','glassmorphism','flat','soft']) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    await navigate('components/dropdown.html');
+    await evaluate('KavUI.setColorTheme('+JSON.stringify(mode)+');KavUI.setDesignTheme('+JSON.stringify(design)+')');
+    await click('[data-ui-target="#dropdown-basic-menu"]');
+    if(!await evaluate(`(()=>{const panel=document.getElementById('dropdown-basic-menu'),r=panel.getBoundingClientRect();return panel.matches(':popover-open') && r.left>=0 && r.right<=innerWidth+1 && r.top>=0 && r.bottom<=innerHeight+1 && document.activeElement===panel.querySelector('button');})()`))throw new Error('Dropdown native bounds/focus '+[width,mode,design]);
+    await key('ArrowDown');
+    if(!await evaluate('document.activeElement.matches("a.ui-dropdown-item")'))throw new Error('Dropdown native arrow skips disabled item');
+    await key('End');await key('Enter');
+    if(!await evaluate('!document.getElementById("dropdown-basic-menu").matches(":popover-open") && document.activeElement.matches("[data-ui-target=\\"#dropdown-basic-menu\\"]") && !!document.querySelector(".ui-toast")'))throw new Error('Dropdown selection/native Enter/toast');
+    await click('[data-ui-target="#dropdown-up"]');await key('Tab');
+    if(!await evaluate('!document.getElementById("dropdown-up").matches(":popover-open") && document.activeElement.matches("[data-ui-target=\\"#dropdown-end\\"]")'))throw new Error('Dropdown Tab closes and advances focus');
+    await click('[data-ui-target="#dropdown-end"]');
+    await click('.page-heading h1');
+    if(!await evaluate('!document.getElementById("dropdown-end").matches(":popover-open") && document.querySelector("[data-ui-target=\\"#dropdown-end\\"]").getAttribute("aria-expanded")==="false"'))throw new Error('Dropdown outside click and aria');
+  }
+  await navigate('components/popover.html');
+  await click('[data-ui-target="#popover-form-panel"]');
+  if(!await evaluate('document.activeElement.id==="popover-project-name"'))throw new Error('Popover autofocus');
+  await click('#popover-form-panel .ui-select-trigger');
+  if(!await evaluate('document.getElementById("popover-form-panel").matches(":popover-open") && !!document.querySelector(".ui-select-menu:popover-open")'))throw new Error('Nested select must preserve parent popover');
+  await key('End');await key('Enter');
+  if(!await evaluate('document.getElementById("popover-form-panel").matches(":popover-open") && document.getElementById("popover-view").selectedIndex===1'))throw new Error('Nested select commit');
+  await key('Escape');
+  if(!await evaluate('!document.getElementById("popover-form-panel").matches(":popover-open") && document.activeElement.matches("[data-ui-target=\\"#popover-form-panel\\"]")'))throw new Error('Popover Escape focus return');
+
+  await navigate('components/drawer.html');
+  for(const width of [320,768,1440])for(const mode of ['light','dark'])for(const design of ['default','glass','glassmorphism','flat','soft'])for(const direction of ['end','start','bottom','top']) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    await evaluate('KavUI.setColorTheme('+JSON.stringify(mode)+');KavUI.setDesignTheme('+JSON.stringify(design)+')');
+    await click('[data-ui-target="#drawer-'+direction+'"]');
+    await evaluate('document.querySelector(".ui-drawer[open]").getAnimations().forEach(animation=>animation.finish())');
+    if(!await evaluate(`(()=>{const drawer=document.getElementById('drawer-${direction}'),r=drawer.getBoundingClientRect();return drawer.open && r.left>=-.5 && r.right<=innerWidth+1 && r.top>=-.5 && r.bottom<=innerHeight+1 && getComputedStyle(document.documentElement).overflow==='hidden' && drawer.contains(document.activeElement);})()`))throw new Error('Drawer bounds/scroll lock/focus '+[width,mode,design,direction]);
+    await key('Escape');await delay(10);
+    if(!await evaluate('!document.querySelector(".ui-drawer[open]") && getComputedStyle(document.documentElement).overflow!=="hidden" && document.activeElement.matches("[data-ui-target=\\"#drawer-'+direction+'\\"]")'))throw new Error('Drawer native Escape and focus '+direction);
+  }
+  await navigate('components/input-group.html');await click('#input-group-select .ui-select-trigger');await key('End');await key('Enter');
+  if(!await evaluate('document.getElementById("group-format").value==="TXT" && document.getElementById("group-format").closest(".ui-input-group").getBoundingClientRect().right<=innerWidth'))throw new Error('Input group native custom select');
+  await navigate('components/button-group.html');await click('#button-group-radio label:nth-child(2)');await key('ArrowRight');
+  if(!await evaluate('new FormData(document.querySelector("#button-group-radio form")).get("period")==="month" && document.activeElement.value==="month"'))throw new Error('Button group native radio keyboard/FormData');
+  await click('#button-group-checkbox label:first-child');
+  if(!await evaluate('document.querySelector("#button-group-checkbox input").checked'))throw new Error('Button group native checkbox');
+  await navigate('components/list-group.html');await click('#list-group-flush label:nth-child(2)');
+  if(!await evaluate('document.querySelector("#list-group-flush input[name=reports]").checked'))throw new Error('List group native label click');
+  for(const width of [320,768,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});await navigate('components/input-group.html');
+    const stacks=await evaluate(`(()=>{const group=document.querySelector('.ui-input-group-stack'),input=group.querySelector('input'),r=group.getBoundingClientRect(),i=input.getBoundingClientRect();return i.width>50 && i.left>=r.left-1 && i.right<=r.right+1 && (innerWidth>=768 || Math.abs(i.width-r.width)<2);})()`);
+    if(!stacks)throw new Error('Responsive stacked input group width '+width);
+  }
+  console.log('Added components: dropdown pointer/Arrow/Home/End/Tab/Enter/outside click at 3 widths × 10 modes/designs; rich popover/nested select; all 4 drawers × 3 widths × 10 modes/designs, scroll lock/Escape/focus return; input/button/list native values');
+
+  // New device overrides must also work with JavaScript disabled.
+  await send('Network.enable');await send('Network.setBlockedURLs',{urls:['*assets/js/*']});
+  for(const width of [320,375,767,768,820,1023,1024,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    await send('Page.navigate',{url:pathToFileURL(join(root,'components/layouts.html')).href});
+    for(let i=0;i<100;i++){await delay(20);if(await evaluate('document.readyState==="complete" && !!document.getElementById("device-grid-demo")'))break;}
+    for(const theme of ['light','dark']) {
+      await evaluate('document.documentElement.dataset.bsTheme='+JSON.stringify(theme));
+      const expected=width<768?{cols:1,gap:8,font:16,padding:12}:width<1024?{cols:2,gap:12,font:18,padding:16}:{cols:3,gap:16,font:24,padding:24};
+      const result=await evaluate(`(()=>{
+        const grid=document.getElementById('device-grid-demo'),cells=[...grid.children].map(el=>el.getBoundingClientRect());
+        const expected=${JSON.stringify(expected)},demo=document.getElementById('device-utilities-demo');
+        const link=demo.querySelector('a'),row=demo.querySelector('.fx');
+        return {cssOnly:typeof KavUI==='undefined',columns:cells.slice(0,expected.cols).every(r=>Math.abs(r.top-cells[0].top)<1) && (expected.cols===3 || cells[expected.cols].top>cells[0].top),gap:parseFloat(getComputedStyle(grid).columnGap)===expected.gap,typography:parseFloat(getComputedStyle(demo.querySelector('h3')).fontSize)===expected.font,spacing:parseFloat(getComputedStyle(demo).paddingLeft)===expected.padding,phone:${width}<768?getComputedStyle(row).flexDirection==='column' && Math.abs(link.getBoundingClientRect().width-row.getBoundingClientRect().width)<2:getComputedStyle(row).flexDirection==='row',overflow:document.documentElement.scrollWidth<=innerWidth+1};
+      })()`);
+      if(Object.values(result).some(value=>!value))throw new Error('Device defaults/overrides '+[width,theme]+JSON.stringify(result));
+    }
+  }
+  await send('Network.setBlockedURLs',{urls:[]});
+  await navigate('starter.html');
+  await evaluate(`(()=>{const wrapper=document.createElement('div');wrapper.id='wide-table-test';wrapper.className='ui-table-scroll';wrapper.tabIndex=0;wrapper.setAttribute('role','region');wrapper.setAttribute('aria-label','横長の一覧');wrapper.innerHTML='<table class="table" style="min-width:1200px"><tr><th>プロジェクト</th><th>担当者</th><th>更新日時</th></tr><tr><td>Design catalog</td><td>チーム</td><td>2026-10-22</td></tr></table>';document.querySelector('main').prepend(wrapper);wrapper.focus();})()`);
+  await send('Emulation.setDeviceMetricsOverride',{width:375,height:1000,deviceScaleFactor:1,mobile:false});
+  await key('ArrowRight');await delay(200);
+  if(!await evaluate('document.getElementById("wide-table-test").scrollLeft>0 && document.documentElement.scrollWidth<=innerWidth+1'))throw new Error('Wide table must scroll by keyboard inside its region');
+  console.log('Device responsiveness: PC/tablet/mobile CSS-only grid/gap/type/padding/stack/full-width across 8 widths × light/dark, 767/768 and 1023/1024 boundaries, keyboard horizontal table scrolling');
+
+  const headerPages=['index.html','getting-started.html','templates.html',...readdirSync(join(root,'components')).filter(name=>name.endsWith('.html')).map(name=>'components/'+name)];
+  for(const width of [320,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    for(const path of headerPages) {
+      await navigate(path);
+      for(const mode of ['light','dark']) {
+        await evaluate('KavUI.setColorTheme('+JSON.stringify(mode)+')');
+        const expected=mode==='light'?'mdi-weather-night':'mdi-weather-sunny';
+        if(!await evaluate(`(()=>{const button=document.querySelector('.catalog-header [data-ui-theme-icon]');const svg=button?.querySelector('svg');return button?.getAttribute('icon')===${JSON.stringify(expected)} && !button.textContent && button.title===button.getAttribute('aria-label') && !!button.title && svg?.getBoundingClientRect().width===18 && svg.querySelector('path').getBBox().width>0 && button.getBoundingClientRect().right<=innerWidth+1 && document.documentElement.scrollWidth<=innerWidth+1;})()`))throw new Error('Catalog header theme icon '+[path,width,mode]);
+      }
+      if(!await evaluate(`(async()=>{
+        scrollTo(0,600);await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+        const header=document.querySelector('.catalog-header'),box=header.getBoundingClientRect();
+        const sidebar=document.querySelector('.catalog-sidebar'),rail=document.querySelector('.catalog-toc-rail');
+        return getComputedStyle(header).position==='sticky' && Math.abs(box.top)<1 && header.contains(document.elementFromPoint(box.width/2,8)) && (innerWidth<768 || (sidebar.getBoundingClientRect().top>=box.bottom-1 && sidebar.getBoundingClientRect().bottom<=innerHeight+1)) && (!rail || innerWidth<1280 || rail.getBoundingClientRect().top>=box.bottom-1);
+      })()`))throw new Error('Catalog sticky header/sidebar bounds '+[path,width]);
+    }
+  }
+  await navigate('index.html');await evaluate('KavUI.setColorTheme("light")');
+  await click('.catalog-header [data-ui-theme-icon] path');
+  if(!await evaluate('document.documentElement.dataset.bsTheme==="dark" && document.querySelector(".catalog-header [data-ui-theme-icon]").getAttribute("aria-label")==="ライトに切替"'))throw new Error('Theme icon native SVG click');
+  await key('Enter');
+  if(!await evaluate('document.documentElement.dataset.bsTheme==="light" && document.querySelector(".catalog-header [data-ui-theme-icon]").getAttribute("aria-label")==="ダークに切替"'))throw new Error('Theme icon native Enter');
+  await send('Page.reload');await delay(100);
+  if(!await evaluate('document.documentElement.dataset.bsTheme==="light" && document.querySelector(".catalog-header [data-ui-theme-icon]").getAttribute("icon")==="mdi-weather-night"'))throw new Error('Theme icon reload persistence');
+  console.log('Catalog theme icons: all '+headerPages.length+' headers × 2 widths × light/dark, icon-only rendering, labels/title, SVG click, keyboard Enter and reload persistence');
+
+  await navigate('components/typography.html');
+  for(const width of [320,768,1440])for(const mode of ['light','dark'])for(const design of ['default','glass','glassmorphism']) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    await evaluate('KavUI.setColorTheme('+JSON.stringify(mode)+');KavUI.setDesignTheme('+JSON.stringify(design)+');scrollTo(0,1200)');await delay(35);
+    const point=await evaluate(`(()=>{const button=document.querySelector('.catalog-header [data-ui-theme-icon]'),box=button.getBoundingClientRect();return {x:box.x+box.width/2,y:box.y+box.height/2};})()`);
+    await send('Input.dispatchMouseEvent',{type:'mousePressed',...point,button:'left',clickCount:1});
+    await send('Input.dispatchMouseEvent',{type:'mouseReleased',...point,button:'left',clickCount:1});
+    if(!await evaluate('document.documentElement.dataset.bsTheme!=='+JSON.stringify(mode)+' && scrollY>500 && Math.abs(document.querySelector(".catalog-header").getBoundingClientRect().top)<1'))throw new Error('Sticky header native click while scrolled '+[width,mode,design]);
+  }
+  console.log('Sticky catalog header: all pages at 2 widths, unobscured sidebars, native control clicks while scrolled across 3 widths × light/dark × default/glass/glassmorphism');
+
+  const dropTextPath=join(profile,'drop-example.txt'),dropPDFPath=join(profile,'drop-example.pdf');
+  writeFileSync(dropTextPath,'file drop example');writeFileSync(dropPDFPath,'%PDF-1.7\nexample');
+  await send('Page.setInterceptFileChooserDialog',{enabled:true});
+  for(const width of [320,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    await navigate('components/forms.html');
+    for(const mode of ['light','dark']) {
+      await evaluate('document.documentElement.dataset.bsTheme='+JSON.stringify(mode)+';document.body.dataset.uiTheme="glassmorphism"');
+      const point=await evaluate(`(async()=>{const zone=document.querySelector('#file-drop [data-ui-file-zone]');zone.scrollIntoView({block:'center'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));const rect=zone.getBoundingClientRect();return {x:rect.x+rect.width/2,y:rect.y+rect.height/2};})()`);
+      const data={items:[],files:[dropTextPath,dropPDFPath],dragOperationsMask:1};
+      for(const type of ['dragEnter','dragOver','drop'])await send('Input.dispatchDragEvent',{type,...point,data});
+      if(!await evaluate('document.getElementById("drop-documents").files.length===2 && document.querySelectorAll("#file-drop .ui-file-list li").length===2 && new FormData(document.querySelector("#file-drop form")).getAll("documents").length===2 && !document.querySelector("#file-drop [data-ui-file-dragging]") && document.documentElement.scrollWidth<=innerWidth+1'))throw new Error('Native file drop/FormData/bounds '+[width,mode]);
+      await click('#file-drop .ui-file-list button');
+      if(!await evaluate('document.getElementById("drop-documents").files.length===1 && document.activeElement.id==="drop-documents"'))throw new Error('Native file removal and focus');
+      await click('#file-drop button[type=reset]');await delay(20);
+      if(!await evaluate('!document.getElementById("drop-documents").files.length && document.querySelector("#file-drop .ui-file-list").hidden'))throw new Error('Native file form reset');
+    }
+    let beforeChooser=fileChooserEvents;
+    await click('#file-drop [data-ui-file-zone]');await delay(30);
+    if(fileChooserEvents!==beforeChooser+1)throw new Error('Click label must open native file chooser');
+    const {root:dom}=await send('DOM.getDocument');const {nodeId}=await send('DOM.querySelector',{nodeId:dom.nodeId,selector:'#drop-documents'});
+    await send('DOM.setFileInputFiles',{nodeId,files:[dropTextPath]});
+    if(!await evaluate('document.getElementById("drop-documents").files[0].name==="drop-example.txt" && document.querySelectorAll("#file-drop .ui-file-list li").length===1'))throw new Error('Native file chooser selection');
+    beforeChooser=fileChooserEvents;
+    await evaluate('(()=>{const input=document.getElementById("drop-documents");const before=document.createElement("button");before.id="file-tab-start";input.before(before);before.focus();})()');
+    await key('Tab');
+    if(!await evaluate('document.activeElement.id==="drop-documents" && getComputedStyle(document.querySelector("#file-drop [data-ui-file-zone]")).outlineStyle==="solid"'))throw new Error('File input keyboard tab order and focus ring');
+    await evaluate('document.getElementById("file-tab-start").remove()');await key('Enter');await delay(30);
+    if(fileChooserEvents!==beforeChooser+1)throw new Error('Keyboard file chooser activation');
+    await send('DOM.setFileInputFiles',{nodeId,files:[]});
+  }
+  await send('Page.setInterceptFileChooserDialog',{enabled:false});
+  console.log('File drop: native OS file drag, click/keyboard chooser, FileList/FormData, removal/focus/reset and responsive bounds @320/1440 light/dark glassmorphism');
+
+  // Typography must work using shared CSS, even when all UI scripts are blocked.
+  await send('Network.setBlockedURLs',{urls:['*assets/js/*']});
+  for(const width of [320,768,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    await send('Page.navigate',{url:pathToFileURL(join(root,'components/typography.html')).href});
+    for(let i=0;i<100;i++){await delay(20);if(await evaluate('document.readyState==="complete" && !!document.getElementById("type-combine")'))break;}
+    for(const theme of ['light','dark']) {
+      await evaluate('document.documentElement.dataset.bsTheme='+JSON.stringify(theme));
+      const result=await evaluate(`(()=>{
+        const heading=document.querySelector('#type-combine h3'), body=document.querySelector('#type-combine .type-body'), alert=document.querySelector('#type-combine .type-caption');
+        const h=getComputedStyle(heading),b=getComputedStyle(body),a=getComputedStyle(alert);
+        const clamped=document.querySelector('.type-clamp-2');
+        const truncate=document.querySelector('.type-truncate');
+        const reference=document.createElement('span');reference.style.color='var(--bs-danger-text-emphasis)';document.body.append(reference);
+        const color=getComputedStyle(reference).color;reference.remove();
+        const defaults=document.querySelector('[data-typography-defaults]');
+        const defaultH1=getComputedStyle(defaults.querySelector('h1')), defaultH2=getComputedStyle(defaults.querySelector('h2'));
+        return {defaults:defaultH1.fontSize==='24px' && defaultH1.fontWeight==='600' && defaultH2.fontSize==='18px' && getComputedStyle(defaults.querySelector('p')).fontSize==='14px' && getComputedStyle(defaults.querySelector('blockquote')).borderInlineStartWidth==='2px',cssOnly:typeof KavUI==='undefined',heading:h.fontSize==='24px' && h.fontWeight==='700',body:b.fontSize==='16px' && Math.abs(parseFloat(b.lineHeight)-28.8)<.1,alert:a.color===color && a.fontWeight==='600',clamp:clamped.scrollHeight>clamped.clientHeight && Math.abs(clamped.clientHeight-parseFloat(getComputedStyle(clamped).lineHeight)*2)<2,truncate:truncate.scrollWidth>truncate.clientWidth && getComputedStyle(truncate).textOverflow==='ellipsis',overflow:document.documentElement.scrollWidth<=innerWidth+1};
+      })()`);
+      if(Object.values(result).some(value=>!value))throw new Error('Typography CSS-only combinations '+[width,theme]+' '+JSON.stringify(result));
+    }
+  }
+  await send('Network.setBlockedURLs',{urls:[]});
+  console.log('Typography: CSS-only classless HTML defaults and combined roles/size/weight/semantic color, line-height, truncation and 2-line clamp at 3 widths × light/dark');
+
+  const paletteData=JSON.parse(readFileSync(join(root,'scripts/color-palettes.json'),'utf8')).palettes;
+  for(const width of [320,768,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    await navigate('components/color-palettes.html');
+    for(const palette of paletteData)for(const mode of ['light','dark'])for(const design of ['default','glass','glassmorphism','flat','soft']) {
+      await evaluate(`KavUI.setPalette(${JSON.stringify(palette.name)});KavUI.setColorTheme(${JSON.stringify(mode)});KavUI.setDesignTheme(${JSON.stringify(design)})`);await delay(180);
+      const result=await evaluate(`(()=>{
+        const rootStyle=getComputedStyle(document.documentElement),buttons=[...document.querySelectorAll('#palette-preview .btn')];
+        const luminance=color=>{const values=color.match(/[\\d.]+/g).slice(0,3).map(Number).map(c=>c/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4);return values[0]*.2126+values[1]*.7152+values[2]*.0722;};
+        const contrast=(a,b)=>{const values=[luminance(a),luminance(b)].sort((a,b)=>a-b);return (values[1]+.05)/(values[0]+.05);};
+        return {overflow:document.documentElement.scrollWidth>innerWidth+1,primary:rootStyle.getPropertyValue('--md-sys-color-primary').trim(),pair:rootStyle.getPropertyValue('--md-sys-color-on-primary').trim(),contrast:buttons.filter(b=>['btn-primary','btn-success','btn-warning','btn-danger','btn-info'].some(name=>b.classList.contains(name))).every(b=>{const css=getComputedStyle(b);return contrast(css.color,css.backgroundColor)>=4.5;}),selected:[...document.querySelectorAll('#palette-choose [aria-pressed=true]')].map(b=>b.dataset.uiPaletteValue)};
+      })()`);
+      if(result.overflow || !result.contrast || result.primary!==palette.modes[mode].roles.primary || result.pair!==palette.modes[mode].roles['on-primary'] || result.selected.join()!==palette.name)throw new Error('Palette roles/contrast/controls '+[width,palette.name,mode,design]+': '+JSON.stringify(result));
+      if(width===1440 && design==='default') {
+        await evaluate('document.getElementById("palette-preview").scrollIntoView()');await delay(70);
+        const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});writeFileSync(join(artifacts,'palette-'+palette.name+'-'+mode+'.png'),Buffer.from(shot.data,'base64'));
+      }
+    }
+    // Use the actual custom select with keyboard input, then navigate and reload.
+    await evaluate('KavUI.setPalette("default")');
+    await click('.catalog-header [data-ui-palette-select] + .ui-select-trigger');await key('End');await key('Enter');
+    if(!await evaluate(`document.documentElement.dataset.uiPalette==='clay' && localStorage.getItem('kav-ui-palette')==='clay' && [...document.querySelectorAll('select[data-ui-palette-select]')].every(s=>s.value==='clay')`))throw new Error('Palette native select/synchronization/persistence');
+    await navigate('templates/dashboard.html');
+    if(!await evaluate('document.documentElement.dataset.uiPalette==="clay" && document.querySelector("[data-ui-palette-select]").value==="clay"'))throw new Error('Palette restored on template navigation');
+    await click('[data-ui-palette-select] + .ui-select-trigger');await key('ArrowUp');await key('Enter');
+    await send('Page.reload');await delay(120);
+    if(!await evaluate('document.documentElement.dataset.uiPalette==="sand" && document.querySelector("[data-ui-palette-select]").value==="sand"'))throw new Error('Palette custom select/reload');
+    for(const mode of ['light','dark'])for(const palette of paletteData) {
+      await evaluate(`KavUI.setColorTheme(${JSON.stringify(mode)});KavUI.setDesignTheme('glassmorphism');KavUI.setPalette(${JSON.stringify(palette.name)})`);
+      if(!await evaluate('document.documentElement.scrollWidth<=innerWidth+1 && [...document.querySelectorAll(".ui-chart-svg")].every(svg=>!!svg.getClientRects().length)'))throw new Error('Palette dashboard/chart '+[width,mode,palette.name]);
+    }
+    await evaluate('KavUI.setPalette("default",{persist:true});KavUI.setDesignTheme("default",{persist:true});KavUI.setColorTheme("light",{persist:true})');
+  }
+  // Block ui.js to prove CSS-only palettes and pre-paint restoration on all entry types.
+  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js','*assets/js/templates.js']});
+  for(const mode of ['light','dark']) {
+    const {identifier}=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-theme',${JSON.stringify(mode)});localStorage.setItem('kav-ui-palette','sage');localStorage.removeItem('kav-ui-design-theme');`});
+    for(const path of ['index.html','getting-started.html','starter.html','components/color-palettes.html','templates.html','templates/docs.html','templates/dashboard.html','templates/changelog.html']) {
+      await firstPaintPage(path);
+      if(!await evaluate(`document.documentElement.dataset.uiPalette==='sage' && getComputedStyle(document.documentElement).getPropertyValue('--md-sys-color-primary').trim()===${JSON.stringify(paletteData.find(p=>p.name==='sage').modes[mode].roles.primary)} && typeof KavUI==='undefined'`))throw new Error('Palette CSS-only first paint '+[mode,path]);
+    }
+    await send('Page.removeScriptToEvaluateOnNewDocument',{identifier});
+  }
+  await send('Network.setBlockedURLs',{urls:[]});
+  const explicit=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-palette','sage');const observer=new MutationObserver(()=>{if(document.documentElement){document.documentElement.dataset.uiPalette='clay';observer.disconnect();}});observer.observe(document,{childList:true});`});
+  await navigate('components/color-palettes.html');
+  if(!await evaluate('document.documentElement.dataset.uiPalette==="clay" && document.querySelector("[data-ui-palette-select]").value==="clay"'))throw new Error('Explicit HTML palette wins over stored palette');
+  await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:explicit.identifier});
+  const optOut=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-palette','sage');const observer=new MutationObserver(()=>{if(document.body){document.body.removeAttribute('data-ui-theme-persist');observer.disconnect();}});observer.observe(document,{childList:true,subtree:true});`});
+  await navigate('starter.html');
+  if(!await evaluate('document.documentElement.dataset.uiPalette==="default"'))throw new Error('Stored palette requires persist opt-in');
+  await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:optOut.identifier});
+  const invalid=await send('Page.addScriptToEvaluateOnNewDocument',{source:"localStorage.setItem('kav-ui-palette','unknown');"});await navigate('components/color-palettes.html');
+  if(!await evaluate('document.documentElement.dataset.uiPalette==="default"'))throw new Error('Invalid stored palette falls back');
+  await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:invalid.identifier});
+  const blocked=await send('Page.addScriptToEvaluateOnNewDocument',{source:"Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Storage unavailable','SecurityError');}});"});await navigate('components/color-palettes.html');
+  if(!await evaluate('KavUI.setPalette("mauve",{persist:true}) && document.documentElement.dataset.uiPalette==="mauve"'))throw new Error('Palette works with blocked storage');
+  await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:blocked.identifier});
+  await navigate('index.html');await evaluate('KavUI.setPalette("default",{persist:true});KavUI.setDesignTheme("default",{persist:true});KavUI.setColorTheme("light",{persist:true})');
+  console.log('Color palettes: 6 × 2 modes × 5 designs × 3 widths, Material role pairs/text contrast, native select/keyboard, independent persistence/navigation/reload, CSS-only pre-paint on 8 entry pages, explicit priority, opt-out, invalid/blocked storage');
+
+  // Service templates: file://, every visual theme, native controls and sample data.
+  for(const width of [320,768,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    for(const path of ['templates/docs.html','templates/dashboard.html','templates/changelog.html','components/chart.html']) {
+      await navigate(path);
+      for(const mode of ['light','dark'])for(const design of ['default','glass','glassmorphism','flat','soft']) {
+        await evaluate('KavUI.setColorTheme('+JSON.stringify(mode)+');KavUI.setDesignTheme('+JSON.stringify(design)+')');await delay(15);
+        const valid=await evaluate(`(()=>{
+          const graphs=[...document.querySelectorAll('.ui-chart-output > svg')];
+          return document.documentElement.scrollWidth<=innerWidth+1 && graphs.every(svg=>{const r=svg.getBoundingClientRect();return r.width>0 && r.left>=-1 && r.right<=innerWidth+1 && !/NaN|Infinity/.test(svg.outerHTML);}) && !document.querySelector('.ui-chart-message')?.textContent.includes('表示できません');
+        })()`);
+        if(!valid)throw new Error('Template/chart bounds '+[path,width,mode,design]);
+      }
+      // Keep representative screenshots for review.
+      await evaluate('KavUI.setColorTheme("'+(width===320?'dark':'light')+'");KavUI.setDesignTheme("'+(width===768?'glassmorphism':'default')+'");scrollTo(0,0)');await delay(60);
+      const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});writeFileSync(join(artifacts,path.replaceAll('/','-')+'-'+width+'.png'),Buffer.from(shot.data,'base64'));
+    }
+    await navigate('templates/docs.html');
+    if(width<768)await click('.template-doc-menu > summary');
+    await evaluate(`(()=>{const search=document.querySelector('[data-doc-search]');search.value='リマインダー';search.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+    if(!await evaluate(`document.querySelectorAll('[data-doc-section]:not([hidden])').length===1 && !document.getElementById('notifications').hidden && document.querySelector('[data-doc-results]').textContent.includes('1件')`))throw new Error('Docs body search');
+    await evaluate(`(()=>{const search=document.querySelector('[data-doc-search]');search.value='該当しない文字列';search.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+    if(!await evaluate('!document.querySelector("[data-doc-empty]").hidden'))throw new Error('Docs empty state');
+    await evaluate(`(()=>{const search=document.querySelector('[data-doc-search]');search.value='';search.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+    await click('.ui-aside-nav a[href="#members"]');await delay(100);
+    if(!await evaluate(`(()=>{const section=document.getElementById('members').getBoundingClientRect(),header=document.querySelector('.ui-header').getBoundingClientRect();return location.hash==='#members' && section.top>=header.bottom-2 && (innerWidth>=768 || !document.querySelector('.template-doc-menu').open);})()`))throw new Error('Docs anchor below sticky header/mobile menu');
+    await navigate('templates/changelog.html');
+    await click('[data-release-filter="added"]');
+    if(!await evaluate(`document.querySelectorAll('[data-release]:not([hidden])').length===2 && document.querySelector('[data-release-filter="added"]').getAttribute('aria-pressed')==='true'`))throw new Error('Changelog category filter');
+    await evaluate(`(()=>{const search=document.querySelector('[data-release-search]');search.value='CSV';search.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+    if(!await evaluate(`document.querySelectorAll('[data-release]:not([hidden])').length===1 && !document.getElementById('v-1-8-0').hidden`))throw new Error('Changelog combined filters');
+    await click('[data-release-filter="fixed"]');
+    if(!await evaluate(`!document.querySelector('[data-release-empty]').hidden && document.querySelector('[data-release-results]').textContent==='0件の更新'`))throw new Error('Changelog empty state');
+    await evaluate(`(()=>{const search=document.querySelector('[data-release-search]');search.value='';search.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+    if(!await evaluate(`document.querySelectorAll('[data-release]:not([hidden])').length===1 && !document.getElementById('v-1-7-2').hidden`))throw new Error('Changelog clear search preserves category');
+    await navigate('templates/dashboard.html');
+    await click('#dashboard-period + .ui-select-trigger');await key('End');await key('Enter');
+    if(!await evaluate(`document.getElementById('dashboard-period').value==='30' && document.querySelectorAll('#revenue-chart tbody tr').length===30 && document.querySelector('[data-metric=orders]').textContent==='498' && document.querySelector('#dashboard-status').textContent.includes('30日')`))throw new Error('Dashboard custom period select updates metrics and chart');
+    const csv=await evaluate(`(async()=>{
+      let blob;const original=URL.createObjectURL;URL.createObjectURL=value=>{blob=value;return original(value);};
+      document.getElementById('dashboard-export').click();URL.createObjectURL=original;
+      const text=await blob.text();const lines=text.replace(/^\\uFEFF/,'').split('\\r\\n');
+      return lines.length===31 && lines[0]==='"日付","売上（円）"' && lines[1].startsWith('"9/23",') && lines.at(-1).startsWith('"10/22",');
+    })()`);
+    if(!csv)throw new Error('Dashboard CSV matches selected sample data');
+    await click('#revenue-chart summary');
+    if(!await evaluate('document.querySelector("#revenue-chart details").open'))throw new Error('Chart data table pointer toggle');
+    await evaluate('document.querySelector("#revenue-chart summary").focus()');await key(' ');
+    if(!await evaluate('!document.querySelector("#revenue-chart details").open'))throw new Error('Chart data table keyboard toggle');
+    await evaluate('scrollTo(0,600)');await delay(50);
+    if(!await evaluate('Math.abs(document.querySelector(".ui-header").getBoundingClientRect().top)<1'))throw new Error('Service sticky header');
+  }
+  console.log('Service templates and chart: 4 pages × 3 widths × 10 themes/modes; docs search/empty/anchors, changelog combined filters, dashboard native select/metrics/chart/CSV, keyboard data table and sticky header');
 
   for(const [path,width,theme] of [['starter.html',1440,'light'],['starter.html',320,'dark'],['components/flex-grid.html',1440,'light'],['components/flex-grid.html',320,'dark'],['components/toasts.html',1440,'light'],['components/toasts.html',320,'dark'],['components/cards.html',1440,'light'],['components/calendar.html',1440,'light'],['components/calendar.html',320,'dark'],['components/datepicker.html',1440,'light'],['components/datepicker.html',320,'dark'],['components/loading.html',1440,'light'],['components/loading.html',320,'dark'],['components/clipboard.html',1440,'light'],['components/clipboard.html',320,'dark'],['components/buttons.html',1440,'light'],['components/buttons.html',320,'dark'],['components/animations.html',1440,'light'],['components/animations.html',320,'dark'],['components/theme-switcher.html',1440,'light'],['components/theme-switcher.html',320,'dark'],['components/forms.html',1440,'light'],['components/spacing.html',1440,'light'],['components/spacing.html',320,'dark']]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
@@ -642,7 +955,7 @@ try {
     if (path==='components/datepicker.html') await click('[data-ui-datepicker-button=icon] .ui-datepicker-toggle');
     if (path==='components/cards.html') await evaluate('document.querySelector("details.source").open=true');
     if (path==='components/toasts.html') {
-      await evaluate("OrchtopUI.toast({title:'保存しました',body:'プロジェクトの設定を保存しました。',meta:'たった今',variant:'success',copy:true,duration:0});OrchtopUI.toast({title:'長いタイトルも固定幅で折り返します',body:'処理が完了しました。\\n詳細: https://example.test/projects/a-very-long-unbroken-project-identifier-for-wrapping-check-2026-001',variant:'info',duration:0})");
+      await evaluate("KavUI.toast({title:'保存しました',body:'プロジェクトの設定を保存しました。',meta:'たった今',variant:'success',copy:true,duration:0});KavUI.toast({title:'長いタイトルも固定幅で折り返します',body:'処理が完了しました。\\n詳細: https://example.test/projects/a-very-long-unbroken-project-identifier-for-wrapping-check-2026-001',variant:'info',duration:0})");
     }
     if (path==='components/clipboard.html') { await click('[data-ui-copy-target="#clipboard-id"]'); }
     if (path==='components/toasts.html') { await click('.ui-toast [data-ui-copy]'); }

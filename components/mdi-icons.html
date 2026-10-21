@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MDI icons — orchtop design catalog</title>
+<title>MDI icons — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
 <style>
 html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
@@ -11,18 +11,22 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </style>
 <script>
 (() => {
-  let mode = null, design = null;
-  try { mode = localStorage.getItem('orchtop-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('orchtop-design-theme'); } catch { /* Storage is optional. */ }
+  let mode = null, design = null, palette = null;
+  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
+  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
+  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
+  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
   const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
   document.documentElement.dataset.uiColorPreference = selected;
   document.documentElement.dataset.bsTheme = selected === 'system'
     ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  if (!['default','glass','glassmorphism','flat','soft'].includes(design)) return;
   const restore = () => {
     if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme')) {
+    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
       document.body.dataset.uiTheme = design;
+    }
+    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
+      document.documentElement.dataset.uiPalette = palette;
     }
     return true;
   };
@@ -44,14 +48,15 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </head>
 <body data-ui-theme-persist>
 <a class="skip-link" href="#main">コンテンツへ移動</a>
-<header class="catalog-header"><a class="brand" href="../index.html">orchtop <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="theme">テーマ切替</button></div></header>
-<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../getting-started.html">導入・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../getting-started.html">導入・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
   <div class="catalog-nav-group">
     <h2>基本スタイル</h2>
     <ul>
       <li><a href="../components/foundations.html">Foundations</a></li>
       <li><a href="../components/themes.html">UI themes</a></li>
       <li><a href="../components/theme-switcher.html">Theme switcher</a></li>
+      <li><a href="../components/color-palettes.html">Color palettes</a></li>
       <li><a href="../components/typography.html">Typography</a></li>
       <li><a href="../components/spacing.html">Spacing</a></li>
       <li><details class="catalog-nav-branch" data-catalog-family="icons" open><summary>Icons</summary><ul><li><a href="../components/mdi-icons.html" aria-current="page">MDIアイコン</a></li><li><a href="../components/icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
@@ -65,6 +70,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/flex-grid.html">Flex grid</a></li>
       <li><a href="../components/cards.html">Cards</a></li>
       <li><a href="../components/sidebar.html">Sidebar</a></li>
+
+      <li><a href="../components/drawer.html">Drawer</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -75,6 +82,9 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/datepicker.html">Date picker</a></li>
       <li><a href="../components/dialog.html">Dialog</a></li>
       <li><a href="../components/clipboard.html">Clipboard</a></li>
+
+      <li><a href="../components/input-group.html">Input group</a></li>
+      <li><a href="../components/button-group.html">Button group</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -82,6 +92,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <ul>
       <li><a href="../components/navigation.html">Navigation</a></li>
       <li><a href="../components/disclosure.html">Accordion</a></li>
+
+      <li><a href="../components/dropdown.html">Dropdown</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -91,6 +103,10 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/table.html">Table</a></li>
       <li><a href="../components/board.html">Kanban board</a></li>
       <li><a href="../components/calendar.html">Calendar</a></li>
+
+      <li><a href="../components/list-group.html">List group</a></li>
+      <li><a href="../components/avatar.html">Avatar</a></li>
+      <li><a href="../components/chart.html">Chart</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -99,6 +115,8 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
       <li><a href="../components/alerts.html">Alerts</a></li>
       <li><a href="../components/toasts.html">Toasts & alerts</a></li>
       <li><a href="../components/tips.html">Tips & tooltips</a></li>
+
+      <li><a href="../components/popover.html">Popover</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -117,8 +135,15 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     </ul>
   </div>
 </nav><a class="overview-link" href="../components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">ORCHTOP / DESIGN SYSTEM</p><h1>MDI icons</h1></header><p class="lede">よく使うMaterial Design Iconsを128種類収録しています。SVGの中身をコピーしてHTMLに貼り付けるだけで使えます。import・アイコンフォント・CDN・スプライトは不要です。</p>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>MDI icons</h1></header><p class="lede">よく使うMaterial Design Iconsを128種類収録しています。SVGの中身をコピーしてHTMLに貼り付けるだけで使えます。import・アイコンフォント・CDN・スプライトは不要です。</p>
 <p><a href="icons.html">サイズ・色・組み合わせの見本 →</a> / <a href="sidebar.html#sidebar-icons">サイドバーでの使い方 →</a></p>
+<section class="specimen" id="mdi-attributes"><h2>属性でアイコンを指定する</h2><p>共通の<code>ui.css</code>と<code>ui.js</code>を読み込むと、<code>icon="mdi-home"</code>のように名前だけで表示できます。同梱128種類に対応し、外部通信・追加ファイルの読み込みは不要です。SVGを直接貼り付ける場合はJavaScriptも不要です。</p><div class="example" data-example><div class="ui-cluster">
+  <span icon="mdi-home" class="ui-icon-md" style="color:var(--bs-primary)" role="img" aria-label="ホーム"></span>
+  <span icon="mdi-heart" class="ui-icon-lg" style="color:var(--bs-danger)" aria-hidden="true"></span>
+  <button type="button" class="btn btn-primary"><span icon="mdi-content-save" class="btn-icon"></span>保存</button>
+  <button type="button" class="btn btn-outline-secondary" aria-label="設定"><span icon="mdi-cog" class="btn-icon"></span></button>
+</div></div><p>標準サイズは周囲の文字と同じ1emです。<code>ui-icon-sm / md / lg / xl</code>で16 / 24 / 32 / 48pxを指定できます。任意のサイズは<code>--ui-icon-size</code>で調整できます。色は文字色を引き継ぎます。サイドバーには<code>class="sidebar-icon"</code>を併用できます。</p><p>属性はspan・i・button・aなど、子要素を配置できるHTML要素に指定してください。子要素の先頭に装飾用SVGを挿入し、既存の文字やイベントは維持します。アイコンだけのボタンにはボタンの<code>aria-label</code>を指定します。単体のアイコンに意味を持たせる場合は、上のホームの例のように要素へ<code>role="img" aria-label="説明"</code>を指定してください。</p><p>追加した要素と<code>icon</code>属性の変更は自動で反映します。<code>KavUI.init(element)</code>でも初期化できます。存在しない名前や属性の削除では生成SVGを取り除き、既存の文字・代替表示を維持します。</p><pre class="setup-code"><code>const icon = document.querySelector(&quot;[icon]&quot;);
+icon.setAttribute(&quot;icon&quot;, &quot;mdi-star&quot;);</code></pre></section>
 <div class="mdi-icon-search"><label for="mdi-search">アイコンを探す</label><input id="mdi-search" class="form-control form-control-sm" type="search" data-mdi-search placeholder="例：home、設定、コピー、通知" aria-describedby="mdi-result"><p class="type-caption" id="mdi-result" role="status">128 / 128 アイコン</p></div>
 <p data-mdi-empty hidden>一致するアイコンがありません。別の名前・用途で検索してください。</p>
 <section class="specimen" id="mdi-navigation" data-mdi-group><h2>ナビゲーション</h2><div class="mdi-icon-grid">
