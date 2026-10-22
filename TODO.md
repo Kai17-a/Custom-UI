@@ -51,3 +51,11 @@
 - [ ] 公開する場合はprivate設定を変更し、レジストリ公開・バージョン管理の手順を整える。
 
 レジストリへの公開、リリースActionsの実行は行っていない。
+
+## ライブラリ用GitHub Releasesワークフロー
+
+- [x] HTML版とは別に、`libraries-vVERSION` タグと手動実行による3パッケージ公開を追加。
+- [x] バージョン・依存一致、ビルド・テスト、SHA-256、draft経由の公開と再実行保護に対応。
+- [x] 操作手順とローカルの非公開テストを追加。
+- 公開先はGitHub Releases。npmレジストリへの公開、タグ作成、Actionsの実行、実リリースは行っていない。
+- GitHub Issue: https://github.com/Kai17-a/Custom-UI/issues/2

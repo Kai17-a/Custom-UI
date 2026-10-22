@@ -154,3 +154,55 @@ npm run test:browser:packages
 例の開発サーバーは `npm run dev:vue` / `npm run dev:astro` で起動します。サーバー環境でのimport、Vue SSR、型の不正な指定、配布CSS参照、モバイル・タブレット・PC、入力値、モーダル、破棄・再作成、Astroのページ遷移とVueハイドレーションを検証します。
 
 レジストリ公開、バージョンタグ作成、リリース用Actionsの実行は別の操作です。今回のパッケージ生成コマンドでは行いません。
+
+## GitHub Releasesへのライブラリ公開
+
+専用ワークフローは `.github/workflows/release-libraries.yml`（**Release Kav-UI libraries**）です。`core`・`vue`・`astro` の3つの `.tgz` と `SHA256SUMS` を同じリリースへ配置します。`private: true` のまま利用でき、npmレジストリへの公開やnpmトークンは不要です。
+
+| 配布対象 | ワークフロー | タグ例 |
+| --- | --- | --- |
+| HTML版ZIP | `release.yml` | `v1.0.0` |
+| ライブラリ3種 | `release-libraries.yml` | `libraries-v0.1.0` |
+
+ライブラリ用タグはHTML版の公開を起動しません。ライブラリのリリースはGitHubの「Latest」に指定しないため、HTML版のLatest指定を変更しません。
+
+### 公開手順
+
+1. ワークフロー・スクリプト・パッケージ変更をコミットし、`main` に取り込みます。手動実行の一覧に表示するにはワークフローがデフォルトブランチ上に必要です。
+2. `packages/{core,vue,astro}/package.json` の `version` と、Vue/Astroの `@kav-ui/core` 依存を同じバージョンへ揃えます。更新する場合は例の依存も揃え、`package-lock.json` を更新・コミットします。
+3. 対象コミットへライブラリ用タグを作成してpushします。現在のパッケージは `0.1.0` です。
+
+```bash
+git tag libraries-v0.1.0
+git push origin libraries-v0.1.0
+```
+
+タグpushで実行されます。既存タグから手動実行する場合は、GitHubの **Actions → Release Kav-UI libraries → Run workflow** で `tag` に `libraries-v0.1.0` を指定します。ブランチ名やHTML版用の `v0.1.0` は指定できません。
+
+Node 24で、タグとバージョンの一致確認、ロックファイルによる依存インストール、共通CSS/JSのビルド、SSR・配布・型の検査、導入例のビルド、公開処理のローカルテストを行います。すべて成功したら3パッケージを生成し、チェックサムを検証してからGitHub Releasesへ添付します。`GITHUB_TOKEN` の `contents: write` を使用し、別の公開トークンは必要ありません。
+
+`libraries-v0.2.0-rc.1` のようなタグはプレリリースにします。公開前のdraftなら再実行でアセットを再配置できます。公開済みの場合は上書きせず失敗するため、新しいバージョンとタグを使用してください。
+
+### ダウンロード後の確認と導入
+
+ライブラリのリリースから3つの `.tgz` と `SHA256SUMS` を同じディレクトリへダウンロードします。
+
+```bash
+sha256sum -c SHA256SUMS
+# Vueアプリの場合
+npm install ./kav-ui-core-0.1.0.tgz ./kav-ui-vue-0.1.0.tgz
+# Astroアプリの場合
+npm install ./kav-ui-core-0.1.0.tgz ./kav-ui-astro-0.1.0.tgz
+```
+
+公開せずに生成・検証する場合は、`npm run pack:packages` の後で次を実行します。`dist/packages` に古いバージョンの `.tgz` が残っている場合は別の場所へ移してから実行してください。
+
+```bash
+node scripts/library-release.mjs validate libraries-v0.1.0
+node scripts/library-release.mjs checksums libraries-v0.1.0
+node scripts/library-release.mjs verify libraries-v0.1.0
+```
+
+上記の生成・検証コマンドは、タグ作成・Actions起動・GitHubへの公開を行いません。
+
+参考：[GitHubの手動実行手順](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow) / [GitHub CLIのRelease作成](https://cli.github.com/manual/gh_release_create)
