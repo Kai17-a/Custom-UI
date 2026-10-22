@@ -1,0 +1,6 @@
+---
+interface Props {config:Record<string,unknown>;class?:string;id?:string;}
+const {config,...rest}=Astro.props;
+---
+<figure {...rest} data-kav-ui-widget data-ui-chart="line"><script type="application/json" data-ui-chart-data set:html={JSON.stringify(config).replace(/</g,'\\u003c')}/></figure>
+<script>import {installAstro} from "../client.js";installAstro();</script>

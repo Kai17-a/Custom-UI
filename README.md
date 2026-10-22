@@ -81,3 +81,17 @@ python3 scripts/build-release.py --version v1.0.0 --output dist
 ```
 
 `dist/`はGitの管理対象外です。ブラウザでのUIテストは`tests/ui.html`、インストール済みChromiumを使う検証は`node tests/run-browser.mjs`です。
+
+## Vue・Astro向けパッケージ
+
+既存のHTML/ZIP版に加えて、`@kav-ui/core`・`@kav-ui/vue`・`@kav-ui/astro` をローカルtarballとして生成できます。Vueのprops・スロット・v-model、Astroの静的出力とクライアント遷移に対応しています。
+
+[導入・対応範囲・検証手順](packages/README.md) / [Vueの例](examples/vue) / [AstroとVue連携の例](examples/astro)
+
+```bash
+npm ci
+npm run build:packages
+npm run pack:packages
+```
+
+パッケージ開発時のみNode/npmを使用します。HTML版の利用手順とZIP配布は変わりません。npmレジストリには未公開です。

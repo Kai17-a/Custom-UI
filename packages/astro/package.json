@@ -1,0 +1,36 @@
+{
+  "name": "@kav-ui/astro",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "src",
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kai17-a/Custom-UI.git",
+    "directory": "packages/astro"
+  },
+  "dependencies": {
+    "@kav-ui/core": "0.1.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./components/*": "./src/components/*.astro",
+    "./client": {
+      "types": "./src/client.d.ts",
+      "import": "./src/client.js"
+    }
+  },
+  "peerDependencies": {
+    "astro": ">=7.4.2 <8"
+  }
+}

@@ -1,0 +1,5 @@
+---
+interface Props {title?:string;description?:string;class?:string;id?:string;}
+const {title,description,...rest}=Astro.props;
+---
+<section {...rest} class:list={['ui-card',rest.class]}>{Astro.slots.has('header')&&<header class="ui-card-header"><slot name="header"/></header>}<div class="ui-card-body">{title&&<h2 class="ui-card-title">{title}</h2>}{description&&<p class="ui-card-description">{description}</p>}<slot/></div>{Astro.slots.has('footer')&&<footer class="ui-card-footer"><slot name="footer"/></footer>}</section>

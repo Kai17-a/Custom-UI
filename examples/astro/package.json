@@ -1,0 +1,15 @@
+{
+  "name": "@kav-ui/example-astro",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@kav-ui/core": "0.1.0",
+    "@kav-ui/astro": "0.1.0",
+    "@kav-ui/vue": "0.1.0"
+  },
+  "scripts": {
+    "dev": "astro dev --host 127.0.0.1",
+    "build": "astro build"
+  }
+}

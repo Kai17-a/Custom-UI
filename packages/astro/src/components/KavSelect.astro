@@ -1,0 +1,7 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+interface Props extends Omit<HTMLAttributes<'select'>,'size'> {value?:string|number;label?:string;options?:Array<{value:string|number;label:string;disabled?:boolean}>;}
+const {value,label,options=[],...rest}=Astro.props;
+---
+<div data-kav-ui-widget><select {...rest} class:list={['form-select',rest.class]} aria-label={label||rest['aria-label']}>{options.map(option=><option value={option.value} disabled={option.disabled} selected={String(value)===String(option.value)}>{option.label}</option>)}<slot/></select></div>
+<script>import {installAstro} from "../client.js";installAstro();</script>

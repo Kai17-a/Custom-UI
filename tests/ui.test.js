@@ -368,6 +368,83 @@ window.uiTestsDone = (async () => {
     document.body.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
     assert(!document.querySelector('[role="tooltip"]'), '領域外で閉じる');
   });
+  await test('Vue境界: 祖先の初期化では変更せず、明示した範囲だけ初期化',()=>{
+    mount('<div data-kav-ui-vue id="vue-owner"><select class="form-select"><option>選択</option></select></div>');
+    const owner=find('#vue-owner');assert(!owner.querySelector('.ui-select-trigger'),'Vueの管理下を祖先から書き換えない');
+    KavUI.init(owner);assert(owner.querySelectorAll('.ui-select-trigger').length===1,'不透明なアダプターでは明示して初期化できる');
+    KavUI.destroy(fixture);assert(owner.querySelector('.ui-select-trigger'),'祖先の破棄でもVueが所有する部品を維持');
+    KavUI.destroy(owner);assert(!owner.querySelector('.ui-select-trigger'),'所有者から明示的に破棄すると元へ戻す');
+  });
+  await test('Vueアイコン境界: 祖先の走査・ObserverはVue DOMに触れずHTMLアダプター内だけ更新',async()=>{
+    mount('<section data-kav-ui-vue><button id="vue-raw-icon" icon="mdi-home">Vue text</button><div id="vue-html-icons" data-kav-ui-vue data-kav-ui-html><button icon="mdi-home">HTML text</button></div></section>');
+    const raw=find('#vue-raw-icon'),html=find('#vue-html-icons'),trusted=html.querySelector('button');
+    KavUI.init(html);await wait(0);
+    assert(!raw.querySelector('svg')&&trusted.querySelector('svg'),'Vueの通常ノードを保護して不透明HTML内を初期化');
+    const original=trusted.querySelector('path').getAttribute('d');raw.setAttribute('icon','mdi-check');trusted.setAttribute('icon','mdi-check');
+    const child=document.createElement('button');child.setAttribute('icon','mdi-home');raw.parentNode.append(child);await wait(0);
+    assert(!raw.querySelector('svg')&&!child.querySelector('svg'),'属性変更と動的追加でもVue側を変更しない');
+    assert(trusted.querySelector('path').getAttribute('d')!==original,'不透明HTML内の属性変更は自動描画');
+    KavUI.destroy(html);
+  });
+  await test('destroy: 選択欄・入力ピッカー・チャートの後始末と再初期化',()=>{
+    mount('<div id="dispose-unit"><select class="form-select" aria-label="選択"><option value="one">1</option><option value="two">2</option></select><input class="form-control" type="color" value="#345678"><figure data-ui-chart><script type="application/json" data-ui-chart-data>{"labels":["月"],"series":[{"name":"値","values":[1]}]}</script></figure></div><div id="outside-unit"><select class="form-select"><option>外側</option></select></div>');
+    const root=find('#dispose-unit'),select=root.querySelector('select'),input=root.querySelector('input[type=color]');
+    select.value='two';root.querySelector('.ui-select-trigger').click();
+    KavUI.destroy(root);
+    assert(!root.querySelector('.ui-select-trigger')&&!root.querySelector('.ui-input-picker')&&!root.querySelector('.ui-chart-output'),'生成DOMを戻す');
+    assert(select.value==='two'&&input.value==='#345678'&&root.querySelector('select')===select,'ネイティブの値とDOMを維持');
+    assert(find('#outside-unit .ui-select-trigger'),'他の範囲を変更しない');
+    KavUI.destroy(root);KavUI.init(root);
+    assert(root.querySelectorAll('.ui-select-trigger').length===1&&root.querySelectorAll('.ui-chart-output').length===1,'再初期化で重複しない');
+  });
+
+  await test('destroy: 入力要素だけの初期化でもピッカー内部の選択欄を破棄',async()=>{
+    mount('<form><fieldset><input class="form-control" type="time" value="09:30"></fieldset></form>');
+    const input=find('input[type=time]');find('.ui-input-picker-trigger').click();
+    const popup=find('.ui-input-popup'),select=popup.querySelector('select'),button=popup.querySelector('.ui-select-trigger');
+    assert(select&&button,'時刻の内部選択欄を初期化');
+    KavUI.destroy(input);
+    assert(find('input[type=time]')===input&&!find('.ui-input-picker')&&!popup.querySelector('.ui-select-trigger'),'元inputと内部のnative selectへ復元');
+    const label=button.textContent;select.selectedOptions[0].textContent='破棄後の変更';find('fieldset').disabled=true;await wait(0);
+    assert(button.textContent===label,'外側fieldsetや古いselectを変更しても破棄済みUIは同期しない');
+  });
+  await test('destroy: 日付入力の生成UIを戻し、同じrootの再描画後に初期化',()=>{
+    mount('<div id="date-dispose" data-ui-datepicker><input type="date" value="2026-10-01"></div>');
+    const root=find('#date-dispose'),oldInput=root.querySelector('input');
+    root.querySelector('[data-ui-datepicker-action="toggle"]').click();
+    KavUI.destroy(root);
+    assert(root.children.length===1&&root.firstElementChild===oldInput&&!root.classList.contains('ui-datepicker'),'入力を維持して生成DOMとクラスを戻す');
+    root.innerHTML='<input type="date" value="2026-10-20">';KavUI.init(root);KavUI.init(root);
+    assert(root.querySelectorAll('.ui-datepicker-toggle').length===1,'新しい入力に一度だけ生成');
+    root.querySelector('[data-ui-datepicker-action="toggle"]').click();
+    root.querySelector('[data-ui-calendar-date="2026-10-24"]').click();
+    assert(root.querySelector('input').value==='2026-10-24'&&oldInput.value==='2026-10-01','新しい入力だけに選択を反映');
+    KavUI.destroy(root);
+  });
+  await test('destroy: サイドバーの同じrootを再描画しても新しいpanelを制御',()=>{
+    mount('<div id="sidebar-dispose" class="app-shell" data-ui-sidebar><aside class="app-sidebar">旧メニュー</aside><main>本文</main></div>');
+    const root=find('#sidebar-dispose'),oldPanel=root.querySelector('aside');
+    KavUI.sidebar(root,{open:true});KavUI.destroy(root);
+    assert(!oldPanel.hidden&&!root.hasAttribute('data-ui-sidebar-state'),'初期状態へ戻す');
+    root.innerHTML='<aside class="app-sidebar">新メニュー</aside><main>新本文</main>';KavUI.init(root);
+    const panel=root.querySelector('aside');
+    KavUI.sidebar(root,{open:true});KavUI.sidebar(root,{open:false});
+    assert(panel.hidden&&!oldPanel.hidden,'新しいpanelだけを閉じる');
+    KavUI.sidebar(root,{open:true});assert(!panel.hidden,'新しいpanelを再表示');
+    KavUI.destroy(root);assert(!document.querySelector('.ui-sidebar-dialog'),'外側のダイアログも片付ける');
+  });
+  await test('destroy: indeterminateの外側form resetと予約済み処理を解除',async()=>{
+    mount('<form><div id="mixed-dispose"><input type="checkbox" data-ui-indeterminate></div></form>');
+    const root=find('#mixed-dispose'),input=root.querySelector('input'),form=find('form');
+    form.reset();KavUI.destroy(root);input.indeterminate=false;await wait(10);
+    assert(!input.indeterminate,'破棄前に予約したresetも取り消す');
+    input.remove();form.reset();await wait(10);
+    assert(!input.indeterminate,'取り外したinputには外側resetが作用しない');
+    root.append(input);input.dataset.uiIndeterminate='false';KavUI.init(root);input.indeterminate=true;form.reset();await wait(10);
+    assert(!input.indeterminate,'再初期化では現在の属性でresetを登録');
+    KavUI.destroy(root);
+  });
+
   await test('Responsive sidebar: API・同期・再初期化・無効ボタン',()=>{
     mount('<div class="app-shell" id="responsive-unit" data-ui-sidebar data-ui-sidebar-mobile="collapse"><aside class="app-sidebar"><a href="#">ページ</a></aside><div><button type="button" data-ui-toggle="sidebar-responsive" data-ui-target="#responsive-unit" icon="mdi-menu" data-ui-label-open="閉じる" data-ui-label-closed="開く"></button></div></div>');
     const root=find('#responsive-unit'),panel=find('.app-sidebar'),button=find('button');
@@ -473,6 +550,26 @@ window.uiTestsDone = (async () => {
     KavUI.init(group);assert(last.getAttribute('aria-selected')==='true','再初期化で選択を保持');
   });
   const splitMarkup=(extra='',panels='')=>'<div class="ui-splitter" data-ui-splitter '+extra+'>'+(panels || '<section data-ui-splitter-panel data-ui-size="30" data-ui-min="15" data-ui-max="60" data-ui-collapsible aria-label="一覧"><a href="#split-test">一覧リンク</a></section><section data-ui-splitter-panel data-ui-size="70" data-ui-min="20" aria-label="本文">本文</section>')+'</div>';
+  await test('Splitter: destroyで通常コンテンツへ戻し、元の属性・サイズ・クラスを復元',()=>{
+    fixture.innerHTML='<div data-ui-splitter><section class="author" data-ui-splitter-panel data-ui-size="30" data-ui-collapsible aria-hidden="false" style="--ui-splitter-size:17 !important;color:red"><a href="#split-restored">リンク</a></section><section class="ui-splitter-panel" id="original-split-panel" data-ui-splitter-panel data-ui-size="70" inert="inert" aria-hidden="true" data-ui-splitter-collapsed="original">本文</section></div>';
+    const root=find('[data-ui-splitter]'),panels=many('[data-ui-splitter-panel]');KavUI.init(root);
+    const oldHandle=root.querySelector('[role=separator]');KavUI.splitter(root,{sizes:[0,100]});
+    assert(panels[0].inert&&panels[0].getAttribute('aria-hidden')==='true','実際に折り畳んでから破棄');
+    KavUI.destroy(root);KavUI.destroy(root);
+    assert(!root.querySelector('[role=separator]')&&!root.hasAttribute('class'),'生成ハンドルと追加ルートクラスを除く');
+    assert(!panels[0].inert&&panels[0].getAttribute('aria-hidden')==='false'&&!panels[0].hasAttribute('data-ui-splitter-collapsed')&&!panels[0].hasAttribute('id')&&panels[0].className==='author','開閉属性・生成ID・パネルクラスを戻す');
+    assert(panels[0].style.getPropertyValue('--ui-splitter-size')==='17'&&panels[0].style.getPropertyPriority('--ui-splitter-size')==='important'&&panels[0].style.color==='red','元のサイズと優先度・他のスタイルを維持');
+    assert(panels[1].getAttribute('inert')==='inert'&&panels[1].getAttribute('aria-hidden')==='true'&&panels[1].getAttribute('data-ui-splitter-collapsed')==='original'&&panels[1].id==='original-split-panel'&&panels[1].className==='ui-splitter-panel'&&!panels[1].hasAttribute('style'),'初期状態で存在した属性は保持');
+    const link=panels[0].querySelector('a');link.focus();assert(document.activeElement===link,'通常コンテンツとして再び操作できる');
+    let changes=0;root.addEventListener('ui:splitterchange',()=>changes++);
+    oldHandle.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));
+    assert(changes===0&&!panels[0].inert,'破棄したハンドルのイベントも解除');
+    KavUI.init(root);KavUI.init(root);
+    assert(root.querySelectorAll('[role=separator]').length===1&&KavUI.splitter(root).join()==='30,70','同じパネルを初期サイズで一度だけ再初期化');
+    root.innerHTML='<section data-ui-splitter-panel data-ui-size="40">新A</section><section data-ui-splitter-panel data-ui-size="60">新B</section>';KavUI.init(root);
+    assert(KavUI.splitter(root).join()==='40,60','構造変更時も旧状態を破棄して初期化');
+    KavUI.destroy(root);assert(!root.querySelector('[role=separator]')&&[...root.children].every(panel=>!panel.inert&&!panel.hasAttribute('style')&&!panel.hasAttribute('class')),'構造変更後も新しいパネルを復元');
+  });
   await test('Splitter: 初期値・制約・API・独立・再初期化', () => {
     mount(splitMarkup()+splitMarkup());const roots=many('[data-ui-splitter]'),root=roots[0];
     assert(KavUI.splitter(root).join() === '30,70','初期サイズ');
@@ -1175,6 +1272,19 @@ window.uiTestsDone = (async () => {
     assert(calendar.dataset.uiMonth==='2026-11' && !calendar.getAnimations({subtree:true}).length,'フォーム用も同じ表示方式');
     calendar.querySelector('[data-ui-calendar-date="2026-11-11"]').click();
     assert(find('#still-date').value==='2026-11-11' && document.activeElement===find('#still-date'),'フォームへの反映とフォーカス復帰を維持');
+  });
+  await test('Calendar destroy: 同じrootの再初期化・再描画と生成DOMの後始末', () => {
+    mount('<div data-ui-calendar data-ui-name="day" data-ui-month="2026-10" data-ui-calendar-modal><ul data-ui-calendar-events><li data-ui-date="2026-10-21">会議</li></ul></div>');
+    const root=find('[data-ui-calendar]'),events=root.querySelector('ul');
+    root.querySelector('[data-ui-calendar-date="2026-10-21"]').click();
+    assert(root.querySelector('dialog[open]'),'日付モーダルを開く');KavUI.destroy(root);
+    assert(!root.querySelector('[data-ui-calendar-view],dialog,[data-ui-calendar-input]')&&!events.hidden,'生成UIを除去しイベント一覧の表示を戻す');
+    KavUI.init(root);assert(root.querySelectorAll('[data-ui-calendar-date]').length===42,'同じDOMへ再初期化できる');
+    KavUI.destroy(root);root.replaceChildren();KavUI.init(root);
+    assert(root.querySelectorAll('[data-ui-calendar-date]').length===42,'rootの内部再描画後も日付を生成');
+    root.querySelector('[data-ui-calendar-date="2026-10-22"]').click();
+    assert(root.dataset.uiValue==='2026-10-22'&&root.querySelector('input').value==='2026-10-22','再生成後の操作とフォーム値');
+    KavUI.destroy(root);
   });
   document.title = failures.length ? 'FAIL — UI tests' : 'PASS — UI tests';
   return {passed, failures};

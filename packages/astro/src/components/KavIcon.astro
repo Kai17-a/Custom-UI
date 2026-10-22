@@ -1,0 +1,6 @@
+---
+import {mdiPaths} from '@kav-ui/core/icons';
+interface Props {name:string;label?:string;class?:string;}
+const {name,label,...rest}=Astro.props;const path=mdiPaths[name];
+---
+{path && <svg {...rest} class:list={['ui-icon',rest.class]} viewBox="0 0 24 24" fill="currentColor" role={label?'img':undefined} aria-label={label} aria-hidden={label?undefined:'true'} focusable="false"><path d={path}/></svg>}

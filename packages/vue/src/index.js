@@ -1,0 +1,109 @@
+import {defineComponent as vueDefineComponent,cloneVNode,isVNode,h,ref,watch,onMounted,onUpdated,onBeforeUpdate,onBeforeUnmount,mergeProps,useId,Teleport,computed,nextTick} from 'vue';
+import {buttonClass,badgeClass,semanticColor,escapeHTML,attributes,mdiPaths,mount,loadRuntime} from '@kav-ui/core';
+export {toast,setColorTheme,setDesignTheme,setPalette,setCustomPalette} from '@kav-ui/core';
+// Ancestor Astro/HTML adapters must not enhance DOM which Vue owns.
+function defineComponent(options){
+ const setup=options.setup;
+ return vueDefineComponent({...options,setup(props,context){const render=setup(props,context);return ()=>{
+  const tree=render(),mark=node=>isVNode(node)&&typeof node.type==='string'?cloneVNode(node,{'data-kav-ui-vue':''}):node;
+  return Array.isArray(tree)?tree.map(mark):mark(tree);
+ };}});
+}
+const model=(props,emit,fallback)=>{const value=ref(props.modelValue??fallback);watch(()=>props.modelValue,next=>{if(next!==undefined)value.value=next;});return {value,set(next){value.value=next;emit('update:modelValue',next);}};};
+export const KavIcon=defineComponent({name:'KavIcon',props:{name:String,label:String},setup:p=>()=>mdiPaths[p.name]?h('svg',{class:'ui-icon',viewBox:'0 0 24 24',fill:'currentColor',role:p.label?'img':undefined,'aria-label':p.label,'aria-hidden':p.label?undefined:'true',focusable:'false'},[h('path',{d:mdiPaths[p.name]})]):null});
+export const KavButton=defineComponent({name:'KavButton',props:{color:{type:String,default:'primary'},variant:{type:String,default:'solid'},size:{type:String,default:'md'},loading:Boolean,disabled:Boolean,icon:String,iconRight:String,href:String,type:{type:String,default:'button'}},setup:(p,{slots})=>()=>h(p.href?'a':'button',{class:[buttonClass(p),p.loading&&'ui-loading-button'],href:p.disabled||p.loading?undefined:p.href,type:p.href?undefined:p.type,disabled:p.href?undefined:p.disabled||p.loading,'aria-disabled':p.href&&p.disabled||p.loading?'true':undefined,'aria-busy':p.loading?'true':undefined,onClick:e=>{if(p.disabled||p.loading){e.preventDefault();e.stopImmediatePropagation();}}},[p.loading?h('span',{class:'ui-spinner ui-spinner-sm','aria-hidden':'true'}):p.icon?h(KavIcon,{name:p.icon}):null,slots.default?.(),p.iconRight?h(KavIcon,{name:p.iconRight}):null])});
+export const KavCard=defineComponent({name:'KavCard',props:{title:String,description:String},setup:(p,{slots})=>()=>h('section',{class:'ui-card'},[slots.header?h('header',{class:'ui-card-header'},slots.header()):null,h('div',{class:'ui-card-body'},[p.title?h('h2',{class:'ui-card-title'},p.title):null,p.description?h('p',{class:'ui-card-description'},p.description):null,slots.default?.()]),slots.footer?h('footer',{class:'ui-card-footer'},slots.footer()):null])});
+export const KavContainer=defineComponent({name:'KavContainer',props:{size:String,as:{type:String,default:'div'}},setup:(p,{slots})=>()=>h(p.as,{class:['ui-container',['sm','lg','fluid'].includes(p.size)&&'ui-container-'+p.size]},slots.default?.())});
+export const KavSpinner=defineComponent({name:'KavSpinner',props:{size:String,label:{type:String,default:'読み込み中'}},setup:p=>()=>h('span',{role:'status','aria-label':p.label,class:['ui-spinner',['xs','sm','lg','xl'].includes(p.size)&&'ui-spinner-'+p.size]})});
+export const KavProgress=defineComponent({name:'KavProgress',props:{value:Number,max:{type:Number,default:100},label:{type:String,default:'進捗'}},setup:p=>()=>h('progress',{class:'ui-progress',value:p.value,max:p.max,'aria-label':p.label})});
+export const KavBadge=defineComponent({name:'KavBadge',props:{color:{type:String,default:'primary'}},setup:(p,{slots})=>()=>h('span',{class:badgeClass(p.color)},slots.default?.())});
+export const KavField=defineComponent({name:'KavField',props:{label:String,for:String,hint:String,error:String},setup:(p,{slots})=>()=>h('div',{class:'field'},[p.label?h('label',{for:p.for},p.label):null,slots.default?.(),p.hint?h('small',{class:'dim'},p.hint):null,p.error?h('small',{class:'ui-invalid-feedback',role:'alert'},p.error):null])});
+/** Opaque HTML boundary: Vue never renders children which the legacy runtime owns. */
+export const KavWidget=defineComponent({name:'KavWidget',inheritAttrs:false,props:{html:{type:String,required:true},as:{type:String,default:'div'}},emits:['ready','error'],setup(p,{attrs,emit,expose}){
+ const host=ref(),api=ref();let cleanup,controller,previous=p.html,previousAs=p.as,version=0;
+ function dispose(){version++;controller?.abort();cleanup?.();cleanup=undefined;}
+ async function start(){const current=++version;controller=new AbortController();try{const stop=await mount(host.value,{signal:controller.signal});if(current!==version){stop();return;}cleanup=stop;api.value=await loadRuntime();emit('ready',api.value);}catch(error){if(current===version)emit('error',error);}}
+ onMounted(start);onBeforeUpdate(()=>{if(previous!==p.html||previousAs!==p.as)dispose();});onUpdated(()=>{if(previous!==p.html||previousAs!==p.as){previous=p.html;previousAs=p.as;start();}});onBeforeUnmount(dispose);
+ expose({element:host,runtime:api});return ()=>h(p.as,mergeProps(attrs,{ref:host,'data-kav-ui-html':'',innerHTML:p.html}));
+}});
+// Model changes update the native control in place; rebuilding the host would lose focus.
+function nativeValue(props,selector,apply=(control,value)=>{control.value=String(value);}){
+ const widget=ref();let api;
+ function sync(){const root=widget.value?.element,control=root?.querySelector(selector);if(!control)return;if(props.modelValue!==undefined)apply(control,props.modelValue);api?.init(root);}
+ watch(()=>props.modelValue,sync,{flush:'post'});
+ return {widget,ready(runtime){api=runtime;sync();}};
+}
+// A native reset does not emit input/change; keep the model in sync after its default action.
+function useFormReset(resolve,restore){
+ let form,current,controller;
+ function bind(){const control=resolve(),next=control?.form;if(next===form&&control===current)return;controller?.abort();form=next;current=control;if(!form)return;const active=new AbortController();controller=active;form.addEventListener('reset',event=>{queueMicrotask(()=>{if(!event.defaultPrevented&&!active.signal.aborted)restore(control);});},{signal:active.signal});}
+ onMounted(bind);onUpdated(bind);onBeforeUnmount(()=>controller?.abort());
+}
+// Focus/blur do not bubble. Capture them at opaque hosts; other native events bubble normally.
+function widgetAttrs(attrs){const forwarded={...attrs};for(const name of ['Focus','Blur'])if(attrs['on'+name]){const listener=event=>{if(event.target.matches('.ui-picker-native,.ui-select-native'))return;if(event.currentTarget.contains(event.relatedTarget)&&(name==='Blur'||!event.relatedTarget?.matches('.ui-picker-native,.ui-select-native')))return;for(const callback of [attrs['on'+name]].flat())callback(event);};forwarded['on'+name+'Capture']=[attrs['on'+name+'Capture'],listener].flat().filter(Boolean);delete forwarded['on'+name];}return forwarded;}
+const inputProps={modelValue:[String,Number],name:String,id:String,label:String,type:{type:String,default:'text'},disabled:Boolean,required:Boolean,placeholder:String,min:[String,Number],max:[String,Number],step:[String,Number]};
+export const KavInput=defineComponent({name:'KavInput',inheritAttrs:false,props:inputProps,emits:['update:modelValue','input','change'],setup(p,{attrs,emit}){
+ const input=ref(),native=nativeValue(p,'input');const initial=p.modelValue;
+ useFormReset(()=>input.value||native.widget.value?.element?.querySelector('input'),control=>emit('update:modelValue',input.value?initial??'':control.value));
+ const isControl=e=>e.target===(input.value||native.widget.value?.element?.querySelector('input'));
+ const update=e=>{if(isControl(e)){emit('update:modelValue',e.target.value);emit(e.type,e);}};
+ const changed=e=>{if(isControl(e))emit('change',e);};
+ return ()=>{
+  const values={...attrs,type:p.type,id:p.id,name:p.name,disabled:p.disabled,required:p.required,placeholder:p.placeholder,min:p.min,max:p.max,step:p.step,'aria-label':p.label??attrs['aria-label'],value:p.modelValue??''};
+  if(['date','time','datetime-local','month','week','color'].includes(p.type)){
+   let html='<input'+attributes({...values,class:'form-control',value:initial??''})+'>';
+   if(p.type==='date')html='<div class="ui-datepicker" data-ui-datepicker>'+html+'</div>';
+   return h(KavWidget,{...widgetAttrs(attrs),ref:native.widget,html,onReady:native.ready,onInput:update,onChange:changed});
+  }
+  return h('input',mergeProps(attrs,{...values,ref:input,class:['form-control',attrs.class],onInput:update,onChange:changed}));
+ };
+}});
+export const KavTextarea=defineComponent({name:'KavTextarea',props:{modelValue:String},emits:['update:modelValue'],setup(p,{emit}){const control=ref(),initial=p.modelValue??'';useFormReset(()=>control.value,element=>{element.value=initial;emit('update:modelValue',initial);});return ()=>h('textarea',{ref:control,class:'form-control',value:p.modelValue,onInput:e=>emit('update:modelValue',e.target.value)},initial);}});
+function checkComponent(name,type,switchStyle=false){return defineComponent({name,inheritAttrs:false,props:{modelValue:{type:[Boolean,String,Number],default:undefined},value:[String,Number],label:String,name:String,id:String,disabled:Boolean,required:Boolean},emits:['update:modelValue','change'],setup(p,{attrs,emit,slots}){
+ const initial=p.modelValue??(type==='radio'?undefined:false),state=model(p,emit,initial),control=ref();useFormReset(()=>control.value,input=>{input.checked=type==='radio'?initial===p.value:Boolean(initial);state.set(initial);});return ()=>h('label',{class:switchStyle?'switch':'form-check',for:p.id},[h('input',mergeProps(attrs,{ref:control,class:switchStyle?undefined:'form-check-input',type,id:p.id,name:p.name,value:p.value,disabled:p.disabled,required:p.required,checked:type==='radio'?state.value.value===p.value:Boolean(state.value.value),onChange:e=>{state.set(type==='radio'?p.value:e.target.checked);emit('change',e);}})),h('span',{class:'form-check-label'},slots.default?.()||p.label)]);
+}});}
+export const KavCheckbox=checkComponent('KavCheckbox','checkbox');export const KavRadio=checkComponent('KavRadio','radio');export const KavSwitch=checkComponent('KavSwitch','checkbox',true);
+export const KavSelect=defineComponent({name:'KavSelect',inheritAttrs:false,props:{modelValue:[String,Number],options:{type:Array,default:()=>[]},label:String,id:String,name:String,disabled:Boolean,required:Boolean},emits:['update:modelValue','change'],setup(p,{attrs,emit}){
+ const native=nativeValue(p,'select'),initial=p.modelValue;
+ const readValue=control=>{const found=p.options.find(o=>String(typeof o==='object'?o.value:o)===control.value);return typeof found==='object'?found.value:found??control.value;};
+ useFormReset(()=>native.widget.value?.element?.querySelector('select'),control=>emit('update:modelValue',readValue(control)));
+ return ()=>h(KavWidget,{...widgetAttrs(attrs),ref:native.widget,onReady:native.ready,html:'<select'+attributes({...attrs,class:'form-select',style:undefined,id:p.id,name:p.name,disabled:p.disabled,required:p.required,'aria-label':p.label??attrs['aria-label']})+'>'+p.options.map(item=>{const o=typeof item==='object'?item:{value:item,label:item};return '<option'+attributes({value:o.value,disabled:o.disabled,selected:String(initial)===String(o.value)})+'>'+escapeHTML(o.label)+'</option>';}).join('')+'</select>',onChange:e=>{if(e.target.tagName!=='SELECT')return;emit('update:modelValue',readValue(e.target));emit('change',e);}});
+}});
+function notice(name,banner){return defineComponent({name,props:{modelValue:{type:Boolean,default:undefined},color:{type:String,default:'info'},variant:String,title:String,icon:String,closable:Boolean},emits:['update:modelValue','close'],setup(p,{slots,emit}){
+ const state=model(p,emit,true),close=()=>{state.set(false);emit('close');};return ()=>!state.value.value?null:banner?h('div',{class:['ui-banner','ui-banner-'+semanticColor(p.color),['solid','outline'].includes(p.variant)&&'ui-banner-'+p.variant],role:'note'},[h('div',{class:'ui-banner-inner'},[p.icon?h(KavIcon,{class:'ui-banner-icon',name:p.icon}):null,h('div',{class:'ui-banner-content'},[p.title?h('strong',{class:'ui-banner-title'},p.title):null,slots.default?.()]),slots.actions?h('div',{class:'ui-banner-actions'},slots.actions()):null,p.closable?h('button',{class:'ui-banner-close',type:'button','aria-label':'案内を閉じる',onClick:close},[h(KavIcon,{name:'mdi-close'})]):null])]):h('div',{class:['alert','alert-'+semanticColor(p.color),p.closable&&'alert-dismissible'],role:'note'},[h('div',[p.title?h('h3',{class:'alert-title'},p.title):null,slots.default?.()]),p.closable?h('button',{class:'btn-close',type:'button','aria-label':'案内を閉じる',onClick:close}):null]);
+}});}
+export const KavAlert=notice('KavAlert',false);export const KavBanner=notice('KavBanner',true);
+export const KavDialog=defineComponent({name:'KavDialog',props:{modelValue:Boolean,title:String,label:String,placement:String},emits:['update:modelValue','close','open'],setup(p,{slots,emit,expose}){
+ const dialog=ref(),heading='kav-dialog-'+useId();let opener;
+ function sync(){if(!dialog.value)return;if(p.modelValue&&!dialog.value.open){opener=document.activeElement;dialog.value.showModal();emit('open');}else if(!p.modelValue&&dialog.value.open)dialog.value.close();}
+ onMounted(sync);watch(()=>p.modelValue,sync,{flush:'post'});onBeforeUnmount(()=>{if(dialog.value?.open)dialog.value.close();if(opener?.isConnected)opener.focus();});
+ const close=()=>{emit('update:modelValue',false);if(dialog.value?.open)dialog.value.close();};expose({close,element:dialog});
+ return ()=>h('dialog',{ref:dialog,class:['ui-dialog',p.placement&&'ui-drawer',['start','top','bottom'].includes(p.placement)&&'ui-drawer-'+p.placement], 'aria-labelledby':p.title?heading:undefined,'aria-label':p.label,onCancel:e=>{e.preventDefault();close();},onClose:()=>{emit('update:modelValue',false);emit('close');if(opener?.isConnected)opener.focus();},onClick:e=>{if(e.target!==dialog.value)return;const r=dialog.value.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)close();}},[p.title?h('h2',{id:heading},p.title):null,slots.default?.(),slots.footer?h('div',{class:'buttons'},slots.footer()):null]);
+}});
+export const KavDrawer=defineComponent({name:'KavDrawer',props:{modelValue:Boolean,title:String,placement:{type:String,default:'end'}},emits:['update:modelValue'],setup:(p,{slots,emit})=>()=>h(KavDialog,{...p,'onUpdate:modelValue':value=>emit('update:modelValue',value)},slots)});
+export const KavAccordion=defineComponent({name:'KavAccordion',props:{modelValue:{type:Boolean,default:undefined},label:String},emits:['update:modelValue'],setup(p,{slots,emit}){const state=model(p,emit,false);return ()=>h('div',{class:'accordion'},[h('details',{open:state.value.value,onToggle:e=>{if(e.target.open!==state.value.value)state.set(e.target.open);}},[h('summary',slots.summary?.()||p.label),slots.default?.()])]);}});
+export const KavTabs=defineComponent({name:'KavTabs',props:{modelValue:String,items:{type:Array,default:()=>[]},label:{type:String,default:'タブ'}},emits:['update:modelValue'],setup(p,{slots,emit}){
+ const state=model(p,emit,p.items.find(item=>!item.disabled)?.value),uid=useId(),buttons=new Map();
+ function selectAvailable(){if(p.items.some(item=>!item.disabled&&item.value===state.value.value))return;const first=p.items.find(item=>!item.disabled);if(first)state.set(first.value);else state.value.value=undefined;}
+ watch(()=>p.items.map(item=>[item.value,item.disabled]),selectAvailable,{immediate:true});watch(state.value,selectAvailable);
+ function move(e,index){const enabled=p.items.filter(i=>!i.disabled),current=enabled.findIndex(i=>i.value===p.items[index].value);let next;if(!enabled.length)return;if(e.key==='ArrowRight')next=(current+1)%enabled.length;if(e.key==='ArrowLeft')next=(current-1+enabled.length)%enabled.length;if(e.key==='Home')next=0;if(e.key==='End')next=enabled.length-1;if(next===undefined)return;e.preventDefault();state.set(enabled[next].value);buttons.get(enabled[next].value)?.focus();}
+ return ()=>h('div',[h('div',{class:'tabs',role:'tablist','aria-label':p.label},p.items.map((item,index)=>h('button',{ref:el=>{if(el)buttons.set(item.value,el);else buttons.delete(item.value);},id:uid+'-tab-'+index,type:'button',role:'tab',disabled:item.disabled,'aria-selected':state.value.value===item.value,'aria-controls':uid+'-panel-'+index,tabindex:state.value.value===item.value?0:-1,onClick:()=>state.set(item.value),onKeydown:e=>move(e,index)},item.label))),...p.items.map((item,index)=>h('section',{class:'tab-panel',role:'tabpanel',id:uid+'-panel-'+index,'aria-labelledby':uid+'-tab-'+index,hidden:state.value.value!==item.value,tabindex:0},slots[item.value]?.()))]);
+}});
+export const KavCalendar=defineComponent({name:'KavCalendar',props:{modelValue:String,month:String,min:String,max:String,label:{type:String,default:'カレンダー'}},emits:['update:modelValue'],setup(p,{emit}){const initial=p.modelValue,native=nativeValue(p,'[data-ui-calendar]',(root,value)=>{root.dataset.uiValue=String(value);});return ()=>h(KavWidget,{ref:native.widget,onReady:native.ready,html:'<div'+attributes({class:'ui-calendar','data-ui-calendar':true,'data-ui-value':initial,'data-ui-month':p.month,'data-ui-min':p.min,'data-ui-max':p.max,'aria-label':p.label})+'></div>','onUi:datechange':e=>emit('update:modelValue',e.detail.value)});}});
+export const KavChart=defineComponent({name:'KavChart',props:{config:{type:Object,required:true}},setup(p){const host=ref();return ()=>h(KavWidget,{ref:host,html:'<figure data-ui-chart="line"><script type="application/json" data-ui-chart-data>'+JSON.stringify(p.config).replace(/</g,'\\u003c')+'</script></figure>'});}});
+
+// Teleport moves Vue-owned menu nodes without handing their DOM to the HTML runtime.
+export const KavSidebar=defineComponent({name:'KavSidebar',inheritAttrs:false,props:{modelValue:{type:Boolean,default:undefined},title:String,label:{type:String,default:'ナビゲーション'},items:{type:Array,default:()=>[]},mobile:{type:String,default:'drawer'},tablet:{type:String,default:'rail'},desktop:{type:String,default:'expanded'},side:{type:String,default:'start'}},emits:['update:modelValue'],setup(p,{attrs,slots,emit,expose}){
+ const state=model(p,emit,true),device=ref('desktop'),dialog=ref(),uid='kav-sidebar-'+useId();let opener,controller,initialized=false;
+ const mode=computed(()=>p[device.value]),overlay=computed(()=>['drawer','top','bottom'].includes(mode.value)&&state.value.value),rail=computed(()=>mode.value==='rail'&&!state.value.value);
+ function toggle(){opener=typeof document==='undefined'?undefined:document.activeElement;state.set(!state.value.value);}
+ function sync(){if(!dialog.value)return;if(overlay.value&&!dialog.value.open){opener=document.activeElement;dialog.value.showModal();}else if(!overlay.value&&dialog.value.open){dialog.value.close();if(opener?.isConnected)opener.focus();}}
+ onMounted(()=>{controller=new AbortController();const tablet=matchMedia('(width >= 768px)'),desktop=matchMedia('(width >= 1024px)');const resize=()=>{device.value=desktop.matches?'desktop':tablet.matches?'tablet':'mobile';};tablet.addEventListener('change',resize,{signal:controller.signal});desktop.addEventListener('change',resize,{signal:controller.signal});resize();if(p.modelValue===undefined)state.set(mode.value==='expanded');initialized=true;nextTick(sync);});
+ watch(mode,()=>{if(initialized)state.set(mode.value==='expanded');},{flush:'sync'});watch(overlay,sync,{flush:'post'});onBeforeUnmount(()=>{controller?.abort();if(dialog.value?.open)dialog.value.close();});
+ expose({toggle,close:()=>state.set(false),open:()=>state.set(true)});
+ const items=()=>p.items.map(item=>h('a',{href:item.href,'aria-current':item.active?'page':undefined,title:rail.value?item.label:undefined,onClick:()=>{if(overlay.value)state.set(false);}},[item.icon?h(KavIcon,{name:item.icon,class:'sidebar-icon'}):null,h('span',{class:'sidebar-label'},item.label)]));
+ return ()=>[h('div',mergeProps(attrs,{class:'app-shell','data-kav-ui-vue':'','data-ui-sidebar':'','data-ui-sidebar-mode':mode.value,'data-ui-sidebar-state':overlay.value?'closed':state.value.value?'expanded':rail.value?'rail':'closed'}),[
+  h(Teleport,{to:dialog.value||'body',disabled:!overlay.value},[h('aside',{class:'app-sidebar',id:uid,'aria-label':p.label,hidden:!state.value.value&&!rail.value,onKeydown:e=>{if(e.key==='Escape'&&state.value.value){e.preventDefault();state.set(false);}},onClick:()=>{if(rail.value&&document.activeElement?.tagName==='SUMMARY')state.set(true);}},[p.title?h('h2',{class:'app-sidebar-title'},p.title):null,h('nav',{class:'app-sidebar-group'},slots.menu?.()||items()),slots.footer?h('div',{class:'app-sidebar-footer'},slots.footer()):null])]),
+  h('div',{class:'app-content'},[slots.toggle?slots.toggle({open:state.value.value,toggle}):h(KavButton,{variant:'outline',color:'secondary',icon:'mdi-menu','aria-label':'メニューを切り替える','aria-expanded':String(state.value.value),'aria-controls':uid,onClick:toggle},()=> 'メニュー'),slots.default?.({open:state.value.value,toggle})])]),
+  h('dialog',{ref:dialog,class:['ui-dialog','ui-drawer','ui-sidebar-dialog',mode.value==='top'?'ui-drawer-top':mode.value==='bottom'?'ui-drawer-bottom':p.side==='start'?'ui-drawer-start':null],'aria-label':p.label,onCancel:e=>{e.preventDefault();state.set(false);},onClose:()=>{if(overlay.value)state.set(false);},onClick:e=>{if(e.target!==dialog.value)return;const r=dialog.value.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)state.set(false);}},[h(KavButton,{class:'ui-sidebar-dialog-close',variant:'outline',color:'secondary',icon:'mdi-close','aria-label':'メニューを閉じる',onClick:()=>state.set(false)})])];
+}});

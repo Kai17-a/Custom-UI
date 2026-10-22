@@ -1,0 +1,10 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+import {buttonClass} from '@kav-ui/core';
+import KavIcon from './KavIcon.astro';
+interface Props extends HTMLAttributes<'button'> {color?:string;variant?:string;size?:string;icon?:string;iconRight?:string;loading?:boolean;href?:string;}
+const {color='primary',variant='solid',size='md',icon,iconRight,loading=false,href,type='button',disabled=false,...rest}=Astro.props;
+const Tag=href?'a':'button';
+---
+<Tag {...rest} class:list={[buttonClass({color,variant,size}),rest.class]} type={href?undefined:type} href={disabled||loading?undefined:href} disabled={href?undefined:disabled||loading} aria-disabled={href&&(disabled||loading)?'true':undefined} aria-busy={loading?'true':undefined}>
+{loading?<span class="ui-spinner ui-spinner-sm" aria-hidden="true"/>:icon&&<KavIcon name={icon}/>}<slot/>{iconRight&&<KavIcon name={iconRight}/>}</Tag>

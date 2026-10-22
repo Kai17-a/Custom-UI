@@ -5,6 +5,34 @@
   const doc = document;
   const openers = new WeakMap();
   const timers = new WeakMap();
+  // Scope teardown is additive: static HTML keeps the existing automatic boot.
+  const disposers=new WeakMap();
+  function onDispose(element,callback){const callbacks=disposers.get(element)||[];callbacks.push(callback);disposers.set(element,callbacks);}
+  function scopedEvents(element){
+    const controller=new AbortController();onDispose(element,()=>controller.abort());
+    return (target,type,callback,options={})=>target?.addEventListener(type,callback,{...(typeof options==='boolean'?{capture:options}:options),signal:controller.signal});
+  }
+  function scopeOwns(scope,node){const owner=node.closest?.('[data-kav-ui-vue]');return !owner||owner===scope||owner.contains(scope);}
+  function destroy(scope){
+    if(typeof scope==='string')scope=query(scope);if(!scope?.querySelectorAll)return;
+    const within=node=>node&&(node===scope||scope.contains(node))&&scopeOwns(scope,node);
+    if(tooltip&&within(tooltip.trigger))hideTooltip();
+    if(openSelect&&within(openSelect.select))openSelect.close();
+    if(activeInputPicker&&within(activeInputPicker.input))activeInputPicker.close();
+    if(activeDatepicker&&within(activeDatepicker.root))closeDatepicker(activeDatepicker);
+    for(const popup of [...openPopups])if(within(popup)||within(popupStates.get(popup)?.trigger))closePopup(popup);
+    if(splitterDrag&&within(splitterDrag.state.root))splitFinish(true);
+    const sidebars=[...(scope.matches?.('[data-ui-sidebar]')?[scope]:[]),...all(scope,'[data-ui-sidebar]')];
+    sidebars.filter(root=>scopeOwns(scope,root)).forEach(root=>{const state=responsiveSidebarStates.get(root);if(state?.overlay)sidebarClose(state,false);});
+    for(const panel of all(doc,'dialog[open]'))if(within(panel)||within(openers.get(panel)))hide(panel);
+    if(dragging&&within(dragging.board))endDrag();
+    for(const element of [scope,...all(scope,'*')].filter(element=>scopeOwns(scope,element)).reverse()){
+      cancelExit(element);clearTimeout(timers.get(element));elementMotions.get(element)?.cancel();
+      const callbacks=disposers.get(element);disposers.delete(element);callbacks?.forEach(callback=>callback());
+    }
+    emit(scope,'destroyed');
+  }
+
   const pageStates = new WeakMap();
   let sequence = 0;
   let tooltip = null;
@@ -492,13 +520,21 @@
     let state=responsiveSidebarStates.get(root);
     if(state){sidebarSync(state);return state;}
     const panel=root.querySelector(':scope > .app-sidebar');if(!panel)return null;
+    const listen=scopedEvents(root),original={hidden:panel.hidden,mode:root.getAttribute('data-ui-sidebar-mode'),state:root.getAttribute('data-ui-sidebar-state')};
     const mode=sidebarMode(root);state={root,panel,mode,device:sidebarDevice(),open:mode==='expanded',overlay:false};responsiveSidebarStates.set(root,state);
-    panel.addEventListener('click',event=>{
+    listen(panel,'click',event=>{
       const link=closest(event.target,'a[href]');
       if(link && !disabled(link) && !event.defaultPrevented && !link.matches('[data-ui-toggle], [data-ui-copy]') && !event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey && state.overlay){sidebarClose(state);emit(root,'sidebarchange',{mode:state.mode,open:false});}
       if(closest(event.target,'summary') && state.mode==='rail'&&!state.open)responsiveSidebar(root,{open:true});
     });
-    panel.addEventListener('keydown',event=>{if(event.key==='Escape'&&state.mode==='collapse'&&state.open){event.preventDefault();responsiveSidebar(root,{open:false});}});
+    listen(panel,'keydown',event=>{if(event.key==='Escape'&&state.mode==='collapse'&&state.open){event.preventDefault();responsiveSidebar(root,{open:false});}});
+    onDispose(root,()=>{
+      if(state.overlay)sidebarClose(state,false);
+      sidebarRestore(state);panel.hidden=original.hidden;
+      for(const item of all(panel,'[data-ui-sidebar-title]')){item.removeAttribute('title');item.removeAttribute('data-ui-sidebar-title');}
+      for(const [name,value] of [['data-ui-sidebar-mode',original.mode],['data-ui-sidebar-state',original.state]]){if(value===null)root.removeAttribute(name);else root.setAttribute(name,value);}
+      responsiveSidebarStates.delete(root);
+    });
     sidebarSync(state);return state;
   }
   function sidebarResize(){
@@ -595,8 +631,25 @@
     try {if(drag.handle.hasPointerCapture(drag.pointer))drag.handle.releasePointerCapture(drag.pointer);}catch { /* A cancelled pointer may already be released. */ }
     splitEnd(drag.state,cancelled);
   }
+  function splitDispose(state) {
+    if(state.disposed)return;state.disposed=true;
+    if(splitterDrag?.state===state)splitFinish(true);
+    state.controller.abort();state.handles.forEach(handle=>handle.remove());
+    state.panels.forEach((panel,i)=>{
+      const original=state.original[i];
+      for(const [name,value] of [['inert',original.inertAttribute],['aria-hidden',original.hidden],['data-ui-splitter-collapsed',original.collapsed],['id',original.id]]){if(value===null)panel.removeAttribute(name);else panel.setAttribute(name,value);}
+      if(original.size)panel.style.setProperty('--ui-splitter-size',original.size,original.priority);else panel.style.removeProperty('--ui-splitter-size');
+      if(!original.styleAttribute&&!panel.getAttribute('style'))panel.removeAttribute('style');
+      if(!original.panelClass)panel.classList.remove('ui-splitter-panel');
+      if(!original.classAttribute&&!panel.getAttribute('class'))panel.removeAttribute('class');
+    });
+    if(!state.rootClass)state.root.classList.remove('ui-splitter');
+    if(!state.rootClassAttribute&&!state.root.getAttribute('class'))state.root.removeAttribute('class');
+    if(splitterStates.get(state.root)===state)splitterStates.delete(state.root);
+  }
   function splitBind(state,handle,index) {
-    handle.addEventListener('pointerdown',event=>{
+    const listen=(type,callback)=>handle.addEventListener(type,callback,{signal:state.controller.signal});
+    listen('pointerdown',event=>{
       if(event.button!==0 || !event.isPrimary || splitterDrag || handle.getAttribute('aria-disabled')==='true')return;
       const axis=state.vertical?'height':'width',length=state.panels.reduce((sum,panel)=>sum+panel.getBoundingClientRect()[axis],0);if(length<=0)return;
       event.preventDefault();handle.focus({preventScroll:true});
@@ -604,20 +657,20 @@
       try {handle.setPointerCapture(event.pointerId);}catch {splitterDrag=null;return;}
       handle.setAttribute('data-ui-dragging','');doc.documentElement.dataset.uiSplitterResizing=state.vertical?'vertical':'horizontal';
     });
-    handle.addEventListener('pointermove',event=>{
+    listen('pointermove',event=>{
       const drag=splitterDrag;if(!drag || drag.handle!==handle || drag.pointer!==event.pointerId)return;
       if(state.root.hasAttribute('data-ui-splitter-disabled') || !state.root.isConnected){splitFinish(true);return;}
       const position=state.vertical?event.clientY:event.clientX;
       splitPair(state,index,drag.before[index]+(position-drag.start)/drag.length*100*(drag.rtl?-1:1));
     });
-    handle.addEventListener('pointerup',event=>{if(splitterDrag?.handle===handle && splitterDrag.pointer===event.pointerId)splitFinish();});
-    for(const name of ['pointercancel','lostpointercapture'])handle.addEventListener(name,event=>{if(splitterDrag?.handle===handle && splitterDrag.pointer===event.pointerId)splitFinish(true);});
-    handle.addEventListener('dblclick',event=>{
+    listen('pointerup',event=>{if(splitterDrag?.handle===handle && splitterDrag.pointer===event.pointerId)splitFinish();});
+    for(const name of ['pointercancel','lostpointercapture'])listen(name,event=>{if(splitterDrag?.handle===handle && splitterDrag.pointer===event.pointerId)splitFinish(true);});
+    listen('dblclick',event=>{
       if(handle.getAttribute('aria-disabled')==='true')return;event.preventDefault();
       if(state.meta[index].collapsible){if(splitToggle(state,index))splitEnd(state);}
       else {const total=state.sizes[index]+state.sizes[index+1],initial=state.initial[index]+state.initial[index+1];if(initial>0 && splitPair(state,index,total*state.initial[index]/initial))splitEnd(state);}
     });
-    handle.addEventListener('keydown',event=>{
+    listen('keydown',event=>{
       if(event.key==='Escape' && splitterDrag?.state===state){event.preventDefault();splitFinish(true);return;}
       if(handle.getAttribute('aria-disabled')==='true')return;
       const rtl=!state.vertical && getComputedStyle(state.root).direction==='rtl';
@@ -648,11 +701,14 @@
       if(splitterDrag?.state===state)splitFinish(true);
       const sizes=splitProject(state.sizes,meta);if(!sizes)return null;state.meta=meta;state.initial=initial;splitApply(state,sizes,false);return state;
     }
-    if(state){
-      if(splitterDrag?.state===state)splitFinish(true);state.handles.forEach(handle=>handle.remove());
-      state.panels.forEach((panel,i)=>{panel.inert=state.original[i].inert;if(state.original[i].hidden===null)panel.removeAttribute('aria-hidden');else panel.setAttribute('aria-hidden',state.original[i].hidden);panel.removeAttribute('data-ui-splitter-collapsed');panel.style.removeProperty('--ui-splitter-size');});
-    }
-    state={root,panels,meta,initial,sizes:[...initial],lastOpen:[...initial],handles:[],vertical:splitVertical(root),original:panels.map(panel=>({inert:panel.inert,hidden:panel.getAttribute('aria-hidden')}))};
+    if(state)splitDispose(state);
+    else onDispose(root,()=>{const current=splitterStates.get(root);if(current)splitDispose(current);});
+    state={root,panels,meta,initial,sizes:[...initial],lastOpen:[...initial],handles:[],controller:new AbortController(),vertical:splitVertical(root),
+      rootClass:root.classList.contains('ui-splitter'),rootClassAttribute:root.hasAttribute('class'),
+      original:panels.map(panel=>({inert:panel.inert,inertAttribute:panel.getAttribute('inert'),hidden:panel.getAttribute('aria-hidden'),
+        collapsed:panel.getAttribute('data-ui-splitter-collapsed'),id:panel.getAttribute('id'),
+        size:panel.style.getPropertyValue('--ui-splitter-size'),priority:panel.style.getPropertyPriority('--ui-splitter-size'),styleAttribute:panel.hasAttribute('style'),
+        panelClass:panel.classList.contains('ui-splitter-panel'),classAttribute:panel.hasAttribute('class')}))};
     try {
       const key=root.dataset.uiSplitterSave,saved=key?JSON.parse(localStorage.getItem('kav-ui-splitter:'+key)):null;
       if(saved?.version===1 && saved.orientation===(state.vertical?'vertical':'horizontal'))state.sizes=splitProject(saved.sizes,meta) || state.sizes;
@@ -881,14 +937,15 @@
   }
   const calendarClamp = (date, config) => new Date(Math.max(config.min.getTime(),Math.min(config.max.getTime(),date.getTime())));
   function renderCalendar(root, restore = false) {
-    root.classList.add('ui-calendar');
+    const originalClass=root.classList.contains('ui-calendar');root.classList.add('ui-calendar');
     const config = calendarConfig(root);
     let state = calendarStates.get(root);
     if (!state) {
       const view = calendarNode('div','ui-calendar-view'); view.setAttribute('data-ui-calendar-view','');
       const status = calendarNode('span','visually-hidden'); status.setAttribute('role','status');
       root.append(view,status);
-      state = {view,status,focus:'',events:new Map(),dialog:null}; calendarStates.set(root,state);
+      state = {view,status,focus:'',events:new Map(),dialog:null,createdInput:null,hiddenLists:new Map()}; calendarStates.set(root,state);
+      onDispose(root,()=>{state.view.remove();state.status.remove();state.dialog?.remove();state.createdInput?.remove();for(const [list,hidden] of state.hiddenLists)list.hidden=hidden;calendarStates.delete(root);if(!originalClass)root.classList.remove('ui-calendar');});
     }
     const active = state.view.contains(doc.activeElement) ? doc.activeElement : null;
     const activeAction = active?.dataset.uiCalendarAction;
@@ -910,12 +967,12 @@
     root.dataset.uiMonth = monthKey;
     let input = owned(root,'[data-ui-calendar-input]','[data-ui-calendar]')[0];
     if (!input && root.dataset.uiName) {
-      input = doc.createElement('input'); input.type='hidden'; input.setAttribute('data-ui-calendar-input',''); root.append(input);
+      input = doc.createElement('input'); input.type='hidden'; input.setAttribute('data-ui-calendar-input',''); root.append(input);state.createdInput=input;
     }
     if (input) { input.value = value; if (root.dataset.uiName) input.name = root.dataset.uiName; }
     const events = new Map();
     for (const list of owned(root,'[data-ui-calendar-events]','[data-ui-calendar]')) {
-      list.hidden = true;
+      if(!state.hiddenLists.has(list))state.hiddenLists.set(list,list.hidden);list.hidden = true;
       for (const item of all(list,'[data-ui-date]')) {
         if (!calendarDate(item.dataset.uiDate)) continue;
         const group = events.get(item.dataset.uiDate) || [];
@@ -1174,6 +1231,7 @@
     }
     const input=all(root,'input[type="date"]').find(field=>field.closest('[data-ui-datepicker]')===root);
     if(!input)return null;
+    const listen=scopedEvents(root),originalClass=root.classList.contains('ui-datepicker');
     root.classList.add('ui-datepicker');
     const name=input.getAttribute('aria-label') || input.labels?.[0]?.textContent.trim() || '日付';
     const toggle=calendarNode('button','btn btn-outline-secondary ui-datepicker-toggle','カレンダー');
@@ -1190,9 +1248,10 @@
     state={root,input,toggle,popup,calendar,clear,open:false,syncing:false};datepickerStates.set(root,state);
     updateDatepickerButton(state);
     toggle.disabled=datepickerLocked(input);
-    popup.addEventListener('toggle',event=>{
+    listen(popup,'toggle',event=>{
       if(event.newState==='closed' && state.open){state.open=false;toggle.setAttribute('aria-expanded','false');if(activeDatepicker===state)activeDatepicker=null;}
     });
+    onDispose(root,()=>{closeDatepicker(state);toggle.remove();popup.remove();calendarStates.delete(calendar);datepickerStates.delete(root);if(!originalClass)root.classList.remove('ui-datepicker');});
     return state;
   }
   function setDatepickerValue(state,value) {
@@ -1285,8 +1344,10 @@
   let openSelect = null;
   function syncSelect(select) { selectControls.get(select)?.sync(); }
   function initSelect(select) {
+    const listen=scopedEvents(select);
     if (selectControls.has(select)) { syncSelect(select); return; }
     if (select.multiple || select.size > 1 || !HTMLElement.prototype.showPopover) return;
+    const original={tabindex:select.getAttribute('tabindex'),hidden:select.getAttribute('aria-hidden')};
     const wrapper = doc.createElement('span'); wrapper.className = 'ui-select';
     const button = doc.createElement('button'); button.type = 'button';
     button.className = select.className;
@@ -1379,8 +1440,8 @@
       }
       button.focus();
     }
-    button.addEventListener('click',()=>{if(isOpen())close();else open();});
-    button.addEventListener('keydown',event=>{
+    listen(button,'click',()=>{if(isOpen())close();else open();});
+    listen(button,'keydown',event=>{
       const options=[...select.options];
       if(event.key==='Escape' && isOpen()) { event.preventDefault();event.stopPropagation();close();return; }
       if(event.key==='Tab') { close();return; }
@@ -1403,16 +1464,16 @@
         if(index>=0)highlight(index);
       }
     });
-    popup.addEventListener('pointerdown',event=>event.preventDefault());
-    popup.addEventListener('click',event=>{
+    listen(popup,'pointerdown',event=>event.preventDefault());
+    listen(popup,'click',event=>{
       const item=closest(event.target,'[role="option"]');if(item)commit(Number(item.dataset.index));
     });
-    popup.addEventListener('toggle',()=>{if(!isOpen()){button.setAttribute('aria-expanded','false');button.removeAttribute('aria-activedescendant');if(openSelect?.select===select)openSelect=null;}});
-    button.addEventListener('blur',close);
-    select.addEventListener('focus',()=>button.focus());
-    select.addEventListener('change',syncControl);
-    select.addEventListener('input',syncControl);
-    select.addEventListener('invalid',event=>{
+    listen(popup,'toggle',()=>{if(!isOpen()){button.setAttribute('aria-expanded','false');button.removeAttribute('aria-activedescendant');if(openSelect?.select===select)openSelect=null;}});
+    listen(button,'blur',close);
+    listen(select,'focus',()=>button.focus());
+    listen(select,'change',syncControl);
+    listen(select,'input',syncControl);
+    listen(select,'invalid',event=>{
       event.preventDefault();button.setAttribute('aria-invalid','true');
       if(!select.closest('form[data-ui-validate]')) {
         if(!nativeError) {nativeError=doc.createElement('small');nativeError.className='ui-invalid-feedback';nativeError.setAttribute('role','alert');wrapper.after(nativeError);}
@@ -1420,13 +1481,17 @@
       }
       button.focus();
     });
-    for(const label of select.labels || [])label.addEventListener('click',event=>{
+    for(const label of select.labels || [])listen(label,'click',event=>{
       if(event.target===label || !closest(event.target,'button, select, a, input, textarea')){event.preventDefault();button.focus();}
     });
-    select.form?.addEventListener('reset',()=>setTimeout(()=>{close();syncControl();},0));
+    listen(select.form,'reset',()=>setTimeout(()=>{close();syncControl();},0));
     const observer=new MutationObserver(()=>{syncControl();if(isOpen()){render();highlight(select.selectedIndex);}});
     observer.observe(select,{attributes:true,childList:true,subtree:true,characterData:true});
     for(let parent=select.parentElement;parent;parent=parent.parentElement)if(parent.tagName==='FIELDSET')observer.observe(parent,{attributes:true,attributeFilter:['disabled']});
+    onDispose(select,()=>{observer.disconnect();close();nativeError?.remove();select.classList.remove('ui-select-native');
+      for(const [name,value] of [['tabindex',original.tabindex],['aria-hidden',original.hidden]]){if(value===null)select.removeAttribute(name);else select.setAttribute(name,value);}
+      if(wrapper.parentNode)wrapper.replaceWith(select);selectControls.delete(select);
+    });
     selectControls.set(select,{sync:syncControl});syncControl();
   }
   window.addEventListener('resize',()=>openSelect?.close());
@@ -1436,9 +1501,11 @@
   let activeInputPicker = null;
   const pickerTypes = {time:'時刻', 'datetime-local':'日時', month:'月', week:'週', color:'色'};
   function initInputPicker(input) {
+    const listen=scopedEvents(input);
     if(inputPickers.has(input)) { inputPickers.get(input).sync(); return; }
     const type=input.getAttribute('type');
     if(!pickerTypes[type] || !HTMLElement.prototype.showPopover)return;
+    const original={tabindex:input.getAttribute('tabindex'),hidden:input.getAttribute('aria-hidden')};
     const root=calendarNode('span','ui-input-picker');
     const trigger=calendarNode('button',input.className+' ui-input-picker-trigger');trigger.type='button';
     trigger.setAttribute('aria-haspopup','dialog');trigger.setAttribute('aria-expanded','false');
@@ -1448,7 +1515,7 @@
     input.before(root);root.append(input,trigger,popup);
     input.classList.add('ui-picker-native');input.tabIndex=-1;input.setAttribute('aria-hidden','true');
     const state={root,input,trigger,popup,sync};inputPickers.set(input,state);
-    let controls={},error=null,pointerWasOpen=false;
+    let controls={},error=null,pointerWasOpen=false,nativeFeedback=null;
     const locked=()=>input.matches(':disabled') || input.readOnly;
     const opened=()=>popup.matches(':popover-open');
     const pad=value=>String(value).padStart(2,'0');
@@ -1510,7 +1577,7 @@
       controls.week.value=String(Math.min(previous,controls.week.options.length));syncSelect(controls.week);
     }
     function render() {
-      popup.replaceChildren();controls={};
+      destroy(popup);popup.replaceChildren();controls={};
       const now=new Date(),value=input.value;
       if(type==='datetime-local') {
         const calendar=calendarNode('div','ui-calendar ui-calendar-compact');calendar.dataset.uiCalendar='';
@@ -1523,7 +1590,7 @@
         row.append(field('年','year','input'),field(type==='month'?'月':'週',type));
         Object.assign(controls.year,{min:'1',max:'9999',step:'1',value:value.slice(0,4)||String(now.getFullYear())});
         if(type==='month') {options(controls.month,12,1,n=>n+'月');controls.month.value=String(Number(value.slice(5,7))||now.getMonth()+1);}
-        else {refreshWeeks();controls.week.value=String(Number(value.slice(6,8))||1);controls.year.addEventListener('input',refreshWeeks);}
+        else {refreshWeeks();controls.week.value=String(Number(value.slice(6,8))||1);listen(controls.year,'input',refreshWeeks);}
       }
       if(type==='time' || type==='datetime-local') {
         row.append(field('時','hour'),field('分','minute'));
@@ -1538,7 +1605,7 @@
         const palette=calendarNode('div','ui-color-palette');palette.setAttribute('role','group');palette.setAttribute('aria-label','色の候補');
         for(const color of ['#2f6fc4','#6b9de0','#2b95a9','#3d9a63','#d4a537','#cf4f4f','#a86cc1','#e789ab','#ffffff','#faf9f7','#c8c9cc','#8a8d94','#555961','#2b2b2e','#1b1c1e','#000000']) {
           const choice=calendarNode('button','ui-color-choice');choice.type='button';choice.style.backgroundColor=color;choice.setAttribute('aria-label',color);choice.setAttribute('aria-pressed',String(value.toLowerCase()===color));
-          choice.addEventListener('click',()=>{controls.hex.value=color;all(palette,'button').forEach(button=>button.setAttribute('aria-pressed',String(button===choice)));});palette.append(choice);
+          listen(choice,'click',()=>{controls.hex.value=color;all(palette,'button').forEach(button=>button.setAttribute('aria-pressed',String(button===choice)));});palette.append(choice);
         }
         popup.append(palette);row.append(field('カラーコード（#RRGGBB）','hex','input'));
         Object.assign(controls.hex,{type:'text',value:value||'#000000',maxLength:7,placeholder:'#2f6fc4'});controls.hex.spellcheck=false;
@@ -1546,9 +1613,9 @@
       popup.append(row);
       error=calendarNode('p','ui-picker-error');error.hidden=true;error.setAttribute('role','alert');popup.append(error);
       const footer=calendarNode('div','ui-picker-footer');
-      const clear=calendarNode('button','btn btn-sm btn-outline-secondary','クリア');clear.type='button';clear.disabled=type==='color';clear.addEventListener('click',()=>save(''));
-      const cancel=calendarNode('button','btn btn-sm btn-outline-secondary','キャンセル');cancel.type='button';cancel.addEventListener('click',()=>close(true));
-      const apply=calendarNode('button','btn btn-sm btn-primary','適用');apply.type='button';apply.dataset.uiPickerApply='';apply.addEventListener('click',applyDraft);
+      const clear=calendarNode('button','btn btn-sm btn-outline-secondary','クリア');clear.type='button';clear.disabled=type==='color';listen(clear,'click',()=>save(''));
+      const cancel=calendarNode('button','btn btn-sm btn-outline-secondary','キャンセル');cancel.type='button';listen(cancel,'click',()=>close(true));
+      const apply=calendarNode('button','btn btn-sm btn-primary','適用');apply.type='button';apply.dataset.uiPickerApply='';listen(apply,'click',applyDraft);
       footer.append(clear,cancel,apply);popup.append(footer);
       all(popup,'select').forEach(initSelect);
     }
@@ -1585,29 +1652,33 @@
       trigger.setAttribute('aria-expanded','true');activeInputPicker=state;enterMotion(popup);
       (popup.querySelector('.ui-calendar-day[tabindex="0"]') || popup.querySelector('.ui-select-trigger, input:not(.ui-select-native), button') || popup).focus({preventScroll:true});
     }
-    trigger.addEventListener('pointerdown',()=>{pointerWasOpen=opened();});
-    trigger.addEventListener('pointercancel',()=>{pointerWasOpen=false;});
-    trigger.addEventListener('click',()=>{if(pointerWasOpen){pointerWasOpen=false;close(true);}else open();});input.addEventListener('focus',()=>trigger.focus());
-    input.addEventListener('input',sync);input.addEventListener('change',sync);
-    input.addEventListener('invalid',event=>{
+    listen(trigger,'pointerdown',()=>{pointerWasOpen=opened();});
+    listen(trigger,'pointercancel',()=>{pointerWasOpen=false;});
+    listen(trigger,'click',()=>{if(pointerWasOpen){pointerWasOpen=false;close(true);}else open();});listen(input,'focus',()=>trigger.focus());
+    listen(input,'input',sync);listen(input,'change',sync);
+    listen(input,'invalid',event=>{
       event.preventDefault();trigger.setAttribute('aria-invalid','true');
       if(!input.closest('form[data-ui-validate]')) {
         let feedback=root.nextElementSibling;
-        if(!feedback?.hasAttribute('data-ui-picker-error')){feedback=calendarNode('small','ui-invalid-feedback');feedback.dataset.uiPickerError='';root.after(feedback);}
+        if(!feedback?.hasAttribute('data-ui-picker-error')){feedback=calendarNode('small','ui-invalid-feedback');feedback.dataset.uiPickerError='';root.after(feedback);nativeFeedback=feedback;}
         feedback.textContent=input.validationMessage;feedback.hidden=false;feedback.setAttribute('role','alert');describedBy(trigger,id(feedback),true);
       }
       trigger.focus();
     });
-    popup.addEventListener('keydown',event=>{
+    listen(popup,'keydown',event=>{
       if(event.key==='Escape'){event.preventDefault();event.stopPropagation();close(true);}
       else if(event.key==='Enter' && event.target.tagName==='INPUT'){event.preventDefault();applyDraft();}
     });
-    popup.addEventListener('toggle',()=>{if(!opened()){trigger.setAttribute('aria-expanded','false');if(activeInputPicker===state)activeInputPicker=null;}});
-    root.addEventListener('focusout',()=>setTimeout(()=>{if(opened() && !root.contains(doc.activeElement))close();},0));
-    for(const label of input.labels || [])label.addEventListener('click',event=>{if(popup.contains(event.target))return;if(event.target===label || !closest(event.target,'input, button, select, a')){event.preventDefault();trigger.focus();}});
-    input.form?.addEventListener('reset',()=>setTimeout(()=>{close();sync();},0));
+    listen(popup,'toggle',()=>{if(!opened()){trigger.setAttribute('aria-expanded','false');if(activeInputPicker===state)activeInputPicker=null;}});
+    listen(root,'focusout',()=>setTimeout(()=>{if(opened() && !root.contains(doc.activeElement))close();},0));
+    for(const label of input.labels || [])listen(label,'click',event=>{if(popup.contains(event.target))return;if(event.target===label || !closest(event.target,'input, button, select, a')){event.preventDefault();trigger.focus();}});
+    listen(input.form,'reset',()=>setTimeout(()=>{close();sync();},0));
     const observer=new MutationObserver(sync);observer.observe(input,{attributes:true});
     for(let parent=input.parentElement;parent;parent=parent.parentElement)if(parent.tagName==='FIELDSET')observer.observe(parent,{attributes:true,attributeFilter:['disabled']});
+    onDispose(input,()=>{observer.disconnect();destroy(popup);close();nativeFeedback?.remove();input.classList.remove('ui-picker-native');
+      for(const [name,value] of [['tabindex',original.tabindex],['aria-hidden',original.hidden]]){if(value===null)input.removeAttribute(name);else input.setAttribute(name,value);}
+      if(root.parentNode)root.replaceWith(input);inputPickers.delete(input);
+    });
     sync();
   }
   window.addEventListener('resize',()=>activeInputPicker?.position());
@@ -1621,8 +1692,10 @@
   function initMixedCheckbox(input) {
     if(mixedCheckboxes.has(input))return;
     mixedCheckboxes.add(input);
+    const listen=scopedEvents(input),original=input.indeterminate;let resetTimer;
     const initial=input.dataset.uiIndeterminate!=='false';input.indeterminate=initial;
-    input.form?.addEventListener('reset',event=>setTimeout(()=>{if(!event.defaultPrevented)input.indeterminate=initial;},0));
+    listen(input.form,'reset',event=>{clearTimeout(resetTimer);resetTimer=setTimeout(()=>{if(!event.defaultPrevented)input.indeterminate=initial;},0);});
+    onDispose(input,()=>{clearTimeout(resetTimer);input.indeterminate=original;mixedCheckboxes.delete(input);});
   }
   // MDI 7.4.47: paths from assets/icons/mdi/*.svg; see its LICENSE and README.
   // Embedded deliberately: file:// does not need fetch, imports or a server.
@@ -1773,21 +1846,23 @@
     host.prepend(svg);
     iconStates.set(host,{name,svg});
   }
-  function scanIcons(scope) {
-    if (scope.matches?.('[icon]')) renderIcon(scope);
-    all(scope,'[icon]').forEach(renderIcon);
+  function automaticIconOwner(element){const owner=element.closest('[data-kav-ui-vue]');return !owner||owner.hasAttribute('data-kav-ui-html');}
+  function scanIcons(scope, automatic = false) {
+    const icons=[...(scope.matches?.('[icon]')?[scope]:[]),...all(scope,'[icon]')];
+    icons.filter(element=>automatic?automaticIconOwner(element):scopeOwns(scope,element)).forEach(renderIcon);
   }
   // Only icons auto-initialize dynamically. Other components keep the init API.
   const iconObserver = new MutationObserver(records => {
     for (const record of records) {
-      if (record.type === 'attributes') renderIcon(record.target);
+      if (record.type === 'attributes') {if(automaticIconOwner(record.target))renderIcon(record.target);}
       else for (const node of record.addedNodes) {
-        if (node.nodeType === 1) scanIcons(node);
+        if (node.nodeType === 1) scanIcons(node,true);
       }
     }
   });
   const fileDropStates = new WeakMap();
   function initFileDrop(root) {
+    const listen=scopedEvents(root);
     if (fileDropStates.has(root)) return;
     const input = root.querySelector('input[type="file"]');
     const zone = root.querySelector('[data-ui-file-zone]');
@@ -1813,7 +1888,7 @@
         const name=doc.createElement('span');name.className='ui-file-name';name.textContent=file.name;
         const size=doc.createElement('span');size.className='ui-file-size';size.textContent=file.size<1024?file.size+' B':file.size<1048576?(file.size/1024).toFixed(1)+' KB':(file.size/1048576).toFixed(1)+' MB';
         const remove=doc.createElement('button');remove.type='button';remove.className='btn btn-sm btn-outline-secondary';remove.textContent='削除';remove.disabled=inactive();remove.setAttribute('aria-label',file.name+'を削除');
-        remove.addEventListener('click',()=>{if(inactive())return;commit([...input.files].filter((_,i)=>i!==index));input.focus();});
+        listen(remove,'click',()=>{if(inactive())return;commit([...input.files].filter((_,i)=>i!==index));input.focus();});
         item.append(name,size,remove);list.append(item);
       }
       status.textContent=input.files.length?input.files.length+'件のファイルを選択しました。':'ファイルは選択されていません。';
@@ -1836,7 +1911,7 @@
       input.dispatchEvent(new Event('input',{bubbles:true}));
       input.dispatchEvent(new Event('change',{bubbles:true}));
     };
-    input.addEventListener('change',()=>{
+    listen(input,'change',()=>{
       if(inactive()){assign(state.files);return;}
       const problem=validate([...input.files]);
       if(problem){assign(state.files);reject(problem);render();return;}
@@ -1844,18 +1919,19 @@
     });
     const fileDrag=event=>[...(event.dataTransfer?.types || [])].includes('Files');
     const stopDrag=()=>{state.depth=0;delete root.dataset.uiFileDragging;};
-    zone.addEventListener('dragenter',event=>{if(!fileDrag(event))return;event.preventDefault();if(!inactive()){state.depth++;root.dataset.uiFileDragging='true';}});
-    zone.addEventListener('dragover',event=>{if(!fileDrag(event))return;event.preventDefault();event.dataTransfer.dropEffect=inactive()?'none':'copy';});
-    zone.addEventListener('dragleave',event=>{if(!fileDrag(event))return;event.preventDefault();if(--state.depth<=0)stopDrag();});
-    zone.addEventListener('drop',event=>{
+    listen(zone,'dragenter',event=>{if(!fileDrag(event))return;event.preventDefault();if(!inactive()){state.depth++;root.dataset.uiFileDragging='true';}});
+    listen(zone,'dragover',event=>{if(!fileDrag(event))return;event.preventDefault();event.dataTransfer.dropEffect=inactive()?'none':'copy';});
+    listen(zone,'dragleave',event=>{if(!fileDrag(event))return;event.preventDefault();if(--state.depth<=0)stopDrag();});
+    listen(zone,'drop',event=>{
       if(!fileDrag(event))return;event.preventDefault();stopDrag();if(inactive())return;
       const items=[...(event.dataTransfer.items || [])];
       if(items.some(item=>item.webkitGetAsEntry?.()?.isDirectory)){reject('フォルダーではなくファイルを選択してください。');return;}
       const files=[...event.dataTransfer.files];if(files.length)commit(files);
     });
-    zone.addEventListener('dragend',stopDrag);
-    input.form?.addEventListener('reset',event=>setTimeout(()=>{if(event.defaultPrevented)return;state.files=[...input.files];clearError();stopDrag();render();},0));
-    new MutationObserver(()=>{stopDrag();render();}).observe(input,{attributes:true,attributeFilter:['disabled']});
+    listen(zone,'dragend',stopDrag);
+    listen(input.form,'reset',event=>setTimeout(()=>{if(event.defaultPrevented)return;state.files=[...input.files];clearError();stopDrag();render();},0));
+    const observer=new MutationObserver(()=>{stopDrag();render();});observer.observe(input,{attributes:true,attributeFilter:['disabled']});
+    onDispose(root,()=>{observer.disconnect();stopDrag();list.remove();status.remove();error.remove();describedBy(input,error.id,false);fileDropStates.delete(root);delete root.dataset.uiFileReady;});
     render();
   }
   // Shared positioning and native light dismissal for menus and rich popovers.
@@ -1975,6 +2051,7 @@
           if (width !== state.width && state.config) drawChart(root,state);
         });
         state.observer.observe(root);
+        onDispose(root,()=>{state.observer.disconnect();state.output.remove();chartStates.delete(root);});
       }
     }
     let candidate = config;
@@ -2099,7 +2176,7 @@
 
   function init(scope = doc) {
     scanIcons(scope);
-    const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)];
+    const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
     scan('[data-ui-splitter]').forEach(initSplitter);
     scan('[data-ui-navbar]').forEach(initNavbar);
     scan('[data-ui-sidebar]').forEach(initResponsiveSidebar);
@@ -3705,7 +3782,7 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
     event.preventDefault(); moveCard(dragging.card, column); endDrag();
   });
   doc.addEventListener('dragend', endDrag);
-  window.KavUI = Object.freeze({init, show, hide, toast, loading, copy, chart, splitter, sidebar:responsiveSidebar, setDesignTheme, setColorTheme, setPalette, setCustomPalette, getCustomPalette});
+  window.KavUI = Object.freeze({init, destroy, show, hide, toast, loading, copy, chart, splitter, sidebar:responsiveSidebar, setDesignTheme, setColorTheme, setPalette, setCustomPalette, getCustomPalette});
   function boot() {
     applyTheme(resolvedColorTheme(), false, false);
     let savedDesign = null, savedPalette = null, savedCustom = null;

@@ -1,0 +1,6 @@
+---
+import {badgeClass} from '@kav-ui/core';
+interface Props {color?:string;class?:string;}
+const {color='primary',...rest}=Astro.props;
+---
+<span {...rest} class:list={[badgeClass(color),rest.class]}><slot/></span>

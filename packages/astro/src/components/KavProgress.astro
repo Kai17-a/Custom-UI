@@ -1,0 +1,6 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+interface Props extends HTMLAttributes<'progress'> {label?:string;}
+const {label='進捗',max=100,...rest}=Astro.props;
+---
+<progress {...rest} class:list={['ui-progress',rest.class]} max={max} aria-label={label}/>

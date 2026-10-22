@@ -1,0 +1,36 @@
+{
+  "name": "@kav-ui/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "src",
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kai17-a/Custom-UI.git",
+    "directory": "packages/core"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./style.css": "./dist/css/ui.css",
+    "./theme-init.js": "./dist/theme-init.js",
+    "./icons": {
+      "types": "./src/icons.d.ts",
+      "import": "./dist/icons.js"
+    }
+  },
+  "sideEffects": [
+    "**/*.css",
+    "./dist/runtime.js",
+    "./dist/theme-init.js"
+  ]
+}

@@ -1,0 +1,7 @@
+---
+interface Props {html:string;class?:string;id?:string;}
+const {html,...rest}=Astro.props;
+---
+<div {...rest} data-kav-ui-widget set:html={html}/>
+
+<script>import {installAstro} from "../client.js";installAstro();</script>
