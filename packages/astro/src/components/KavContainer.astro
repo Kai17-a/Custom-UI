@@ -1,0 +1,5 @@
+---
+interface Props {size?:'sm'|'lg'|'fluid';class?:string;id?:string;}
+const {size,...rest}=Astro.props;
+---
+<div {...rest} class:list={['ui-container',size&&'ui-container-'+size,rest.class]}><slot/></div>

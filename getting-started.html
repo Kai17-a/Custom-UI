@@ -5,37 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Getting started — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<style>
-html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
-html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
-</style>
-<script>
-(() => {
-  let mode = null, design = null, palette = null;
-  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
-  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
-  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
-  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
-  document.documentElement.dataset.uiColorPreference = selected;
-  document.documentElement.dataset.bsTheme = selected === 'system'
-    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  const restore = () => {
-    if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
-      document.body.dataset.uiTheme = design;
-    }
-    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
-      document.documentElement.dataset.uiPalette = palette;
-    }
-    return true;
-  };
-  if (!restore()) {
-    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
-    observer.observe(document.documentElement, {childList:true, subtree:true});
-  }
-})();
-</script>
+<script src="assets/js/theme-init.js"></script>
 <link rel="stylesheet" href="assets/css/catalog.css">
 
 
@@ -65,6 +35,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <h2>レイアウト</h2>
     <ul>
       <li><a href="components/layouts.html">Layouts</a></li>
+      <li><a href="components/splitter.html">Splitter</a></li>
       <li><a href="components/flex.html">Flexbox</a></li>
       <li><a href="components/flex-grid.html">Flex grid</a></li>
       <li><a href="components/cards.html">Cards</a></li>
@@ -112,6 +83,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <h2>通知・補足</h2>
     <ul>
       <li><a href="components/alerts.html">Alerts</a></li>
+      <li><a href="components/banner.html">Banner</a></li>
       <li><a href="components/toasts.html">Toasts & alerts</a></li>
       <li><a href="components/tips.html">Tips & tooltips</a></li>
 
@@ -134,7 +106,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     </ul>
   </div>
 </nav><a class="overview-link" href="components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / UI TOOLKIT</p><h1>Getting started</h1></header><p class="lede">Kav-UIはclassで見た目を、data-ui-*属性で動作を指定する共通UIです。専用の初期化コードは通常不要です。JavaScriptから操作する場合は<code>KavUI</code>を使用します。</p><section class="specimen" id="color-palettes"><h2>カラーパレット</h2><p><a href="components/color-palettes.html">Material 3に基づく6種類の低彩度パレット</a>を追加しています。htmlにdata-ui-palette="sage"を付けると、CSSだけで全体に反映します。切り替え部品はdata-ui-palette-select、ボタンはdata-ui-palette-value="sage"、APIはKavUI.setPalette()です。質感のdata-ui-theme、明暗のdata-bs-themeとは独立します。</p></section><section class="specimen" id="service-templates"><h2>サービス画面・チャート</h2><p><a href="templates.html">3種類のサービステンプレート</a>は、ドキュメント・ダッシュボード・changelogの独立したHTMLです。画面固有のtemplates.css / templates.jsと共通のui.css / ui.jsで動きます。</p><p><a href="components/chart.html">Chart</a>は共通UIに含まれ、data-ui-chart属性とJSONで折れ線・面・棒・ドーナツを描画できます。データ表も自動で付きます。更新はKavUI.chart(element, config)を使います。</p></section><section class="specimen" id="more-components"><h2>メニュー・パネル・連結コンポーネント</h2><p>追加の汎用コンポーネントも共通のui.cssとui.jsだけで使えます。Dropdown・PopoverはPopover API、Drawerはdialogを使用します。Input group・Button group・List group・Avatarの見た目にはJavaScriptは不要です。</p><ul><li><a href="components/dropdown.html">Dropdown</a>：操作メニュー・上下配置・キーボード・選択イベント</li><li><a href="components/popover.html">Popover</a>：操作を含む補足パネル・フォーム・画面端補正</li><li><a href="components/drawer.html">Drawer</a>：左右上下のサイドパネル・背景スクロール停止・フォーカス復帰</li><li><a href="components/input-group.html">Input group</a>：入力欄と接頭辞・接尾辞・ボタン・selectの連結</li><li><a href="components/button-group.html">Button group</a>：ボタンの連結・縦並び・radio／checkboxの選択</li><li><a href="components/list-group.html">List group</a>：一覧・操作・現在地・件数・チェック付きリスト</li><li><a href="components/avatar.html">Avatar</a>：イニシャル・画像・サイズ・ステータス・グループ</li></ul><p>追加対象の参考：<a href="https://getbootstrap.com/docs/5.3/components/dropdowns/">BootstrapのDropdown</a>・<a href="https://getbootstrap.com/docs/5.3/components/offcanvas/">Offcanvas</a>・<a href="https://getbootstrap.com/docs/5.3/forms/input-group/">Input group</a>、<a href="https://bulma.io/documentation/components/dropdown/">BulmaのDropdown</a>、<a href="https://daisyui.com/components/avatar/">daisyUIのAvatar</a>。コードと見た目はKav-UIの構成に合わせて実装しています。</p></section><section class="specimen" id="responsive-devices"><h2>PC・タブレット・スマートフォン</h2><p>PC（1024px以上）の指定を基本に、タブレット（768px以上1024px未満）は<code>tablet:</code>、スマートフォン（768px未満）は<code>mobile:</code>を付けて調整できます。共通のui.cssだけで使え、npmやビルドは不要です。</p><pre class="setup-code"><code>&lt;div class="fx-grid fx-grid-3 tablet:fx-grid-2 mobile:fx-grid-1 fx-gap-4"&gt;
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / UI TOOLKIT</p><h1>Getting started</h1></header><p class="lede">Kav-UIはclassで見た目を、data-ui-*属性で動作を指定する共通UIです。専用の初期化コードは通常不要です。JavaScriptから操作する場合は<code>KavUI</code>を使用します。</p><section class="specimen" id="color-palettes"><h2>カラーパレット</h2><p>ユーザーが基準色と彩度を選べる<a href="components/color-palettes.html#palette-custom">カスタム配色フォーム</a>も利用できます。formにdata-ui-palette-editor、色入力にdata-ui-palette-seed、彩度入力にdata-ui-palette-chromaを指定します。APIはKavUI.setCustomPalette()です。初回描画前の復元には、CSSより前に任意のassets/js/theme-init.jsを読み込みます。</p><p><a href="components/color-palettes.html">Material 3に基づく6種類の低彩度パレット</a>を追加しています。htmlにdata-ui-palette="sage"を付けると、CSSだけで全体に反映します。切り替え部品はdata-ui-palette-select、ボタンはdata-ui-palette-value="sage"、APIはKavUI.setPalette()です。質感のdata-ui-theme、明暗のdata-bs-themeとは独立します。</p></section><section class="specimen" id="splitter"><h2>領域のサイズ変更</h2><p><a href="components/splitter.html">Splitter</a>は、横・縦のパネルをドラッグやキーボードで調整する部品です。親にdata-ui-splitter、直下のパネルにdata-ui-splitter-panelを指定します。最小／最大サイズ・折り畳み・入れ子・任意保存に対応し、APIはKavUI.splitter()です。</p></section><section class="specimen" id="glass-background"><h2>ガラスの背景画像</h2><p>glass・glassmorphismには任意の背景画像を指定できます。CSSクラスで--ui-theme-background-imageと--ui-theme-background-opacityを設定するだけで、画像を薄く重ねます。指定しなければ従来の背景を維持します。<a href="components/themes.html#theme-background">設定方法とプレビュー →</a></p></section><section class="specimen" id="service-templates"><h2>サービス画面・チャート</h2><p><a href="templates.html">サービステンプレート</a>は、ドキュメント・ダッシュボード・changelog・エラー画面の独立したHTMLです。画面固有のtemplates.css / templates.jsと共通のui.css / ui.jsで動きます。</p><p><a href="components/chart.html">Chart</a>は共通UIに含まれ、data-ui-chart属性とJSONで折れ線・面・棒・ドーナツを描画できます。データ表も自動で付きます。更新はKavUI.chart(element, config)を使います。</p></section><section class="specimen" id="more-components"><h2>メニュー・パネル・連結コンポーネント</h2><p>追加の汎用コンポーネントも共通のui.cssとui.jsだけで使えます。Dropdown・PopoverはPopover API、Drawerはdialogを使用します。Input group・Button group・List group・Avatarの見た目にはJavaScriptは不要です。</p><ul><li><a href="components/dropdown.html">Dropdown</a>：操作メニュー・上下配置・キーボード・選択イベント</li><li><a href="components/popover.html">Popover</a>：操作を含む補足パネル・フォーム・画面端補正</li><li><a href="components/drawer.html">Drawer</a>：左右上下のサイドパネル・背景スクロール停止・フォーカス復帰</li><li><a href="components/input-group.html">Input group</a>：入力欄と接頭辞・接尾辞・ボタン・selectの連結</li><li><a href="components/button-group.html">Button group</a>：ボタンの連結・縦並び・radio／checkboxの選択</li><li><a href="components/list-group.html">List group</a>：一覧・操作・現在地・件数・チェック付きリスト</li><li><a href="components/avatar.html">Avatar</a>：イニシャル・画像・サイズ・ステータス・グループ</li></ul><p>追加対象の参考：<a href="https://getbootstrap.com/docs/5.3/components/dropdowns/">BootstrapのDropdown</a>・<a href="https://getbootstrap.com/docs/5.3/components/offcanvas/">Offcanvas</a>・<a href="https://getbootstrap.com/docs/5.3/forms/input-group/">Input group</a>、<a href="https://bulma.io/documentation/components/dropdown/">BulmaのDropdown</a>、<a href="https://daisyui.com/components/avatar/">daisyUIのAvatar</a>。コードと見た目はKav-UIの構成に合わせて実装しています。</p></section><section class="specimen" id="responsive-devices"><h2>PC・タブレット・スマートフォン</h2><p>PC（1024px以上）の指定を基本に、タブレット（768px以上1024px未満）は<code>tablet:</code>、スマートフォン（768px未満）は<code>mobile:</code>を付けて調整できます。共通のui.cssだけで使え、npmやビルドは不要です。</p><pre class="setup-code"><code>&lt;div class="fx-grid fx-grid-3 tablet:fx-grid-2 mobile:fx-grid-1 fx-gap-4"&gt;
   &lt;div class="ui-card"&gt;…&lt;/div&gt;
   &lt;div class="ui-card"&gt;…&lt;/div&gt;
   &lt;div class="ui-card"&gt;…&lt;/div&gt;
@@ -219,6 +191,6 @@ KavUI.show('#my-dialog');
 KavUI.hide('#help-panel');
 
 // 動的に追加したHTMLのARIA・初期表示を整える場合：
-KavUI.init(container);</code></pre><p>initは繰り返し実行できます。操作のイベントは委譲しているため、後から追加したボタンも動作します。</p><h2>カタログ固有のファイル</h2><p>catalog.css / layout.css / catalog.js / catalog-navigation.js / catalog-demo.js と Flexbox playground は見本画面専用です。アプリでは ui.css / ui.js を使ってください。HTMLのdata-demo-*は送信を止めたり結果を模擬表示するための属性です。アプリに取り込む際は外してください。</p></section><section class="usage"><h2>動作テスト</h2><p><a href="tests/ui.html">ブラウザテストを開く</a>と、自動で共通UIの動作を検証します。Chromiumがインストールされている環境では <code>node tests/run-browser.mjs</code> でも実行できます。npmのインストールは不要です。</p></section></main></div>
+KavUI.init(container);</code></pre><p>initは繰り返し実行できます。操作のイベントは委譲しているため、後から追加したボタンも動作します。</p><h2>カタログ固有のファイル</h2><p>catalog.css / layout.css / catalog.js / catalog-navigation.js / catalog-demo.js と Flexbox playground は見本画面専用です。アプリでは ui.css / ui.js を使ってください。HTMLのdata-demo-*は送信を止めたり結果を模擬表示するための属性です。アプリに取り込む際は外してください。</p></section><section class="usage"><h2>動作テスト</h2><p><a href="tests/ui.html">ブラウザテストを開く</a>と、自動で共通UIの動作を検証します。Chromiumがインストールされている環境では <code>node tests/run-browser.mjs</code> でも実行できます。npmのインストールは不要です。</p></section><section class="specimen" id="banner-guide"><h2>全体告知のバナー</h2><p><code>ui-banner</code> と <code>ui-banner-inner</code> でページ全体の案内を配置できます。色・操作・閉じる・固定表示の例は <a href="components/banner.html">Banner</a> を参照してください。</p></section></main></div>
 
 </body></html>

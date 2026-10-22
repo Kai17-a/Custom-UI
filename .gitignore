@@ -1,0 +1,11 @@
+# Local release packages and Python bytecode.
+/dist/
+__pycache__/
+
+# Optional framework package development.
+node_modules/
+/packages/*/dist/
+/examples/*/dist/
+/examples/*/.astro/
+*.tgz
+/packages/*/.astro/

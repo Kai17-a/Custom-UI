@@ -1,0 +1,7 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+interface Props extends HTMLAttributes<'input'> {label?:string;}
+const {label,...rest}=Astro.props;const date=rest.type==='date';
+---
+<div data-kav-ui-widget>{date?<div class="ui-datepicker" data-ui-datepicker><input {...rest} class:list={['form-control',rest.class]} aria-label={label||rest['aria-label']}/></div>:<input {...rest} class:list={['form-control',rest.class]} aria-label={label||rest['aria-label']}/>}</div>
+<script>import {installAstro} from "../client.js";installAstro();</script>

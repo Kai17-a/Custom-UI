@@ -1,0 +1,6 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+interface Props extends HTMLAttributes<'textarea'> {value?:string;}
+const {value,...rest}=Astro.props;
+---
+<textarea {...rest} class:list={['form-control',rest.class]}>{value}<slot/></textarea>

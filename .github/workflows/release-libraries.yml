@@ -1,0 +1,77 @@
+name: Release Kav-UI libraries
+
+on:
+  push:
+    tags:
+      - 'libraries-v[0-9]*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing library tag (e.g. libraries-v0.1.0 or libraries-v0.2.0-rc.1)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kav-ui-library-release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build, test and publish library tarballs
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+      ASTRO_TELEMETRY_DISABLED: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the library version tag
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: refs/tags/${{ inputs.tag || github.ref_name }}
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '>=24.13.0 <25'
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Validate tag and package versions
+        run: node scripts/library-release.mjs validate "$RELEASE_TAG"
+
+      - name: Install locked development dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Build shared library assets
+        run: npm run build:packages
+
+      - name: Test package exports, SSR and release metadata
+        run: npm run test:packages
+
+      - name: Check public types
+        run: npm run check:packages
+
+      - name: Build Vue and Astro examples
+        run: npm run build:examples
+
+      - name: Test release orchestration without publishing
+        run: python3 -m unittest discover -s tests -p 'test_*release*.py'
+
+      - name: Pack libraries and write SHA-256 checksums
+        run: |
+          npm run pack:packages
+          node scripts/library-release.mjs checksums "$RELEASE_TAG"
+          node scripts/library-release.mjs verify "$RELEASE_TAG"
+
+      - name: Publish the library release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: bash scripts/publish-library-release.sh

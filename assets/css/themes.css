@@ -14,7 +14,10 @@ body[data-ui-theme="glass"] {
   background:
     radial-gradient(ellipse at 5% 0%, color-mix(in srgb, var(--bs-primary) 18%, transparent), transparent 55%),
     radial-gradient(ellipse at 100% 25%, color-mix(in srgb, var(--bs-info) 14%, transparent), transparent 50%),
-    var(--bs-body-bg);
+    linear-gradient(var(--_ui-background-tint), var(--_ui-background-tint)),
+    var(--ui-theme-background-image, none) var(--bs-body-bg);
+  background-size:auto, auto, auto, var(--ui-theme-background-size, cover);
+  background-position:center, center, center, var(--ui-theme-background-position, center);
 }
 /* A stronger frosted-glass treatment with luminous edges and layered color. */
 body[data-ui-theme="glassmorphism"] {
@@ -35,10 +38,15 @@ body[data-ui-theme="glassmorphism"] {
     radial-gradient(ellipse 55rem 35rem at 0 15%, color-mix(in srgb, var(--bs-primary) 34%, transparent), transparent 75%),
     radial-gradient(ellipse 48rem 38rem at 100% 55%, color-mix(in srgb, var(--bs-info) 30%, transparent), transparent 75%),
     radial-gradient(ellipse 45rem 30rem at 30% 100%, color-mix(in srgb, var(--bs-success) 16%, transparent), transparent 75%),
-    var(--bs-body-bg);
+    linear-gradient(var(--_ui-background-tint), var(--_ui-background-tint)),
+    var(--ui-theme-background-image, none) var(--bs-body-bg);
+  background-size:auto, auto, auto, auto, var(--ui-theme-background-size, cover);
+  background-position:center, center, center, center, var(--ui-theme-background-position, center);
 }
 /* Anchor decorative backgrounds to the viewport, including on long catalog pages. */
 body:is([data-ui-theme="glass"], [data-ui-theme="glassmorphism"]) {
+  /* The tint keeps arbitrary photographs subtle in both color modes. */
+  --_ui-background-tint:color-mix(in srgb, var(--bs-body-bg) calc(100% - clamp(0%, var(--ui-theme-background-opacity, 18%), 100%)), transparent);
   background-attachment:fixed;
   background-repeat:no-repeat;
 }

@@ -5,37 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Color palettes — Kav-UI design catalog</title>
     <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-    <style>
-html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
-html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
-</style>
-    <script>
-(() => {
-  let mode = null, design = null, palette = null;
-  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
-  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
-  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
-  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
-  document.documentElement.dataset.uiColorPreference = selected;
-  document.documentElement.dataset.bsTheme = selected === 'system'
-    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  const restore = () => {
-    if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
-      document.body.dataset.uiTheme = design;
-    }
-    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
-      document.documentElement.dataset.uiPalette = palette;
-    }
-    return true;
-  };
-  if (!restore()) {
-    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
-    observer.observe(document.documentElement, {childList:true, subtree:true});
-  }
-})();
-</script>
+    <script src="../assets/js/theme-init.js"></script>
     <link rel="stylesheet" href="../assets/css/catalog.css">
     <script defer src="../assets/js/catalog.js"></script>
     <script defer src="../assets/js/catalog-navigation.js"></script>
@@ -122,6 +92,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
               <li>
                 <a href="../components/layouts.html">Layouts</a>
               </li>
+      <li><a href="../components/splitter.html">Splitter</a></li>
               <li>
                 <a href="../components/flex.html">Flexbox</a>
               </li>
@@ -211,6 +182,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
               <li>
                 <a href="../components/alerts.html">Alerts</a>
               </li>
+      <li><a href="../components/banner.html">Banner</a></li>
               <li>
                 <a href="../components/toasts.html">Toasts & alerts</a>
               </li>
@@ -287,6 +259,59 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
             </div>
           </div>
         </section>
+        <section class="specimen" id="palette-custom">
+          <h2>自分の色からパレットを作る</h2>
+          <p>基準色と彩度を選び「配色を適用」を押すと、背景・本文・ボタン・選択状態をまとめて生成します。基準色はそのまま塗らず、色相をHCTで取り出してMaterialのトーンへ割り当てます。彩度は0〜32に制限し、原色を選んでも落ち着いた配色にします。</p>
+          <div class="example" data-example>
+            <form class="ui-palette-editor" data-ui-palette-editor>
+              <div class="ui-palette-editor-fields">
+                <div>
+                  <label class="form-label" for="custom-palette-seed">基準色（HEXも入力可）</label>
+                  <input id="custom-palette-seed" class="form-control" type="color" value="#7d6b91" data-ui-palette-seed required>
+                </div>
+                <div>
+                  <label class="form-label" for="custom-palette-chroma">彩度（HCT Chroma）：<output for="custom-palette-chroma" data-ui-palette-chroma-output>24</output></label>
+                  <input id="custom-palette-chroma" class="form-range" type="range" min="0" max="32" step="1" value="24" data-ui-palette-chroma>
+                  <p class="type-caption">0は無彩色、24は既存パレットと同程度です。</p>
+                </div>
+              </div>
+              <div class="ui-cluster">
+                <button class="btn btn-primary" type="submit">配色を適用</button>
+                <button class="btn btn-outline-secondary" type="reset">入力を戻す</button>
+                <button class="btn btn-ghost-secondary" type="button" data-ui-palette-value="default">標準に戻す</button>
+              </div>
+              <p class="ui-palette-editor-status" role="status" data-ui-palette-status></p>
+            </form>
+          </div>
+          <p>このフォームも共通コンポーネントです。HTMLをコピーするだけで動きます。適用後は上部の配色欄に「カスタム」が追加され、既存パレットと行き来できます。白・黒・グレーの基準色、または彩度0では無彩色のパレットを作ります。成功・警告・エラー・情報の意味色は固定です。</p>
+        </section>
+        <section class="specimen" id="palette-custom-api">
+          <h2>カスタム配色のAPI・保存</h2>
+          <pre class="setup-code"><code>KavUI.setCustomPalette('#7d6b91', {chroma: 24});
+KavUI.setCustomPalette('#52796f', {chroma: 20, persist: true});
+
+// 設定を読み出す。返り値はコピーなので、変更しても現在の配色は変わりません。
+const settings = KavUI.getCustomPalette(); // {seed: '#52796f', chroma: 20}
+
+KavUI.setPalette('sage');   // 定義したカスタム配色は保持されます。
+KavUI.setPalette('custom'); // 最後に作ったカスタム配色へ戻します。</code></pre>
+          <p>基準色は#RRGGBB、chromaは0〜32の整数です。chromaの既定値は24です。不正な値はfalseを返し、配色・保存値を変更しません。カスタムが未定義のときはgetCustomPalette()がnull、setPalette('custom')がfalseになります。変更時はui:palettechangeでdetail.palette='custom'、detail.seed、detail.chromaを通知します。</p>
+          <p>フォームからの適用はbodyにdata-ui-theme-persistがある場合だけ保存します。APIはpersist:trueで保存します。設定と初回描画用キャッシュはkav-ui-custom-paletteへ保存され、ライト・ダーク両方の色を持ちます。再読み込み時は基準色から再計算します。質感・明暗の設定は変更しません。</p>
+          <h3>HTMLで初期色を指定する</h3>
+          <pre class="setup-code"><code>&lt;html data-ui-palette="custom"
+      data-ui-palette-seed="#52796f"
+      data-ui-palette-chroma="20"&gt;</code></pre>
+          <p>初期色の生成にはui.jsが必要です。明示した基準色は保存済み設定より優先します。固定された既存6パレットは従来どおりCSSだけで使えます。</p>
+          <h3>遷移時の配色を先に復元する</h3>
+          <pre class="setup-code"><code>&lt;!-- CSSより前。defer / asyncを付けずに読み込みます。 --&gt;
+&lt;script src="assets/js/theme-init.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;
+
+&lt;body data-ui-theme-persist&gt;...&lt;/body&gt;</code></pre>
+          <p>theme-init.jsは任意です。保存した配色をCSSの描画前に復元し、カラーパレット・質感・明暗を引き継ぎます。カタログ・starter・テンプレートでは読み込み済みで、配布ZIPにも含めています。色生成処理はui.jsに同梱しているため、外部通信・npm・ブラウザでのimportは不要です。</p>
+        </section>
+
         <section class="specimen" id="palette-select">
           <h2>selectで配置する</h2>
           <p>ボタンと選択欄は自動で同期します。デザインテーマと表示モードを変えても、選択した配色を保ちます。</p>
@@ -392,7 +417,7 @@ document.body.addEventListener('ui:palettechange', event =&gt; {
   console.log(event.detail.palette);
 });</code></pre>
           <p>setPalette()は有効な値でtrue、不明な値では変更せずfalseを返します。APIはpersist省略時に保存しません。選択欄・ボタンからの操作はbodyにdata-ui-theme-persistがある場合だけ、kav-ui-paletteへ保存します。明暗のkav-ui-theme、質感のkav-ui-design-themeとは独立しています。保存を利用できない場合も、ページ内の切り替えは動きます。</p>
-          <p>初回描画の前に保存値を復元するhead内の処理は、カタログ・starter・サービステンプレートに含めています。アプリへの取り込み時にも引き継いでください。</p>
+          <p>初回描画の前に保存値を復元するtheme-init.jsは、カタログ・starter・サービステンプレートで読み込んでいます。アプリへの取り込み時にも引き継いでください。</p>
           <p><a href="theme-switcher.html">明暗・質感の切り替え →</a> / <a href="../templates/dashboard.html">ダッシュボードで配色を試す →</a></p>
         </section>
         <details class="source">

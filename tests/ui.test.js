@@ -30,6 +30,72 @@ window.uiTestsDone = (async () => {
     zone.dispatchEvent(new DragEvent('dragenter',{bubbles:true,cancelable:true,dataTransfer:data}));
     const event=new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:data});zone.dispatchEvent(event);return event;
   };
+  const paletteState=()=>({mode:document.documentElement.dataset.uiColorPreference,design:document.body.dataset.uiTheme,stored:['kav-ui-palette','kav-ui-custom-palette'].map(key=>[key,localStorage.getItem(key)])});
+  const restorePaletteState=state=>{KavUI.setPalette('default');KavUI.setColorTheme(state.mode);KavUI.setDesignTheme(state.design);for(const [key,value] of state.stored){if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,value);}};
+  await test('Custom palette: 未定義・検証・コピー・同一値と更新イベント', () => {
+    const state=paletteState();const events=[];const listener=event=>events.push(event.detail);
+    try {
+      assert(KavUI.getCustomPalette()===null && !KavUI.setPalette('custom'),'未定義では選べない');
+      document.body.addEventListener('ui:palettechange',listener);
+      assert(KavUI.setCustomPalette('#7D6B91',{chroma:24}),'HEXを正規化して生成');
+      assert(document.documentElement.dataset.uiPalette==='custom' && KavUI.getCustomPalette().seed==='#7d6b91','現在の配色と設定');
+      const settings=KavUI.getCustomPalette();settings.seed='#ff0000';assert(KavUI.getCustomPalette().seed==='#7d6b91','設定はコピー');
+      assert(events.length===1 && events[0].palette==='custom' && events[0].seed==='#7d6b91' && events[0].chroma===24,'カスタムの詳細通知');
+      KavUI.setCustomPalette('#7d6b91',{chroma:24});assert(events.length===1,'同じ設定では通知を増やさない');
+      KavUI.setCustomPalette('#52796f',{chroma:20});assert(events.length===2 && events[1].seed==='#52796f','同じcustom内の色変更も通知');
+      for(const [seed,chroma] of [['#ff0',24],['red',24],['#000000; color:red',24],['#123456',33],['#123456',-1],['#123456',NaN],['#123456',12.5],['#123456','24']])assert(!KavUI.setCustomPalette(seed,{chroma}),'不正な設定を拒否');
+      assert(events.length===2 && KavUI.getCustomPalette().seed==='#52796f','不正な更新で色と通知を変えない');
+      assert(document.querySelectorAll('style[data-ui-custom-palette-style]').length===1,'生成スタイルを重複しない');
+    } finally {document.body.removeEventListener('ui:palettechange',listener);restorePaletteState(state);}
+  });
+  await test('Custom palette: 既存配色・明暗・質感との独立と保存', () => {
+    const state=paletteState();
+    try {
+      mount('<select class="form-select" data-ui-palette-select><option value="default">標準</option><option value="sage">セージ</option></select>');
+      localStorage.removeItem('kav-ui-custom-palette');KavUI.setDesignTheme('glass');KavUI.setColorTheme('light');KavUI.setCustomPalette('#52796f',{chroma:20});
+      const primary=()=>getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim();const light=primary();
+      assert(!localStorage.getItem('kav-ui-custom-palette'),'APIは既定で保存しない');
+      assert(find('select').value==='custom' && find('select [value=custom]') && find('.ui-select-trigger').textContent==='カスタム','既存selectへ選択肢を追加');
+      KavUI.setPalette('sage');assert(primary()!==light && document.body.dataset.uiTheme==='glass','既存パレットへ戻せる');
+      KavUI.setPalette('custom',{persist:true});assert(primary()===light,'保持したカスタムへ戻す');
+      const cached=JSON.parse(localStorage.getItem('kav-ui-custom-palette'));assert(cached.seed==='#52796f' && cached.chroma===20 && cached.light['--bs-primary']===light && cached.dark['--bs-primary'],'再選択でも設定と初回描画用の両配色を保存');
+      KavUI.setColorTheme('dark');assert(primary()!==light && document.body.dataset.uiTheme==='glass','明暗だけ変更');
+      KavUI.setColorTheme('light');assert(primary()===light,'ライトの色へ復帰');
+      KavUI.init(fixture);assert(find('select').querySelectorAll('[value=custom]').length===1,'再初期化で選択肢を増やさない');
+    } finally {restorePaletteState(state);}
+  });
+  await test('Custom palette: 高彩度・無彩色・極端な基準色でも文字コントラストを保持', () => {
+    const state=paletteState();
+    const luminance=hex=>{const c=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return c[0]*.2126+c[1]*.7152+c[2]*.0722;};
+    const contrast=(a,b)=>{const [lo,hi]=[luminance(a),luminance(b)].sort((a,b)=>a-b);return(hi+.05)/(lo+.05);};
+    try {
+      for(const seed of ['#ff0000','#00ff00','#0000ff','#ffff00','#ff00ff','#00ffff','#ffffff','#000000','#808080','#7d6b91'])for(const chroma of [0,24,32]) {
+        assert(KavUI.setCustomPalette(seed,{chroma}),'入力色を受け付ける');
+        for(const mode of ['light','dark']) {
+          KavUI.setColorTheme(mode);const css=getComputedStyle(document.documentElement),value=key=>css.getPropertyValue('--md-sys-color-'+key).trim();
+          for(const role of ['primary','secondary','tertiary','error'])assert(contrast(value(role),value('on-'+role))>=4.5 && contrast(value(role+'-container'),value('on-'+role+'-container'))>=4.5,'Materialの前景・背景のトーン対');
+          assert(contrast(value('surface'),value('on-surface'))>=7,'本文のトーン対');
+          if(chroma===0 || ['#ffffff','#000000','#808080'].includes(seed)) {const p=value('primary');assert(p.slice(1,3)===p.slice(3,5) && p.slice(3,5)===p.slice(5,7),'グレーは無彩色を保つ');}
+        }
+      }
+    } finally {restorePaletteState(state);}
+  });
+  await test('Custom palette editor: 適用前は保持・検証・複数フォーム同期・リセット・保存', async () => {
+    const state=paletteState(),persist=document.body.hasAttribute('data-ui-theme-persist');
+    const editor=id=>'<form data-ui-palette-editor><label for="seed-'+id+'">基準色</label><input id="seed-'+id+'" data-ui-palette-seed value="#52796f" required><input type="number" min="0" max="32" step="1" value="24" data-ui-palette-chroma><output data-ui-palette-chroma-output></output><button type="submit">適用</button><button type="reset">戻す</button><p role="status" data-ui-palette-status></p></form>';
+    try {
+      mount(editor('one')+editor('two'));document.body.setAttribute('data-ui-theme-persist','');
+      const form=find('form'),seed=form.querySelector('[data-ui-palette-seed]'),chroma=form.querySelector('[data-ui-palette-chroma]');const before=document.documentElement.dataset.uiPalette;
+      seed.value='#52796f';chroma.value='20';chroma.dispatchEvent(new Event('input',{bubbles:true}));assert(document.documentElement.dataset.uiPalette===before && form.querySelector('output').textContent==='20','編集中は全体の色を変えない');
+      form.requestSubmit();assert(document.documentElement.dataset.uiPalette==='custom' && form.querySelector('[role=status]').textContent.includes('適用しました'),'送信せず適用');
+      assert(many('[data-ui-palette-seed]').every(input=>input.value==='#52796f') && many('[data-ui-palette-chroma]').every(input=>input.value==='20'),'他のフォームも同期');
+      assert(JSON.parse(localStorage.getItem('kav-ui-custom-palette')).seed==='#52796f','フォームからの保存');
+      seed.value='invalid';form.requestSubmit();assert(form.querySelector('[data-ui-error]') && KavUI.getCustomPalette().seed==='#52796f','不正入力は配色を壊さない');
+      seed.value='#ffffff';chroma.value='10';form.reset();await wait(10);assert(seed.value==='#52796f' && chroma.value==='20' && !form.querySelector('[data-ui-error]'),'最後に適用した値へ入力だけ戻す');
+      KavUI.init(fixture);let changes=0;const listener=()=>changes++;document.body.addEventListener('ui:palettechange',listener);seed.value='#7d6b91';form.requestSubmit();document.body.removeEventListener('ui:palettechange',listener);assert(changes===1,'initを重ねても1回だけ適用');
+    } finally {document.body.toggleAttribute('data-ui-theme-persist',persist);restorePaletteState(state);}
+  });
+
   await test('Palette: APIの検証・独立性・イベント・同期・保存', () => {
     const saved=localStorage.getItem('kav-ui-palette'),design=document.body.dataset.uiTheme,mode=document.documentElement.dataset.uiColorPreference;
     try {
@@ -302,6 +368,136 @@ window.uiTestsDone = (async () => {
     document.body.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
     assert(!document.querySelector('[role="tooltip"]'), '領域外で閉じる');
   });
+  await test('Vue境界: 祖先の初期化では変更せず、明示した範囲だけ初期化',()=>{
+    mount('<div data-kav-ui-vue id="vue-owner"><select class="form-select"><option>選択</option></select></div>');
+    const owner=find('#vue-owner');assert(!owner.querySelector('.ui-select-trigger'),'Vueの管理下を祖先から書き換えない');
+    KavUI.init(owner);assert(owner.querySelectorAll('.ui-select-trigger').length===1,'不透明なアダプターでは明示して初期化できる');
+    KavUI.destroy(fixture);assert(owner.querySelector('.ui-select-trigger'),'祖先の破棄でもVueが所有する部品を維持');
+    KavUI.destroy(owner);assert(!owner.querySelector('.ui-select-trigger'),'所有者から明示的に破棄すると元へ戻す');
+  });
+  await test('Vueアイコン境界: 祖先の走査・ObserverはVue DOMに触れずHTMLアダプター内だけ更新',async()=>{
+    mount('<section data-kav-ui-vue><button id="vue-raw-icon" icon="mdi-home">Vue text</button><div id="vue-html-icons" data-kav-ui-vue data-kav-ui-html><button icon="mdi-home">HTML text</button></div></section>');
+    const raw=find('#vue-raw-icon'),html=find('#vue-html-icons'),trusted=html.querySelector('button');
+    KavUI.init(html);await wait(0);
+    assert(!raw.querySelector('svg')&&trusted.querySelector('svg'),'Vueの通常ノードを保護して不透明HTML内を初期化');
+    const original=trusted.querySelector('path').getAttribute('d');raw.setAttribute('icon','mdi-check');trusted.setAttribute('icon','mdi-check');
+    const child=document.createElement('button');child.setAttribute('icon','mdi-home');raw.parentNode.append(child);await wait(0);
+    assert(!raw.querySelector('svg')&&!child.querySelector('svg'),'属性変更と動的追加でもVue側を変更しない');
+    assert(trusted.querySelector('path').getAttribute('d')!==original,'不透明HTML内の属性変更は自動描画');
+    KavUI.destroy(html);
+  });
+  await test('destroy: 選択欄・入力ピッカー・チャートの後始末と再初期化',()=>{
+    mount('<div id="dispose-unit"><select class="form-select" aria-label="選択"><option value="one">1</option><option value="two">2</option></select><input class="form-control" type="color" value="#345678"><figure data-ui-chart><script type="application/json" data-ui-chart-data>{"labels":["月"],"series":[{"name":"値","values":[1]}]}</script></figure></div><div id="outside-unit"><select class="form-select"><option>外側</option></select></div>');
+    const root=find('#dispose-unit'),select=root.querySelector('select'),input=root.querySelector('input[type=color]');
+    select.value='two';root.querySelector('.ui-select-trigger').click();
+    KavUI.destroy(root);
+    assert(!root.querySelector('.ui-select-trigger')&&!root.querySelector('.ui-input-picker')&&!root.querySelector('.ui-chart-output'),'生成DOMを戻す');
+    assert(select.value==='two'&&input.value==='#345678'&&root.querySelector('select')===select,'ネイティブの値とDOMを維持');
+    assert(find('#outside-unit .ui-select-trigger'),'他の範囲を変更しない');
+    KavUI.destroy(root);KavUI.init(root);
+    assert(root.querySelectorAll('.ui-select-trigger').length===1&&root.querySelectorAll('.ui-chart-output').length===1,'再初期化で重複しない');
+  });
+
+  await test('destroy: 入力要素だけの初期化でもピッカー内部の選択欄を破棄',async()=>{
+    mount('<form><fieldset><input class="form-control" type="time" value="09:30"></fieldset></form>');
+    const input=find('input[type=time]');find('.ui-input-picker-trigger').click();
+    const popup=find('.ui-input-popup'),select=popup.querySelector('select'),button=popup.querySelector('.ui-select-trigger');
+    assert(select&&button,'時刻の内部選択欄を初期化');
+    KavUI.destroy(input);
+    assert(find('input[type=time]')===input&&!find('.ui-input-picker')&&!popup.querySelector('.ui-select-trigger'),'元inputと内部のnative selectへ復元');
+    const label=button.textContent;select.selectedOptions[0].textContent='破棄後の変更';find('fieldset').disabled=true;await wait(0);
+    assert(button.textContent===label,'外側fieldsetや古いselectを変更しても破棄済みUIは同期しない');
+  });
+  await test('destroy: 日付入力の生成UIを戻し、同じrootの再描画後に初期化',()=>{
+    mount('<div id="date-dispose" data-ui-datepicker><input type="date" value="2026-10-01"></div>');
+    const root=find('#date-dispose'),oldInput=root.querySelector('input');
+    root.querySelector('[data-ui-datepicker-action="toggle"]').click();
+    KavUI.destroy(root);
+    assert(root.children.length===1&&root.firstElementChild===oldInput&&!root.classList.contains('ui-datepicker'),'入力を維持して生成DOMとクラスを戻す');
+    root.innerHTML='<input type="date" value="2026-10-20">';KavUI.init(root);KavUI.init(root);
+    assert(root.querySelectorAll('.ui-datepicker-toggle').length===1,'新しい入力に一度だけ生成');
+    root.querySelector('[data-ui-datepicker-action="toggle"]').click();
+    root.querySelector('[data-ui-calendar-date="2026-10-24"]').click();
+    assert(root.querySelector('input').value==='2026-10-24'&&oldInput.value==='2026-10-01','新しい入力だけに選択を反映');
+    KavUI.destroy(root);
+  });
+  await test('destroy: サイドバーの同じrootを再描画しても新しいpanelを制御',()=>{
+    mount('<div id="sidebar-dispose" class="app-shell" data-ui-sidebar><aside class="app-sidebar">旧メニュー</aside><main>本文</main></div>');
+    const root=find('#sidebar-dispose'),oldPanel=root.querySelector('aside');
+    KavUI.sidebar(root,{open:true});KavUI.destroy(root);
+    assert(!oldPanel.hidden&&!root.hasAttribute('data-ui-sidebar-state'),'初期状態へ戻す');
+    root.innerHTML='<aside class="app-sidebar">新メニュー</aside><main>新本文</main>';KavUI.init(root);
+    const panel=root.querySelector('aside');
+    KavUI.sidebar(root,{open:true});KavUI.sidebar(root,{open:false});
+    assert(panel.hidden&&!oldPanel.hidden,'新しいpanelだけを閉じる');
+    KavUI.sidebar(root,{open:true});assert(!panel.hidden,'新しいpanelを再表示');
+    KavUI.destroy(root);assert(!document.querySelector('.ui-sidebar-dialog'),'外側のダイアログも片付ける');
+  });
+  await test('destroy: indeterminateの外側form resetと予約済み処理を解除',async()=>{
+    mount('<form><div id="mixed-dispose"><input type="checkbox" data-ui-indeterminate></div></form>');
+    const root=find('#mixed-dispose'),input=root.querySelector('input'),form=find('form');
+    form.reset();KavUI.destroy(root);input.indeterminate=false;await wait(10);
+    assert(!input.indeterminate,'破棄前に予約したresetも取り消す');
+    input.remove();form.reset();await wait(10);
+    assert(!input.indeterminate,'取り外したinputには外側resetが作用しない');
+    root.append(input);input.dataset.uiIndeterminate='false';KavUI.init(root);input.indeterminate=true;form.reset();await wait(10);
+    assert(!input.indeterminate,'再初期化では現在の属性でresetを登録');
+    KavUI.destroy(root);
+  });
+
+  await test('Responsive sidebar: API・同期・再初期化・無効ボタン',()=>{
+    mount('<div class="app-shell" id="responsive-unit" data-ui-sidebar data-ui-sidebar-mobile="collapse"><aside class="app-sidebar"><a href="#">ページ</a></aside><div><button type="button" data-ui-toggle="sidebar-responsive" data-ui-target="#responsive-unit" icon="mdi-menu" data-ui-label-open="閉じる" data-ui-label-closed="開く"></button></div></div>');
+    const root=find('#responsive-unit'),panel=find('.app-sidebar'),button=find('button');
+    KavUI.sidebar(root,{open:true});assert(!panel.hidden&&button.getAttribute('aria-expanded')==='true','表示とARIA');
+    let events=0;root.addEventListener('ui:sidebarchange',()=>events++);
+    button.click();assert(panel.hidden&&button.getAttribute('aria-expanded')==='false'&&events===1,'一度だけ閉じる');
+    assert(button.querySelector('svg')&&button.getAttribute('aria-label')==='開く','ラベル変更でアイコンを消さない');
+    KavUI.init(root);assert(panel.hidden,'再初期化で開かない');
+    button.disabled=true;button.click();assert(panel.hidden,'無効操作を無視');button.disabled=false;
+    button.click();assert(!panel.hidden&&events===2,'再表示');
+    assert(KavUI.sidebar('#does-not-exist')===false,'不正な対象');
+  });
+  await test('Responsive sidebar: レールでもリンク名・子メニューを維持',()=>{
+    if(innerWidth<768)return;
+    mount('<div class="app-shell" id="rail-unit" data-ui-sidebar data-ui-sidebar-tablet="rail" data-ui-sidebar-desktop="rail"><aside class="app-sidebar"><nav><a href="#"><span class="sidebar-icon" icon="mdi-home"></span><span class="sidebar-label">概要</span></a><details><summary><span class="sidebar-icon" icon="mdi-cog"></span><span class="sidebar-label">設定</span></summary><a href="#">詳細</a></details></nav></aside><div><button type="button" data-ui-toggle="sidebar-responsive" data-ui-target="#rail-unit">展開</button></div></div>');
+    const root=find('#rail-unit'),panel=find('.app-sidebar'),link=find('a');
+    assert(KavUI.sidebar(root).mode==='rail'&&!panel.hidden,'レールは表示を維持');
+    assert(link.title==='概要'&&getComputedStyle(find('.sidebar-label')).position==='absolute','ラベルを視覚的に隠す');
+    find('summary').click();assert(KavUI.sidebar(root).open&&find('details').open,'子メニューを開くと文字付きになる');
+    assert(!link.hasAttribute('title'),'自動補完のtitleを戻す');
+    find('button').click();assert(root.dataset.uiSidebarState==='rail'&&!panel.hidden,'レールへ戻す');
+  });
+  await test('Responsive sidebar: top/bottomを全画面区分で指定できる',async()=>{
+    for(const edge of ['top','bottom']){
+      mount('<div class="app-shell" id="edge-unit" data-ui-sidebar data-ui-sidebar-mobile="'+edge+'" data-ui-sidebar-tablet="'+edge+'" data-ui-sidebar-desktop="'+edge+'"><aside class="app-sidebar"><a href="#">ページ</a></aside><div><button type="button" data-ui-toggle="sidebar-responsive" data-ui-target="#edge-unit">開く</button></div></div>');
+      const root=find('#edge-unit'),panel=find('.app-sidebar');
+      assert(KavUI.sidebar(root).mode===edge&&panel.hidden,'端から開くモードを適用');
+      find('button').click();const dialog=document.querySelector('.ui-sidebar-dialog');
+      assert(dialog.open&&dialog.classList.contains('ui-drawer-'+edge)&&dialog.contains(panel),'上下のドロワーで開く');
+      dialog.close();await wait(20);assert(panel.parentNode===root&&panel.hidden,'閉じたら戻す');
+    }
+  });
+  await test('Responsive sidebar: drawerの同一DOM・入力状態・復帰',async()=>{
+    if(innerWidth>=768)return;
+    mount('<div class="app-shell" id="drawer-unit" data-ui-sidebar><aside class="app-sidebar" aria-label="テストメニュー"><label>検索<input value="保持"></label><a href="#">概要</a></aside><div><button type="button" data-ui-toggle="sidebar-responsive" data-ui-target="#drawer-unit">開く</button></div></div>');
+    const root=find('#drawer-unit'),panel=find('.app-sidebar'),input=find('input'),button=find('button');
+    button.focus();button.click();const dialog=document.querySelector('.ui-sidebar-dialog');
+    assert(dialog?.open&&dialog.contains(panel)&&input.value==='保持','元のDOMでモーダル表示');
+    input.value='編集中';dialog.close();await wait(30);
+    assert(panel.parentNode===root&&panel.hidden&&input.value==='編集中'&&!dialog.isConnected,'閉じた後に入力状態を維持して戻す');
+    assert(document.activeElement===button,'トリガーにフォーカス復帰');
+    button.click();root.remove();await wait(30);
+    assert(!document.querySelector('.ui-sidebar-dialog[open]'),'利用側が削除されてもモーダルを残さない');
+  });
+
+  await test('Banner: 近いバナーだけ閉じる・フォーカス復帰・再表示', () => {
+    mount('<button type="button" data-ui-toggle="show" data-ui-target="#banner-unit">表示</button><div class="ui-banner ui-banner-info" id="banner-unit"><div class="ui-banner-inner"><p class="ui-banner-content">案内</p><button type="button" class="ui-banner-close" data-ui-dismiss="banner" aria-label="案内を閉じる">×</button></div></div><div class="ui-banner">別の案内</div>');
+    const banner=find('#banner-unit'),close=find('[data-ui-dismiss=banner]');let hidden=0;banner.addEventListener('ui:hidden',()=>hidden++);
+    close.focus();close.click();assert(banner.hidden && !many('.ui-banner')[1].hidden && hidden===1,'対象だけ閉じる');
+    assert(document.activeElement===find('[data-ui-toggle=show]'),'外の表示ボタンへフォーカスを戻す');
+    find('[data-ui-toggle=show]').click();assert(!banner.hidden,'既存showで再表示');
+    close.disabled=true;close.click();assert(!banner.hidden,'無効な閉じるボタンは操作しない');
+  });
   await test('親領域を閉じるとツールチップも消える', () => {
     mount('<button data-ui-toggle="collapse" data-ui-target="#tooltip-parent">開閉</button><div id="tooltip-parent"><button data-ui-tooltip="補足">説明</button></div>');
     find('[data-ui-tooltip]').focus();
@@ -320,6 +516,118 @@ window.uiTestsDone = (async () => {
     assert(groups[0].querySelector('[data-ui-panel="a"]').id !== groups[1].querySelector('[data-ui-panel="a"]').id, 'IDを一意に自動生成');
     document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Home',bubbles:true,cancelable:true}));
     assert(document.activeElement === first, 'Homeで先頭へ');
+  });
+  await test('ナビバー: レスポンシブ開閉・独立・Escape・無効リンク・再初期化', () => {
+    const markup=()=>'<nav class="navbar" data-ui-navbar aria-label="テスト"><button type="button" data-ui-navbar-toggle>メニュー</button><div class="navbar-collapse" data-ui-navbar-panel><a class="nav-link" href="#nav-unit" id="nav-unit">概要</a><a class="nav-link" href="#disabled" aria-disabled="true" tabindex="-1">無効</a></div></nav>';
+    mount(markup()+markup().replace('id="nav-unit"','id="nav-unit-2"'));
+    const roots=many('[data-ui-navbar]'),root=roots[0],button=root.querySelector('button'),panel=root.querySelector('[data-ui-navbar-panel]');
+    const collapsed=innerWidth<1024;
+    assert(button.hidden===!collapsed && panel.hidden===collapsed,'PCは展開、小画面は折り畳み');
+    assert(button.getAttribute('aria-controls')===panel.id,'パネルを関連付ける');
+    let count=0;root.addEventListener('ui:navtoggle',()=>count++);KavUI.init(root);KavUI.init(root);
+    if(collapsed) {
+      button.click();assert(!panel.hidden && button.getAttribute('aria-expanded')==='true','開く');
+      assert(roots[1].querySelector('[data-ui-navbar-panel]').hidden,'他のナビバーは閉じたまま');
+      const disclosure=document.createElement('div');disclosure.hidden=true;disclosure.id=panel.id+'-section';const action=document.createElement('a');action.href='#'+disclosure.id;action.dataset.uiToggle='collapse';action.dataset.uiTarget='#'+disclosure.id;action.textContent='開閉';panel.append(action,disclosure);KavUI.init(root);action.click();
+      assert(!disclosure.hidden && !panel.hidden,'開閉用リンクではナビバーを閉じない');
+      const disabledLink=panel.querySelector('[aria-disabled]'),event=new MouseEvent('click',{bubbles:true,cancelable:true});disabledLink.dispatchEvent(event);
+      assert(event.defaultPrevented && !panel.hidden,'無効リンクは遷移・閉鎖しない');
+      panel.querySelector('a').focus();panel.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
+      assert(panel.hidden && document.activeElement===button && count===2,'Escapeで閉じてトリガーに戻る・イベント重複なし');
+      button.click();panel.querySelector('a').addEventListener('click',event=>event.preventDefault(),{once:true});panel.querySelector('a').click();
+      assert(!panel.hidden,'アプリがキャンセルしたリンクでは閉じない');
+    } else assert(button.getAttribute('aria-expanded')==='true','PCは常に展開');
+  });
+  await test('タブ: 縦配置・手動選択・RTL・無効項目スキップ', () => {
+    mount(tabs().replace('data-ui-tabs>','data-ui-tabs data-ui-tab-activation="manual">').replace('role="tablist"','role="tablist" aria-orientation="vertical"'));
+    const group=find('[data-ui-tabs]'),first=find('button'),last=many('button').at(-1);first.focus();
+    first.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true}));
+    assert(document.activeElement===last && first.getAttribute('aria-selected')==='true' && last.tabIndex===0 && first.tabIndex===-1,'矢印でフォーカスのみ移動');
+    last.click();assert(last.getAttribute('aria-selected')==='true' && !find('[data-ui-panel="b"]').hidden,'クリック／Enterで選択');
+    group.querySelector('[role=tablist]').removeAttribute('aria-orientation');group.dir='rtl';
+    last.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true,cancelable:true}));
+    assert(document.activeElement===first && last.getAttribute('aria-selected')==='true','RTLでは左右を逆にして手動選択を保つ');
+    KavUI.init(group);assert(last.getAttribute('aria-selected')==='true','再初期化で選択を保持');
+  });
+  const splitMarkup=(extra='',panels='')=>'<div class="ui-splitter" data-ui-splitter '+extra+'>'+(panels || '<section data-ui-splitter-panel data-ui-size="30" data-ui-min="15" data-ui-max="60" data-ui-collapsible aria-label="一覧"><a href="#split-test">一覧リンク</a></section><section data-ui-splitter-panel data-ui-size="70" data-ui-min="20" aria-label="本文">本文</section>')+'</div>';
+  await test('Splitter: destroyで通常コンテンツへ戻し、元の属性・サイズ・クラスを復元',()=>{
+    fixture.innerHTML='<div data-ui-splitter><section class="author" data-ui-splitter-panel data-ui-size="30" data-ui-collapsible aria-hidden="false" style="--ui-splitter-size:17 !important;color:red"><a href="#split-restored">リンク</a></section><section class="ui-splitter-panel" id="original-split-panel" data-ui-splitter-panel data-ui-size="70" inert="inert" aria-hidden="true" data-ui-splitter-collapsed="original">本文</section></div>';
+    const root=find('[data-ui-splitter]'),panels=many('[data-ui-splitter-panel]');KavUI.init(root);
+    const oldHandle=root.querySelector('[role=separator]');KavUI.splitter(root,{sizes:[0,100]});
+    assert(panels[0].inert&&panels[0].getAttribute('aria-hidden')==='true','実際に折り畳んでから破棄');
+    KavUI.destroy(root);KavUI.destroy(root);
+    assert(!root.querySelector('[role=separator]')&&!root.hasAttribute('class'),'生成ハンドルと追加ルートクラスを除く');
+    assert(!panels[0].inert&&panels[0].getAttribute('aria-hidden')==='false'&&!panels[0].hasAttribute('data-ui-splitter-collapsed')&&!panels[0].hasAttribute('id')&&panels[0].className==='author','開閉属性・生成ID・パネルクラスを戻す');
+    assert(panels[0].style.getPropertyValue('--ui-splitter-size')==='17'&&panels[0].style.getPropertyPriority('--ui-splitter-size')==='important'&&panels[0].style.color==='red','元のサイズと優先度・他のスタイルを維持');
+    assert(panels[1].getAttribute('inert')==='inert'&&panels[1].getAttribute('aria-hidden')==='true'&&panels[1].getAttribute('data-ui-splitter-collapsed')==='original'&&panels[1].id==='original-split-panel'&&panels[1].className==='ui-splitter-panel'&&!panels[1].hasAttribute('style'),'初期状態で存在した属性は保持');
+    const link=panels[0].querySelector('a');link.focus();assert(document.activeElement===link,'通常コンテンツとして再び操作できる');
+    let changes=0;root.addEventListener('ui:splitterchange',()=>changes++);
+    oldHandle.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));
+    assert(changes===0&&!panels[0].inert,'破棄したハンドルのイベントも解除');
+    KavUI.init(root);KavUI.init(root);
+    assert(root.querySelectorAll('[role=separator]').length===1&&KavUI.splitter(root).join()==='30,70','同じパネルを初期サイズで一度だけ再初期化');
+    root.innerHTML='<section data-ui-splitter-panel data-ui-size="40">新A</section><section data-ui-splitter-panel data-ui-size="60">新B</section>';KavUI.init(root);
+    assert(KavUI.splitter(root).join()==='40,60','構造変更時も旧状態を破棄して初期化');
+    KavUI.destroy(root);assert(!root.querySelector('[role=separator]')&&[...root.children].every(panel=>!panel.inert&&!panel.hasAttribute('style')&&!panel.hasAttribute('class')),'構造変更後も新しいパネルを復元');
+  });
+  await test('Splitter: 初期値・制約・API・独立・再初期化', () => {
+    mount(splitMarkup()+splitMarkup());const roots=many('[data-ui-splitter]'),root=roots[0];
+    assert(KavUI.splitter(root).join() === '30,70','初期サイズ');
+    assert(KavUI.splitter(root,{sizes:[95,5]}).join()==='60,40','最小・最大の範囲へ調整');
+    assert(KavUI.splitter(roots[1]).join()==='30,70','他のSplitterは変更しない');
+    const copy=KavUI.splitter(root);copy[0]=1;assert(KavUI.splitter(root)[0]===60,'返り値はコピー');
+    for(const sizes of [[-1,101],[20],[NaN,100],[0,0],['20',80]])assert(KavUI.splitter(root,{sizes})===false,'不正な入力を拒否');
+    KavUI.init(root);KavUI.init(root);assert(root.querySelectorAll('[data-ui-splitter-handle]').length===1 && KavUI.splitter(root)[0]===60,'再初期化で増殖・リセットしない');
+    const handle=root.querySelector('[role=separator]');assert(handle.getAttribute('aria-controls')===root.querySelector('[data-ui-splitter-panel]').id && handle.getAttribute('aria-orientation')==='vertical','ARIAの関連と向き');
+  });
+  await test('Splitter: キーボード・折り畳み・復元・リセット・無効', () => {
+    mount(splitMarkup());const root=find('[data-ui-splitter]'),handle=find('[role=separator]'),pane=find('[data-ui-splitter-panel]');
+    const press=(key,shiftKey=false)=>handle.dispatchEvent(new KeyboardEvent('keydown',{key,shiftKey,bubbles:true,cancelable:true}));
+    press('ArrowRight');assert(KavUI.splitter(root)[0]===32,'矢印は2%');press('ArrowLeft',true);assert(KavUI.splitter(root)[0]===22,'Shiftは10%');
+    pane.querySelector('a').focus();press('Enter');assert(KavUI.splitter(root)[0]===0 && pane.inert && pane.getAttribute('aria-hidden')==='true' && document.activeElement===handle,'折り畳むとフォーカスを戻す');
+    press('Enter');assert(KavUI.splitter(root)[0]===22 && !pane.inert,'直前のサイズへ戻す');
+    press('End');assert(KavUI.splitter(root)[0]===60,'Endで最大');press('Home');assert(KavUI.splitter(root)[0]===0,'Homeで折り畳み');press('ArrowRight');assert(KavUI.splitter(root)[0]===15,'折り畳みから最小幅へ展開');
+    KavUI.splitter(root,{reset:true});assert(KavUI.splitter(root)[0]===30,'初期値へリセット');
+    root.dir='rtl';press('ArrowLeft');assert(KavUI.splitter(root)[0]===32,'RTLでは左で拡大');
+    root.dataset.uiSplitterDisabled='';KavUI.init(root);press('ArrowLeft');assert(KavUI.splitter(root)[0]===32 && handle.tabIndex===-1 && handle.getAttribute('aria-disabled')==='true','無効なハンドルは操作しない');
+  });
+  await test('Splitter: 縦分割・3領域・入れ子・合計100', () => {
+    mount(splitMarkup('data-ui-orientation="vertical"','<section data-ui-splitter-panel data-ui-min="10" data-ui-size="20">上</section><section data-ui-splitter-panel data-ui-min="10" data-ui-size="30">中</section><section data-ui-splitter-panel data-ui-min="10" data-ui-size="50">下</section>'));
+    const root=find('[data-ui-splitter]'),handles=many('[role=separator]');handles[0].dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true}));
+    assert(KavUI.splitter(root).join()==='22,28,50' && handles[0].getAttribute('aria-orientation')==='horizontal','隣接する2領域のみ縦方向で変更');
+    root.querySelectorAll('[data-ui-splitter-panel]')[2].innerHTML=splitMarkup();KavUI.init(root);
+    assert(root.querySelectorAll('[role=separator]').length===3 && KavUI.splitter(root).length===3,'入れ子のパネルを数えない');
+    assert(Math.abs(KavUI.splitter(root).reduce((a,b)=>a+b,0)-100)<.001,'割合合計を維持');
+  });
+  await test('Splitter: スマートフォンの縦積みと操作方向・ARIA', () => {
+    mount(splitMarkup());const root=find('[data-ui-splitter]');root.classList.add('ui-splitter-mobile-stack');KavUI.init(root);
+    const mobile=innerWidth<768,handle=find('[role=separator]');assert(handle.getAttribute('aria-orientation')===(mobile?'horizontal':'vertical'),'境界の向きを同期');
+    handle.dispatchEvent(new KeyboardEvent('keydown',{key:mobile?'ArrowDown':'ArrowRight',bubbles:true,cancelable:true}));assert(KavUI.splitter(root)[0]===32,'見た目に合うキーで変更');
+  });
+  await test('Splitter: 隣接パネルの折り畳み・ARIA範囲・DOM変更後の復元', () => {
+    mount(splitMarkup('', '<section data-ui-splitter-panel data-ui-collapsible data-ui-size="20">A</section><section data-ui-splitter-panel data-ui-collapsible data-ui-size="30">B</section><section data-ui-splitter-panel data-ui-size="50">C</section>'));
+    const root=find('[data-ui-splitter]');KavUI.splitter(root,{sizes:[0,0,100]});
+    const handle=find('[role=separator]');assert(Number(handle.getAttribute('aria-valuemin'))<=Number(handle.getAttribute('aria-valuenow')) && Number(handle.getAttribute('aria-valuemax'))>=Number(handle.getAttribute('aria-valuenow')),'全て折り畳んだ境界でも有効なARIA範囲');
+    handle.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));assert(KavUI.splitter(root)[0]===20,'他領域へ再配分して展開');
+    KavUI.splitter(root,{sizes:[0,0,100]});root.append(Object.assign(document.createElement('section'),{textContent:'D'}));root.lastChild.dataset.uiSplitterPanel='';KavUI.init(root);
+    assert(KavUI.splitter(root).length===4 && !root.querySelector('[data-ui-splitter-panel]').inert,'構造変更で古いinert状態を引き継がない');
+  });
+  await test('Splitter: 多数パネルの丸め誤差でも最後まで折り畳める', () => {
+    mount(splitMarkup('',Array.from({length:6},(_,i)=>'<section data-ui-splitter-panel data-ui-collapsible>領域'+i+'</section>').join('')));
+    const root=find('[data-ui-splitter]');for(const handle of many('[role=separator]'))handle.dispatchEvent(new KeyboardEvent('keydown',{key:'Home',bubbles:true,cancelable:true}));
+    const sizes=KavUI.splitter(root);assert(sizes.slice(0,-1).every(value=>value===0) && sizes.at(-1)===100,'6領域の割合を一つへ集約');
+    assert(Array.isArray(KavUI.splitter(root,{sizes})),'取得値を再設定できる');
+  });
+  await test('Splitter: 任意保存・復元・壊れた保存値・実現不能な制約', () => {
+    const key='kav-ui-splitter:test-splitter',before=localStorage.getItem(key);
+    try {
+      localStorage.removeItem(key);mount(splitMarkup('data-ui-splitter-save="test-splitter"'));let root=find('[data-ui-splitter]');
+      KavUI.splitter(root,{sizes:[45,55]});assert(JSON.parse(localStorage.getItem(key)).sizes[0]===45,'指定した場合だけ保存');
+      mount(splitMarkup('data-ui-splitter-save="test-splitter"'));assert(KavUI.splitter(find('[data-ui-splitter]'))[0]===45,'サイズを復元');
+      localStorage.setItem(key,'invalid');mount(splitMarkup('data-ui-splitter-save="test-splitter"'));assert(KavUI.splitter(find('[data-ui-splitter]'))[0]===30,'破損時は初期値');
+      mount(splitMarkup('','<div data-ui-splitter-panel data-ui-min="70">A</div><div data-ui-splitter-panel data-ui-min="70">B</div>'));
+      assert(KavUI.splitter(find('[data-ui-splitter]'))===false && !find('[role=separator]'),'成立しない制約では操作部品を追加しない');
+    } finally {if(before===null)localStorage.removeItem(key);else localStorage.setItem(key,before);}
   });
   const pagination = () => '<div data-ui-pagination data-ui-page-size="2">' + [1,2,3].map(n=>'<p data-ui-page-item>'+n+'</p>').join('') + '<p data-ui-page-status></p><button data-ui-page="1">1</button><button data-ui-page="2">2</button><button data-ui-page-step="1">次へ</button></div>';
   await test('ページ送りの独立性・実際の項目表示・端のフォーカス', () => {
@@ -765,6 +1073,27 @@ window.uiTestsDone = (async () => {
       KavUI.setDesignTheme('default');assert(getComputedStyle(card).borderRadius===original,'標準へ戻すと元のデザイン');
     } finally { KavUI.setDesignTheme(before); }
   });
+  await test('ガラス背景画像: 任意指定・薄さ・モードとテーマの独立・解除', () => {
+    const body=document.body,beforeTheme=body.dataset.uiTheme,beforeMode=document.documentElement.dataset.bsTheme;
+    const keys=['--ui-theme-background-image','--ui-theme-background-opacity','--ui-theme-background-position'];
+    const saved=keys.map(key=>[key,body.style.getPropertyValue(key)]);
+    try {
+      const image='url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%222%22 height=%222%22%3E%3Cpath fill=%22%238fa9b5%22 d=%22M0 0h2v2H0z%22/%3E%3C/svg%3E")';
+      body.style.setProperty(keys[0],image);body.style.setProperty(keys[1],'22%');body.style.setProperty(keys[2],'right top');
+      for(const theme of ['glass','glassmorphism'])for(const mode of ['light','dark']) {
+        body.dataset.uiTheme=theme;document.documentElement.dataset.bsTheme=mode;
+        const css=getComputedStyle(body);
+        assert(css.backgroundImage.includes('data:image/svg+xml'),'画像を最背面へ追加');
+        assert(css.backgroundImage.includes('color(srgb') || css.backgroundImage.includes('color-mix('),'テーマ色で薄く重ねる');
+        assert(css.backgroundAttachment.split(',').every(value=>value.trim()==='fixed'),'全レイヤーを画面へ固定');
+        assert(css.backgroundSize.split(',').at(-1).trim()==='cover','画像だけcover');
+        assert(css.backgroundPosition.split(',').at(-1).trim()==='100% 0%','画像の表示位置を指定');
+      }
+      for(const theme of ['default','flat','soft']) {KavUI.setDesignTheme(theme);assert(!getComputedStyle(body).backgroundImage.includes('data:image/svg+xml'),'他のテーマに画像を出さない');}
+      body.dataset.uiTheme='glass';body.style.removeProperty(keys[0]);
+      assert(!getComputedStyle(body).backgroundImage.includes('url(') && getComputedStyle(body).backgroundImage.includes('radial-gradient'),'解除後は既存のグラデーションを保つ');
+    } finally {for(const [key,value] of saved){if(value)body.style.setProperty(key,value);else body.style.removeProperty(key);}KavUI.setDesignTheme(beforeTheme);document.documentElement.dataset.bsTheme=beforeMode;}
+  });
   await test('テーマ切替を複数ボタンへ同期', () => {
     mount('<button data-ui-toggle="theme">1</button><button data-ui-toggle="theme">2</button>');
     const before=document.documentElement.dataset.bsTheme;find('button').click();
@@ -943,6 +1272,19 @@ window.uiTestsDone = (async () => {
     assert(calendar.dataset.uiMonth==='2026-11' && !calendar.getAnimations({subtree:true}).length,'フォーム用も同じ表示方式');
     calendar.querySelector('[data-ui-calendar-date="2026-11-11"]').click();
     assert(find('#still-date').value==='2026-11-11' && document.activeElement===find('#still-date'),'フォームへの反映とフォーカス復帰を維持');
+  });
+  await test('Calendar destroy: 同じrootの再初期化・再描画と生成DOMの後始末', () => {
+    mount('<div data-ui-calendar data-ui-name="day" data-ui-month="2026-10" data-ui-calendar-modal><ul data-ui-calendar-events><li data-ui-date="2026-10-21">会議</li></ul></div>');
+    const root=find('[data-ui-calendar]'),events=root.querySelector('ul');
+    root.querySelector('[data-ui-calendar-date="2026-10-21"]').click();
+    assert(root.querySelector('dialog[open]'),'日付モーダルを開く');KavUI.destroy(root);
+    assert(!root.querySelector('[data-ui-calendar-view],dialog,[data-ui-calendar-input]')&&!events.hidden,'生成UIを除去しイベント一覧の表示を戻す');
+    KavUI.init(root);assert(root.querySelectorAll('[data-ui-calendar-date]').length===42,'同じDOMへ再初期化できる');
+    KavUI.destroy(root);root.replaceChildren();KavUI.init(root);
+    assert(root.querySelectorAll('[data-ui-calendar-date]').length===42,'rootの内部再描画後も日付を生成');
+    root.querySelector('[data-ui-calendar-date="2026-10-22"]').click();
+    assert(root.dataset.uiValue==='2026-10-22'&&root.querySelector('input').value==='2026-10-22','再生成後の操作とフォーム値');
+    KavUI.destroy(root);
   });
   document.title = failures.length ? 'FAIL — UI tests' : 'PASS — UI tests';
   return {passed, failures};

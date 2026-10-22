@@ -14,7 +14,7 @@
 .ui-toast:not([hidden]),
 .ui-tooltip,
 .ui-datepicker-popup:not([hidden]),
-.alert:not([hidden]),
+.alert:not([hidden]), .ui-banner:not([hidden]),
 .ui-reveal:not([hidden]),
 [data-ui-panel]:not([hidden]),
 .accordion details[open] > :not(summary),
@@ -26,7 +26,7 @@
 @keyframes ui-backdrop-appear { from { opacity:0; } to { opacity:1; } }
 @media (prefers-reduced-motion:reduce) {
   .ui-dialog[open], .ui-toast:not([hidden]), .ui-tooltip,
-  .ui-datepicker-popup:not([hidden]), .alert:not([hidden]),
+  .ui-datepicker-popup:not([hidden]), .alert:not([hidden]), .ui-banner:not([hidden]),
   .ui-reveal:not([hidden]), [data-ui-panel]:not([hidden]),
   .accordion details[open] > :not(summary), .tip-disclosure[open] > :not(summary),
   .ui-dialog[open]::backdrop { animation:none; }

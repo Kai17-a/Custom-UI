@@ -1,0 +1,6 @@
+---
+interface Props {value?:string;month?:string;min?:string;max?:string;label?:string;class?:string;id?:string;}
+const {value,month,min,max,label='カレンダー',...rest}=Astro.props;
+---
+<div {...rest} class:list={['ui-calendar',rest.class]} data-kav-ui-widget data-ui-calendar data-ui-value={value} data-ui-month={month} data-ui-min={min} data-ui-max={max} aria-label={label}/>
+<script>import {installAstro} from "../client.js";installAstro();</script>

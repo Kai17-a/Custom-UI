@@ -5,37 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MDI icons — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<style>
-html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
-html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
-</style>
-<script>
-(() => {
-  let mode = null, design = null, palette = null;
-  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
-  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
-  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
-  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
-  document.documentElement.dataset.uiColorPreference = selected;
-  document.documentElement.dataset.bsTheme = selected === 'system'
-    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  const restore = () => {
-    if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
-      document.body.dataset.uiTheme = design;
-    }
-    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
-      document.documentElement.dataset.uiPalette = palette;
-    }
-    return true;
-  };
-  if (!restore()) {
-    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
-    observer.observe(document.documentElement, {childList:true, subtree:true});
-  }
-})();
-</script>
+<script src="../assets/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
@@ -66,6 +36,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <h2>レイアウト</h2>
     <ul>
       <li><a href="../components/layouts.html">Layouts</a></li>
+      <li><a href="../components/splitter.html">Splitter</a></li>
       <li><a href="../components/flex.html">Flexbox</a></li>
       <li><a href="../components/flex-grid.html">Flex grid</a></li>
       <li><a href="../components/cards.html">Cards</a></li>
@@ -113,6 +84,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <h2>通知・補足</h2>
     <ul>
       <li><a href="../components/alerts.html">Alerts</a></li>
+      <li><a href="../components/banner.html">Banner</a></li>
       <li><a href="../components/toasts.html">Toasts & alerts</a></li>
       <li><a href="../components/tips.html">Tips & tooltips</a></li>
 
@@ -135,7 +107,9 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     </ul>
   </div>
 </nav><a class="overview-link" href="../components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>MDI icons</h1></header><p class="lede">よく使うMaterial Design Iconsを128種類収録しています。SVGの中身をコピーしてHTMLに貼り付けるだけで使えます。import・アイコンフォント・CDN・スプライトは不要です。</p>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>MDI icons</h1></header>
+<div class="alert alert-info sp-mb-6" role="note"><p><strong>Material Design Icons（MDI）を使用しています。</strong> MDI 7.4.47のSVGを同梱しています（Apache License 2.0）。<a href="#mdi-source">出典・同梱ファイルを確認する</a></p></div>
+<p class="lede">よく使うMaterial Design Iconsを128種類収録しています。SVGの中身をコピーしてHTMLに貼り付けるだけで使えます。import・アイコンフォント・CDN・スプライトは不要です。</p>
 <p><a href="icons.html">サイズ・色・組み合わせの見本 →</a> / <a href="sidebar.html#sidebar-icons">サイドバーでの使い方 →</a></p>
 <section class="specimen" id="mdi-attributes"><h2>属性でアイコンを指定する</h2><p>共通の<code>ui.css</code>と<code>ui.js</code>を読み込むと、<code>icon="mdi-home"</code>のように名前だけで表示できます。同梱128種類に対応し、外部通信・追加ファイルの読み込みは不要です。SVGを直接貼り付ける場合はJavaScriptも不要です。</p><div class="example" data-example><div class="ui-cluster">
   <span icon="mdi-home" class="ui-icon-md" style="color:var(--bs-primary)" role="img" aria-label="ホーム"></span>

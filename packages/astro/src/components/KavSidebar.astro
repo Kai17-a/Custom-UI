@@ -1,0 +1,6 @@
+---
+interface Props {id:string;title?:string;label?:string;mobile?:'drawer'|'collapse'|'top'|'bottom';tablet?:'expanded'|'rail'|'hidden'|'top'|'bottom';desktop?:'expanded'|'rail'|'hidden'|'top'|'bottom';side?:'start'|'end';class?:string;}
+const {id,title,label='ナビゲーション',mobile='drawer',tablet='rail',desktop='expanded',side='start',...rest}=Astro.props;
+---
+<div {...rest} id={id} class:list={['app-shell',rest.class]} data-kav-ui-widget data-ui-sidebar data-ui-sidebar-mobile={mobile} data-ui-sidebar-tablet={tablet} data-ui-sidebar-desktop={desktop} data-ui-sidebar-side={side}><aside class="app-sidebar" aria-label={label}>{title&&<h2 class="app-sidebar-title">{title}</h2>}<slot name="menu"/></aside><div class="app-content"><slot/></div></div>
+<script>import {installAstro} from "../client.js";installAstro();</script>

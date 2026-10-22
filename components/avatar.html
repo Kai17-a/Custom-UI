@@ -5,37 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Avatar — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<style>
-html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
-html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
-</style>
-<script>
-(() => {
-  let mode = null, design = null, palette = null;
-  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
-  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
-  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
-  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
-  document.documentElement.dataset.uiColorPreference = selected;
-  document.documentElement.dataset.bsTheme = selected === 'system'
-    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  const restore = () => {
-    if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
-      document.body.dataset.uiTheme = design;
-    }
-    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
-      document.documentElement.dataset.uiPalette = palette;
-    }
-    return true;
-  };
-  if (!restore()) {
-    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
-    observer.observe(document.documentElement, {childList:true, subtree:true});
-  }
-})();
-</script>
+<script src="../assets/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
@@ -65,6 +35,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <h2>レイアウト</h2>
     <ul>
       <li><a href="../components/layouts.html">Layouts</a></li>
+      <li><a href="../components/splitter.html">Splitter</a></li>
       <li><a href="../components/flex.html">Flexbox</a></li>
       <li><a href="../components/flex-grid.html">Flex grid</a></li>
       <li><a href="../components/cards.html">Cards</a></li>
@@ -112,6 +83,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <h2>通知・補足</h2>
     <ul>
       <li><a href="../components/alerts.html">Alerts</a></li>
+      <li><a href="../components/banner.html">Banner</a></li>
       <li><a href="../components/toasts.html">Toasts & alerts</a></li>
       <li><a href="../components/tips.html">Tips & tooltips</a></li>
 

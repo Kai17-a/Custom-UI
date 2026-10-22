@@ -5,37 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sidebar — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<style>
-html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
-html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
-</style>
-<script>
-(() => {
-  let mode = null, design = null, palette = null;
-  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
-  try { palette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
-  const palettes = ['default','slate','sage','teal','mauve','sand','clay'];
-  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
-  document.documentElement.dataset.uiColorPreference = selected;
-  document.documentElement.dataset.bsTheme = selected === 'system'
-    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  const restore = () => {
-    if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme') && ['default','glass','glassmorphism','flat','soft'].includes(design)) {
-      document.body.dataset.uiTheme = design;
-    }
-    if (document.body.hasAttribute('data-ui-theme-persist') && !palettes.includes(document.documentElement.dataset.uiPalette) && palettes.includes(palette)) {
-      document.documentElement.dataset.uiPalette = palette;
-    }
-    return true;
-  };
-  if (!restore()) {
-    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
-    observer.observe(document.documentElement, {childList:true, subtree:true});
-  }
-})();
-</script>
+<script src="../assets/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
@@ -66,6 +36,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <h2>レイアウト</h2>
     <ul>
       <li><a href="../components/layouts.html">Layouts</a></li>
+      <li><a href="../components/splitter.html">Splitter</a></li>
       <li><a href="../components/flex.html">Flexbox</a></li>
       <li><a href="../components/flex-grid.html">Flex grid</a></li>
       <li><a href="../components/cards.html">Cards</a></li>
@@ -113,6 +84,7 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
     <h2>通知・補足</h2>
     <ul>
       <li><a href="../components/alerts.html">Alerts</a></li>
+      <li><a href="../components/banner.html">Banner</a></li>
       <li><a href="../components/toasts.html">Toasts & alerts</a></li>
       <li><a href="../components/tips.html">Tips & tooltips</a></li>
 
@@ -182,6 +154,130 @@ html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme
 </div>
 </div>
 <p><a href="mdi-icons.html">MDIアイコンのSVG</a>や、<code>span.sidebar-icon</code>で囲ったアイコンも使えます。装飾アイコンには<code>aria-hidden="true"</code>を付け、リンク名は文字で指定してください。塗りのSVGには<code>fill="currentColor"</code>、線のSVGには<code>fill="none" stroke="currentColor"</code>を指定します。JavaScriptの追加設定は不要です。</p>
+</section>
+<section class="specimen" id="sidebar-responsive"><h2>レスポンシブ：ハンバーガー・アイコン表示</h2>
+<p>スマートフォンではメニューを左右のドロワーで表示します。タブレットではアイコンだけのレール、PCでは通常表示になります。メニューボタンでレールから文字付きに戻せます。</p>
+<div class="example" data-example>
+<div class="app-shell" id="sidebar-responsive-demo" data-ui-sidebar data-ui-sidebar-mobile="drawer" data-ui-sidebar-tablet="rail" data-ui-sidebar-desktop="expanded" data-ui-sidebar-side="start">
+  <aside class="app-sidebar" aria-label="メニューのナビゲーション">
+    <h3 class="app-sidebar-title">Workspace</h3>
+    <nav class="app-sidebar-group" aria-label="メニューのページ">
+      <a href="sidebar.html" aria-current="page"><span class="sidebar-icon" icon="mdi-home" aria-hidden="true"></span><span class="sidebar-label">概要</span></a>
+      <a href="board.html"><span class="sidebar-icon" icon="mdi-view-dashboard" aria-hidden="true"></span><span class="sidebar-label">タスク</span><span class="sidebar-meta">5</span></a>
+      <details><summary><span class="sidebar-icon" icon="mdi-cog" aria-hidden="true"></span><span class="sidebar-label">設定</span></summary>
+        <a href="forms.html"><span class="sidebar-icon" icon="mdi-account" aria-hidden="true"></span><span class="sidebar-label">アカウント</span></a>
+        <a href="tips.html"><span class="sidebar-icon" icon="mdi-information-outline" aria-hidden="true"></span><span class="sidebar-label">ヘルプ</span></a>
+      </details>
+    </nav>
+    <p class="app-sidebar-footer">Free plan</p>
+  </aside>
+  <section class="app-content" aria-labelledby="sidebar-responsive-demo-title">
+    <button type="button" class="btn btn-outline-secondary" data-ui-toggle="sidebar-responsive" data-ui-target="#sidebar-responsive-demo" aria-label="メニューを切り替える"><span icon="mdi-menu" aria-hidden="true"></span>メニュー</button>
+    <h3 id="sidebar-responsive-demo-title" class="sp-mt-4">作業スペース</h3>
+    <p>メニューの表示方法は画面幅で切り替わります。アイコンだけの状態でもリンク名を読み上げられます。</p>
+  </section>
+</div>
+</div></section>
+<section class="specimen" id="sidebar-rail"><h2>PC・タブレットでアイコンのみ</h2>
+<p>両方に <code>rail</code> を指定すると常にコンパクトな状態から始まります。サイドパネルのアイコンと文字付きボタンの例です。文字付きに展開すればフッターや件数も表示します。アイコンのないリンクは文字を残します。</p><div class="example" data-example><div class="app-shell" id="sidebar-rail-demo" data-ui-sidebar data-ui-sidebar-mobile="drawer" data-ui-sidebar-tablet="rail" data-ui-sidebar-desktop="rail" data-ui-sidebar-side="end">
+  <aside class="app-sidebar" aria-label="メニューを展開・縮小のナビゲーション">
+    <h3 class="app-sidebar-title">Workspace</h3>
+    <nav class="app-sidebar-group" aria-label="メニューを展開・縮小のページ">
+      <a href="sidebar.html" aria-current="page"><span class="sidebar-icon" icon="mdi-home" aria-hidden="true"></span><span class="sidebar-label">概要</span></a>
+      <a href="board.html"><span class="sidebar-icon" icon="mdi-view-dashboard" aria-hidden="true"></span><span class="sidebar-label">タスク</span><span class="sidebar-meta">5</span></a>
+      <details><summary><span class="sidebar-icon" icon="mdi-cog" aria-hidden="true"></span><span class="sidebar-label">設定</span></summary>
+        <a href="forms.html"><span class="sidebar-icon" icon="mdi-account" aria-hidden="true"></span><span class="sidebar-label">アカウント</span></a>
+        <a href="tips.html"><span class="sidebar-icon" icon="mdi-information-outline" aria-hidden="true"></span><span class="sidebar-label">ヘルプ</span></a>
+      </details>
+    </nav>
+    <p class="app-sidebar-footer">Free plan</p>
+  </aside>
+  <section class="app-content" aria-labelledby="sidebar-rail-demo-title">
+    <button type="button" class="btn btn-outline-secondary" data-ui-toggle="sidebar-responsive" data-ui-target="#sidebar-rail-demo" aria-label="メニューを展開・縮小を切り替える"><span icon="mdi-chevron-right" aria-hidden="true"></span>メニューを展開・縮小</button>
+    <h3 id="sidebar-rail-demo-title" class="sp-mt-4">作業スペース</h3>
+    <p>メニューの表示方法は画面幅で切り替わります。アイコンだけの状態でもリンク名を読み上げられます。</p>
+  </section>
+</div>
+</div></section>
+<section class="specimen" id="sidebar-collapse"><h2>本文内で折り畳むメニュー</h2><p>スマートフォンで <code>collapse</code> を指定すると、本文の前にメニューを展開します。画面全体を覆わずに選択できます。PC・タブレットでもボタンから表示・非表示を切り替えられます。</p><div class="example" data-example><div class="app-shell" id="sidebar-collapse-demo" data-ui-sidebar data-ui-sidebar-mobile="collapse" data-ui-sidebar-tablet="hidden" data-ui-sidebar-desktop="expanded" data-ui-sidebar-side="start">
+  <aside class="app-sidebar" aria-label="ページ一覧のナビゲーション">
+    <h3 class="app-sidebar-title">Workspace</h3>
+    <nav class="app-sidebar-group" aria-label="ページ一覧のページ">
+      <a href="sidebar.html" aria-current="page"><span class="sidebar-icon" icon="mdi-home" aria-hidden="true"></span><span class="sidebar-label">概要</span></a>
+      <a href="board.html"><span class="sidebar-icon" icon="mdi-view-dashboard" aria-hidden="true"></span><span class="sidebar-label">タスク</span><span class="sidebar-meta">5</span></a>
+      <details><summary><span class="sidebar-icon" icon="mdi-cog" aria-hidden="true"></span><span class="sidebar-label">設定</span></summary>
+        <a href="forms.html"><span class="sidebar-icon" icon="mdi-account" aria-hidden="true"></span><span class="sidebar-label">アカウント</span></a>
+        <a href="tips.html"><span class="sidebar-icon" icon="mdi-information-outline" aria-hidden="true"></span><span class="sidebar-label">ヘルプ</span></a>
+      </details>
+    </nav>
+    <p class="app-sidebar-footer">Free plan</p>
+  </aside>
+  <section class="app-content" aria-labelledby="sidebar-collapse-demo-title">
+    <button type="button" class="btn btn-outline-secondary" data-ui-toggle="sidebar-responsive" data-ui-target="#sidebar-collapse-demo" aria-label="ページ一覧を切り替える"><span icon="mdi-chevron-down" aria-hidden="true"></span>ページ一覧</button>
+    <h3 id="sidebar-collapse-demo-title" class="sp-mt-4">作業スペース</h3>
+    <p>メニューの表示方法は画面幅で切り替わります。アイコンだけの状態でもリンク名を読み上げられます。</p>
+  </section>
+</div>
+</div></section>
+<section class="specimen" id="sidebar-top"><h2>上から開くメニュー</h2><p><code>top</code> を指定すると画面の上端からシートとして開きます。この例はPC・タブレット・スマートフォンで上から開きます。ドロワーとシートは Escape・背景クリック・閉じるボタンで閉じ、起点のボタンにフォーカスを戻します。</p><div class="example" data-example><div class="app-shell" id="sidebar-top-demo" data-ui-sidebar data-ui-sidebar-mobile="top" data-ui-sidebar-tablet="top" data-ui-sidebar-desktop="top" data-ui-sidebar-side="start">
+  <aside class="app-sidebar" aria-label="上から開くナビゲーション">
+    <h3 class="app-sidebar-title">Workspace</h3>
+    <nav class="app-sidebar-group" aria-label="上部メニューのページ">
+      <a href="sidebar.html" aria-current="page"><span class="sidebar-icon" icon="mdi-home" aria-hidden="true"></span><span class="sidebar-label">概要</span></a>
+      <a href="board.html"><span class="sidebar-icon" icon="mdi-view-dashboard" aria-hidden="true"></span><span class="sidebar-label">タスク</span><span class="sidebar-meta">5</span></a>
+      <details><summary><span class="sidebar-icon" icon="mdi-cog" aria-hidden="true"></span><span class="sidebar-label">設定</span></summary>
+        <a href="forms.html"><span class="sidebar-icon" icon="mdi-account" aria-hidden="true"></span><span class="sidebar-label">アカウント</span></a>
+        <a href="tips.html"><span class="sidebar-icon" icon="mdi-information-outline" aria-hidden="true"></span><span class="sidebar-label">ヘルプ</span></a>
+      </details>
+    </nav>
+    <p class="app-sidebar-footer">Free plan</p>
+  </aside>
+  <section class="app-content" aria-labelledby="sidebar-top-demo-title">
+    <button type="button" class="btn btn-outline-secondary" data-ui-toggle="sidebar-responsive" data-ui-target="#sidebar-top-demo" aria-label="ナビゲーションを切り替える"><span icon="mdi-chevron-down" aria-hidden="true"></span>ナビゲーション</button>
+    <h3 id="sidebar-top-demo-title" class="sp-mt-4">作業スペース</h3>
+    <p>このボタンで画面の上端からメニューを開きます。本文の位置は変わりません。</p>
+  </section>
+</div>
+</div></section>
+<section class="specimen" id="sidebar-bottom"><h2>下から開くメニュー</h2><p><code>bottom</code> を指定すると画面の下端からシートとして開きます。この例はPC・タブレット・スマートフォンで下から開きます。ドロワーとシートは Escape・背景クリック・閉じるボタンで閉じ、起点のボタンにフォーカスを戻します。</p><div class="example" data-example><div class="app-shell" id="sidebar-bottom-demo" data-ui-sidebar data-ui-sidebar-mobile="bottom" data-ui-sidebar-tablet="bottom" data-ui-sidebar-desktop="bottom" data-ui-sidebar-side="start">
+  <aside class="app-sidebar" aria-label="下から開くナビゲーション">
+    <h3 class="app-sidebar-title">Workspace</h3>
+    <nav class="app-sidebar-group" aria-label="下部メニューのページ">
+      <a href="sidebar.html" aria-current="page"><span class="sidebar-icon" icon="mdi-home" aria-hidden="true"></span><span class="sidebar-label">概要</span></a>
+      <a href="board.html"><span class="sidebar-icon" icon="mdi-view-dashboard" aria-hidden="true"></span><span class="sidebar-label">タスク</span><span class="sidebar-meta">5</span></a>
+      <details><summary><span class="sidebar-icon" icon="mdi-cog" aria-hidden="true"></span><span class="sidebar-label">設定</span></summary>
+        <a href="forms.html"><span class="sidebar-icon" icon="mdi-account" aria-hidden="true"></span><span class="sidebar-label">アカウント</span></a>
+        <a href="tips.html"><span class="sidebar-icon" icon="mdi-information-outline" aria-hidden="true"></span><span class="sidebar-label">ヘルプ</span></a>
+      </details>
+    </nav>
+    <p class="app-sidebar-footer">Free plan</p>
+  </aside>
+  <section class="app-content" aria-labelledby="sidebar-bottom-demo-title">
+    <button type="button" class="btn btn-outline-secondary" data-ui-toggle="sidebar-responsive" data-ui-target="#sidebar-bottom-demo" aria-label="ナビゲーションを切り替える"><span icon="mdi-dots-horizontal" aria-hidden="true"></span>ナビゲーション</button>
+    <h3 id="sidebar-bottom-demo-title" class="sp-mt-4">作業スペース</h3>
+    <p>このボタンで画面の下端からメニューを開きます。本文の位置は変わりません。</p>
+  </section>
+</div>
+</div></section>
+<section class="specimen" id="sidebar-responsive-api"><h2>レスポンシブの指定方法</h2>
+<div class="table-responsive"><table class="table"><thead><tr><th>指定</th><th>動作</th></tr></thead><tbody>
+<tr><td><code>.app-shell[data-ui-sidebar]</code></td><td>レスポンシブの動作を有効化。直下に <code>.app-sidebar</code> を1つ配置</td></tr>
+<tr><td><code>data-ui-sidebar-mobile</code></td><td>768px未満：<code>drawer</code>（標準）、<code>collapse</code>、<code>top</code>、<code>bottom</code></td></tr>
+<tr><td><code>data-ui-sidebar-tablet</code></td><td>768〜1023px：<code>expanded</code>（標準）、<code>rail</code>、<code>hidden</code>、<code>top</code>、<code>bottom</code></td></tr>
+<tr><td><code>data-ui-sidebar-desktop</code></td><td>1024px以上：<code>expanded</code>（標準）、<code>rail</code>、<code>hidden</code>、<code>top</code>、<code>bottom</code></td></tr>
+<tr><td><code>data-ui-sidebar-side="end"</code></td><td>ドロワーを右側から表示。省略時は左側。RTLでは反転</td></tr>
+<tr><td><code>data-ui-toggle="sidebar-responsive"</code></td><td>ボタンの <code>data-ui-target</code> に app-shell のIDを指定。見た目はハンバーガー・文字・矢印・三点リーダーなど自由に設定</td></tr>
+<tr><td><code>.sidebar-icon / .sidebar-label / .sidebar-meta</code></td><td>アイコン・リンク名・件数。レールでは文字を視覚的に隠し、読み上げ用の名前は維持。リンクには title も補完</td></tr>
+<tr><td><code>.sidebar-expanded-only</code></td><td>レールで隠したい追加コンテンツに指定</td></tr>
+</tbody></table></div>
+<p><code>top</code> / <code>bottom</code> は画面の上端 / 下端から開くオーバーレイです。<code>collapse</code> は本文の前に展開するインライン表示です。画面区分ごとに別の表示方法を指定できます。</p>
+<p><code>expanded</code> は文字付き、<code>rail</code> はアイコンのみ、<code>hidden</code> は非表示から始めます。どの状態もボタンで展開・縮小できます。</p>
+<p>ドロワーは元のサイドバーを一時的に body 直下の dialog へ移します。IDや入力状態は維持し、閉じると元の場所へ戻します。フォーム等の祖先要素に依存する場合は、その要素もサイドバー内に配置してください。通常のリンクを選ぶとドロワーを閉じます。画面区分が変わると、その区分の初期表示へ戻ります。JavaScript無効時は通常のメニューを表示します。</p>
+<pre><code>KavUI.sidebar('#sidebar-responsive-demo', {open: true});
+KavUI.sidebar('#sidebar-responsive-demo', {open: false});
+const state = KavUI.sidebar('#sidebar-responsive-demo'); // {mode, open}
+// app-shell の ui:sidebarchange で event.detail.mode / open を取得</code></pre>
+<p><code>--ui-sidebar-width</code>（標準15rem）・<code>--ui-sidebar-rail-width</code>（標準4.5rem）で幅を調整できます。従来の <code>data-ui-toggle="sidebar"</code> は全体を隠す既存動作のままです。新しいサイドバーには <code>sidebar-responsive</code> を使います。</p>
 </section>
 <details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
 &lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/css/ui.css">ui.css</a> / <a href="../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>

@@ -108,3 +108,21 @@
   .template-design-label, .template-palette-label { max-width:7.5rem; }
   .service-template .ui-header-actions .form-select { font-size:12px; }
 }
+
+/* Standalone recovery pages use the same shared card, links and theme controls. */
+.template-error { display:grid; align-items:center; padding-block:var(--space-8); }
+.template-error-card { width:min(100%,40rem); margin-inline:auto; }
+.template-error-body { padding:var(--space-8); }
+.template-error-code { margin:0 0 var(--space-6); font:600 calc(var(--text-5xl) * 2)/1 var(--bs-font-monospace); letter-spacing:var(--tracking-tight); color:var(--bs-primary); }
+.template-error-body h1 { font-size:var(--text-2xl); margin-bottom:var(--space-3); }
+.template-error-description { color:var(--bs-secondary-color); line-height:var(--leading-relaxed); margin:0; }
+.template-error-actions { display:flex; flex-wrap:wrap; gap:var(--space-3); margin-top:var(--space-6); }
+.template-error-help { border-top:1px solid var(--bs-border-color); padding-top:var(--space-6); margin-top:var(--space-6); }
+.template-error-help h2 { font-size:var(--text-sm); margin-bottom:var(--space-2); }
+.template-error-help p { margin:0; font-size:var(--text-sm); color:var(--bs-secondary-color); line-height:var(--leading-relaxed); }
+@media (width < 768px) {
+  .template-error { padding-block:var(--space-6); }
+  .template-error-body { padding:var(--space-6); }
+  .template-error-code { font-size:calc(var(--text-5xl) * 1.5); }
+  .template-error-actions > * { width:100%; justify-content:center; }
+}

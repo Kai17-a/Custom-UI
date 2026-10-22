@@ -1,0 +1,6 @@
+---
+interface Props {id:string;title?:string;label?:string;placement?:'start'|'end'|'top'|'bottom';class?:string;}
+const {id,title,label,placement,...rest}=Astro.props;
+---
+<div data-kav-ui-widget><dialog {...rest} id={id} data-ui-dialog class:list={['ui-dialog',placement&&'ui-drawer',placement&&placement!=='end'&&'ui-drawer-'+placement,rest.class]} aria-label={label} aria-labelledby={title?id+'-title':undefined}>{title&&<h2 id={id+'-title'}>{title}</h2>}<slot/>{Astro.slots.has('footer')&&<div class="buttons"><slot name="footer"/></div>}</dialog></div>
+<script>import {installAstro} from "../client.js";installAstro();</script>

@@ -97,3 +97,34 @@ document.addEventListener('click',event=>{
   KavUI.chart('#chart-live',{type:'bar',label:'チームの完了件数',unit:'件',labels:['Aチーム','Bチーム','Cチーム'],series:[{name:'完了件数',values:updated?[12,18,9]:[18,25,14]}]});
   document.querySelector('[data-demo-chart-status]').textContent=updated?'初期データ':'更新後のデータ（サンプル）';
 });
+
+// Optional background preview. Local files stay in this tab and are never uploaded.
+(() => {
+  const root=document.querySelector('[data-demo-theme-background]');if(!root)return;
+  const body=document.body,file=root.querySelector('input[type="file"]'),range=root.querySelector('[type="range"]');
+  const status=root.querySelector('[data-demo-background-status]'),output=root.querySelector('output');
+  let current=null,request=0;
+  const release=()=>{if(current){URL.revokeObjectURL(current);current=null;}};
+  const activate=()=>{if(!['glass','glassmorphism'].includes(body.dataset.uiTheme))KavUI.setDesignTheme('glassmorphism');};
+  root.addEventListener('click',event=>{
+    const button=event.target.closest('[data-demo-background-action]');if(!button)return;
+    request++;body.style.removeProperty('--ui-theme-background-image');release();file.value='';file.dispatchEvent(new Event('change',{bubbles:true}));
+    const enabled=button.dataset.demoBackgroundAction==='sample';body.classList.toggle('catalog-theme-background',enabled);
+    if(enabled)activate();status.textContent=enabled?'サンプル画像を表示しています。':'画像を解除しました。元の背景を表示しています。';
+  });
+  range.addEventListener('input',()=>{output.value=range.value+'%';body.style.setProperty('--ui-theme-background-opacity',range.value+'%');});
+  root.addEventListener('ui:filechange',async event=>{
+    const selected=event.detail.files[0];file.removeAttribute('aria-invalid');
+    if(!selected){request++;body.style.removeProperty('--ui-theme-background-image');body.classList.remove('catalog-theme-background');release();status.textContent='画像を解除しました。元の背景を表示しています。';return;}
+    const ticket=++request,url=URL.createObjectURL(selected),image=new Image();image.src=url;
+    try {
+      await image.decode();
+      if(ticket!==request){URL.revokeObjectURL(url);return;}
+      release();current=url;body.classList.remove('catalog-theme-background');
+      body.style.setProperty('--ui-theme-background-image','url("'+url+'")');activate();status.textContent=selected.name+'を表示しています（このページ内のみ）。';
+    } catch {
+      URL.revokeObjectURL(url);if(ticket===request){file.setAttribute('aria-invalid','true');status.textContent='画像を読み込めませんでした。別の画像を選択してください。';}
+    }
+  });
+  window.addEventListener('pagehide',event=>{if(!event.persisted){request++;release();}});
+})();

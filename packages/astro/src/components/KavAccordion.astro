@@ -1,0 +1,5 @@
+---
+interface Props {label?:string;open?:boolean;class?:string;}
+const {label,open,...rest}=Astro.props;
+---
+<div {...rest} class:list={['accordion',rest.class]}><details open={open}><summary><slot name="summary">{label}</slot></summary><slot/></details></div>

@@ -1,0 +1,7 @@
+---
+import {semanticColor} from '@kav-ui/core';import KavIcon from './KavIcon.astro';
+interface Props {color?:string;variant?:'solid'|'outline';title?:string;icon?:string;closable?:boolean;class?:string;id?:string;}
+const {color='info',variant,title,icon,closable=false,...rest}=Astro.props;
+---
+<div {...rest} class:list={['ui-banner','ui-banner-'+semanticColor(color),variant&&'ui-banner-'+variant,rest.class]} role="note"><div class="ui-banner-inner">{icon&&<KavIcon name={icon} class="ui-banner-icon"/>}<div class="ui-banner-content">{title&&<strong class="ui-banner-title">{title}</strong>}<slot/></div>{Astro.slots.has('actions')&&<div class="ui-banner-actions"><slot name="actions"/></div>}{closable&&<button type="button" class="ui-banner-close" data-ui-dismiss="banner" aria-label="案内を閉じる"><KavIcon name="mdi-close"/></button>}</div></div>
+<script>import {installAstro} from "../client.js";installAstro();</script>

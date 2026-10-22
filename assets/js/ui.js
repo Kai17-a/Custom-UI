@@ -5,6 +5,34 @@
   const doc = document;
   const openers = new WeakMap();
   const timers = new WeakMap();
+  // Scope teardown is additive: static HTML keeps the existing automatic boot.
+  const disposers=new WeakMap();
+  function onDispose(element,callback){const callbacks=disposers.get(element)||[];callbacks.push(callback);disposers.set(element,callbacks);}
+  function scopedEvents(element){
+    const controller=new AbortController();onDispose(element,()=>controller.abort());
+    return (target,type,callback,options={})=>target?.addEventListener(type,callback,{...(typeof options==='boolean'?{capture:options}:options),signal:controller.signal});
+  }
+  function scopeOwns(scope,node){const owner=node.closest?.('[data-kav-ui-vue]');return !owner||owner===scope||owner.contains(scope);}
+  function destroy(scope){
+    if(typeof scope==='string')scope=query(scope);if(!scope?.querySelectorAll)return;
+    const within=node=>node&&(node===scope||scope.contains(node))&&scopeOwns(scope,node);
+    if(tooltip&&within(tooltip.trigger))hideTooltip();
+    if(openSelect&&within(openSelect.select))openSelect.close();
+    if(activeInputPicker&&within(activeInputPicker.input))activeInputPicker.close();
+    if(activeDatepicker&&within(activeDatepicker.root))closeDatepicker(activeDatepicker);
+    for(const popup of [...openPopups])if(within(popup)||within(popupStates.get(popup)?.trigger))closePopup(popup);
+    if(splitterDrag&&within(splitterDrag.state.root))splitFinish(true);
+    const sidebars=[...(scope.matches?.('[data-ui-sidebar]')?[scope]:[]),...all(scope,'[data-ui-sidebar]')];
+    sidebars.filter(root=>scopeOwns(scope,root)).forEach(root=>{const state=responsiveSidebarStates.get(root);if(state?.overlay)sidebarClose(state,false);});
+    for(const panel of all(doc,'dialog[open]'))if(within(panel)||within(openers.get(panel)))hide(panel);
+    if(dragging&&within(dragging.board))endDrag();
+    for(const element of [scope,...all(scope,'*')].filter(element=>scopeOwns(scope,element)).reverse()){
+      cancelExit(element);clearTimeout(timers.get(element));elementMotions.get(element)?.cancel();
+      const callbacks=disposers.get(element);disposers.delete(element);callbacks?.forEach(callback=>callback());
+    }
+    emit(scope,'destroyed');
+  }
+
   const pageStates = new WeakMap();
   let sequence = 0;
   let tooltip = null;
@@ -414,6 +442,361 @@
     resume();
     return note;
   }
+  // Splitter: percentages describe panel space, excluding the resize handles.
+  // Responsive application sidebars share the native drawer's focus and dismissal behavior.
+  const responsiveSidebarStates=new WeakMap();
+  const sidebarTablet=matchMedia('(width >= 768px)'),sidebarDesktop=matchMedia('(width >= 1024px)');
+  function sidebarDevice(){return sidebarDesktop.matches?'desktop':sidebarTablet.matches?'tablet':'mobile';}
+  function sidebarMode(root){
+    const device=sidebarDevice(),value=root.getAttribute('data-ui-sidebar-'+device);
+    const allowed=device==='mobile'?['drawer','collapse','top','bottom']:['expanded','rail','hidden','top','bottom'];
+    return allowed.includes(value)?value:device==='mobile'?'drawer':'expanded';
+  }
+  function sidebarButtons(state){return all(doc,'[data-ui-toggle="sidebar-responsive"]').filter(button=>target(button)===state.root);}
+  function sidebarFocusOut(state,trigger){
+    if(!state.panel.contains(doc.activeElement))return;
+    const button=[trigger,...sidebarButtons(state)].find(item=>item&&!state.panel.contains(item)&&!disabled(item)&&!item.closest('[hidden],[inert]')&&item.getClientRects().length);
+    if(button)button.focus({preventScroll:true});else focusAfterHide(state.panel,trigger);
+  }
+  function sidebarSync(state){
+    const {root,panel,mode}=state,expanded=state.open;
+    root.dataset.uiSidebarMode=mode;
+    root.dataset.uiSidebarState=state.overlay?'closed':expanded?'expanded':mode==='rail'?'rail':'closed';
+    panel.hidden=!expanded && mode!=='rail';
+    if(state.overlay)panel.hidden=false;
+    for(const button of sidebarButtons(state)){
+      if(!button.hasAttribute('data-ui-target'))button.setAttribute('data-ui-target','#'+id(root));
+      button.setAttribute('aria-controls',id(panel));button.setAttribute('aria-expanded',String(expanded));
+      const label=button.getAttribute(expanded?'data-ui-label-open':'data-ui-label-closed');
+      if(label){button.setAttribute('aria-label',label);if(!button.hasAttribute('icon')&&!button.querySelector('svg,[icon]'))button.textContent=label;}
+    }
+    for(const item of all(panel,'a, summary')){
+      const rail=!expanded&&mode==='rail';
+      if(rail && !item.hasAttribute('title')){item.title=item.querySelector('.sidebar-label')?.textContent.trim()||item.textContent.trim();item.dataset.uiSidebarTitle='';}
+      else if(!rail && item.hasAttribute('data-ui-sidebar-title')){item.removeAttribute('title');item.removeAttribute('data-ui-sidebar-title');}
+    }
+    if(state.panel.contains(doc.activeElement)&&!doc.activeElement.getClientRects().length)sidebarFocusOut(state);
+  }
+  function sidebarRestore(state){
+    state.observer?.disconnect();state.observer=null;
+    if(state.marker?.parentNode)state.marker.replaceWith(state.panel);
+    state.marker=null;state.overlay=false;
+  }
+  function sidebarClose(state,restoreFocus=true){
+    const dialog=state.dialog;
+    if(dialog?.open){if(!restoreFocus)openers.delete(dialog);hide(dialog);}
+    sidebarRestore(state);state.open=false;
+    dialog?.remove();state.dialog=null;
+    sidebarSync(state);
+  }
+  function responsiveSidebar(root,options){
+    if(typeof root==='string')root=query(root);
+    const state=initResponsiveSidebar(root);if(!state)return false;
+    if(!options)return {mode:state.mode,open:state.open};
+    const opening=options.open===undefined?!state.open:Boolean(options.open);
+    if(opening===state.open)return {mode:state.mode,open:state.open};
+    if(!opening){
+      if(state.overlay)sidebarClose(state);
+      else {sidebarFocusOut(state,options.trigger);state.open=false;sidebarSync(state);}
+    }else{
+      state.open=true;
+      if(['drawer','top','bottom'].includes(state.mode)){
+        const dialog=doc.createElement('dialog');state.dialog=dialog;state.overlay=true;
+        dialog.className='ui-dialog ui-drawer ui-sidebar-dialog '+(state.mode==='top'?'ui-drawer-top':state.mode==='bottom'?'ui-drawer-bottom':root.dataset.uiSidebarSide==='end'?'':'ui-drawer-start');
+        dialog.setAttribute('data-ui-dialog','');dialog.dir=getComputedStyle(root).direction;dialog.setAttribute('aria-label',state.panel.getAttribute('aria-label')||'ナビゲーション');
+        state.marker=doc.createComment('responsive sidebar');state.panel.before(state.marker);
+        const close=doc.createElement('button');close.type='button';close.className='btn btn-outline-secondary btn-icon-only ui-sidebar-dialog-close';close.setAttribute('icon','mdi-close');close.setAttribute('aria-label','メニューを閉じる');close.setAttribute('data-ui-dismiss','dialog');
+        dialog.append(close,state.panel);doc.body.append(dialog);scanIcons(dialog);sidebarSync(state);
+        dialog.addEventListener('close',()=>{if(state.dialog!==dialog)return;sidebarRestore(state);state.open=false;state.dialog=null;dialog.remove();sidebarSync(state);emit(root,'sidebarchange',{mode:state.mode,open:false});});
+        state.observer=new MutationObserver(()=>{if(!root.isConnected)sidebarClose(state,false);});state.observer.observe(doc.body,{childList:true,subtree:true});
+        show(dialog,options.trigger);
+      }else {sidebarSync(state);enterMotion(state.panel);}
+    }
+    emit(root,'sidebarchange',{mode:state.mode,open:state.open});
+    return {mode:state.mode,open:state.open};
+  }
+  function initResponsiveSidebar(root){
+    if(!root?.matches?.('.app-shell[data-ui-sidebar]'))return null;
+    let state=responsiveSidebarStates.get(root);
+    if(state){sidebarSync(state);return state;}
+    const panel=root.querySelector(':scope > .app-sidebar');if(!panel)return null;
+    const listen=scopedEvents(root),original={hidden:panel.hidden,mode:root.getAttribute('data-ui-sidebar-mode'),state:root.getAttribute('data-ui-sidebar-state')};
+    const mode=sidebarMode(root);state={root,panel,mode,device:sidebarDevice(),open:mode==='expanded',overlay:false};responsiveSidebarStates.set(root,state);
+    listen(panel,'click',event=>{
+      const link=closest(event.target,'a[href]');
+      if(link && !disabled(link) && !event.defaultPrevented && !link.matches('[data-ui-toggle], [data-ui-copy]') && !event.ctrlKey&&!event.metaKey&&!event.shiftKey&&!event.altKey && state.overlay){sidebarClose(state);emit(root,'sidebarchange',{mode:state.mode,open:false});}
+      if(closest(event.target,'summary') && state.mode==='rail'&&!state.open)responsiveSidebar(root,{open:true});
+    });
+    listen(panel,'keydown',event=>{if(event.key==='Escape'&&state.mode==='collapse'&&state.open){event.preventDefault();responsiveSidebar(root,{open:false});}});
+    onDispose(root,()=>{
+      if(state.overlay)sidebarClose(state,false);
+      sidebarRestore(state);panel.hidden=original.hidden;
+      for(const item of all(panel,'[data-ui-sidebar-title]')){item.removeAttribute('title');item.removeAttribute('data-ui-sidebar-title');}
+      for(const [name,value] of [['data-ui-sidebar-mode',original.mode],['data-ui-sidebar-state',original.state]]){if(value===null)root.removeAttribute(name);else root.setAttribute(name,value);}
+      responsiveSidebarStates.delete(root);
+    });
+    sidebarSync(state);return state;
+  }
+  function sidebarResize(){
+    for(const root of all(doc,'.app-shell[data-ui-sidebar]')){
+      const state=responsiveSidebarStates.get(root);if(!state)continue;
+      const mode=sidebarMode(root),device=sidebarDevice();if(mode===state.mode&&device===state.device)continue;
+      if(state.overlay)sidebarClose(state,false);
+      state.mode=mode;state.device=device;state.open=mode==='expanded';
+      if(!state.open && mode!=='rail')sidebarFocusOut(state);
+      sidebarSync(state);emit(root,'sidebarchange',{mode,open:state.open});
+    }
+  }
+  sidebarTablet.addEventListener('change',sidebarResize);sidebarDesktop.addEventListener('change',sidebarResize);
+
+  const splitterStates=new WeakMap();
+  const splitterMobile=matchMedia('(width < 768px)');
+  const splitVertical=root=>root.dataset.uiOrientation==='vertical' || (root.classList.contains('ui-splitter-mobile-stack') && splitterMobile.matches);
+  let splitterDrag=null;
+  const splitRound=value=>Math.round(value*1e6)/1e6;
+  function splitProject(values,meta) {
+    if(!Array.isArray(values) || values.length!==meta.length || !values.every(value=>typeof value==='number' && Number.isFinite(value) && value>=0 && value<=100))return null;
+    const sum=values.reduce((a,b)=>a+b,0);if(sum<=0)return null;
+    const limits=meta.map((item,i)=>values[i]===0 && item.collapsible?{min:0,max:0}:item);
+    if(limits.reduce((n,item)=>n+item.min,0)>100+1e-6 || limits.reduce((n,item)=>n+item.max,0)<100-1e-6)return null;
+    const sizes=values.map((value,i)=>Math.max(limits[i].min,Math.min(limits[i].max,value/sum*100)));
+    for(let pass=0;pass<=sizes.length;pass++) {
+      const remaining=100-sizes.reduce((a,b)=>a+b,0);if(Math.abs(remaining)<1e-7)break;
+      const adjustable=sizes.map((value,i)=>i).filter(i=>remaining>0?sizes[i]<limits[i].max-1e-7:sizes[i]>limits[i].min+1e-7);
+      if(!adjustable.length)return null;
+      for(const i of adjustable)sizes[i]=Math.max(limits[i].min,Math.min(limits[i].max,sizes[i]+remaining/adjustable.length));
+    }
+    const rounded=sizes.map(splitRound),remaining=splitRound(100-rounded.reduce((a,b)=>a+b,0));
+    if(remaining!==0) {
+      const index=rounded.findIndex((value,i)=>value+remaining>=limits[i].min && value+remaining<=limits[i].max);
+      if(index<0)return sizes;
+      rounded[index]=splitRound(rounded[index]+remaining);
+    }
+    return rounded;
+  }
+  function splitBounds(state,index) {
+    const a=state.meta[index],b=state.meta[index+1],total=state.sizes[index]+state.sizes[index+1];
+    const low=Math.max(a.min,total-b.max),high=Math.min(a.max,total-b.min);
+    const zero=a.collapsible && total>=b.min-1e-6 && total<=b.max+1e-6;
+    const full=b.collapsible && total>=a.min-1e-6 && total<=a.max+1e-6;
+    return {low,high,zero,full,total,min:zero?0:low,max:full?total:high};
+  }
+  function splitRender(state) {
+    const {root,panels,handles,meta,sizes}=state;
+    state.vertical=splitVertical(root);
+    panels.forEach((panel,i)=>{
+      const collapsed=sizes[i]<=1e-6;
+      if(collapsed && panel.contains(doc.activeElement))handles[Math.min(i,handles.length-1)]?.focus({preventScroll:true});
+      panel.style.setProperty('--ui-splitter-size',String(sizes[i]));panel.toggleAttribute('data-ui-splitter-collapsed',collapsed);
+      panel.inert=collapsed || state.original[i].inert;
+      if(collapsed)panel.setAttribute('aria-hidden','true');else if(state.original[i].hidden===null)panel.removeAttribute('aria-hidden');else panel.setAttribute('aria-hidden',state.original[i].hidden);
+      if(!collapsed)state.lastOpen[i]=sizes[i];
+    });
+    handles.forEach((handle,i)=>{
+      const bounds=splitBounds(state,i),locked=root.hasAttribute('data-ui-splitter-disabled') || (bounds.max-bounds.min<1e-6 && !meta[i].collapsible);
+      handle.tabIndex=locked?-1:0;handle.setAttribute('aria-disabled',String(locked));
+      handle.setAttribute('aria-orientation',state.vertical?'horizontal':'vertical');
+      handle.setAttribute('aria-valuemin',String(splitRound(Math.max(0,Math.min(sizes[i],bounds.min)))));handle.setAttribute('aria-valuemax',String(splitRound(Math.max(sizes[i],bounds.max))));
+      handle.setAttribute('aria-valuenow',String(splitRound(sizes[i])));handle.setAttribute('aria-valuetext',splitRound(sizes[i])+'%'+(sizes[i]===0?'（折り畳み）':''));
+    });
+  }
+  function splitSave(state) {
+    const key=state.root.dataset.uiSplitterSave;if(!key)return;
+    try {localStorage.setItem('kav-ui-splitter:'+key,JSON.stringify({version:1,orientation:state.vertical?'vertical':'horizontal',sizes:state.sizes}));}catch { /* Saving is optional. */ }
+  }
+  function splitApply(state,sizes,notify=true) {
+    const changed=sizes.some((value,i)=>Math.abs(value-state.sizes[i])>1e-6);state.sizes=[...sizes];splitRender(state);
+    if(changed && notify)emit(state.root,'splitterchange',{sizes:[...sizes]});return changed;
+  }
+  function splitEnd(state,cancelled=false) {if(!cancelled)splitSave(state);emit(state.root,'splitterend',{sizes:[...state.sizes],cancelled});}
+  function splitPair(state,index,requested) {
+    const {low,high,zero,full,total}=splitBounds(state,index),a=state.meta[index],b=state.meta[index+1];let value;
+    if(zero && requested<a.min/2)value=0;
+    else if(full && requested>total-b.min/2)value=total;
+    else if(low<=high)value=Math.max(low,Math.min(high,requested));
+    else return false;
+    const sizes=[...state.sizes];sizes[index]=splitRound(value);sizes[index+1]=splitRound(total-value);return splitApply(state,sizes);
+  }
+  function splitToggle(state,index) {
+    const item=state.meta[index];if(!item.collapsible)return false;
+    const value=state.sizes[index]===0?Math.max(item.min,Math.min(item.max,state.lastOpen[index] || state.initial[index] || item.min)):0;
+    const proposed=[...state.sizes];proposed[index]=value;
+    const fixed=state.meta.map((entry,i)=>i===index?{...entry,min:value,max:value}:entry),sizes=splitProject(proposed,fixed);
+    return sizes?splitApply(state,sizes):false;
+  }
+  function splitFinish(cancelled=false) {
+    const drag=splitterDrag;if(!drag)return;splitterDrag=null;
+    delete doc.documentElement.dataset.uiSplitterResizing;drag.handle.removeAttribute('data-ui-dragging');
+    if(cancelled)splitApply(drag.state,drag.before);
+    try {if(drag.handle.hasPointerCapture(drag.pointer))drag.handle.releasePointerCapture(drag.pointer);}catch { /* A cancelled pointer may already be released. */ }
+    splitEnd(drag.state,cancelled);
+  }
+  function splitDispose(state) {
+    if(state.disposed)return;state.disposed=true;
+    if(splitterDrag?.state===state)splitFinish(true);
+    state.controller.abort();state.handles.forEach(handle=>handle.remove());
+    state.panels.forEach((panel,i)=>{
+      const original=state.original[i];
+      for(const [name,value] of [['inert',original.inertAttribute],['aria-hidden',original.hidden],['data-ui-splitter-collapsed',original.collapsed],['id',original.id]]){if(value===null)panel.removeAttribute(name);else panel.setAttribute(name,value);}
+      if(original.size)panel.style.setProperty('--ui-splitter-size',original.size,original.priority);else panel.style.removeProperty('--ui-splitter-size');
+      if(!original.styleAttribute&&!panel.getAttribute('style'))panel.removeAttribute('style');
+      if(!original.panelClass)panel.classList.remove('ui-splitter-panel');
+      if(!original.classAttribute&&!panel.getAttribute('class'))panel.removeAttribute('class');
+    });
+    if(!state.rootClass)state.root.classList.remove('ui-splitter');
+    if(!state.rootClassAttribute&&!state.root.getAttribute('class'))state.root.removeAttribute('class');
+    if(splitterStates.get(state.root)===state)splitterStates.delete(state.root);
+  }
+  function splitBind(state,handle,index) {
+    const listen=(type,callback)=>handle.addEventListener(type,callback,{signal:state.controller.signal});
+    listen('pointerdown',event=>{
+      if(event.button!==0 || !event.isPrimary || splitterDrag || handle.getAttribute('aria-disabled')==='true')return;
+      const axis=state.vertical?'height':'width',length=state.panels.reduce((sum,panel)=>sum+panel.getBoundingClientRect()[axis],0);if(length<=0)return;
+      event.preventDefault();handle.focus({preventScroll:true});
+      splitterDrag={state,handle,index,pointer:event.pointerId,start:state.vertical?event.clientY:event.clientX,length,before:[...state.sizes],rtl:!state.vertical && getComputedStyle(state.root).direction==='rtl'};
+      try {handle.setPointerCapture(event.pointerId);}catch {splitterDrag=null;return;}
+      handle.setAttribute('data-ui-dragging','');doc.documentElement.dataset.uiSplitterResizing=state.vertical?'vertical':'horizontal';
+    });
+    listen('pointermove',event=>{
+      const drag=splitterDrag;if(!drag || drag.handle!==handle || drag.pointer!==event.pointerId)return;
+      if(state.root.hasAttribute('data-ui-splitter-disabled') || !state.root.isConnected){splitFinish(true);return;}
+      const position=state.vertical?event.clientY:event.clientX;
+      splitPair(state,index,drag.before[index]+(position-drag.start)/drag.length*100*(drag.rtl?-1:1));
+    });
+    listen('pointerup',event=>{if(splitterDrag?.handle===handle && splitterDrag.pointer===event.pointerId)splitFinish();});
+    for(const name of ['pointercancel','lostpointercapture'])listen(name,event=>{if(splitterDrag?.handle===handle && splitterDrag.pointer===event.pointerId)splitFinish(true);});
+    listen('dblclick',event=>{
+      if(handle.getAttribute('aria-disabled')==='true')return;event.preventDefault();
+      if(state.meta[index].collapsible){if(splitToggle(state,index))splitEnd(state);}
+      else {const total=state.sizes[index]+state.sizes[index+1],initial=state.initial[index]+state.initial[index+1];if(initial>0 && splitPair(state,index,total*state.initial[index]/initial))splitEnd(state);}
+    });
+    listen('keydown',event=>{
+      if(event.key==='Escape' && splitterDrag?.state===state){event.preventDefault();splitFinish(true);return;}
+      if(handle.getAttribute('aria-disabled')==='true')return;
+      const rtl=!state.vertical && getComputedStyle(state.root).direction==='rtl';
+      const less=state.vertical?'ArrowUp':rtl?'ArrowRight':'ArrowLeft',more=state.vertical?'ArrowDown':rtl?'ArrowLeft':'ArrowRight';
+      const parsed=Number(state.root.dataset.uiSplitterStep),step=(parsed>0 && parsed<=100?parsed:2)*(event.shiftKey?5:1),bounds=splitBounds(state,index);
+      let value=state.sizes[index],changed=false;
+      if(event.key==='Enter'){event.preventDefault();changed=splitToggle(state,index);}
+      else {
+        if(event.key===less)value=value===bounds.total && state.meta[index+1].collapsible?bounds.high:value<=state.meta[index].min && bounds.zero?0:value-step;
+        else if(event.key===more)value=value===0?bounds.low:value>=bounds.high && bounds.full?bounds.total:value+step;
+        else if(event.key==='Home')value=bounds.min;
+        else if(event.key==='End')value=bounds.max;
+        else return;
+        event.preventDefault();changed=splitPair(state,index,value);
+      }
+      if(changed)splitEnd(state);
+    });
+  }
+  function initSplitter(root) {
+    const panels=all(root,':scope > [data-ui-splitter-panel]');if(panels.length<2)return null;
+    const number=(panel,key,fallback)=>panel.dataset[key]===undefined || panel.dataset[key]===''?fallback:Number(panel.dataset[key]);
+    const meta=panels.map(panel=>({min:number(panel,'uiMin',10),max:number(panel,'uiMax',100),size:number(panel,'uiSize',null),collapsible:panel.hasAttribute('data-ui-collapsible')}));
+    if(meta.some(item=>!Number.isFinite(item.min) || !Number.isFinite(item.max) || item.min<0 || item.max>100 || item.min>item.max || (item.size!==null && (!Number.isFinite(item.size) || item.size<0 || item.size>100))) || meta.reduce((sum,item)=>sum+item.min,0)>100+1e-6)return null;
+    const remaining=Math.max(0,100-meta.reduce((sum,item)=>sum+(item.size??0),0)),missing=meta.filter(item=>item.size===null).length;
+    const initial=splitProject(meta.map(item=>item.size??remaining/missing),meta);if(!initial)return null;
+    let state=splitterStates.get(root);
+    if(state && panels.length===state.panels.length && panels.every((panel,i)=>panel===state.panels[i])) {
+      if(splitterDrag?.state===state)splitFinish(true);
+      const sizes=splitProject(state.sizes,meta);if(!sizes)return null;state.meta=meta;state.initial=initial;splitApply(state,sizes,false);return state;
+    }
+    if(state)splitDispose(state);
+    else onDispose(root,()=>{const current=splitterStates.get(root);if(current)splitDispose(current);});
+    state={root,panels,meta,initial,sizes:[...initial],lastOpen:[...initial],handles:[],controller:new AbortController(),vertical:splitVertical(root),
+      rootClass:root.classList.contains('ui-splitter'),rootClassAttribute:root.hasAttribute('class'),
+      original:panels.map(panel=>({inert:panel.inert,inertAttribute:panel.getAttribute('inert'),hidden:panel.getAttribute('aria-hidden'),
+        collapsed:panel.getAttribute('data-ui-splitter-collapsed'),id:panel.getAttribute('id'),
+        size:panel.style.getPropertyValue('--ui-splitter-size'),priority:panel.style.getPropertyPriority('--ui-splitter-size'),styleAttribute:panel.hasAttribute('style'),
+        panelClass:panel.classList.contains('ui-splitter-panel'),classAttribute:panel.hasAttribute('class')}))};
+    try {
+      const key=root.dataset.uiSplitterSave,saved=key?JSON.parse(localStorage.getItem('kav-ui-splitter:'+key)):null;
+      if(saved?.version===1 && saved.orientation===(state.vertical?'vertical':'horizontal'))state.sizes=splitProject(saved.sizes,meta) || state.sizes;
+    } catch { /* Invalid or unavailable storage keeps the defaults. */ }
+    root.classList.add('ui-splitter');panels.forEach(panel=>panel.classList.add('ui-splitter-panel'));
+    panels.slice(0,-1).forEach((panel,index)=>{
+      const handle=doc.createElement('div');handle.className='ui-splitter-handle';handle.dataset.uiSplitterHandle='';handle.setAttribute('role','separator');handle.setAttribute('aria-controls',id(panel));
+      const labelled=panel.getAttribute('aria-labelledby');if(labelled)handle.setAttribute('aria-labelledby',labelled);else handle.setAttribute('aria-label',panel.getAttribute('aria-label') || 'パネル'+(index+1)+'のサイズ');
+      root.insertBefore(handle,panels[index+1]);state.handles.push(handle);splitBind(state,handle,index);
+    });
+    splitterStates.set(root,state);splitRender(state);return state;
+  }
+  function splitter(root,options={}) {
+    if(typeof root==='string')root=query(root);if(!root?.matches?.('[data-ui-splitter]'))return false;
+    const state=splitterStates.get(root) || initSplitter(root);if(!state)return false;
+    if(options.reset && options.sizes!==undefined)return false;
+    if(options.reset || options.sizes!==undefined) {
+      const sizes=options.reset?[...state.initial]:splitProject(options.sizes,state.meta);if(!sizes)return false;
+      if(splitterDrag?.state===state)splitFinish(true);
+      if(splitApply(state,sizes))splitEnd(state);
+    }
+    return [...state.sizes];
+  }
+  // A component may be unmounted while its pointer is captured.
+  doc.addEventListener('pointerup',event=>{if(splitterDrag?.pointer===event.pointerId)splitFinish(!splitterDrag.handle.isConnected);},true);
+  doc.addEventListener('pointercancel',event=>{if(splitterDrag?.pointer===event.pointerId)splitFinish(true);},true);
+  doc.addEventListener('lostpointercapture',event=>{if(splitterDrag?.pointer===event.pointerId && !splitterDrag.handle.isConnected)splitFinish(true);});
+  doc.addEventListener('keydown',event=>{if(event.key==='Escape' && splitterDrag){event.preventDefault();splitFinish(true);}});
+  doc.addEventListener('click',event=>{const button=closest(event.target,'[data-ui-splitter-reset]');if(button && !disabled(button)){event.preventDefault();splitter(button.dataset.uiSplitterReset,{reset:true});}});
+  splitterMobile.addEventListener('change',()=>{if(splitterDrag)splitFinish(true);for(const root of all(doc,'[data-ui-splitter]')){const state=splitterStates.get(root);if(state)splitRender(state);}});
+  window.addEventListener('resize',()=>{if(splitterDrag)splitFinish(true);});
+  window.addEventListener('blur',()=>{if(splitterDrag)splitFinish(true);});
+  const navbarStates = new WeakMap();
+  const navbarBreakpoints = {tablet:matchMedia('(min-width: 768px)'),pc:matchMedia('(min-width: 1024px)')};
+  function navbarCollapsed(root) { return !navbarBreakpoints[root.classList.contains('navbar-expand-tablet')?'tablet':'pc'].matches; }
+  function syncNavbar(state, notify=false) {
+    const {root,panel,toggles}=state,collapsed=navbarCollapsed(root),expanded=!collapsed || state.open;
+    const wasHidden=panel.hidden,active=doc.activeElement;
+    state.collapsed=collapsed;root.dataset.uiNavbarCollapsed=String(collapsed);
+    for(const button of toggles) {button.hidden=!collapsed;if(!button.hasAttribute('data-ui-target'))button.setAttribute('data-ui-target','#'+id(root));
+      button.setAttribute('aria-controls',id(panel));button.setAttribute('aria-expanded',String(expanded));}
+    if(!expanded && !wasHidden) {
+      for(const popup of openPopups)if(panel.contains(popup))closePopup(popup);
+      if(openSelect && panel.contains(openSelect.select))openSelect.close();
+      if(activeDatepicker && panel.contains(activeDatepicker.root))closeDatepicker(activeDatepicker);
+      if(tooltip && panel.contains(tooltip.trigger))hideTooltip();
+      if(activeInputPicker && panel.contains(activeInputPicker.root))activeInputPicker.close();
+    }
+    panel.hidden=!expanded;
+    if(!expanded && panel.contains(active))toggles.find(button=>!disabled(button))?.focus();
+    if(expanded && !collapsed && toggles.includes(active))all(panel,'a[href], button, input, select, [tabindex="0"]').find(item=>!disabled(item) && item.getClientRects().length)?.focus();
+    if(notify && expanded && wasHidden)enterMotion(panel);
+    if(notify)emit(root,'navtoggle',{expanded,collapsible:collapsed});
+  }
+  function initNavbar(root) {
+    const panel=owned(root,'[data-ui-navbar-panel]','[data-ui-navbar]')[0],toggles=owned(root,'button[data-ui-navbar-toggle]','[data-ui-navbar]');
+    if(!panel || !toggles.length)return;
+    let state=navbarStates.get(root);
+    if(!state || state.panel!==panel){state={root,panel,toggles,open:false};navbarStates.set(root,state);}
+    else state.toggles=toggles;
+    root.setAttribute('data-ui-navbar-ready','');syncNavbar(state);
+  }
+  Object.values(navbarBreakpoints).forEach(media=>media.addEventListener('change',()=>{
+    for(const root of all(doc,'[data-ui-navbar]')) {
+      const state=navbarStates.get(root);if(!state || state.collapsed===navbarCollapsed(root))continue;
+      state.open=false;syncNavbar(state);
+    }
+  }));
+  doc.addEventListener('click',event=>{
+    const link=closest(event.target,'.nav-link[aria-disabled="true"], .ui-step-link[aria-disabled="true"], .pagination-link[aria-disabled="true"]');
+    if(link)event.preventDefault();
+  },true);
+  doc.addEventListener('click',event=>{
+    if(event.defaultPrevented)return;
+    const root=closest(event.target,'[data-ui-navbar]'),state=navbarStates.get(root);if(!state)return;
+    const toggle=closest(event.target,'button[data-ui-navbar-toggle]');
+    if(toggle && state.toggles.includes(toggle) && !disabled(toggle) && state.collapsed) {
+      event.preventDefault();state.open=!state.open;syncNavbar(state,true);
+    } else {
+      const link=closest(event.target,'a[href]');
+      if(link && !link.matches('[data-ui-toggle], [data-ui-dismiss]') && !disabled(link) && state.panel.contains(link) && state.collapsed && state.open) {state.open=false;syncNavbar(state,true);}
+    }
+  });
+  doc.addEventListener('keydown',event=>{
+    if(event.defaultPrevented || event.key!=='Escape' || openSelect || activeInputPicker || activeDatepicker || tooltip || closest(event.target,'[data-ui-dropdown], [data-ui-popover]'))return;
+    const state=navbarStates.get(closest(event.target,'[data-ui-navbar]'));
+    if(state?.collapsed && state.open) {event.preventDefault();state.open=false;syncNavbar(state,true);state.toggles.find(button=>!disabled(button))?.focus();}
+  });
   function tabData(group) {
     const tabs = owned(group, '[data-ui-toggle="tab"]', '[data-ui-tabs]');
     const panels = owned(group, '[data-ui-panel]', '[data-ui-tabs]');
@@ -554,14 +937,15 @@
   }
   const calendarClamp = (date, config) => new Date(Math.max(config.min.getTime(),Math.min(config.max.getTime(),date.getTime())));
   function renderCalendar(root, restore = false) {
-    root.classList.add('ui-calendar');
+    const originalClass=root.classList.contains('ui-calendar');root.classList.add('ui-calendar');
     const config = calendarConfig(root);
     let state = calendarStates.get(root);
     if (!state) {
       const view = calendarNode('div','ui-calendar-view'); view.setAttribute('data-ui-calendar-view','');
       const status = calendarNode('span','visually-hidden'); status.setAttribute('role','status');
       root.append(view,status);
-      state = {view,status,focus:'',events:new Map(),dialog:null}; calendarStates.set(root,state);
+      state = {view,status,focus:'',events:new Map(),dialog:null,createdInput:null,hiddenLists:new Map()}; calendarStates.set(root,state);
+      onDispose(root,()=>{state.view.remove();state.status.remove();state.dialog?.remove();state.createdInput?.remove();for(const [list,hidden] of state.hiddenLists)list.hidden=hidden;calendarStates.delete(root);if(!originalClass)root.classList.remove('ui-calendar');});
     }
     const active = state.view.contains(doc.activeElement) ? doc.activeElement : null;
     const activeAction = active?.dataset.uiCalendarAction;
@@ -583,12 +967,12 @@
     root.dataset.uiMonth = monthKey;
     let input = owned(root,'[data-ui-calendar-input]','[data-ui-calendar]')[0];
     if (!input && root.dataset.uiName) {
-      input = doc.createElement('input'); input.type='hidden'; input.setAttribute('data-ui-calendar-input',''); root.append(input);
+      input = doc.createElement('input'); input.type='hidden'; input.setAttribute('data-ui-calendar-input',''); root.append(input);state.createdInput=input;
     }
     if (input) { input.value = value; if (root.dataset.uiName) input.name = root.dataset.uiName; }
     const events = new Map();
     for (const list of owned(root,'[data-ui-calendar-events]','[data-ui-calendar]')) {
-      list.hidden = true;
+      if(!state.hiddenLists.has(list))state.hiddenLists.set(list,list.hidden);list.hidden = true;
       for (const item of all(list,'[data-ui-date]')) {
         if (!calendarDate(item.dataset.uiDate)) continue;
         const group = events.get(item.dataset.uiDate) || [];
@@ -847,6 +1231,7 @@
     }
     const input=all(root,'input[type="date"]').find(field=>field.closest('[data-ui-datepicker]')===root);
     if(!input)return null;
+    const listen=scopedEvents(root),originalClass=root.classList.contains('ui-datepicker');
     root.classList.add('ui-datepicker');
     const name=input.getAttribute('aria-label') || input.labels?.[0]?.textContent.trim() || '日付';
     const toggle=calendarNode('button','btn btn-outline-secondary ui-datepicker-toggle','カレンダー');
@@ -863,9 +1248,10 @@
     state={root,input,toggle,popup,calendar,clear,open:false,syncing:false};datepickerStates.set(root,state);
     updateDatepickerButton(state);
     toggle.disabled=datepickerLocked(input);
-    popup.addEventListener('toggle',event=>{
+    listen(popup,'toggle',event=>{
       if(event.newState==='closed' && state.open){state.open=false;toggle.setAttribute('aria-expanded','false');if(activeDatepicker===state)activeDatepicker=null;}
     });
+    onDispose(root,()=>{closeDatepicker(state);toggle.remove();popup.remove();calendarStates.delete(calendar);datepickerStates.delete(root);if(!originalClass)root.classList.remove('ui-datepicker');});
     return state;
   }
   function setDatepickerValue(state,value) {
@@ -958,8 +1344,10 @@
   let openSelect = null;
   function syncSelect(select) { selectControls.get(select)?.sync(); }
   function initSelect(select) {
+    const listen=scopedEvents(select);
     if (selectControls.has(select)) { syncSelect(select); return; }
     if (select.multiple || select.size > 1 || !HTMLElement.prototype.showPopover) return;
+    const original={tabindex:select.getAttribute('tabindex'),hidden:select.getAttribute('aria-hidden')};
     const wrapper = doc.createElement('span'); wrapper.className = 'ui-select';
     const button = doc.createElement('button'); button.type = 'button';
     button.className = select.className;
@@ -1052,8 +1440,8 @@
       }
       button.focus();
     }
-    button.addEventListener('click',()=>{if(isOpen())close();else open();});
-    button.addEventListener('keydown',event=>{
+    listen(button,'click',()=>{if(isOpen())close();else open();});
+    listen(button,'keydown',event=>{
       const options=[...select.options];
       if(event.key==='Escape' && isOpen()) { event.preventDefault();event.stopPropagation();close();return; }
       if(event.key==='Tab') { close();return; }
@@ -1076,16 +1464,16 @@
         if(index>=0)highlight(index);
       }
     });
-    popup.addEventListener('pointerdown',event=>event.preventDefault());
-    popup.addEventListener('click',event=>{
+    listen(popup,'pointerdown',event=>event.preventDefault());
+    listen(popup,'click',event=>{
       const item=closest(event.target,'[role="option"]');if(item)commit(Number(item.dataset.index));
     });
-    popup.addEventListener('toggle',()=>{if(!isOpen()){button.setAttribute('aria-expanded','false');button.removeAttribute('aria-activedescendant');if(openSelect?.select===select)openSelect=null;}});
-    button.addEventListener('blur',close);
-    select.addEventListener('focus',()=>button.focus());
-    select.addEventListener('change',syncControl);
-    select.addEventListener('input',syncControl);
-    select.addEventListener('invalid',event=>{
+    listen(popup,'toggle',()=>{if(!isOpen()){button.setAttribute('aria-expanded','false');button.removeAttribute('aria-activedescendant');if(openSelect?.select===select)openSelect=null;}});
+    listen(button,'blur',close);
+    listen(select,'focus',()=>button.focus());
+    listen(select,'change',syncControl);
+    listen(select,'input',syncControl);
+    listen(select,'invalid',event=>{
       event.preventDefault();button.setAttribute('aria-invalid','true');
       if(!select.closest('form[data-ui-validate]')) {
         if(!nativeError) {nativeError=doc.createElement('small');nativeError.className='ui-invalid-feedback';nativeError.setAttribute('role','alert');wrapper.after(nativeError);}
@@ -1093,13 +1481,17 @@
       }
       button.focus();
     });
-    for(const label of select.labels || [])label.addEventListener('click',event=>{
+    for(const label of select.labels || [])listen(label,'click',event=>{
       if(event.target===label || !closest(event.target,'button, select, a, input, textarea')){event.preventDefault();button.focus();}
     });
-    select.form?.addEventListener('reset',()=>setTimeout(()=>{close();syncControl();},0));
+    listen(select.form,'reset',()=>setTimeout(()=>{close();syncControl();},0));
     const observer=new MutationObserver(()=>{syncControl();if(isOpen()){render();highlight(select.selectedIndex);}});
     observer.observe(select,{attributes:true,childList:true,subtree:true,characterData:true});
     for(let parent=select.parentElement;parent;parent=parent.parentElement)if(parent.tagName==='FIELDSET')observer.observe(parent,{attributes:true,attributeFilter:['disabled']});
+    onDispose(select,()=>{observer.disconnect();close();nativeError?.remove();select.classList.remove('ui-select-native');
+      for(const [name,value] of [['tabindex',original.tabindex],['aria-hidden',original.hidden]]){if(value===null)select.removeAttribute(name);else select.setAttribute(name,value);}
+      if(wrapper.parentNode)wrapper.replaceWith(select);selectControls.delete(select);
+    });
     selectControls.set(select,{sync:syncControl});syncControl();
   }
   window.addEventListener('resize',()=>openSelect?.close());
@@ -1109,9 +1501,11 @@
   let activeInputPicker = null;
   const pickerTypes = {time:'時刻', 'datetime-local':'日時', month:'月', week:'週', color:'色'};
   function initInputPicker(input) {
+    const listen=scopedEvents(input);
     if(inputPickers.has(input)) { inputPickers.get(input).sync(); return; }
     const type=input.getAttribute('type');
     if(!pickerTypes[type] || !HTMLElement.prototype.showPopover)return;
+    const original={tabindex:input.getAttribute('tabindex'),hidden:input.getAttribute('aria-hidden')};
     const root=calendarNode('span','ui-input-picker');
     const trigger=calendarNode('button',input.className+' ui-input-picker-trigger');trigger.type='button';
     trigger.setAttribute('aria-haspopup','dialog');trigger.setAttribute('aria-expanded','false');
@@ -1121,7 +1515,7 @@
     input.before(root);root.append(input,trigger,popup);
     input.classList.add('ui-picker-native');input.tabIndex=-1;input.setAttribute('aria-hidden','true');
     const state={root,input,trigger,popup,sync};inputPickers.set(input,state);
-    let controls={},error=null,pointerWasOpen=false;
+    let controls={},error=null,pointerWasOpen=false,nativeFeedback=null;
     const locked=()=>input.matches(':disabled') || input.readOnly;
     const opened=()=>popup.matches(':popover-open');
     const pad=value=>String(value).padStart(2,'0');
@@ -1183,7 +1577,7 @@
       controls.week.value=String(Math.min(previous,controls.week.options.length));syncSelect(controls.week);
     }
     function render() {
-      popup.replaceChildren();controls={};
+      destroy(popup);popup.replaceChildren();controls={};
       const now=new Date(),value=input.value;
       if(type==='datetime-local') {
         const calendar=calendarNode('div','ui-calendar ui-calendar-compact');calendar.dataset.uiCalendar='';
@@ -1196,7 +1590,7 @@
         row.append(field('年','year','input'),field(type==='month'?'月':'週',type));
         Object.assign(controls.year,{min:'1',max:'9999',step:'1',value:value.slice(0,4)||String(now.getFullYear())});
         if(type==='month') {options(controls.month,12,1,n=>n+'月');controls.month.value=String(Number(value.slice(5,7))||now.getMonth()+1);}
-        else {refreshWeeks();controls.week.value=String(Number(value.slice(6,8))||1);controls.year.addEventListener('input',refreshWeeks);}
+        else {refreshWeeks();controls.week.value=String(Number(value.slice(6,8))||1);listen(controls.year,'input',refreshWeeks);}
       }
       if(type==='time' || type==='datetime-local') {
         row.append(field('時','hour'),field('分','minute'));
@@ -1211,7 +1605,7 @@
         const palette=calendarNode('div','ui-color-palette');palette.setAttribute('role','group');palette.setAttribute('aria-label','色の候補');
         for(const color of ['#2f6fc4','#6b9de0','#2b95a9','#3d9a63','#d4a537','#cf4f4f','#a86cc1','#e789ab','#ffffff','#faf9f7','#c8c9cc','#8a8d94','#555961','#2b2b2e','#1b1c1e','#000000']) {
           const choice=calendarNode('button','ui-color-choice');choice.type='button';choice.style.backgroundColor=color;choice.setAttribute('aria-label',color);choice.setAttribute('aria-pressed',String(value.toLowerCase()===color));
-          choice.addEventListener('click',()=>{controls.hex.value=color;all(palette,'button').forEach(button=>button.setAttribute('aria-pressed',String(button===choice)));});palette.append(choice);
+          listen(choice,'click',()=>{controls.hex.value=color;all(palette,'button').forEach(button=>button.setAttribute('aria-pressed',String(button===choice)));});palette.append(choice);
         }
         popup.append(palette);row.append(field('カラーコード（#RRGGBB）','hex','input'));
         Object.assign(controls.hex,{type:'text',value:value||'#000000',maxLength:7,placeholder:'#2f6fc4'});controls.hex.spellcheck=false;
@@ -1219,9 +1613,9 @@
       popup.append(row);
       error=calendarNode('p','ui-picker-error');error.hidden=true;error.setAttribute('role','alert');popup.append(error);
       const footer=calendarNode('div','ui-picker-footer');
-      const clear=calendarNode('button','btn btn-sm btn-outline-secondary','クリア');clear.type='button';clear.disabled=type==='color';clear.addEventListener('click',()=>save(''));
-      const cancel=calendarNode('button','btn btn-sm btn-outline-secondary','キャンセル');cancel.type='button';cancel.addEventListener('click',()=>close(true));
-      const apply=calendarNode('button','btn btn-sm btn-primary','適用');apply.type='button';apply.dataset.uiPickerApply='';apply.addEventListener('click',applyDraft);
+      const clear=calendarNode('button','btn btn-sm btn-outline-secondary','クリア');clear.type='button';clear.disabled=type==='color';listen(clear,'click',()=>save(''));
+      const cancel=calendarNode('button','btn btn-sm btn-outline-secondary','キャンセル');cancel.type='button';listen(cancel,'click',()=>close(true));
+      const apply=calendarNode('button','btn btn-sm btn-primary','適用');apply.type='button';apply.dataset.uiPickerApply='';listen(apply,'click',applyDraft);
       footer.append(clear,cancel,apply);popup.append(footer);
       all(popup,'select').forEach(initSelect);
     }
@@ -1258,29 +1652,33 @@
       trigger.setAttribute('aria-expanded','true');activeInputPicker=state;enterMotion(popup);
       (popup.querySelector('.ui-calendar-day[tabindex="0"]') || popup.querySelector('.ui-select-trigger, input:not(.ui-select-native), button') || popup).focus({preventScroll:true});
     }
-    trigger.addEventListener('pointerdown',()=>{pointerWasOpen=opened();});
-    trigger.addEventListener('pointercancel',()=>{pointerWasOpen=false;});
-    trigger.addEventListener('click',()=>{if(pointerWasOpen){pointerWasOpen=false;close(true);}else open();});input.addEventListener('focus',()=>trigger.focus());
-    input.addEventListener('input',sync);input.addEventListener('change',sync);
-    input.addEventListener('invalid',event=>{
+    listen(trigger,'pointerdown',()=>{pointerWasOpen=opened();});
+    listen(trigger,'pointercancel',()=>{pointerWasOpen=false;});
+    listen(trigger,'click',()=>{if(pointerWasOpen){pointerWasOpen=false;close(true);}else open();});listen(input,'focus',()=>trigger.focus());
+    listen(input,'input',sync);listen(input,'change',sync);
+    listen(input,'invalid',event=>{
       event.preventDefault();trigger.setAttribute('aria-invalid','true');
       if(!input.closest('form[data-ui-validate]')) {
         let feedback=root.nextElementSibling;
-        if(!feedback?.hasAttribute('data-ui-picker-error')){feedback=calendarNode('small','ui-invalid-feedback');feedback.dataset.uiPickerError='';root.after(feedback);}
+        if(!feedback?.hasAttribute('data-ui-picker-error')){feedback=calendarNode('small','ui-invalid-feedback');feedback.dataset.uiPickerError='';root.after(feedback);nativeFeedback=feedback;}
         feedback.textContent=input.validationMessage;feedback.hidden=false;feedback.setAttribute('role','alert');describedBy(trigger,id(feedback),true);
       }
       trigger.focus();
     });
-    popup.addEventListener('keydown',event=>{
+    listen(popup,'keydown',event=>{
       if(event.key==='Escape'){event.preventDefault();event.stopPropagation();close(true);}
       else if(event.key==='Enter' && event.target.tagName==='INPUT'){event.preventDefault();applyDraft();}
     });
-    popup.addEventListener('toggle',()=>{if(!opened()){trigger.setAttribute('aria-expanded','false');if(activeInputPicker===state)activeInputPicker=null;}});
-    root.addEventListener('focusout',()=>setTimeout(()=>{if(opened() && !root.contains(doc.activeElement))close();},0));
-    for(const label of input.labels || [])label.addEventListener('click',event=>{if(popup.contains(event.target))return;if(event.target===label || !closest(event.target,'input, button, select, a')){event.preventDefault();trigger.focus();}});
-    input.form?.addEventListener('reset',()=>setTimeout(()=>{close();sync();},0));
+    listen(popup,'toggle',()=>{if(!opened()){trigger.setAttribute('aria-expanded','false');if(activeInputPicker===state)activeInputPicker=null;}});
+    listen(root,'focusout',()=>setTimeout(()=>{if(opened() && !root.contains(doc.activeElement))close();},0));
+    for(const label of input.labels || [])listen(label,'click',event=>{if(popup.contains(event.target))return;if(event.target===label || !closest(event.target,'input, button, select, a')){event.preventDefault();trigger.focus();}});
+    listen(input.form,'reset',()=>setTimeout(()=>{close();sync();},0));
     const observer=new MutationObserver(sync);observer.observe(input,{attributes:true});
     for(let parent=input.parentElement;parent;parent=parent.parentElement)if(parent.tagName==='FIELDSET')observer.observe(parent,{attributes:true,attributeFilter:['disabled']});
+    onDispose(input,()=>{observer.disconnect();destroy(popup);close();nativeFeedback?.remove();input.classList.remove('ui-picker-native');
+      for(const [name,value] of [['tabindex',original.tabindex],['aria-hidden',original.hidden]]){if(value===null)input.removeAttribute(name);else input.setAttribute(name,value);}
+      if(root.parentNode)root.replaceWith(input);inputPickers.delete(input);
+    });
     sync();
   }
   window.addEventListener('resize',()=>activeInputPicker?.position());
@@ -1294,8 +1692,10 @@
   function initMixedCheckbox(input) {
     if(mixedCheckboxes.has(input))return;
     mixedCheckboxes.add(input);
+    const listen=scopedEvents(input),original=input.indeterminate;let resetTimer;
     const initial=input.dataset.uiIndeterminate!=='false';input.indeterminate=initial;
-    input.form?.addEventListener('reset',event=>setTimeout(()=>{if(!event.defaultPrevented)input.indeterminate=initial;},0));
+    listen(input.form,'reset',event=>{clearTimeout(resetTimer);resetTimer=setTimeout(()=>{if(!event.defaultPrevented)input.indeterminate=initial;},0);});
+    onDispose(input,()=>{clearTimeout(resetTimer);input.indeterminate=original;mixedCheckboxes.delete(input);});
   }
   // MDI 7.4.47: paths from assets/icons/mdi/*.svg; see its LICENSE and README.
   // Embedded deliberately: file:// does not need fetch, imports or a server.
@@ -1446,21 +1846,23 @@
     host.prepend(svg);
     iconStates.set(host,{name,svg});
   }
-  function scanIcons(scope) {
-    if (scope.matches?.('[icon]')) renderIcon(scope);
-    all(scope,'[icon]').forEach(renderIcon);
+  function automaticIconOwner(element){const owner=element.closest('[data-kav-ui-vue]');return !owner||owner.hasAttribute('data-kav-ui-html');}
+  function scanIcons(scope, automatic = false) {
+    const icons=[...(scope.matches?.('[icon]')?[scope]:[]),...all(scope,'[icon]')];
+    icons.filter(element=>automatic?automaticIconOwner(element):scopeOwns(scope,element)).forEach(renderIcon);
   }
   // Only icons auto-initialize dynamically. Other components keep the init API.
   const iconObserver = new MutationObserver(records => {
     for (const record of records) {
-      if (record.type === 'attributes') renderIcon(record.target);
+      if (record.type === 'attributes') {if(automaticIconOwner(record.target))renderIcon(record.target);}
       else for (const node of record.addedNodes) {
-        if (node.nodeType === 1) scanIcons(node);
+        if (node.nodeType === 1) scanIcons(node,true);
       }
     }
   });
   const fileDropStates = new WeakMap();
   function initFileDrop(root) {
+    const listen=scopedEvents(root);
     if (fileDropStates.has(root)) return;
     const input = root.querySelector('input[type="file"]');
     const zone = root.querySelector('[data-ui-file-zone]');
@@ -1486,7 +1888,7 @@
         const name=doc.createElement('span');name.className='ui-file-name';name.textContent=file.name;
         const size=doc.createElement('span');size.className='ui-file-size';size.textContent=file.size<1024?file.size+' B':file.size<1048576?(file.size/1024).toFixed(1)+' KB':(file.size/1048576).toFixed(1)+' MB';
         const remove=doc.createElement('button');remove.type='button';remove.className='btn btn-sm btn-outline-secondary';remove.textContent='削除';remove.disabled=inactive();remove.setAttribute('aria-label',file.name+'を削除');
-        remove.addEventListener('click',()=>{if(inactive())return;commit([...input.files].filter((_,i)=>i!==index));input.focus();});
+        listen(remove,'click',()=>{if(inactive())return;commit([...input.files].filter((_,i)=>i!==index));input.focus();});
         item.append(name,size,remove);list.append(item);
       }
       status.textContent=input.files.length?input.files.length+'件のファイルを選択しました。':'ファイルは選択されていません。';
@@ -1509,7 +1911,7 @@
       input.dispatchEvent(new Event('input',{bubbles:true}));
       input.dispatchEvent(new Event('change',{bubbles:true}));
     };
-    input.addEventListener('change',()=>{
+    listen(input,'change',()=>{
       if(inactive()){assign(state.files);return;}
       const problem=validate([...input.files]);
       if(problem){assign(state.files);reject(problem);render();return;}
@@ -1517,18 +1919,19 @@
     });
     const fileDrag=event=>[...(event.dataTransfer?.types || [])].includes('Files');
     const stopDrag=()=>{state.depth=0;delete root.dataset.uiFileDragging;};
-    zone.addEventListener('dragenter',event=>{if(!fileDrag(event))return;event.preventDefault();if(!inactive()){state.depth++;root.dataset.uiFileDragging='true';}});
-    zone.addEventListener('dragover',event=>{if(!fileDrag(event))return;event.preventDefault();event.dataTransfer.dropEffect=inactive()?'none':'copy';});
-    zone.addEventListener('dragleave',event=>{if(!fileDrag(event))return;event.preventDefault();if(--state.depth<=0)stopDrag();});
-    zone.addEventListener('drop',event=>{
+    listen(zone,'dragenter',event=>{if(!fileDrag(event))return;event.preventDefault();if(!inactive()){state.depth++;root.dataset.uiFileDragging='true';}});
+    listen(zone,'dragover',event=>{if(!fileDrag(event))return;event.preventDefault();event.dataTransfer.dropEffect=inactive()?'none':'copy';});
+    listen(zone,'dragleave',event=>{if(!fileDrag(event))return;event.preventDefault();if(--state.depth<=0)stopDrag();});
+    listen(zone,'drop',event=>{
       if(!fileDrag(event))return;event.preventDefault();stopDrag();if(inactive())return;
       const items=[...(event.dataTransfer.items || [])];
       if(items.some(item=>item.webkitGetAsEntry?.()?.isDirectory)){reject('フォルダーではなくファイルを選択してください。');return;}
       const files=[...event.dataTransfer.files];if(files.length)commit(files);
     });
-    zone.addEventListener('dragend',stopDrag);
-    input.form?.addEventListener('reset',event=>setTimeout(()=>{if(event.defaultPrevented)return;state.files=[...input.files];clearError();stopDrag();render();},0));
-    new MutationObserver(()=>{stopDrag();render();}).observe(input,{attributes:true,attributeFilter:['disabled']});
+    listen(zone,'dragend',stopDrag);
+    listen(input.form,'reset',event=>setTimeout(()=>{if(event.defaultPrevented)return;state.files=[...input.files];clearError();stopDrag();render();},0));
+    const observer=new MutationObserver(()=>{stopDrag();render();});observer.observe(input,{attributes:true,attributeFilter:['disabled']});
+    onDispose(root,()=>{observer.disconnect();stopDrag();list.remove();status.remove();error.remove();describedBy(input,error.id,false);fileDropStates.delete(root);delete root.dataset.uiFileReady;});
     render();
   }
   // Shared positioning and native light dismissal for menus and rich popovers.
@@ -1648,6 +2051,7 @@
           if (width !== state.width && state.config) drawChart(root,state);
         });
         state.observer.observe(root);
+        onDispose(root,()=>{state.observer.disconnect();state.output.remove();chartStates.delete(root);});
       }
     }
     let candidate = config;
@@ -1772,7 +2176,10 @@
 
   function init(scope = doc) {
     scanIcons(scope);
-    const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)];
+    const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-splitter]').forEach(initSplitter);
+    scan('[data-ui-navbar]').forEach(initNavbar);
+    scan('[data-ui-sidebar]').forEach(initResponsiveSidebar);
     scan('[data-ui-tabs]').forEach(group => {
       const {tabs} = tabData(group);
       const tab = tabs.find(item => item.getAttribute('aria-selected') === 'true' && !disabled(item)) || tabs.find(item => !disabled(item));
@@ -1795,6 +2202,7 @@
     scan('button[data-ui-copy], button[data-ui-copy-target]').forEach(initCopyIcon);
     syncDesignThemeControls(scope);
     syncColorThemeControls(scope);
+    scan('form[data-ui-palette-editor]').forEach(initPaletteEditor);
     syncPaletteControls(scope);
     scan('select.form-select, select[data-ui-theme-select], select[data-ui-color-select], select[data-ui-palette-select]').forEach(initSelect);
     scan('[data-ui-toggle="collapse"], [data-ui-toggle="sidebar"]').forEach(button => {
@@ -1830,22 +2238,1315 @@
     setDesignTheme(select.value, {persist:doc.body.hasAttribute('data-ui-theme-persist')});
     syncDesignThemeControls();
   });
+  // BEGIN BUNDLED MATERIAL COLOR UTILITIES
+  // Apache-2.0, Google LLC; notices: assets/vendor/material-color-utilities.
+  const materialColors = (() => {
+    const modules = {
+"hct/cam16": (require) => {
+const utils = require("utils/color_utils");
+const math = require("utils/math_utils");
+const { ViewingConditions } = require("hct/viewing_conditions");
+class Cam16 {
+    hue;
+    chroma;
+    j;
+    q;
+    m;
+    s;
+    jstar;
+    astar;
+    bstar;
+    constructor(hue, chroma, j, q, m, s, jstar, astar, bstar){
+        this.hue = hue;
+        this.chroma = chroma;
+        this.j = j;
+        this.q = q;
+        this.m = m;
+        this.s = s;
+        this.jstar = jstar;
+        this.astar = astar;
+        this.bstar = bstar;
+    }
+    distance(other) {
+        const dJ = this.jstar - other.jstar;
+        const dA = this.astar - other.astar;
+        const dB = this.bstar - other.bstar;
+        const dEPrime = Math.sqrt(dJ * dJ + dA * dA + dB * dB);
+        const dE = 1.41 * Math.pow(dEPrime, 0.63);
+        return dE;
+    }
+    static fromInt(argb) {
+        return Cam16.fromIntInViewingConditions(argb, ViewingConditions.DEFAULT);
+    }
+    static fromIntInViewingConditions(argb, viewingConditions) {
+        const red = (argb & 0x00ff0000) >> 16;
+        const green = (argb & 0x0000ff00) >> 8;
+        const blue = argb & 0x000000ff;
+        const redL = utils.linearized(red);
+        const greenL = utils.linearized(green);
+        const blueL = utils.linearized(blue);
+        const x = 0.41233895 * redL + 0.35762064 * greenL + 0.18051042 * blueL;
+        const y = 0.2126 * redL + 0.7152 * greenL + 0.0722 * blueL;
+        const z = 0.01932141 * redL + 0.11916382 * greenL + 0.95034478 * blueL;
+        const rC = 0.401288 * x + 0.650173 * y - 0.051461 * z;
+        const gC = -0.250268 * x + 1.204414 * y + 0.045854 * z;
+        const bC = -0.002079 * x + 0.048952 * y + 0.953127 * z;
+        const rD = viewingConditions.rgbD[0] * rC;
+        const gD = viewingConditions.rgbD[1] * gC;
+        const bD = viewingConditions.rgbD[2] * bC;
+        const rAF = Math.pow(viewingConditions.fl * Math.abs(rD) / 100.0, 0.42);
+        const gAF = Math.pow(viewingConditions.fl * Math.abs(gD) / 100.0, 0.42);
+        const bAF = Math.pow(viewingConditions.fl * Math.abs(bD) / 100.0, 0.42);
+        const rA = math.signum(rD) * 400.0 * rAF / (rAF + 27.13);
+        const gA = math.signum(gD) * 400.0 * gAF / (gAF + 27.13);
+        const bA = math.signum(bD) * 400.0 * bAF / (bAF + 27.13);
+        const a = (11.0 * rA + -12.0 * gA + bA) / 11.0;
+        const b = (rA + gA - 2.0 * bA) / 9.0;
+        const u = (20.0 * rA + 20.0 * gA + 21.0 * bA) / 20.0;
+        const p2 = (40.0 * rA + 20.0 * gA + bA) / 20.0;
+        const atan2 = Math.atan2(b, a);
+        const atanDegrees = atan2 * 180.0 / Math.PI;
+        const hue = math.sanitizeDegreesDouble(atanDegrees);
+        const hueRadians = hue * Math.PI / 180.0;
+        const ac = p2 * viewingConditions.nbb;
+        const j = 100.0 * Math.pow(ac / viewingConditions.aw, viewingConditions.c * viewingConditions.z);
+        const q = 4.0 / viewingConditions.c * Math.sqrt(j / 100.0) * (viewingConditions.aw + 4.0) * viewingConditions.fLRoot;
+        const huePrime = hue < 20.14 ? hue + 360 : hue;
+        const eHue = 0.25 * (Math.cos(huePrime * Math.PI / 180.0 + 2.0) + 3.8);
+        const p1 = 50000.0 / 13.0 * eHue * viewingConditions.nc * viewingConditions.ncb;
+        const t = p1 * Math.sqrt(a * a + b * b) / (u + 0.305);
+        const alpha = Math.pow(t, 0.9) * Math.pow(1.64 - Math.pow(0.29, viewingConditions.n), 0.73);
+        const c = alpha * Math.sqrt(j / 100.0);
+        const m = c * viewingConditions.fLRoot;
+        const s = 50.0 * Math.sqrt(alpha * viewingConditions.c / (viewingConditions.aw + 4.0));
+        const jstar = (1.0 + 100.0 * 0.007) * j / (1.0 + 0.007 * j);
+        const mstar = 1.0 / 0.0228 * Math.log(1.0 + 0.0228 * m);
+        const astar = mstar * Math.cos(hueRadians);
+        const bstar = mstar * Math.sin(hueRadians);
+        return new Cam16(hue, c, j, q, m, s, jstar, astar, bstar);
+    }
+    static fromJch(j, c, h) {
+        return Cam16.fromJchInViewingConditions(j, c, h, ViewingConditions.DEFAULT);
+    }
+    static fromJchInViewingConditions(j, c, h, viewingConditions) {
+        const q = 4.0 / viewingConditions.c * Math.sqrt(j / 100.0) * (viewingConditions.aw + 4.0) * viewingConditions.fLRoot;
+        const m = c * viewingConditions.fLRoot;
+        const alpha = c / Math.sqrt(j / 100.0);
+        const s = 50.0 * Math.sqrt(alpha * viewingConditions.c / (viewingConditions.aw + 4.0));
+        const hueRadians = h * Math.PI / 180.0;
+        const jstar = (1.0 + 100.0 * 0.007) * j / (1.0 + 0.007 * j);
+        const mstar = 1.0 / 0.0228 * Math.log(1.0 + 0.0228 * m);
+        const astar = mstar * Math.cos(hueRadians);
+        const bstar = mstar * Math.sin(hueRadians);
+        return new Cam16(h, c, j, q, m, s, jstar, astar, bstar);
+    }
+    static fromUcs(jstar, astar, bstar) {
+        return Cam16.fromUcsInViewingConditions(jstar, astar, bstar, ViewingConditions.DEFAULT);
+    }
+    static fromUcsInViewingConditions(jstar, astar, bstar, viewingConditions) {
+        const a = astar;
+        const b = bstar;
+        const m = Math.sqrt(a * a + b * b);
+        const M = (Math.exp(m * 0.0228) - 1.0) / 0.0228;
+        const c = M / viewingConditions.fLRoot;
+        let h = Math.atan2(b, a) * (180.0 / Math.PI);
+        if (h < 0.0) {
+            h += 360.0;
+        }
+        const j = jstar / (1 - (jstar - 100) * 0.007);
+        return Cam16.fromJchInViewingConditions(j, c, h, viewingConditions);
+    }
+    toInt() {
+        return this.viewed(ViewingConditions.DEFAULT);
+    }
+    viewed(viewingConditions) {
+        const alpha = this.chroma === 0.0 || this.j === 0.0 ? 0.0 : this.chroma / Math.sqrt(this.j / 100.0);
+        const t = Math.pow(alpha / Math.pow(1.64 - Math.pow(0.29, viewingConditions.n), 0.73), 1.0 / 0.9);
+        const hRad = this.hue * Math.PI / 180.0;
+        const eHue = 0.25 * (Math.cos(hRad + 2.0) + 3.8);
+        const ac = viewingConditions.aw * Math.pow(this.j / 100.0, 1.0 / viewingConditions.c / viewingConditions.z);
+        const p1 = eHue * (50000.0 / 13.0) * viewingConditions.nc * viewingConditions.ncb;
+        const p2 = ac / viewingConditions.nbb;
+        const hSin = Math.sin(hRad);
+        const hCos = Math.cos(hRad);
+        const gamma = 23.0 * (p2 + 0.305) * t / (23.0 * p1 + 11.0 * t * hCos + 108.0 * t * hSin);
+        const a = gamma * hCos;
+        const b = gamma * hSin;
+        const rA = (460.0 * p2 + 451.0 * a + 288.0 * b) / 1403.0;
+        const gA = (460.0 * p2 - 891.0 * a - 261.0 * b) / 1403.0;
+        const bA = (460.0 * p2 - 220.0 * a - 6300.0 * b) / 1403.0;
+        const rCBase = Math.max(0, 27.13 * Math.abs(rA) / (400.0 - Math.abs(rA)));
+        const rC = math.signum(rA) * (100.0 / viewingConditions.fl) * Math.pow(rCBase, 1.0 / 0.42);
+        const gCBase = Math.max(0, 27.13 * Math.abs(gA) / (400.0 - Math.abs(gA)));
+        const gC = math.signum(gA) * (100.0 / viewingConditions.fl) * Math.pow(gCBase, 1.0 / 0.42);
+        const bCBase = Math.max(0, 27.13 * Math.abs(bA) / (400.0 - Math.abs(bA)));
+        const bC = math.signum(bA) * (100.0 / viewingConditions.fl) * Math.pow(bCBase, 1.0 / 0.42);
+        const rF = rC / viewingConditions.rgbD[0];
+        const gF = gC / viewingConditions.rgbD[1];
+        const bF = bC / viewingConditions.rgbD[2];
+        const x = 1.86206786 * rF - 1.01125463 * gF + 0.14918677 * bF;
+        const y = 0.38752654 * rF + 0.62144744 * gF - 0.00897398 * bF;
+        const z = -0.01584150 * rF - 0.03412294 * gF + 1.04996444 * bF;
+        const argb = utils.argbFromXyz(x, y, z);
+        return argb;
+    }
+    static fromXyzInViewingConditions(x, y, z, viewingConditions) {
+        const rC = 0.401288 * x + 0.650173 * y - 0.051461 * z;
+        const gC = -0.250268 * x + 1.204414 * y + 0.045854 * z;
+        const bC = -0.002079 * x + 0.048952 * y + 0.953127 * z;
+        const rD = viewingConditions.rgbD[0] * rC;
+        const gD = viewingConditions.rgbD[1] * gC;
+        const bD = viewingConditions.rgbD[2] * bC;
+        const rAF = Math.pow(viewingConditions.fl * Math.abs(rD) / 100.0, 0.42);
+        const gAF = Math.pow(viewingConditions.fl * Math.abs(gD) / 100.0, 0.42);
+        const bAF = Math.pow(viewingConditions.fl * Math.abs(bD) / 100.0, 0.42);
+        const rA = math.signum(rD) * 400.0 * rAF / (rAF + 27.13);
+        const gA = math.signum(gD) * 400.0 * gAF / (gAF + 27.13);
+        const bA = math.signum(bD) * 400.0 * bAF / (bAF + 27.13);
+        const a = (11.0 * rA + -12.0 * gA + bA) / 11.0;
+        const b = (rA + gA - 2.0 * bA) / 9.0;
+        const u = (20.0 * rA + 20.0 * gA + 21.0 * bA) / 20.0;
+        const p2 = (40.0 * rA + 20.0 * gA + bA) / 20.0;
+        const atan2 = Math.atan2(b, a);
+        const atanDegrees = atan2 * 180.0 / Math.PI;
+        const hue = atanDegrees < 0 ? atanDegrees + 360.0 : atanDegrees >= 360 ? atanDegrees - 360 : atanDegrees;
+        const hueRadians = hue * Math.PI / 180.0;
+        const ac = p2 * viewingConditions.nbb;
+        const J = 100.0 * Math.pow(ac / viewingConditions.aw, viewingConditions.c * viewingConditions.z);
+        const Q = 4.0 / viewingConditions.c * Math.sqrt(J / 100.0) * (viewingConditions.aw + 4.0) * viewingConditions.fLRoot;
+        const huePrime = hue < 20.14 ? hue + 360 : hue;
+        const eHue = 1.0 / 4.0 * (Math.cos(huePrime * Math.PI / 180.0 + 2.0) + 3.8);
+        const p1 = 50000.0 / 13.0 * eHue * viewingConditions.nc * viewingConditions.ncb;
+        const t = p1 * Math.sqrt(a * a + b * b) / (u + 0.305);
+        const alpha = Math.pow(t, 0.9) * Math.pow(1.64 - Math.pow(0.29, viewingConditions.n), 0.73);
+        const C = alpha * Math.sqrt(J / 100.0);
+        const M = C * viewingConditions.fLRoot;
+        const s = 50.0 * Math.sqrt(alpha * viewingConditions.c / (viewingConditions.aw + 4.0));
+        const jstar = (1.0 + 100.0 * 0.007) * J / (1.0 + 0.007 * J);
+        const mstar = Math.log(1.0 + 0.0228 * M) / 0.0228;
+        const astar = mstar * Math.cos(hueRadians);
+        const bstar = mstar * Math.sin(hueRadians);
+        return new Cam16(hue, C, J, Q, M, s, jstar, astar, bstar);
+    }
+    xyzInViewingConditions(viewingConditions) {
+        const alpha = this.chroma === 0.0 || this.j === 0.0 ? 0.0 : this.chroma / Math.sqrt(this.j / 100.0);
+        const t = Math.pow(alpha / Math.pow(1.64 - Math.pow(0.29, viewingConditions.n), 0.73), 1.0 / 0.9);
+        const hRad = this.hue * Math.PI / 180.0;
+        const eHue = 0.25 * (Math.cos(hRad + 2.0) + 3.8);
+        const ac = viewingConditions.aw * Math.pow(this.j / 100.0, 1.0 / viewingConditions.c / viewingConditions.z);
+        const p1 = eHue * (50000.0 / 13.0) * viewingConditions.nc * viewingConditions.ncb;
+        const p2 = ac / viewingConditions.nbb;
+        const hSin = Math.sin(hRad);
+        const hCos = Math.cos(hRad);
+        const gamma = 23.0 * (p2 + 0.305) * t / (23.0 * p1 + 11 * t * hCos + 108.0 * t * hSin);
+        const a = gamma * hCos;
+        const b = gamma * hSin;
+        const rA = (460.0 * p2 + 451.0 * a + 288.0 * b) / 1403.0;
+        const gA = (460.0 * p2 - 891.0 * a - 261.0 * b) / 1403.0;
+        const bA = (460.0 * p2 - 220.0 * a - 6300.0 * b) / 1403.0;
+        const rCBase = Math.max(0, 27.13 * Math.abs(rA) / (400.0 - Math.abs(rA)));
+        const rC = math.signum(rA) * (100.0 / viewingConditions.fl) * Math.pow(rCBase, 1.0 / 0.42);
+        const gCBase = Math.max(0, 27.13 * Math.abs(gA) / (400.0 - Math.abs(gA)));
+        const gC = math.signum(gA) * (100.0 / viewingConditions.fl) * Math.pow(gCBase, 1.0 / 0.42);
+        const bCBase = Math.max(0, 27.13 * Math.abs(bA) / (400.0 - Math.abs(bA)));
+        const bC = math.signum(bA) * (100.0 / viewingConditions.fl) * Math.pow(bCBase, 1.0 / 0.42);
+        const rF = rC / viewingConditions.rgbD[0];
+        const gF = gC / viewingConditions.rgbD[1];
+        const bF = bC / viewingConditions.rgbD[2];
+        const x = 1.86206786 * rF - 1.01125463 * gF + 0.14918677 * bF;
+        const y = 0.38752654 * rF + 0.62144744 * gF - 0.00897398 * bF;
+        const z = -0.01584150 * rF - 0.03412294 * gF + 1.04996444 * bF;
+        return [
+            x,
+            y,
+            z
+        ];
+    }
+}
+
+return {Cam16};
+},
+"hct/hct": (require) => {
+const utils = require("utils/color_utils");
+const { Cam16 } = require("hct/cam16");
+const { HctSolver } = require("hct/hct_solver");
+const { ViewingConditions } = require("hct/viewing_conditions");
+class Hct {
+    argb;
+    internalHue;
+    internalChroma;
+    internalTone;
+    static from(hue, chroma, tone) {
+        return new Hct(HctSolver.solveToInt(hue, chroma, tone));
+    }
+    static fromInt(argb) {
+        return new Hct(argb);
+    }
+    toInt() {
+        return this.argb;
+    }
+    get hue() {
+        return this.internalHue;
+    }
+    set hue(newHue) {
+        this.setInternalState(HctSolver.solveToInt(newHue, this.internalChroma, this.internalTone));
+    }
+    get chroma() {
+        return this.internalChroma;
+    }
+    set chroma(newChroma) {
+        this.setInternalState(HctSolver.solveToInt(this.internalHue, newChroma, this.internalTone));
+    }
+    get tone() {
+        return this.internalTone;
+    }
+    set tone(newTone) {
+        this.setInternalState(HctSolver.solveToInt(this.internalHue, this.internalChroma, newTone));
+    }
+    setValue(propertyName, value) {
+        this[propertyName] = value;
+    }
+    toString() {
+        return `HCT(${this.hue.toFixed(0)}, ${this.chroma.toFixed(0)}, ${this.tone.toFixed(0)})`;
+    }
+    static isBlue(hue) {
+        return hue >= 250 && hue < 270;
+    }
+    static isYellow(hue) {
+        return hue >= 105 && hue < 125;
+    }
+    static isCyan(hue) {
+        return hue >= 170 && hue < 207;
+    }
+    constructor(argb){
+        this.argb = argb;
+        const cam = Cam16.fromInt(argb);
+        this.internalHue = cam.hue;
+        this.internalChroma = cam.chroma;
+        this.internalTone = utils.lstarFromArgb(argb);
+        this.argb = argb;
+    }
+    setInternalState(argb) {
+        const cam = Cam16.fromInt(argb);
+        this.internalHue = cam.hue;
+        this.internalChroma = cam.chroma;
+        this.internalTone = utils.lstarFromArgb(argb);
+        this.argb = argb;
+    }
+    inViewingConditions(vc) {
+        const cam = Cam16.fromInt(this.toInt());
+        const viewedInVc = cam.xyzInViewingConditions(vc);
+        const recastInVc = Cam16.fromXyzInViewingConditions(viewedInVc[0], viewedInVc[1], viewedInVc[2], ViewingConditions.make());
+        const recastHct = Hct.from(recastInVc.hue, recastInVc.chroma, utils.lstarFromY(viewedInVc[1]));
+        return recastHct;
+    }
+}
+
+return {Hct};
+},
+"hct/hct_solver": (require) => {
+const colorUtils = require("utils/color_utils");
+const mathUtils = require("utils/math_utils");
+const { Cam16 } = require("hct/cam16");
+const { ViewingConditions } = require("hct/viewing_conditions");
+class HctSolver {
+    static SCALED_DISCOUNT_FROM_LINRGB = [
+        [
+            0.001200833568784504,
+            0.002389694492170889,
+            0.0002795742885861124
+        ],
+        [
+            0.0005891086651375999,
+            0.0029785502573438758,
+            0.0003270666104008398
+        ],
+        [
+            0.00010146692491640572,
+            0.0005364214359186694,
+            0.0032979401770712076
+        ]
+    ];
+    static LINRGB_FROM_SCALED_DISCOUNT = [
+        [
+            1373.2198709594231,
+            -1100.4251190754821,
+            -7.278681089101213
+        ],
+        [
+            -271.815969077903,
+            559.6580465940733,
+            -32.46047482791194
+        ],
+        [
+            1.9622899599665666,
+            -57.173814538844006,
+            308.7233197812385
+        ]
+    ];
+    static Y_FROM_LINRGB = [
+        0.2126,
+        0.7152,
+        0.0722
+    ];
+    static CRITICAL_PLANES = [
+        0.015176349177441876,
+        0.045529047532325624,
+        0.07588174588720938,
+        0.10623444424209313,
+        0.13658714259697685,
+        0.16693984095186062,
+        0.19729253930674434,
+        0.2276452376616281,
+        0.2579979360165119,
+        0.28835063437139563,
+        0.3188300904430532,
+        0.350925934958123,
+        0.3848314933096426,
+        0.42057480301049466,
+        0.458183274052838,
+        0.4976837250274023,
+        0.5391024159806381,
+        0.5824650784040898,
+        0.6277969426914107,
+        0.6751227633498623,
+        0.7244668422128921,
+        0.775853049866786,
+        0.829304845476233,
+        0.8848452951698498,
+        0.942497089126609,
+        1.0022825574869039,
+        1.0642236851973577,
+        1.1283421258858297,
+        1.1946592148522128,
+        1.2631959812511864,
+        1.3339731595349034,
+        1.407011200216447,
+        1.4823302800086415,
+        1.5599503113873272,
+        1.6398909516233677,
+        1.7221716113234105,
+        1.8068114625156377,
+        1.8938294463134073,
+        1.9832442801866852,
+        2.075074464868551,
+        2.1693382909216234,
+        2.2660538449872063,
+        2.36523901573795,
+        2.4669114995532007,
+        2.5710888059345764,
+        2.6777882626779785,
+        2.7870270208169257,
+        2.898822059350997,
+        3.0131901897720907,
+        3.1301480604002863,
+        3.2497121605402226,
+        3.3718988244681087,
+        3.4967242352587946,
+        3.624204428461639,
+        3.754355295633311,
+        3.887192587735158,
+        4.022731918402185,
+        4.160988767090289,
+        4.301978482107941,
+        4.445716283538092,
+        4.592217266055746,
+        4.741496401646282,
+        4.893568542229298,
+        5.048448422192488,
+        5.20615066083972,
+        5.3666897647573375,
+        5.5300801301023865,
+        5.696336044816294,
+        5.865471690767354,
+        6.037501145825082,
+        6.212438385869475,
+        6.390297286737924,
+        6.571091626112461,
+        6.7548350853498045,
+        6.941541251256611,
+        7.131223617812143,
+        7.323895587840543,
+        7.5195704746346665,
+        7.7182615035334345,
+        7.919981813454504,
+        8.124744458384042,
+        8.332562408825165,
+        8.543448553206703,
+        8.757415699253682,
+        8.974476575321063,
+        9.194643831691977,
+        9.417930041841839,
+        9.644347703669503,
+        9.873909240696694,
+        10.106627003236781,
+        10.342513269534024,
+        10.58158024687427,
+        10.8238400726681,
+        11.069304815507364,
+        11.317986476196008,
+        11.569896988756009,
+        11.825048221409341,
+        12.083451977536606,
+        12.345119996613247,
+        12.610063955123938,
+        12.878295467455942,
+        13.149826086772048,
+        13.42466730586372,
+        13.702830557985108,
+        13.984327217668513,
+        14.269168601521828,
+        14.55736596900856,
+        14.848930523210871,
+        15.143873411576273,
+        15.44220572664832,
+        15.743938506781891,
+        16.04908273684337,
+        16.35764934889634,
+        16.66964922287304,
+        16.985093187232053,
+        17.30399201960269,
+        17.62635644741625,
+        17.95219714852476,
+        18.281524751807332,
+        18.614349837764564,
+        18.95068293910138,
+        19.290534541298456,
+        19.633915083172692,
+        19.98083495742689,
+        20.331304511189067,
+        20.685334046541502,
+        21.042933821039977,
+        21.404114048223256,
+        21.76888489811322,
+        22.137256497705877,
+        22.50923893145328,
+        22.884842241736916,
+        23.264076429332462,
+        23.6469514538663,
+        24.033477234264016,
+        24.42366364919083,
+        24.817520537484558,
+        25.21505769858089,
+        25.61628489293138,
+        26.021211842414342,
+        26.429848230738664,
+        26.842203703840827,
+        27.258287870275353,
+        27.678110301598522,
+        28.10168053274597,
+        28.529008062403893,
+        28.96010235337422,
+        29.39497283293396,
+        29.83362889318845,
+        30.276079891419332,
+        30.722335150426627,
+        31.172403958865512,
+        31.62629557157785,
+        32.08401920991837,
+        32.54558406207592,
+        33.010999283389665,
+        33.4802739966603,
+        33.953417292456834,
+        34.430438229418264,
+        34.911345834551085,
+        35.39614910352207,
+        35.88485700094671,
+        36.37747846067349,
+        36.87402238606382,
+        37.37449765026789,
+        37.87891309649659,
+        38.38727753828926,
+        38.89959975977785,
+        39.41588851594697,
+        39.93615253289054,
+        40.460400508064545,
+        40.98864111053629,
+        41.520882981230194,
+        42.05713473317016,
+        42.597404951718396,
+        43.141702194811224,
+        43.6900349931913,
+        44.24241185063697,
+        44.798841244188324,
+        45.35933162437017,
+        45.92389141541209,
+        46.49252901546552,
+        47.065252796817916,
+        47.64207110610409,
+        48.22299226451468,
+        48.808024568002054,
+        49.3971762874833,
+        49.9904556690408,
+        50.587870934119984,
+        51.189430279724725,
+        51.79514187861014,
+        52.40501387947288,
+        53.0190544071392,
+        53.637271562750364,
+        54.259673423945976,
+        54.88626804504493,
+        55.517063457223934,
+        56.15206766869424,
+        56.79128866487574,
+        57.43473440856916,
+        58.08241284012621,
+        58.734331877617365,
+        59.39049941699807,
+        60.05092333227251,
+        60.715611475655585,
+        61.38457167773311,
+        62.057811747619894,
+        62.7353394731159,
+        63.417162620860914,
+        64.10328893648692,
+        64.79372614476921,
+        65.48848194977529,
+        66.18756403501224,
+        66.89098006357258,
+        67.59873767827808,
+        68.31084450182222,
+        69.02730813691093,
+        69.74813616640164,
+        70.47333615344107,
+        71.20291564160104,
+        71.93688215501312,
+        72.67524319850172,
+        73.41800625771542,
+        74.16517879925733,
+        74.9167682708136,
+        75.67278210128072,
+        76.43322770089146,
+        77.1981124613393,
+        77.96744375590167,
+        78.74122893956174,
+        79.51947534912904,
+        80.30219030335869,
+        81.08938110306934,
+        81.88105503125999,
+        82.67721935322541,
+        83.4778813166706,
+        84.28304815182372,
+        85.09272707154808,
+        85.90692527145302,
+        86.72564993000343,
+        87.54890820862819,
+        88.3767072518277,
+        89.2090541872801,
+        90.04595612594655,
+        90.88742016217518,
+        91.73345337380438,
+        92.58406282226491,
+        93.43925555268066,
+        94.29903859396902,
+        95.16341895893969,
+        96.03240364439274,
+        96.9059996312159,
+        97.78421388448044,
+        98.6670533535366,
+        99.55452497210776
+    ];
+    static sanitizeRadians(angle) {
+        return (angle + Math.PI * 8) % (Math.PI * 2);
+    }
+    static trueDelinearized(rgbComponent) {
+        const normalized = rgbComponent / 100.0;
+        let delinearized = 0.0;
+        if (normalized <= 0.0031308) {
+            delinearized = normalized * 12.92;
+        } else {
+            delinearized = 1.055 * Math.pow(normalized, 1.0 / 2.4) - 0.055;
+        }
+        return delinearized * 255.0;
+    }
+    static chromaticAdaptation(component) {
+        const af = Math.pow(Math.abs(component), 0.42);
+        return mathUtils.signum(component) * 400.0 * af / (af + 27.13);
+    }
+    static hueOf(linrgb) {
+        const scaledDiscount = mathUtils.matrixMultiply(linrgb, HctSolver.SCALED_DISCOUNT_FROM_LINRGB);
+        const rA = HctSolver.chromaticAdaptation(scaledDiscount[0]);
+        const gA = HctSolver.chromaticAdaptation(scaledDiscount[1]);
+        const bA = HctSolver.chromaticAdaptation(scaledDiscount[2]);
+        const a = (11.0 * rA + -12.0 * gA + bA) / 11.0;
+        const b = (rA + gA - 2.0 * bA) / 9.0;
+        return Math.atan2(b, a);
+    }
+    static areInCyclicOrder(a, b, c) {
+        const deltaAB = HctSolver.sanitizeRadians(b - a);
+        const deltaAC = HctSolver.sanitizeRadians(c - a);
+        return deltaAB < deltaAC;
+    }
+    static intercept(source, mid, target) {
+        return (mid - source) / (target - source);
+    }
+    static lerpPoint(source, t, target) {
+        return [
+            source[0] + (target[0] - source[0]) * t,
+            source[1] + (target[1] - source[1]) * t,
+            source[2] + (target[2] - source[2]) * t
+        ];
+    }
+    static setCoordinate(source, coordinate, target, axis) {
+        const t = HctSolver.intercept(source[axis], coordinate, target[axis]);
+        return HctSolver.lerpPoint(source, t, target);
+    }
+    static isBounded(x) {
+        return 0.0 <= x && x <= 100.0;
+    }
+    static nthVertex(y, n) {
+        const kR = HctSolver.Y_FROM_LINRGB[0];
+        const kG = HctSolver.Y_FROM_LINRGB[1];
+        const kB = HctSolver.Y_FROM_LINRGB[2];
+        const coordA = n % 4 <= 1 ? 0.0 : 100.0;
+        const coordB = n % 2 === 0 ? 0.0 : 100.0;
+        if (n < 4) {
+            const g = coordA;
+            const b = coordB;
+            const r = (y - g * kG - b * kB) / kR;
+            if (HctSolver.isBounded(r)) {
+                return [
+                    r,
+                    g,
+                    b
+                ];
+            } else {
+                return [
+                    -1.0,
+                    -1.0,
+                    -1.0
+                ];
+            }
+        } else if (n < 8) {
+            const b = coordA;
+            const r = coordB;
+            const g = (y - r * kR - b * kB) / kG;
+            if (HctSolver.isBounded(g)) {
+                return [
+                    r,
+                    g,
+                    b
+                ];
+            } else {
+                return [
+                    -1.0,
+                    -1.0,
+                    -1.0
+                ];
+            }
+        } else {
+            const r = coordA;
+            const g = coordB;
+            const b = (y - r * kR - g * kG) / kB;
+            if (HctSolver.isBounded(b)) {
+                return [
+                    r,
+                    g,
+                    b
+                ];
+            } else {
+                return [
+                    -1.0,
+                    -1.0,
+                    -1.0
+                ];
+            }
+        }
+    }
+    static bisectToSegment(y, targetHue) {
+        let left = [
+            -1.0,
+            -1.0,
+            -1.0
+        ];
+        let right = left;
+        let leftHue = 0.0;
+        let rightHue = 0.0;
+        let initialized = false;
+        let uncut = true;
+        for(let n = 0; n < 12; n++){
+            const mid = HctSolver.nthVertex(y, n);
+            if (mid[0] < 0) {
+                continue;
+            }
+            const midHue = HctSolver.hueOf(mid);
+            if (!initialized) {
+                left = mid;
+                right = mid;
+                leftHue = midHue;
+                rightHue = midHue;
+                initialized = true;
+                continue;
+            }
+            if (uncut || HctSolver.areInCyclicOrder(leftHue, midHue, rightHue)) {
+                uncut = false;
+                if (HctSolver.areInCyclicOrder(leftHue, targetHue, midHue)) {
+                    right = mid;
+                    rightHue = midHue;
+                } else {
+                    left = mid;
+                    leftHue = midHue;
+                }
+            }
+        }
+        return [
+            left,
+            right
+        ];
+    }
+    static midpoint(a, b) {
+        return [
+            (a[0] + b[0]) / 2,
+            (a[1] + b[1]) / 2,
+            (a[2] + b[2]) / 2
+        ];
+    }
+    static criticalPlaneBelow(x) {
+        return Math.floor(x - 0.5);
+    }
+    static criticalPlaneAbove(x) {
+        return Math.ceil(x - 0.5);
+    }
+    static bisectToLimit(y, targetHue) {
+        const segment = HctSolver.bisectToSegment(y, targetHue);
+        let left = segment[0];
+        let leftHue = HctSolver.hueOf(left);
+        let right = segment[1];
+        for(let axis = 0; axis < 3; axis++){
+            if (left[axis] !== right[axis]) {
+                let lPlane = -1;
+                let rPlane = 255;
+                if (left[axis] < right[axis]) {
+                    lPlane = HctSolver.criticalPlaneBelow(HctSolver.trueDelinearized(left[axis]));
+                    rPlane = HctSolver.criticalPlaneAbove(HctSolver.trueDelinearized(right[axis]));
+                } else {
+                    lPlane = HctSolver.criticalPlaneAbove(HctSolver.trueDelinearized(left[axis]));
+                    rPlane = HctSolver.criticalPlaneBelow(HctSolver.trueDelinearized(right[axis]));
+                }
+                for(let i = 0; i < 8; i++){
+                    if (Math.abs(rPlane - lPlane) <= 1) {
+                        break;
+                    } else {
+                        const mPlane = Math.floor((lPlane + rPlane) / 2.0);
+                        const midPlaneCoordinate = HctSolver.CRITICAL_PLANES[mPlane];
+                        const mid = HctSolver.setCoordinate(left, midPlaneCoordinate, right, axis);
+                        const midHue = HctSolver.hueOf(mid);
+                        if (HctSolver.areInCyclicOrder(leftHue, targetHue, midHue)) {
+                            right = mid;
+                            rPlane = mPlane;
+                        } else {
+                            left = mid;
+                            leftHue = midHue;
+                            lPlane = mPlane;
+                        }
+                    }
+                }
+            }
+        }
+        return HctSolver.midpoint(left, right);
+    }
+    static inverseChromaticAdaptation(adapted) {
+        const adaptedAbs = Math.abs(adapted);
+        const base = Math.max(0, 27.13 * adaptedAbs / (400.0 - adaptedAbs));
+        return mathUtils.signum(adapted) * Math.pow(base, 1.0 / 0.42);
+    }
+    static findResultByJ(hueRadians, chroma, y) {
+        let j = Math.sqrt(y) * 11.0;
+        const viewingConditions = ViewingConditions.DEFAULT;
+        const tInnerCoeff = 1 / Math.pow(1.64 - Math.pow(0.29, viewingConditions.n), 0.73);
+        const eHue = 0.25 * (Math.cos(hueRadians + 2.0) + 3.8);
+        const p1 = eHue * (50000.0 / 13.0) * viewingConditions.nc * viewingConditions.ncb;
+        const hSin = Math.sin(hueRadians);
+        const hCos = Math.cos(hueRadians);
+        for(let iterationRound = 0; iterationRound < 5; iterationRound++){
+            const jNormalized = j / 100.0;
+            const alpha = chroma === 0.0 || j === 0.0 ? 0.0 : chroma / Math.sqrt(jNormalized);
+            const t = Math.pow(alpha * tInnerCoeff, 1.0 / 0.9);
+            const ac = viewingConditions.aw * Math.pow(jNormalized, 1.0 / viewingConditions.c / viewingConditions.z);
+            const p2 = ac / viewingConditions.nbb;
+            const gamma = 23.0 * (p2 + 0.305) * t / (23.0 * p1 + 11 * t * hCos + 108.0 * t * hSin);
+            const a = gamma * hCos;
+            const b = gamma * hSin;
+            const rA = (460.0 * p2 + 451.0 * a + 288.0 * b) / 1403.0;
+            const gA = (460.0 * p2 - 891.0 * a - 261.0 * b) / 1403.0;
+            const bA = (460.0 * p2 - 220.0 * a - 6300.0 * b) / 1403.0;
+            const rCScaled = HctSolver.inverseChromaticAdaptation(rA);
+            const gCScaled = HctSolver.inverseChromaticAdaptation(gA);
+            const bCScaled = HctSolver.inverseChromaticAdaptation(bA);
+            const linrgb = mathUtils.matrixMultiply([
+                rCScaled,
+                gCScaled,
+                bCScaled
+            ], HctSolver.LINRGB_FROM_SCALED_DISCOUNT);
+            if (linrgb[0] < 0 || linrgb[1] < 0 || linrgb[2] < 0) {
+                return 0;
+            }
+            const kR = HctSolver.Y_FROM_LINRGB[0];
+            const kG = HctSolver.Y_FROM_LINRGB[1];
+            const kB = HctSolver.Y_FROM_LINRGB[2];
+            const fnj = kR * linrgb[0] + kG * linrgb[1] + kB * linrgb[2];
+            if (fnj <= 0) {
+                return 0;
+            }
+            if (iterationRound === 4 || Math.abs(fnj - y) < 0.002) {
+                if (linrgb[0] > 100.01 || linrgb[1] > 100.01 || linrgb[2] > 100.01) {
+                    return 0;
+                }
+                return colorUtils.argbFromLinrgb(linrgb);
+            }
+            j = j - (fnj - y) * j / (2 * fnj);
+        }
+        return 0;
+    }
+    static solveToInt(hueDegrees, chroma, lstar) {
+        if (chroma < 0.0001 || lstar < 0.0001 || lstar > 99.9999) {
+            return colorUtils.argbFromLstar(lstar);
+        }
+        hueDegrees = mathUtils.sanitizeDegreesDouble(hueDegrees);
+        const hueRadians = hueDegrees / 180 * Math.PI;
+        const y = colorUtils.yFromLstar(lstar);
+        const exactAnswer = HctSolver.findResultByJ(hueRadians, chroma, y);
+        if (exactAnswer !== 0) {
+            return exactAnswer;
+        }
+        const linrgb = HctSolver.bisectToLimit(y, hueRadians);
+        return colorUtils.argbFromLinrgb(linrgb);
+    }
+    static solveToCam(hueDegrees, chroma, lstar) {
+        return Cam16.fromInt(HctSolver.solveToInt(hueDegrees, chroma, lstar));
+    }
+}
+
+return {HctSolver};
+},
+"hct/viewing_conditions": (require) => {
+const utils = require("utils/color_utils");
+const math = require("utils/math_utils");
+class ViewingConditions {
+    n;
+    aw;
+    nbb;
+    ncb;
+    c;
+    nc;
+    rgbD;
+    fl;
+    fLRoot;
+    z;
+    static DEFAULT = ViewingConditions.make();
+    static make(whitePoint = utils.whitePointD65(), adaptingLuminance = 200.0 / Math.PI * utils.yFromLstar(50.0) / 100.0, backgroundLstar = 50.0, surround = 2.0, discountingIlluminant = false) {
+        const xyz = whitePoint;
+        const rW = xyz[0] * 0.401288 + xyz[1] * 0.650173 + xyz[2] * -0.051461;
+        const gW = xyz[0] * -0.250268 + xyz[1] * 1.204414 + xyz[2] * 0.045854;
+        const bW = xyz[0] * -0.002079 + xyz[1] * 0.048952 + xyz[2] * 0.953127;
+        const f = 0.8 + surround / 10.0;
+        const c = f >= 0.9 ? math.lerp(0.59, 0.69, (f - 0.9) * 10.0) : math.lerp(0.525, 0.59, (f - 0.8) * 10.0);
+        let d = discountingIlluminant ? 1.0 : f * (1.0 - 1.0 / 3.6 * Math.exp((-adaptingLuminance - 42.0) / 92.0));
+        d = d > 1.0 ? 1.0 : d < 0.0 ? 0.0 : d;
+        const nc = f;
+        const rgbD = [
+            d * (100.0 / rW) + 1.0 - d,
+            d * (100.0 / gW) + 1.0 - d,
+            d * (100.0 / bW) + 1.0 - d
+        ];
+        const k = 1.0 / (5.0 * adaptingLuminance + 1.0);
+        const k4 = k * k * k * k;
+        const k4F = 1.0 - k4;
+        const fl = k4 * adaptingLuminance + 0.1 * k4F * k4F * Math.cbrt(5.0 * adaptingLuminance);
+        const n = utils.yFromLstar(backgroundLstar) / whitePoint[1];
+        const z = 1.48 + Math.sqrt(n);
+        const nbb = 0.725 / Math.pow(n, 0.2);
+        const ncb = nbb;
+        const rgbAFactors = [
+            Math.pow(fl * rgbD[0] * rW / 100.0, 0.42),
+            Math.pow(fl * rgbD[1] * gW / 100.0, 0.42),
+            Math.pow(fl * rgbD[2] * bW / 100.0, 0.42)
+        ];
+        const rgbA = [
+            400.0 * rgbAFactors[0] / (rgbAFactors[0] + 27.13),
+            400.0 * rgbAFactors[1] / (rgbAFactors[1] + 27.13),
+            400.0 * rgbAFactors[2] / (rgbAFactors[2] + 27.13)
+        ];
+        const aw = (2.0 * rgbA[0] + rgbA[1] + 0.05 * rgbA[2]) * nbb;
+        return new ViewingConditions(n, aw, nbb, ncb, c, nc, rgbD, fl, Math.pow(fl, 0.25), z);
+    }
+    constructor(n, aw, nbb, ncb, c, nc, rgbD, fl, fLRoot, z){
+        this.n = n;
+        this.aw = aw;
+        this.nbb = nbb;
+        this.ncb = ncb;
+        this.c = c;
+        this.nc = nc;
+        this.rgbD = rgbD;
+        this.fl = fl;
+        this.fLRoot = fLRoot;
+        this.z = z;
+    }
+}
+
+return {ViewingConditions};
+},
+"utils/color_utils": (require) => {
+const mathUtils = require("utils/math_utils");
+const SRGB_TO_XYZ = [
+    [
+        0.41233895,
+        0.35762064,
+        0.18051042
+    ],
+    [
+        0.2126,
+        0.7152,
+        0.0722
+    ],
+    [
+        0.01932141,
+        0.11916382,
+        0.95034478
+    ]
+];
+const XYZ_TO_SRGB = [
+    [
+        3.2413774792388685,
+        -1.5376652402851851,
+        -0.49885366846268053
+    ],
+    [
+        -0.9691452513005321,
+        1.8758853451067872,
+        0.04156585616912061
+    ],
+    [
+        0.05562093689691305,
+        -0.20395524564742123,
+        1.0571799111220335
+    ]
+];
+const WHITE_POINT_D65 = [
+    95.047,
+    100.0,
+    108.883
+];
+function argbFromRgb(red, green, blue) {
+    return (255 << 24 | (red & 255) << 16 | (green & 255) << 8 | blue & 255) >>> 0;
+}
+function argbFromLinrgb(linrgb) {
+    const r = delinearized(linrgb[0]);
+    const g = delinearized(linrgb[1]);
+    const b = delinearized(linrgb[2]);
+    return argbFromRgb(r, g, b);
+}
+function alphaFromArgb(argb) {
+    return argb >> 24 & 255;
+}
+function redFromArgb(argb) {
+    return argb >> 16 & 255;
+}
+function greenFromArgb(argb) {
+    return argb >> 8 & 255;
+}
+function blueFromArgb(argb) {
+    return argb & 255;
+}
+function isOpaque(argb) {
+    return alphaFromArgb(argb) >= 255;
+}
+function argbFromXyz(x, y, z) {
+    const matrix = XYZ_TO_SRGB;
+    const linearR = matrix[0][0] * x + matrix[0][1] * y + matrix[0][2] * z;
+    const linearG = matrix[1][0] * x + matrix[1][1] * y + matrix[1][2] * z;
+    const linearB = matrix[2][0] * x + matrix[2][1] * y + matrix[2][2] * z;
+    const r = delinearized(linearR);
+    const g = delinearized(linearG);
+    const b = delinearized(linearB);
+    return argbFromRgb(r, g, b);
+}
+function xyzFromArgb(argb) {
+    const r = linearized(redFromArgb(argb));
+    const g = linearized(greenFromArgb(argb));
+    const b = linearized(blueFromArgb(argb));
+    return mathUtils.matrixMultiply([
+        r,
+        g,
+        b
+    ], SRGB_TO_XYZ);
+}
+function argbFromLab(l, a, b) {
+    const whitePoint = WHITE_POINT_D65;
+    const fy = (l + 16.0) / 116.0;
+    const fx = a / 500.0 + fy;
+    const fz = fy - b / 200.0;
+    const xNormalized = labInvf(fx);
+    const yNormalized = labInvf(fy);
+    const zNormalized = labInvf(fz);
+    const x = xNormalized * whitePoint[0];
+    const y = yNormalized * whitePoint[1];
+    const z = zNormalized * whitePoint[2];
+    return argbFromXyz(x, y, z);
+}
+function labFromArgb(argb) {
+    const linearR = linearized(redFromArgb(argb));
+    const linearG = linearized(greenFromArgb(argb));
+    const linearB = linearized(blueFromArgb(argb));
+    const matrix = SRGB_TO_XYZ;
+    const x = matrix[0][0] * linearR + matrix[0][1] * linearG + matrix[0][2] * linearB;
+    const y = matrix[1][0] * linearR + matrix[1][1] * linearG + matrix[1][2] * linearB;
+    const z = matrix[2][0] * linearR + matrix[2][1] * linearG + matrix[2][2] * linearB;
+    const whitePoint = WHITE_POINT_D65;
+    const xNormalized = x / whitePoint[0];
+    const yNormalized = y / whitePoint[1];
+    const zNormalized = z / whitePoint[2];
+    const fx = labF(xNormalized);
+    const fy = labF(yNormalized);
+    const fz = labF(zNormalized);
+    const l = 116.0 * fy - 16;
+    const a = 500.0 * (fx - fy);
+    const b = 200.0 * (fy - fz);
+    return [
+        l,
+        a,
+        b
+    ];
+}
+function argbFromLstar(lstar) {
+    const y = yFromLstar(lstar);
+    const component = delinearized(y);
+    return argbFromRgb(component, component, component);
+}
+function lstarFromArgb(argb) {
+    const y = xyzFromArgb(argb)[1];
+    return 116.0 * labF(y / 100.0) - 16.0;
+}
+function yFromLstar(lstar) {
+    return 100.0 * labInvf((lstar + 16.0) / 116.0);
+}
+function lstarFromY(y) {
+    return labF(y / 100.0) * 116.0 - 16.0;
+}
+function linearized(rgbComponent) {
+    const normalized = rgbComponent / 255.0;
+    if (normalized <= 0.040449936) {
+        return normalized / 12.92 * 100.0;
+    } else {
+        return Math.pow((normalized + 0.055) / 1.055, 2.4) * 100.0;
+    }
+}
+function delinearized(rgbComponent) {
+    const normalized = rgbComponent / 100.0;
+    let delinearized = 0.0;
+    if (normalized <= 0.0031308) {
+        delinearized = normalized * 12.92;
+    } else {
+        delinearized = 1.055 * Math.pow(normalized, 1.0 / 2.4) - 0.055;
+    }
+    return mathUtils.clampInt(0, 255, Math.round(delinearized * 255.0));
+}
+function whitePointD65() {
+    return WHITE_POINT_D65;
+}
+function labF(t) {
+    const e = 216.0 / 24389.0;
+    const kappa = 24389.0 / 27.0;
+    if (t > e) {
+        return Math.pow(t, 1.0 / 3.0);
+    } else {
+        return (kappa * t + 16) / 116;
+    }
+}
+function labInvf(ft) {
+    const e = 216.0 / 24389.0;
+    const kappa = 24389.0 / 27.0;
+    const ft3 = ft * ft * ft;
+    if (ft3 > e) {
+        return ft3;
+    } else {
+        return (116 * ft - 16) / kappa;
+    }
+}
+
+return {argbFromRgb,argbFromLinrgb,alphaFromArgb,redFromArgb,greenFromArgb,blueFromArgb,isOpaque,argbFromXyz,xyzFromArgb,argbFromLab,labFromArgb,argbFromLstar,lstarFromArgb,yFromLstar,lstarFromY,linearized,delinearized,whitePointD65};
+},
+"utils/math_utils": (require) => {
+function signum(num) {
+    if (num < 0) {
+        return -1;
+    } else if (num === 0) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+function lerp(start, stop, amount) {
+    return (1.0 - amount) * start + amount * stop;
+}
+function clampInt(min, max, input) {
+    if (input < min) {
+        return min;
+    } else if (input > max) {
+        return max;
+    }
+    return input;
+}
+function clampDouble(min, max, input) {
+    if (input < min) {
+        return min;
+    } else if (input > max) {
+        return max;
+    }
+    return input;
+}
+function sanitizeDegreesInt(degrees) {
+    degrees = degrees % 360;
+    if (degrees < 0) {
+        degrees = degrees + 360;
+    }
+    return degrees;
+}
+function sanitizeDegreesDouble(degrees) {
+    degrees = degrees % 360.0;
+    if (degrees < 0) {
+        degrees = degrees + 360.0;
+    }
+    return degrees;
+}
+function rotationDirection(from, to) {
+    const increasingDifference = sanitizeDegreesDouble(to - from);
+    return increasingDifference <= 180.0 ? 1.0 : -1.0;
+}
+function differenceDegrees(a, b) {
+    return 180.0 - Math.abs(Math.abs(a - b) - 180.0);
+}
+function matrixMultiply(row, matrix) {
+    const a = row[0] * matrix[0][0] + row[1] * matrix[0][1] + row[2] * matrix[0][2];
+    const b = row[0] * matrix[1][0] + row[1] * matrix[1][1] + row[2] * matrix[1][2];
+    const c = row[0] * matrix[2][0] + row[1] * matrix[2][1] + row[2] * matrix[2][2];
+    return [
+        a,
+        b,
+        c
+    ];
+}
+
+return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDouble,rotationDirection,differenceDegrees,matrixMultiply};
+}
+    };
+    const cache = new Map();
+    function require(id) {
+      if (!cache.has(id)) cache.set(id,modules[id](require));
+      return cache.get(id);
+    }
+    return require('hct/hct');
+  })();
+  // END BUNDLED MATERIAL COLOR UTILITIES
+  let customPalette = null;
+  const paletteHex = value => typeof value==='string' && /^#[0-9a-f]{6}$/i.test(value.trim()) ? value.trim().toLowerCase() : null;
+  function customPaletteStyle(record) {
+    let style=doc.querySelector('style[data-ui-custom-palette-style]');
+    if(!style){style=doc.createElement('style');style.setAttribute('data-ui-custom-palette-style','');doc.head.append(style);}
+    style.textContent=['light','dark'].map(mode=>{
+      const properties=record[mode],primary=properties['--bs-primary'];
+      const rgb=[1,3,5].map(index=>parseInt(primary.slice(index,index+2),16)).join(', ');
+      const ink=properties['--ui-on-primary'].replace('#','%23');
+      const tick=`url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='${ink}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.6' d='m4 10 4 4 8-8'/%3e%3c/svg%3e")`;
+      const dash=`url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath stroke='${ink}' stroke-width='2.6' stroke-linecap='round' d='M5 10h10'/%3e%3c/svg%3e")`;
+      const selector=mode==='dark'?':root[data-bs-theme="dark"][data-ui-palette="custom"]':':root[data-ui-palette="custom"]';
+      return selector+'{'+Object.entries(properties).map(([key,value])=>key+':'+value+';').join('')+`--bs-primary-rgb:${rgb};--ui-palette-check-tick:${tick};--ui-palette-check-dash:${dash};}`;
+    }).join('\n');
+  }
+  function createCustomPalette(seed, chroma) {
+    seed=paletteHex(seed);
+    if(!seed || typeof chroma!=='number' || !Number.isInteger(chroma) || chroma<0 || chroma>32)return null;
+    const source=materialColors.Hct.fromInt(parseInt('ff'+seed.slice(1),16));
+    const gray=source.chroma<3 || chroma===0;
+    const hue=gray?0:source.hue;
+    const specifications={primary:[hue,gray?0:chroma],secondary:[hue,gray?0:Math.min(chroma/2,12)],tertiary:[(hue+60)%360,gray?0:Math.min(chroma*2/3,16)],neutral:[hue,gray?0:4],variant:[hue,gray?0:8],error:[25,32],success:[145,32],warning:[85,24],info:[235,24]};
+    const record={version:1,seed,chroma};
+    const token=role=>(['success','warning','info'].includes(role.replace(/^on-/, '').split('-')[0])?'--ui-color-':'--md-sys-color-')+role;
+    for(const dark of [false,true]) {
+      const roles={},properties={};
+      const put=(name,palette,tone)=>{
+        const [hue,chroma]=specifications[palette];
+        roles[name]='#'+(materialColors.Hct.from(hue,chroma,tone).toInt()>>>0).toString(16).slice(-6).padStart(6,'0');
+      };
+      for(const key of ['primary','secondary','tertiary','error','success','warning','info']) {
+        put(key,key,dark?80:40);put('on-'+key,key,dark?20:100);put(key+'-container',key,dark?30:90);put('on-'+key+'-container',key,dark?90:30);
+      }
+      for(const [key,palette,tone] of [['surface','neutral',dark?6:98],['on-surface','neutral',dark?90:10],['surface-container-lowest','neutral',dark?4:100],['surface-container-low','neutral',dark?10:96],['surface-container','neutral',dark?12:94],['surface-container-high','neutral',dark?17:92],['surface-container-highest','neutral',dark?22:90],['surface-variant','variant',dark?30:90],['on-surface-variant','variant',dark?80:30],['outline','variant',dark?60:50],['outline-variant','variant',dark?30:80],['inverse-surface','neutral',dark?90:20],['inverse-on-surface','neutral',dark?20:95],['inverse-primary','primary',dark?40:80]])put(key,palette,tone);
+      for(const [role,value] of Object.entries(roles))properties[token(role)]=value;
+      const aliases={'--bs-body-bg':'surface','--bs-body-color':'on-surface','--bs-secondary-color':'on-surface-variant','--bs-secondary-bg':'surface-container-high','--bs-tertiary-bg':'surface-container-low','--bs-border-color':'outline-variant','--ui-control-outline':'outline'};
+      for(const [property,role] of Object.entries(aliases))properties[property]=roles[role];
+      for(const [ui,material] of [['primary','primary'],['danger','error'],['success','success'],['warning','warning'],['info','info']]) {
+        for(const [suffix,role] of [['',material],['-bg-subtle',material+'-container'],['-border-subtle',material+'-container'],['-text-emphasis','on-'+material+'-container']])properties['--bs-'+ui+suffix]=roles[role];
+        properties['--ui-on-'+ui]=roles['on-'+material];
+      }
+      record[dark?'dark':'light']=properties;
+    }
+    return record;
+  }
+  function getCustomPalette() { return customPalette?{seed:customPalette.seed,chroma:customPalette.chroma}:null; }
+  function syncPaletteEditors(scope=doc) {
+    const editors=[...(scope.matches?.('form[data-ui-palette-editor]')?[scope]:[]),...all(scope,'form[data-ui-palette-editor]')];
+    for(const form of editors) {
+      const seed=form.querySelector('[data-ui-palette-seed]'),chroma=form.querySelector('[data-ui-palette-chroma]');
+      if(customPalette && seed && chroma) {
+        seed.value=seed.defaultValue=customPalette.seed;chroma.value=chroma.defaultValue=String(customPalette.chroma);inputPickers.get(seed)?.sync();
+      }
+      const status=form.querySelector('[data-ui-palette-status]');if(status){status.textContent='';status.removeAttribute('data-ui-error');}
+      updatePaletteDraft(form);
+    }
+  }
+  function updatePaletteDraft(form) {
+    const output=form.querySelector('[data-ui-palette-chroma-output]'),chroma=form.querySelector('[data-ui-palette-chroma]');
+    if(output && chroma)output.textContent=chroma.value;
+  }
+  const paletteEditors = new WeakSet();
+  function initPaletteEditor(form) {
+    if(paletteEditors.has(form))return;
+    paletteEditors.add(form);form.noValidate=true;syncPaletteEditors(form);
+    form.addEventListener('reset',()=>setTimeout(()=>{updatePaletteDraft(form);const status=form.querySelector('[data-ui-palette-status]');if(status){status.textContent='';status.removeAttribute('data-ui-error');}},0));
+  }
+  function setCustomPalette(seed, {chroma=24,persist=false}={}) {
+    const record=createCustomPalette(seed,chroma);if(!record)return false;
+    const changed=!customPalette || customPalette.seed!==record.seed || customPalette.chroma!==record.chroma;
+    const before=doc.documentElement.dataset.uiPalette;
+    customPalette=record;customPaletteStyle(record);applyPalette('custom',false);syncPaletteEditors();
+    if(persist)try {localStorage.setItem('kav-ui-custom-palette',JSON.stringify(record));localStorage.setItem('kav-ui-palette','custom');}catch { /* In-page colors still work without storage. */ }
+    if(changed || before!=='custom')emit(doc.body,'palettechange',{palette:'custom',...getCustomPalette()});
+    return true;
+  }
+  doc.addEventListener('input',event=>{
+    const form=closest(event.target,'form[data-ui-palette-editor]');if(form)updatePaletteDraft(form);
+  });
+  doc.addEventListener('submit',event=>{
+    const form=event.target;if(!form.matches('form[data-ui-palette-editor]') || event.defaultPrevented)return;
+    event.preventDefault();
+    const seed=form.querySelector('[data-ui-palette-seed]'),chroma=form.querySelector('[data-ui-palette-chroma]'),status=form.querySelector('[data-ui-palette-status]');
+    if(event.submitter && disabled(event.submitter))return;
+    const valid=seed && chroma && form.checkValidity() && setCustomPalette(seed.value,{chroma:Number(chroma.value),persist:doc.body.hasAttribute('data-ui-theme-persist')});
+    if(status){status.textContent=valid?'カスタム配色を適用しました。':'基準色を#RRGGBB、彩度を0〜32で指定してください。';status.toggleAttribute('data-ui-error',!valid);}
+    if(!valid){if(seed && !paletteHex(seed.value))seed.focus();else chroma?.focus();}
+  });
+
   // Palette hue is independent from light/dark preference and surface design.
-  const colorPalettes = ['default','slate','sage','teal','mauve','sand','clay'];
+  const colorPalettes = ['default','slate','sage','teal','mauve','sand','clay','custom'];
   function syncPaletteControls(scope = doc) {
     const palette=doc.documentElement.dataset.uiPalette || 'default';
-    [...(scope.matches?.('select[data-ui-palette-select]')?[scope]:[]),...all(scope,'select[data-ui-palette-select]')].forEach(select=>{select.value=palette;syncSelect(select);});
+    [...(scope.matches?.('select[data-ui-palette-select]')?[scope]:[]),...all(scope,'select[data-ui-palette-select]')].forEach(select=>{
+      let option=[...select.options].find(option=>option.value==='custom');
+      if(customPalette && !option){option=doc.createElement('option');option.value='custom';option.textContent='カスタム';select.append(option);}
+      if(option)option.disabled=!customPalette;select.value=palette;syncSelect(select);
+    });
     [...(scope.matches?.('button[data-ui-palette-value]')?[scope]:[]),...all(scope,'button[data-ui-palette-value]')].forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.uiPaletteValue===palette)));
   }
   function applyPalette(palette, notify = true) {
     const before=doc.documentElement.dataset.uiPalette || 'default';
     doc.documentElement.dataset.uiPalette=palette;syncPaletteControls();
-    if(notify && before!==palette)emit(doc.body,'palettechange',{palette});
+    if(notify && before!==palette)emit(doc.body,'palettechange',palette==='custom'?{palette,...getCustomPalette()}:{palette});
   }
   function setPalette(palette, {persist = false} = {}) {
-    if(!colorPalettes.includes(palette))return false;
+    if(!colorPalettes.includes(palette) || (palette==='custom' && !customPalette))return false;
     applyPalette(palette);
-    if(persist)try {localStorage.setItem('kav-ui-palette',palette);} catch { /* Storage is optional. */ }
+    if(persist)try {if(palette==='custom')localStorage.setItem('kav-ui-custom-palette',JSON.stringify(customPalette));localStorage.setItem('kav-ui-palette',palette);} catch { /* Storage is optional. */ }
     return true;
   }
   doc.addEventListener('change',event=>{
@@ -1915,7 +3616,7 @@
     }
     if (button.hasAttribute('data-ui-dismiss')) {
       const kind = button.dataset.uiDismiss;
-      const panel = target(button) || (kind === 'dialog' ? button.closest('dialog') : kind === 'popover' ? button.closest('[data-ui-popover]') : kind === 'dropdown' ? button.closest('[data-ui-dropdown]') : button.closest(kind === 'toast' ? '.ui-toast' : '.alert'));
+      const panel = target(button) || (kind === 'dialog' ? button.closest('dialog') : kind === 'popover' ? button.closest('[data-ui-popover]') : kind === 'dropdown' ? button.closest('[data-ui-dropdown]') : button.closest(kind === 'banner' ? '.ui-banner' : kind === 'toast' ? '.ui-toast' : '.alert'));
       if (panel) {
         event.preventDefault();
         hide(panel, button);
@@ -1928,6 +3629,8 @@
     } else if (['dropdown','popover'].includes(action)) {
       const panel=target(button);if(!isPopup(panel))return;
       event.preventDefault();if(popupOpen(panel))closePopup(panel,true);else openPopup(panel,button);
+    } else if (action === 'sidebar-responsive') {
+      event.preventDefault();responsiveSidebar(target(button),{trigger:button});
     } else if (action === 'tab') {
       event.preventDefault(); activateTab(button);
     } else if (['collapse','sidebar','dialog','show','hide'].includes(action)) {
@@ -1955,15 +3658,19 @@
     const tabs = tabData(group).tabs.filter(item => !disabled(item));
     const vertical = tab.closest('[role="tablist"]')?.getAttribute('aria-orientation') === 'vertical';
     const index = tabs.indexOf(tab);
-    const previous = vertical ? 'ArrowUp' : 'ArrowLeft';
-    const next = vertical ? 'ArrowDown' : 'ArrowRight';
+    const rtl = getComputedStyle(tab.closest('[role="tablist"]') || group).direction === 'rtl';
+    const previous = vertical ? 'ArrowUp' : rtl ? 'ArrowRight' : 'ArrowLeft';
+    const next = vertical ? 'ArrowDown' : rtl ? 'ArrowLeft' : 'ArrowRight';
     let position;
     if (event.key === next) position = (index + 1) % tabs.length;
     if (event.key === previous) position = (index - 1 + tabs.length) % tabs.length;
     if (event.key === 'Home') position = 0;
     if (event.key === 'End') position = tabs.length - 1;
     if (position === undefined) return;
-    event.preventDefault(); activateTab(tabs[position]); tabs[position].focus();
+    event.preventDefault();
+    if(group.dataset.uiTabActivation==='manual')tabs.forEach((item,index)=>item.tabIndex=index===position?0:-1);
+    else activateTab(tabs[position]);
+    tabs[position].focus();
   });
   doc.addEventListener('focusin', event => {
     const trigger = closest(event.target, '[data-ui-tooltip]');
@@ -2075,15 +3782,20 @@
     event.preventDefault(); moveCard(dragging.card, column); endDrag();
   });
   doc.addEventListener('dragend', endDrag);
-  window.KavUI = Object.freeze({init, show, hide, toast, loading, copy, chart, setDesignTheme, setColorTheme, setPalette});
+  window.KavUI = Object.freeze({init, destroy, show, hide, toast, loading, copy, chart, splitter, sidebar:responsiveSidebar, setDesignTheme, setColorTheme, setPalette, setCustomPalette, getCustomPalette});
   function boot() {
     applyTheme(resolvedColorTheme(), false, false);
-    let savedDesign = null, savedPalette = null;
+    let savedDesign = null, savedPalette = null, savedCustom = null;
     if (doc.body.hasAttribute('data-ui-theme-persist')) {
-      try { savedDesign = localStorage.getItem('kav-ui-design-theme'); savedPalette = localStorage.getItem('kav-ui-palette'); } catch { /* Storage is optional. */ }
+      try { savedDesign = localStorage.getItem('kav-ui-design-theme'); savedPalette = localStorage.getItem('kav-ui-palette'); savedCustom=JSON.parse(localStorage.getItem('kav-ui-custom-palette') || 'null'); } catch { /* Storage is optional. */ }
     }
+    const explicitSeed=doc.documentElement.getAttribute('data-ui-palette-seed');
+    const explicitChroma=doc.documentElement.getAttribute('data-ui-palette-chroma');
+    const record=explicitSeed?createCustomPalette(explicitSeed,explicitChroma===null?24:Number(explicitChroma)):savedCustom?.version===1?createCustomPalette(savedCustom.seed,savedCustom.chroma):null;
+    if(record){customPalette=record;customPaletteStyle(record);}
+    const validPalette=palette=>colorPalettes.includes(palette) && (palette!=='custom' || customPalette);
     const explicitPalette = doc.documentElement.getAttribute('data-ui-palette');
-    applyPalette(colorPalettes.includes(explicitPalette) ? explicitPalette : colorPalettes.includes(savedPalette) ? savedPalette : 'default', false);
+    applyPalette(validPalette(explicitPalette) ? explicitPalette : validPalette(savedPalette) ? savedPalette : 'default', false);
     const explicitDesign = doc.body.getAttribute('data-ui-theme');
     applyDesignTheme(designThemes.includes(explicitDesign) ? explicitDesign : designThemes.includes(savedDesign) ? savedDesign : 'default', false);
     init();

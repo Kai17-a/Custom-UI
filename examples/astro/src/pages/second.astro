@@ -1,0 +1,4 @@
+---
+import {ClientRouter} from 'astro:transitions';import {KavProvider,KavContainer,KavSelect,KavButton,KavDialog} from '@kav-ui/astro';
+---
+<!doctype html><html lang="ja"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Kav-UI / ページ遷移</title><ClientRouter/></head><body><KavProvider/><KavContainer><h1>遷移後のページ</h1><p>ページを再読み込みせずに移動した後も、選択欄とモーダルを利用できます。</p><KavSelect label="遷移後の選択" options={[{value:'one',label:'項目1'},{value:'two',label:'項目2'}]}/><KavButton data-ui-toggle="dialog" data-ui-target="#second-dialog" data-testid="astro-open">開く</KavButton><KavDialog id="second-dialog" title="遷移後の確認"><p>二重に初期化せず開きます。</p><KavButton data-ui-dismiss="dialog">閉じる</KavButton></KavDialog><a href="/" data-testid="astro-back">最初のページへ戻る</a></KavContainer></body></html>
