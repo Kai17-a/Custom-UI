@@ -1286,6 +1286,133 @@ window.uiTestsDone = (async () => {
     assert(root.dataset.uiValue==='2026-10-22'&&root.querySelector('input').value==='2026-10-22','再生成後の操作とフォーム値');
     KavUI.destroy(root);
   });
+  await test('Command: 検索・空結果・無効項目・キーボード選択・IME', () => {
+    mount('<div data-ui-command><input data-ui-command-input aria-label="操作を検索"><div data-ui-command-list><section data-ui-command-group="ページ"><button type="button" data-ui-command-item data-ui-value="docs" data-ui-keywords="ガイド guide">ドキュメント</button><button type="button" data-ui-command-item disabled>管理</button><button type="button" data-ui-command-item data-ui-value="settings">設定</button></section></div><p data-ui-command-empty hidden>該当なし</p><p data-ui-command-status></p></div>');
+    const root=find('[data-ui-command]'),input=find('input');let selected=[];root.addEventListener('ui:commandselect',e=>selected.push(e.detail.value));
+    assert(input.getAttribute('role')==='combobox' && input.getAttribute('aria-controls')===find('[data-ui-command-list]').id,'検索と一覧のARIA関連付け');
+    input.value='ＧＵＩＤＥ';input.dispatchEvent(new Event('input',{bubbles:true}));
+    assert(!find('[data-ui-value=docs]').hidden && find('[data-ui-value=settings]').hidden,'全角英数字・キーワードの部分一致');
+    input.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',isComposing:true,bubbles:true,cancelable:true}));assert(selected.length===0,'IME確定では実行しない');
+    input.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));assert(selected[0]==='docs','Enterで選択イベント');
+    input.value='一致しない';input.dispatchEvent(new Event('input',{bubbles:true}));assert(!find('[data-ui-command-empty]').hidden&&!input.hasAttribute('aria-activedescendant'),'0件の表示とアクティブ解除');
+    input.value='';input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true}));
+    assert(input.getAttribute('aria-activedescendant')===find('[data-ui-value=settings]').id,'無効項目を飛ばして選ぶ');KavUI.destroy(root);
+  });
+  await test('Command: ダイアログ・ショートカット・破棄・動的項目', async () => {
+    mount('<button id="command-opener" type="button">Open</button><dialog class="ui-dialog" data-ui-dialog data-ui-command data-ui-command-shortcut="k"><input data-ui-command-input aria-label="検索"><div data-ui-command-list><button type="button" data-ui-command-item data-ui-value="first">First</button></div><p data-ui-command-empty hidden>Empty</p></dialog>');
+    const root=find('dialog'),input=find('input');find('#command-opener').focus();
+    const shortcut=()=>document.dispatchEvent(new KeyboardEvent('keydown',{key:'k',ctrlKey:true,bubbles:true,cancelable:true}));shortcut();assert(root.open&&document.activeElement===input,'任意のCtrl+Kで開き入力へフォーカス');
+    find('[data-ui-command-item]').click();await wait(40);assert(!root.open&&document.activeElement===find('#command-opener'),'選択で閉じフォーカス復帰');
+    const item=document.createElement('button');item.type='button';item.dataset.uiCommandItem='';item.textContent='Second';root.querySelector('[data-ui-command-list]').append(item);KavUI.init(root);
+    assert(item.getAttribute('role')==='option','追加項目を再初期化');KavUI.destroy(root);shortcut();assert(!root.open&&!input.hasAttribute('role')&&!item.hasAttribute('role'),'破棄でイベント・ARIAを戻す');
+    KavUI.init(root);shortcut();assert(root.open,'同じDOMに再初期化');KavUI.destroy(root);assert(!root.open,'破棄でモーダルを残さない');
+  });
+  await test('Carousel: 前後・ループ・キーボード・ARIA・破棄', async () => {
+    mount('<div class="ui-carousel" data-ui-carousel aria-label="紹介" style="width:300px;max-width:100%"><div class="ui-carousel-viewport" data-ui-carousel-viewport><section class="ui-carousel-slide"><a href="#one">One</a></section><section class="ui-carousel-slide">Two</section><section class="ui-carousel-slide">Three</section></div><button type="button" data-ui-carousel-prev>Prev</button><button type="button" data-ui-carousel-next>Next</button><button type="button" data-ui-carousel-to="2">Third</button><span data-ui-carousel-status></span></div>');
+    const root=find('[data-ui-carousel]'),viewport=find('[data-ui-carousel-viewport]'),slides=many('.ui-carousel-slide');let changes=0;root.addEventListener('ui:carouselchange',()=>changes++);
+    assert(find('[data-ui-carousel-prev]').disabled&&slides[1].inert&&viewport.tabIndex===0,'初期状態と画面外のフォーカス抑止');
+    find('[data-ui-carousel-next]').click();assert(root.dataset.uiCarouselIndex==='1'&&!slides[1].inert&&slides[0].inert&&changes===1,'次へと選択状態');
+    find('[data-ui-carousel-to]').click();assert(root.dataset.uiCarouselIndex==='2'&&find('[data-ui-carousel-next]').disabled,'直接指定と終端');
+    root.dataset.uiCarouselLoop='';KavUI.init(root);find('[data-ui-carousel-next]').click();assert(root.dataset.uiCarouselIndex==='0','任意のループ');
+    viewport.dispatchEvent(new KeyboardEvent('keydown',{key:'End',bubbles:true,cancelable:true}));assert(root.dataset.uiCarouselIndex==='2','キーボードで最後へ');
+    const added=document.createElement('section');added.className='ui-carousel-slide';added.textContent='Four';viewport.append(added);KavUI.init(root);assert(slides[0].getAttribute('aria-label')==='1 / 4'&&added.getAttribute('aria-label')==='4 / 4','追加後に位置の読み上げを更新');
+    KavUI.destroy(root);assert(!root.hasAttribute('data-ui-carousel-ready')&&!viewport.hasAttribute('tabindex')&&slides.every(s=>!s.inert&&!s.hasAttribute('aria-hidden')),'破棄で属性と操作を復元');
+    const value=root.dataset.uiCarouselIndex;find('[data-ui-carousel-next]').click();assert(root.dataset.uiCarouselIndex===value,'破棄後に操作しない');KavUI.init(root);assert(root.hasAttribute('data-ui-carousel-ready'),'再初期化');KavUI.destroy(root);
+  });
+  await test('Rating: ネイティブradioの送信値・reset・無効状態', () => {
+    mount('<form><fieldset class="ui-rating"><legend>評価</legend><label class="ui-rating-choice"><input class="ui-rating-input" type="radio" name="rating" value="1">1</label><label class="ui-rating-choice"><input class="ui-rating-input" type="radio" name="rating" value="2" checked>2</label><label class="ui-rating-choice"><input class="ui-rating-input" type="radio" name="rating" value="3" disabled>3</label></fieldset><button type="reset">Reset</button></form>');
+    find('[value="1"]').click();assert(new FormData(find('form')).get('rating')==='1','標準のフォーム値');find('[value="3"]').click();assert(new FormData(find('form')).get('rating')==='1','無効値を選択しない');find('form').reset();assert(new FormData(find('form')).get('rating')==='2','初期値へreset');
+  });
+  await test('Scroll: 現在地を領域内だけ移動・状態変更・破棄', async () => {
+    mount('<div data-ui-scroll-active style="height:70px;width:220px;overflow:auto"><a aria-current="">Unset</a><div style="height:180px"></div><a href="#scroll-last" aria-current="page" id="scroll-current">Current</a><div style="height:180px"></div><a href="#scroll-first" id="scroll-other">Other</a></div>');
+    const root=find('[data-ui-scroll-active]'),current=find('#scroll-current'),other=find('#scroll-other'),before=scrollY;
+    await wait(50);assert(root.scrollTop>0,'初期の現在地を表示');assert(scrollY===before,'本文をスクロールしない');
+    const first=root.scrollTop;current.removeAttribute('aria-current');other.setAttribute('aria-current','page');await wait(50);assert(root.scrollTop>first,'現在地の変更を追跡');
+    KavUI.init(root);KavUI.init(root);await wait(30);KavUI.destroy(root);root.scrollTop=0;current.setAttribute('aria-current','page');other.removeAttribute('aria-current');await wait(50);assert(root.scrollTop===0,'破棄で監視と予約処理を停止');
+    KavUI.init(root);await wait(50);assert(root.scrollTop>0,'同じDOMへ再初期化');KavUI.destroy(root);
+  });
+  await test('Toast: コピーアイコンが本文・タイトル末尾で文字サイズに揃う', () => {
+    for(const options of [{title:'通知',body:'本文の末尾'},{title:'タイトルのみ'},{body:'長い本文'.repeat(40)}]) {
+      const note=KavUI.toast({...options,copy:true,duration:0}),button=note.querySelector('[data-ui-copy]');
+      const message=note.querySelector(options.body?'.ui-toast-body':'.ui-toast-title');
+      assert(button.closest('.ui-toast-body, .ui-toast-title')===message&&message.lastElementChild.contains(button),'メッセージ末尾へ配置');
+      assert(!note.querySelector('.ui-toast-actions'),'独立した操作行は作らない');
+      assert(Math.abs(parseFloat(getComputedStyle(button.querySelector('svg')).width)-parseFloat(getComputedStyle(message).fontSize))<.5,'アイコンは本文/タイトルの1em');
+    }
+  });
+  await test('Light surfaces: 明るさを抑えた標準背景とMaterial・カスタム配色', () => {
+    const state=paletteState();
+    try {
+      KavUI.setColorTheme('light');KavUI.setPalette('default');
+      assert(getComputedStyle(document.documentElement).getPropertyValue('--bs-body-bg').trim()==='#f4f3f0','標準は柔らかいオフホワイト');
+      for(const palette of ['slate','sage','teal','mauve','sand','clay']){
+        KavUI.setPalette(palette);const style=getComputedStyle(document.documentElement);
+        assert(style.getPropertyValue('--md-sys-color-surface').trim()===style.getPropertyValue('--md-sys-color-surface-container-low').trim(),'Surfaceは既存のHCT tone96');
+        assert(style.getPropertyValue('--md-sys-color-surface-container-lowest').trim()!=='#ffffff','最も明るい面も純白を抑える');
+      }
+      KavUI.setCustomPalette('#52796f',{chroma:20,persist:true});const cached=JSON.parse(localStorage.getItem('kav-ui-custom-palette'));
+      assert(cached.version===2&&cached.light['--bs-body-bg']===cached.light['--md-sys-color-surface-container-low'],'カスタムも同じ明度・保存形式');
+      KavUI.setPalette('default');KavUI.setColorTheme('dark');assert(getComputedStyle(document.documentElement).getPropertyValue('--bs-body-bg').trim()==='#1b1c1e','ダーク背景は維持');
+    } finally {restorePaletteState(state);}
+  });
+  const dataTableMarkup=()=>`<div class="ui-data-table" data-ui-data-table data-ui-page-size="2">
+    <input data-ui-table-search type="search" aria-label="検索"><select data-ui-table-page-size aria-label="表示件数"><option value="2">2</option><option value="3">3</option><option value="0">すべて</option></select>
+    <table class="table"><thead><tr><th><input type="checkbox" data-ui-table-select-all aria-label="表示行を選択"></th><th scope="col"><button type="button" data-ui-table-sort="text">名前</button></th><th scope="col"><button type="button" data-ui-table-sort="number">数値</button></th><th scope="col"><button type="button" data-ui-table-sort="date">日付</button></th></tr></thead><tbody>
+    ${[['a','Alpha','10','2026-10-20'],['b','Beta','2','2026-10-22'],['c','Gamma','10','2026-10-21'],['d','Guide','100',''],['e','Delta','','2026-10-19'],['h','Hidden','0','2020-01-01']].map(([key,label,value,date])=>`<tr data-ui-row-id="${key}" ${key==='h'?'hidden':''} ${key==='d'?'data-ui-table-keywords="日本語 ドキュメント"':''}><td><input type="checkbox" data-ui-row-select aria-label="${label}を選択" ${key==='e'?'disabled':''}></td><td>${label}</td><td data-ui-sort-value="${value}">${value?value+' units':'未設定'}</td><td>${date}</td></tr>`).join('')}
+    </tbody></table><p data-ui-table-status role="status"></p><p data-ui-table-selection role="status"></p><button type="button" data-ui-table-prev>前へ</button><span data-ui-table-page-status></span><button type="button" data-ui-table-next>次へ</button>
+  </div>`;
+  const visibleDataRows=()=>many('tbody tr[data-ui-row-id]').filter(row=>!row.hidden).map(row=>row.dataset.uiRowId).join(',');
+  await test('Data table: 検索・ページ送り・表示件数・空結果', () => {
+    mount(dataTableMarkup());const search=find('[data-ui-table-search]');
+    assert(visibleDataRows()==='a,b'&&find('[data-ui-table-prev]').disabled,'初期ページ2件');
+    find('[data-ui-table-next]').click();assert(visibleDataRows()==='c,d','次の2件');
+    search.value='ＧＵＩＤＥ';search.dispatchEvent(new Event('input',{bubbles:true}));assert(visibleDataRows()==='d'&&find('[data-ui-table-next]').disabled,'全角検索で最初のページへ');
+    search.value='日本語';search.dispatchEvent(new Event('input',{bubbles:true}));assert(visibleDataRows()==='d','追加キーワード');
+    search.value='存在しない';search.dispatchEvent(new Event('input',{bubbles:true}));assert(!find('[data-ui-table-empty]').hidden&&visibleDataRows()===''&&find('[data-ui-table-status]').textContent.includes('0'),'空の表示');
+    search.value='';search.dispatchEvent(new Event('input',{bubbles:true}));const size=find('[data-ui-table-page-size]');size.value='0';size.dispatchEvent(new Event('change',{bubbles:true}));assert(visibleDataRows()==='a,b,c,d,e'&&find('[data-ui-row-id=h]').hidden,'全件でも元のhiddenを維持');
+  });
+  await test('Data table: 数値・日付・安定ソートと元の順番', () => {
+    mount(dataTableMarkup());const size=find('[data-ui-table-page-size]');size.value='0';size.dispatchEvent(new Event('change',{bubbles:true}));
+    const number=find('[data-ui-table-sort=number]');number.click();assert(visibleDataRows()==='b,a,c,d,e'&&number.closest('th').getAttribute('aria-sort')==='ascending','数値は表示文字列と分離し同値の順序を維持');
+    number.click();assert(visibleDataRows()==='d,a,c,b,e','降順でも欠損は末尾');number.click();assert(visibleDataRows()==='a,b,c,d,e','3回目は元の順序');
+    find('[data-ui-table-sort=date]').click();assert(visibleDataRows()==='e,a,c,b,d','日付と欠損を比較');
+    find('[data-ui-table-sort=text]').click();assert(visibleDataRows()==='a,b,e,c,d','文字列の昇順');
+  });
+  await test('Data table: 選択・現在ページの一括選択・無効行・イベント', () => {
+    mount(dataTableMarkup());const root=find('[data-ui-data-table]'),all=find('[data-ui-table-select-all]');let selected=[];root.addEventListener('ui:tableselect',event=>selected=event.detail.selected);
+    find('[data-ui-row-id=a] [data-ui-row-select]').click();assert(all.indeterminate&&!all.checked&&selected.join()==='a','一部選択');all.click();assert(all.checked&&!all.indeterminate&&selected.join()==='a,b','現在の2行を選択');
+    find('[data-ui-table-next]').click();assert(!all.checked&&!all.indeterminate,'次のページのチェック状態');find('[data-ui-row-id=c] [data-ui-row-select]').click();assert(selected.join()==='a,b,c','前ページの選択を保持');
+    const search=find('[data-ui-table-search]');search.value='Gamma';search.dispatchEvent(new Event('input',{bubbles:true}));assert(all.checked,'検索結果の一括選択状態');all.click();assert(selected.join()==='a,b','絞り込んだ表示行だけ解除');
+    search.value='Delta';search.dispatchEvent(new Event('input',{bubbles:true}));assert(all.disabled,'選択できない行しかない場合');KavUI.destroy(root);
+  });
+  await test('Data table: 追加・削除・再初期化・破棄と複数表の独立', () => {
+    mount(dataTableMarkup()+dataTableMarkup());const root=many('[data-ui-data-table]')[0],other=many('[data-ui-data-table]')[1],body=root.querySelector('tbody');
+    root.querySelector('[data-ui-table-sort=number]').click();assert([...other.querySelectorAll('tbody tr[data-ui-row-id]')].filter(row=>!row.hidden).map(row=>row.dataset.uiRowId).join()==='a,b','他の表を変更しない');
+    const added=document.createElement('tr');added.dataset.uiRowId='new';added.innerHTML='<td></td><td>New</td><td data-ui-sort-value="1">1</td><td>2026-10-23</td>';body.append(added);KavUI.init(root);assert(!added.hidden,'追加行を現在の並び順に反映');
+    const removed=body.querySelector('[data-ui-row-id=b]');removed.remove();KavUI.init(root);KavUI.init(root);assert(root.querySelectorAll('[data-ui-table-empty]').length===1,'繰り返しても空表示は1件');
+    KavUI.destroy(root);assert(!root.hasAttribute('data-ui-table-ready')&&!root.querySelector('[data-ui-table-empty]')&&[...body.rows].map(row=>row.dataset.uiRowId).join()==='a,c,d,e,h,new','破棄で順序を戻し削除行を復活させない');
+    assert(!body.querySelector('[data-ui-row-id=c]').hidden&&body.querySelector('[data-ui-row-id=h]').hidden&&!root.querySelector('th[aria-sort]'),'表示とARIAを復元');
+    root.querySelector('[data-ui-table-sort=number]').click();assert([...body.rows].map(row=>row.dataset.uiRowId).join()==='a,c,d,e,h,new','破棄後に操作しない');KavUI.init(root);assert(root.hasAttribute('data-ui-table-ready'),'再利用');KavUI.destroy(root);KavUI.destroy(other);
+  });
+  await test('Data table: フォームresetとキャンセル・フォーカス保持', async () => {
+    mount('<form>'+dataTableMarkup()+'</form>');const root=find('[data-ui-data-table]'),form=find('form'),search=find('[data-ui-table-search]'),size=find('[data-ui-table-page-size]');
+    find('[data-ui-table-sort=number]').click();const check=find('[data-ui-row-id=a] [data-ui-row-select]');check.focus();check.click();assert(document.activeElement===check,'行選択でフォーカスを失わない');
+    search.value='Guide';search.dispatchEvent(new Event('input',{bubbles:true}));size.value='3';size.dispatchEvent(new Event('change',{bubbles:true}));form.reset();await wait(30);
+    assert(search.value===''&&size.value==='2'&&visibleDataRows()==='a,b'&&!check.checked&&!find('th[aria-sort]'),'フォームの初期値と元の並びへ戻す');
+    search.value='Gamma';search.dispatchEvent(new Event('input',{bubbles:true}));form.addEventListener('reset',event=>event.preventDefault(),{once:true});form.reset();await wait(30);assert(search.value==='Gamma'&&visibleDataRows()==='c','キャンセルしたresetは反映しない');KavUI.destroy(root);
+  });
+  await test('Data table: 表そのものへの指定・空の表・不正な件数', () => {
+    mount('<table data-ui-data-table data-ui-page-size="invalid"><thead><tr><th><button type="button" data-ui-table-sort="number">数</button></th></tr></thead><tbody></tbody></table>');
+    const root=find('table');assert(root.hasAttribute('data-ui-table-ready')&&!find('[data-ui-table-empty]').hidden&&find('[data-ui-table-empty] td').colSpan===1,'0件でも操作可能な空表示');KavUI.destroy(root);assert(!root.id&&!root.hasAttribute('data-ui-table-ready')&&!find('[data-ui-table-empty]'),'生成したIDと空表示も復元');
+  });
+  await test('Scroll once: 初回だけ現在地を表示し開閉では位置を保持', async () => {
+    mount('<div data-ui-scroll-active="once" style="height:80px;width:220px;overflow:auto"><details><summary>展開する</summary><div style="height:150px">子メニュー</div></details><div style="height:200px"></div><a aria-current="page" href="#current">現在のページ</a></div>');
+    const root=find('[data-ui-scroll-active]'),summary=find('summary');await wait(60);assert(root.scrollTop>0,'初回の現在地表示は行う');
+    root.scrollTop=0;summary.focus({preventScroll:true});summary.click();await wait(60);assert(root.scrollTop===0&&document.activeElement===summary,'展開しても現在地へ戻さない');
+    summary.click();await wait(60);assert(root.scrollTop===0&&document.activeElement===summary,'閉じるときも位置とフォーカスを保つ');
+    find('a').setAttribute('aria-current','page');KavUI.init(root);await wait(60);assert(root.scrollTop===0,'同じDOMの再初期化でも引き戻さない');
+    KavUI.destroy(root);KavUI.init(root);await wait(60);assert(root.scrollTop>0,'破棄後は新しい初期表示として扱う');KavUI.destroy(root);
+  });
   document.title = failures.length ? 'FAIL — UI tests' : 'PASS — UI tests';
   return {passed, failures};
 })();
