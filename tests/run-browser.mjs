@@ -911,7 +911,7 @@ try {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});await navigate('components/themes.html');
     if(!await evaluate('!getComputedStyle(document.body).backgroundImage.includes("url(")'))throw new Error('Background must be optional');
     await click('[data-demo-background-action=sample]');
-    const loaded=await evaluate(`(async()=>{const image=new Image();image.src=new URL('../assets/images/theme-background.svg',location.href);await image.decode();return document.body.dataset.uiTheme==='glassmorphism' && getComputedStyle(document.body).backgroundImage.includes('theme-background.svg');})()`);
+    const loaded=await evaluate(`(async()=>{const source=getComputedStyle(document.body).backgroundImage.match(/url[(]["]([^"]+)["][)]/)?.[1];if(source!==new URL('../assets/images/theme-background.svg',location.href).href)throw new Error('Actual wallpaper URL: '+source);const image=new Image();image.src=source;await image.decode();return image.naturalWidth>0 && document.body.dataset.uiTheme==='glassmorphism';})()`);
     if(!loaded)throw new Error('Background sample/loading');
     for(const mode of ['light','dark'])for(const design of ['glass','glassmorphism']) {
       await evaluate(`KavUI.setColorTheme(${JSON.stringify(mode)});KavUI.setDesignTheme(${JSON.stringify(design)});document.getElementById('theme-background').scrollIntoView({behavior:"instant"})`);await delay(60);

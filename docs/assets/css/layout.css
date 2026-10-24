@@ -228,6 +228,3 @@ dialog .buttons { flex-wrap:wrap; }
   .catalog-theme-control .ui-select { width:100%; min-width:0; }
   .catalog-theme-control .form-select { width:100%; min-width:0; font-size:12px; }
 }
-
-/* Catalog-only preview; applications supply their own image in a CSS class. */
-body.catalog-theme-background { --ui-theme-background-image:url("../images/theme-background.svg"); }
