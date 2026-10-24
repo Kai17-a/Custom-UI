@@ -1,7 +1,9 @@
 .badge-neutral { color:var(--bs-body-color); background:var(--bs-tertiary-bg); }
 .form-control:disabled, .form-select:disabled { background-color:var(--bs-secondary-bg); opacity:.65; cursor:not-allowed; }
 .form-control[aria-invalid="true"] { border-color:var(--bs-danger); }
+/* Separate the label, control and help text while keeping each field grouped. */
 .field { display:grid; gap:6px; max-width:420px; margin:0 0 18px; }
+.field > label:not(.form-check,.switch) { display:grid; gap:6px; }
 .field small { color:var(--bs-secondary-color); }
 .field .field-error { color:var(--bs-danger-text-emphasis); }
 .choice-list { display:flex; flex-wrap:wrap; gap:18px; padding:12px; border:1px solid var(--bs-border-color); border-radius:var(--bs-border-radius); }

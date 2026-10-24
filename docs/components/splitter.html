@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Splitter — Kav-UI design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
+<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../llms.txt">
+<link rel="alternate" type="text/markdown" href="splitter.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../installation.html">ダウンロード・導入</a>
+<a class="overview-link" href="../getting-started.html">使い方・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a>
+<a class="overview-link" href="../ai-agents.html">AIエージェント向け</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="foundations.html">Foundations</a></li>
+      <li><a href="themes.html">UI themes</a></li>
+      <li><a href="theme-switcher.html">Theme switcher</a></li>
+      <li><a href="color-palettes.html">Color palettes</a></li>
+      <li><a href="typography.html">Typography</a></li>
+      <li><a href="spacing.html">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="mdi-icons.html">MDIアイコン</a></li><li><a href="icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="layouts.html">Layouts</a></li>
+      <li><a href="splitter.html" aria-current="page">Splitter</a></li>
+      <li><a href="flex.html">Flexbox</a></li>
+      <li><a href="flex-grid.html">Flex grid</a></li>
+      <li><a href="cards.html">Cards</a></li>
+      <li><a href="sidebar.html">Sidebar</a></li>
+
+      <li><a href="drawer.html">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="buttons.html">Buttons</a></li>
+      <li><a href="forms.html">Forms</a></li>
+              <li><a href="rating.html">Rating</a></li>
+      <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="dialog.html">Dialog</a></li>
+      <li><a href="clipboard.html">Clipboard</a></li>
+
+      <li><a href="input-group.html">Input group</a></li>
+      <li><a href="button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="command.html">Command menu</a></li>
+      <li><a href="disclosure.html">Accordion</a></li>
+
+      <li><a href="dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="badges.html">Badges</a></li>
+      <li><a href="table.html">Table</a></li>
+      <li><a href="data-table.html">Data table</a></li>
+      <li><a href="board.html">Kanban board</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+
+      <li><a href="list-group.html">List group</a></li>
+      <li><a href="avatar.html">Avatar</a></li>
+      <li><a href="chart.html">Chart</a></li>
+              <li><a href="carousel.html">Carousel</a></li>
+              <li><a href="timeline.html">Timeline</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="banner.html">Banner</a></li>
+      <li><a href="toasts.html">Toasts & alerts</a></li>
+      <li><a href="tips.html">Tips & tooltips</a></li>
+
+      <li><a href="popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="loading.html">Loading</a></li>
+      <li><a href="states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="animations.html">一覧・使い方</a></li>
+        <li><a href="animations-entrances.html">表示・非表示</a></li>
+        <li><a href="animations-movement.html">移動・回転</a></li>
+        <li><a href="animations-attention.html">強調・揺れ</a></li>
+        <li><a href="animations-interactions.html">操作時の動き</a></li>
+        <li><a href="animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main">
+  <header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Splitter</h1></header>
+  <p class="lede">隣り合うパネルの境界をドラッグしてサイズを調整します。横・縦分割、複数パネル、入れ子、折り畳み、任意のサイズ保存に対応。共通のui.css / ui.jsを読み込み、属性で指定します。</p>
+  <section class="specimen" id="splitter-horizontal">
+    <h2>横分割：ドラッグとキーボード</h2>
+    <p><code>data-ui-splitter-panel</code>を直下に並べると、境界のハンドルを自動で生成します。</p><p>サイズ・最小・最大はパネル領域全体に対する割合（%）です。ハンドルの幅は含みません。</p>
+    <div class="example" data-example>
+      <div class="ui-splitter ui-splitter-sm" data-ui-splitter id="splitter-basic">
+        <section data-ui-splitter-panel data-ui-size="30" data-ui-min="15" data-ui-max="60" aria-labelledby="splitter-projects-title"><div class="ui-splitter-content"><h3 id="splitter-projects-title">プロジェクト</h3><nav class="nav nav-vertical" aria-label="プロジェクト"><a class="nav-link" href="layouts.html">レイアウト</a><a class="nav-link" href="cards.html">カード</a><a class="nav-link" href="forms.html">フォーム</a></nav></div></section>
+        <section data-ui-splitter-panel data-ui-size="70" data-ui-min="20" aria-label="プロジェクトの本文"><div class="ui-splitter-content"><h3>デザインカタログ</h3><p>境界線を左右にドラッグして、一覧と本文の幅を調整できます。</p><p class="type-caption">ハンドルにTabで移動し、左右矢印で2%ずつ、Shift＋矢印で10%ずつ変更できます。</p></div></section>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary sp-mt-3" type="button" data-ui-splitter-reset="#splitter-basic">初期サイズへ戻す</button>
+    </div>
+    <p>仕切りは細い1本線で表示します。線の周囲もドラッグでき、ホバー・ドラッグ中は線の色が変わります。スマートフォンではタッチ操作に対応します。文字が収まらないパネルはスクロールできます。ハンドルをダブルクリックすると、隣接する2パネルの初期比率へ戻ります。</p>
+  </section>
+  <section class="specimen" id="splitter-vertical">
+    <h2>縦分割・3つ以上のパネル</h2>
+    <p><code>data-ui-orientation="vertical"</code>で上下に並べます。縦分割のキー操作は上下矢印です。境界ごとに、隣り合う2領域のサイズだけを変更します。</p>
+    <div class="example" data-example>
+      <div class="ui-splitter" data-ui-splitter data-ui-orientation="vertical" id="splitter-vertical-demo">
+        <section data-ui-splitter-panel data-ui-size="35" data-ui-min="15" aria-label="プレビュー"><div class="ui-splitter-content"><h3>プレビュー</h3><p>変更した画面の見え方を表示します。</p></div></section>
+        <section data-ui-splitter-panel data-ui-size="35" data-ui-min="15" aria-label="エディター"><div class="ui-splitter-content"><h3>エディター</h3><p>ハンドルを上下へ動かして、作業領域を広げられます。</p></div></section>
+        <section data-ui-splitter-panel data-ui-size="30" data-ui-min="15" aria-label="ログ"><div class="ui-splitter-content"><h3>ログ</h3><p class="type-caption">12:30 プレビューを更新しました。</p></div></section>
+      </div>
+    </div>
+  </section>
+  <section class="specimen" id="splitter-nested">
+    <h2>横と縦を組み合わせる</h2>
+    <div class="example" data-example>
+      <div class="ui-splitter ui-splitter-lg ui-splitter-mobile-stack" data-ui-splitter id="splitter-nested-demo">
+        <section data-ui-splitter-panel data-ui-size="25" data-ui-min="15" data-ui-max="45" aria-label="ファイル一覧"><div class="ui-splitter-content"><h3>ファイル</h3><ul><li>index.html</li><li>app.css</li><li>app.js</li></ul></div></section>
+        <section data-ui-splitter-panel data-ui-size="75" data-ui-min="40" aria-label="編集エリア">
+          <div class="ui-splitter" data-ui-splitter data-ui-orientation="vertical">
+            <section data-ui-splitter-panel data-ui-size="65" data-ui-min="25" aria-label="画面の編集"><div class="ui-splitter-content"><h3>画面の編集</h3><p>親の左右分割とは独立して、上下のサイズを調整できます。</p><label class="field">プロジェクト名<input class="form-control" value="Design catalog"></label></div></section>
+            <section data-ui-splitter-panel data-ui-size="35" data-ui-min="15" aria-label="ターミナル"><div class="ui-splitter-content"><h3>ターミナル</h3><p class="type-caption">Ready. npmや追加ライブラリは不要です。</p></div></section>
+          </div>
+        </section>
+      </div>
+    </div>
+    <p>この例はui-splitter-mobile-stackでスマートフォン（768px未満）では上下分割に切り替えます。キーボードの方向・ARIAも同期します。パネル直下のSplitterは親の高さに収まります。パネルは親ごとに管理するため、入れ子のサイズやハンドルが混ざりません。</p>
+  </section>
+  <section class="specimen" id="splitter-collapse">
+    <h2>折り畳み・展開</h2>
+    <p>パネルにdata-ui-collapsibleを追加します。ハンドルでEnterまたはダブルクリックすると、その手前のパネルを折り畳み、再操作で直前のサイズへ戻します。ドラッグでは最小サイズの半分より小さくすると折り畳みます。ドラッグでの折り畳みは、隣の領域の最大サイズに収まる場合に行います。</p>
+    <div class="example" data-example>
+      <div class="ui-splitter ui-splitter-sm" data-ui-splitter id="splitter-collapse-demo">
+        <section data-ui-splitter-panel data-ui-size="30" data-ui-min="20" data-ui-max="50" data-ui-collapsible aria-label="補助パネル"><div class="ui-splitter-content"><h3>補助パネル</h3><p>折り畳むとこの中のリンクや入力欄はフォーカス対象から外れます。</p><a href="sidebar.html">Sidebarを見る</a></div></section>
+        <section data-ui-splitter-panel data-ui-size="70" data-ui-min="30" aria-label="メインパネル"><div class="ui-splitter-content"><h3>メインパネル</h3><p>Enterで補助パネルを開閉できます。折り畳んだ後もハンドルは残ります。</p></div></section>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary sp-mt-3" type="button" data-ui-splitter-reset="#splitter-collapse-demo">両方を初期サイズへ戻す</button>
+    </div>
+    <p>Enterによる開閉では、制約に収まるよう他のパネルへ再配分します。折り畳む領域にフォーカスがある場合はハンドルへ移します。最初から折り畳む場合はdata-ui-size="0"とdata-ui-collapsibleを指定します。</p>
+  </section>
+  <section class="specimen" id="splitter-persist">
+    <h2>サイズを保存する（任意）</h2>
+    <p>data-ui-splitter-saveに画面固有のキーを付けると、操作完了時に割合をlocalStorageへ保存します。この例は再読み込みしても同じ配分で開きます。属性を省略すると保存しません。</p>
+    <div class="example" data-example>
+      <div class="ui-splitter ui-splitter-sm" data-ui-splitter data-ui-splitter-save="catalog-workspace" id="splitter-saved-demo">
+        <section data-ui-splitter-panel data-ui-size="40" data-ui-min="20" data-ui-max="70" aria-label="保存される一覧"><div class="ui-splitter-content"><h3>一覧</h3><p>横幅を変えてからページを再読み込みしてください。</p></div></section>
+        <section data-ui-splitter-panel data-ui-size="60" data-ui-min="20" aria-label="保存される詳細"><div class="ui-splitter-content"><h3>詳細</h3><p>デザインやカラーパレットを変えても割合を保持します。</p></div></section>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary sp-mt-3" type="button" data-ui-splitter-reset="#splitter-saved-demo">保存値を初期サイズへ戻す</button>
+    </div>
+    <p>保存キーはkav-ui-splitter:指定したキーです。保存されたパネル数・向き・数値が合わない場合は初期値へ戻します。ブラウザで保存が使えなくても、その場でのサイズ変更はできます。</p>
+  </section>
+  <section class="specimen" id="splitter-disabled">
+    <h2>サイズ変更を無効にする</h2>
+    <div class="example" data-example>
+      <div class="ui-splitter ui-splitter-sm" data-ui-splitter data-ui-splitter-disabled>
+        <section data-ui-splitter-panel aria-label="読み取り専用の左領域"><div class="ui-splitter-content"><h3>一覧</h3><p>ハンドルの操作は無効ですが、中身は操作できます。</p></div></section>
+        <section data-ui-splitter-panel aria-label="読み取り専用の右領域"><div class="ui-splitter-content"><h3>詳細</h3><a href="layouts.html">レイアウトを見る</a></div></section>
+      </div>
+    </div>
+  </section>
+  <section class="specimen" id="splitter-api">
+    <h2>指定方法・API・イベント</h2>
+    <p>ui-splitter-smは高さ16rem、通常は24rem、ui-splitter-lgは32remです。アプリ固有のクラスで--ui-splitter-heightを指定して高さを変更できます。内側の余白はui-splitter-contentに付け、パネル自体にはpaddingや最小幅を指定しないでください。</p>
+    <div class="ui-table-scroll" tabindex="0" role="region" aria-label="Splitterの属性"><table class="table"><thead><tr><th scope="col">指定</th><th scope="col">内容</th></tr></thead><tbody>
+      <tr><th scope="row">data-ui-splitter</th><td>親の初期化。直下のdata-ui-splitter-panelを2つ以上配置。</td></tr>
+      <tr><th scope="row">data-ui-orientation</th><td>horizontal（既定）／vertical。指定の向きを維持。ui-splitter-mobile-stackを追加するとスマートフォンでは縦分割。</td></tr>
+      <tr><th scope="row">data-ui-size</th><td>初期サイズ。省略した領域で残りを分け、合計100へ正規化。</td></tr>
+      <tr><th scope="row">data-ui-min / data-ui-max</th><td>0〜100の割合。既定は10／100。制約に収まるよう初期値も調整。</td></tr>
+      <tr><th scope="row">data-ui-collapsible</th><td>パネルの折り畳みを許可。</td></tr>
+      <tr><th scope="row">data-ui-splitter-step</th><td>親に指定。矢印キーの移動幅。既定2。Shiftで5倍。</td></tr>
+      <tr><th scope="row">data-ui-splitter-disabled</th><td>親に指定。ポインター・キーボードによる変更を無効化。</td></tr>
+      <tr><th scope="row">data-ui-splitter-save</th><td>親に保存キーを指定。省略時は保存しない。</td></tr>
+    </tbody></table></div>
+    <pre class="setup-code"><code>// 現在の割合をコピーで取得
+const sizes = KavUI.splitter('#splitter-basic'); // [30, 70]
+
+// 制約内に調整して反映。成功時は反映後の配列、不正な指定はfalse。
+KavUI.splitter('#splitter-basic', {sizes: [40, 60]});
+KavUI.splitter('#splitter-basic', {reset: true});
+
+// 値が変わるたびに通知
+const root = document.querySelector('#splitter-basic');
+root.addEventListener('ui:splitterchange', event =&gt; {
+  console.log(event.detail.sizes);
+});
+// 操作完了。Escape・ポインターキャンセルは開始時へ戻し、保存しない。
+root.addEventListener('ui:splitterend', event =&gt; {
+  console.log(event.detail.sizes, event.detail.cancelled);
+});
+
+// DOMや設定を変更した後の初期化
+KavUI.init(root);</code></pre>
+    <p>左右／上下矢印で調整、Shiftで大きく調整、Home／Endで境界まで移動します。RTLでは横分割の左右を反転します。ドラッグ中のEscape、ポインターキャンセル、画面サイズ変更では開始時の割合へ戻します。</p>
+    <p>パネルにaria-labelまたはaria-labelledbyを指定すると、対応するハンドルの名前にも反映します。ハンドルはrole="separator"、aria-controls、現在値・最小値・最大値を持ちます。</p>
+    <p>最小サイズの合計が100を超えるなど成立しない設定では初期化しません。サイズ配列は要素数が一致する0〜100の数値を指定します。全て0の配列・負数・文字列・NaNは受け付けません。JSがない場合は等分表示となり、サイズ変更はできません。</p>
+    <p>機能の参考：<a href="https://ui.nuxt.com/docs/releases/v4.11.0">Nuxt UI Splitter</a>。キーボードとARIAの参考：<a href="https://www.w3.org/WAI/ARIA/apg/patterns/windowsplitter/">WAI-ARIA Window Splitter Pattern</a>。Nuxt・Vue・外部ライブラリの読み込みは不要です。</p>
+  </section>
+  <details class="source"><summary>使用ファイル・取り込み方</summary><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a>。後から追加した要素にはKavUI.init()を呼びます。</p></details>
+</main></div>
+
+</body></html>

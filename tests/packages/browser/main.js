@@ -2,9 +2,12 @@ import {createApp,h,ref,nextTick} from 'vue';
 import {KavInput,KavSelect,KavTabs,KavSidebar,KavTextarea,KavWidget,KavCheckbox,KavRadio,KavSwitch} from '@kav-ui/vue';
 import '@kav-ui/core/style.css';
 const date=ref('2026-10-20'),choice=ref(1),items=ref([]),selected=ref(),overlay=ref(true),body=ref('Initial body'),tag=ref('div'),checked=ref(true),radio=ref('one'),enabled=ref(true),timeModel=ref('09:30');
+const extraVisible=ref(true);
+const extraHTML='<div data-ui-command><input data-ui-command-input aria-label=Search><div data-ui-command-list><button type=button data-ui-command-item data-ui-value=one>One</button><button type=button data-ui-command-item data-ui-value=two>Two</button></div></div><div class=ui-carousel data-ui-carousel aria-label=Slides><div class=ui-carousel-viewport data-ui-carousel-viewport><section class=ui-carousel-slide>First</section><section class=ui-carousel-slide>Second</section></div><button type=button data-ui-carousel-next>Next</button></div><div data-ui-data-table data-ui-page-size=0><input data-ui-table-search aria-label=Filter><table><thead><tr><th><button type=button data-ui-table-sort=number>Number</button></th></tr></thead><tbody><tr><td>10</td></tr><tr><td>2</td></tr></tbody></table></div>';
 let focused=0,blurred=0,keyed=0,committedInputs=0,committedChanges=0;
 const bind=state=>({modelValue:state.value,'onUpdate:modelValue':value=>state.value=value});
 createApp({setup:()=>()=>h('main',[
+ extraVisible.value?h(KavWidget,{id:'extra-components',html:extraHTML}):null,
  h('form',{id:'reset-form'},[
   h(KavInput,{...bind(date),type:'date',name:'date'}),
   h(KavCheckbox,{...bind(checked),name:'checked',label:'Check'}),
@@ -59,5 +62,19 @@ window.runPackageRegressions=async()=>{
  assert(selected.value==='second','Removing the active tab must select an available tab');
  items.value=[];await nextTick();items.value=[{value:'last',label:'Last'}];await nextTick();
  assert(selected.value==='last','Empty tabs must recover when repopulated');
- return 'PASS: form reset, async tabs, initial overlay sidebar';
+ const extra=document.querySelector('#extra-components'),search=extra.querySelector('input'),slides=extra.querySelector('[data-ui-carousel]');
+ assert(search.getAttribute('role')==='combobox'&&slides.hasAttribute('data-ui-carousel-ready'),'Widget initializes command and carousel');
+ let commandSelection;extra.addEventListener('ui:commandselect',event=>commandSelection=event.detail.value);
+ search.value='Two';search.dispatchEvent(new Event('input',{bubbles:true}));search.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));
+ assert(commandSelection==='two','Widget forwards searchable command selection');
+ slides.querySelector('[data-ui-carousel-next]').click();assert(slides.dataset.uiCarouselIndex==='1','Widget carousel control works');
+ const dataTable=extra.querySelector('[data-ui-data-table]');
+ dataTable.querySelector('[data-ui-table-sort]').click();
+ assert([...dataTable.querySelectorAll('tbody tr:not([data-ui-table-empty])')].map(row=>row.textContent).join()==='2,10','Widget initializes data table sorting');
+ const filter=dataTable.querySelector('[data-ui-table-search]');filter.value='10';filter.dispatchEvent(new Event('input',{bubbles:true}));
+ assert([...dataTable.querySelectorAll('tbody tr:not([data-ui-table-empty])')].filter(row=>!row.hidden).map(row=>row.textContent).join()==='10','Widget data table search works');
+ extraVisible.value=false;await nextTick();await wait();
+ assert(!dataTable.hasAttribute('data-ui-table-ready')&&!dataTable.querySelector('[data-ui-table-empty]'),'Widget disposes data table state');
+ assert(!search.hasAttribute('role')&&!slides.hasAttribute('data-ui-carousel-ready')&&!slides.querySelector('.ui-carousel-slide').inert,'Widget teardown restores command/carousel attributes');
+ return 'PASS: form reset, async tabs, initial overlay sidebar, Command/Carousel/Data table widget mount/events/disposal';
 };

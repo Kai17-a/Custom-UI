@@ -15,11 +15,18 @@
 .ui-copy-icon[aria-disabled="true"], .ui-copy-icon:disabled { opacity:.5; cursor:default; pointer-events:none; }
 .ui-copy-icon[data-ui-copy-state="success"] { color:var(--bs-success-text-emphasis); }
 .ui-copy-icon svg { display:block; width:1.125rem; height:1.125rem; fill:currentColor; }
-.ui-toast-actions { margin-top:var(--space-3); }
-.ui-toast-actions .ui-copy-status:empty { display:none; }
+.ui-toast .ui-copy-status:empty { display:none; }
 
 /* Copy and check glyphs use the notification's semantic foreground color. */
 .ui-toast .ui-copy-icon, .ui-toast .ui-copy-icon:hover,
 .ui-toast .ui-copy-icon[data-ui-copy-state="success"] { color:inherit; }
 .ui-toast .ui-copy-icon:hover { background:transparent; opacity:.75; }
 .ui-toast .ui-copy-icon:focus-visible { outline-color:currentColor; }
+
+/* Inline with the last line of the message, scaled to its text. */
+.ui-toast .ui-copy-icon { position:relative; width:1em; height:1em; margin-inline-start:.3em; padding:0; font:inherit; line-height:1; vertical-align:-.125em; }
+.ui-toast .ui-copy-icon::after { content:""; position:absolute; inset:-.25em; }
+.ui-toast .ui-copy-icon svg { width:1em; height:1em; }
+
+/* Keep the final grapheme with the icon so it never becomes an orphan row. */
+.ui-toast-copy-tail { white-space:nowrap; }

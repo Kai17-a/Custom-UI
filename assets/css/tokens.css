@@ -6,7 +6,7 @@
   /* A quieter palette: warm off-white and ink instead of pure black on
      white, and the accents led down from Bootstrap's brights to muted
      steel-blue, sage, terracotta, khaki and teal. */
-  --bs-body-bg: #faf9f7;
+  --bs-body-bg: #f4f3f0;
   --bs-body-color: #2b2b2e;
   --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -19,34 +19,44 @@
   --bs-box-shadow-lg: 0 1rem 2.5rem rgba(43, 43, 46, .14);
   --bs-box-shadow-sm: 0 1px 2px rgba(43, 43, 46, .05);
 
-  --bs-primary: #2f6fc4;
-  --bs-primary-rgb: 47, 111, 196;
-  --bs-primary-bg-subtle: #e6eefb;
-  --bs-primary-border-subtle: #b2c9ea;
+  /* Low-chroma HCT accents, generated with bundled Material Color Utilities.
+     hue/chroma: primary 255/24, success 155/24, danger 25/28, warning 85/24, info 215/20.
+     Light: fill/on/container/ink/border tones 40/100/95/30/80.
+     Dark: 70/10/20/80/40, keeping filled controls quieter on dark surfaces. */
+  --bs-primary: #4a607c;
+  --ui-on-primary: #ffffff;
+  --bs-primary-text-emphasis: #324863;
+  --bs-primary-rgb: 74, 96, 124;
+  --bs-primary-bg-subtle: #eaf1ff;
+  --bs-primary-border-subtle: #b2c8e8;
 
-  --bs-success: #3d9a63;
-  --bs-success-bg-subtle: #e3f2e8;
-  --bs-success-border-subtle: #a8d3b8;
-  --bs-success-text-emphasis: #275c3d;
+  --bs-success: #45664c;
+  --ui-on-success: #ffffff;
+  --bs-success-bg-subtle: #d4fad9;
+  --bs-success-border-subtle: #abd0b0;
+  --bs-success-text-emphasis: #2e4e36;
 
-  --bs-danger: #cf4f4f;
-  --bs-danger-bg-subtle: #fbe8e8;
-  --bs-danger-border-subtle: #eab3b3;
-  --bs-danger-text-emphasis: #7a2626;
+  --bs-danger: #874f49;
+  --ui-on-danger: #ffffff;
+  --bs-danger-bg-subtle: #ffedea;
+  --bs-danger-border-subtle: #fcb5ac;
+  --bs-danger-text-emphasis: #6b3933;
 
-  --bs-warning: #d9951c;
-  --bs-warning-bg-subtle: #fbf0da;
-  --bs-warning-border-subtle: #ecd09a;
-  --bs-warning-text-emphasis: #7a5410;
+  --bs-warning: #715b2e;
+  --ui-on-warning: #ffffff;
+  --bs-warning-bg-subtle: #ffefd5;
+  --bs-warning-border-subtle: #e0c38c;
+  --bs-warning-text-emphasis: #574419;
 
-  --bs-info: #2b95a9;
-  --bs-info-bg-subtle: #e0f1f4;
-  --bs-info-border-subtle: #a9d3db;
-  --bs-info-text-emphasis: #1f5c69;
+  --bs-info: #43636b;
+  --ui-on-info: #ffffff;
+  --bs-info-bg-subtle: #d6f6ff;
+  --bs-info-border-subtle: #aaccd5;
+  --bs-info-text-emphasis: #2b4b53;
 
-  --bs-secondary-bg: #eceae4;
+  --bs-secondary-bg: #e7e5df;
   --bs-secondary-color: rgba(43, 43, 46, .66);
-  --bs-tertiary-bg: #f2f0eb;
+  --bs-tertiary-bg: #eeece6;
 
   color-scheme: light;
 }
@@ -59,30 +69,36 @@
   --bs-border-color: #383a3e;
   --bs-border-color-translucent: rgba(255, 255, 255, .12);
 
-  --bs-primary: #6b9de0;
-  --bs-primary-rgb: 107, 157, 224;
-  --bs-primary-bg-subtle: #1b2942;
-  --bs-primary-border-subtle: #365083;
+  --bs-primary: #97adcc;
+  --ui-on-primary: #031c35;
+  --bs-primary-text-emphasis: #b2c8e8;
+  --bs-primary-rgb: 151, 173, 204;
+  --bs-primary-bg-subtle: #1b324b;
+  --bs-primary-border-subtle: #4a607c;
 
-  --bs-success: #5fb884;
-  --bs-success-bg-subtle: #183024;
-  --bs-success-border-subtle: #2f5d42;
-  --bs-success-text-emphasis: #82c9a0;
+  --bs-success: #90b496;
+  --ui-on-success: #01210d;
+  --bs-success-bg-subtle: #173721;
+  --bs-success-border-subtle: #45664c;
+  --bs-success-text-emphasis: #abd0b0;
 
-  --bs-danger: #e06a6a;
-  --bs-danger-bg-subtle: #35201f;
-  --bs-danger-border-subtle: #66383a;
-  --bs-danger-text-emphasis: #e89494;
+  --bs-danger: #de9a92;
+  --ui-on-danger: #360f0b;
+  --bs-danger-bg-subtle: #50231e;
+  --bs-danger-border-subtle: #874f49;
+  --bs-danger-text-emphasis: #fcb5ac;
 
-  --bs-warning: #d8a03c;
-  --bs-warning-bg-subtle: #352b16;
-  --bs-warning-border-subtle: #5f4c24;
-  --bs-warning-text-emphasis: #e3bd6a;
+  --bs-warning: #c3a873;
+  --ui-on-warning: #261900;
+  --bs-warning-bg-subtle: #3f2e04;
+  --bs-warning-border-subtle: #715b2e;
+  --bs-warning-text-emphasis: #e0c38c;
 
-  --bs-info: #56aec2;
-  --bs-info-bg-subtle: #17303a;
-  --bs-info-border-subtle: #2b5566;
-  --bs-info-text-emphasis: #82c2d2;
+  --bs-info: #8fb1ba;
+  --ui-on-info: #001f25;
+  --bs-info-bg-subtle: #12353c;
+  --bs-info-border-subtle: #43636b;
+  --bs-info-text-emphasis: #aaccd5;
 
   --bs-secondary-bg: #2a2c30;
   --bs-secondary-color: rgba(200, 201, 204, .68);

@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Typography — Kav-UI design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
+<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../llms.txt">
+<link rel="alternate" type="text/markdown" href="typography.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../installation.html">ダウンロード・導入</a>
+<a class="overview-link" href="../getting-started.html">使い方・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a>
+<a class="overview-link" href="../ai-agents.html">AIエージェント向け</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="foundations.html">Foundations</a></li>
+      <li><a href="themes.html">UI themes</a></li>
+      <li><a href="theme-switcher.html">Theme switcher</a></li>
+      <li><a href="color-palettes.html">Color palettes</a></li>
+      <li><a href="typography.html" aria-current="page">Typography</a></li>
+      <li><a href="spacing.html">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="mdi-icons.html">MDIアイコン</a></li><li><a href="icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="layouts.html">Layouts</a></li>
+      <li><a href="splitter.html">Splitter</a></li>
+      <li><a href="flex.html">Flexbox</a></li>
+      <li><a href="flex-grid.html">Flex grid</a></li>
+      <li><a href="cards.html">Cards</a></li>
+      <li><a href="sidebar.html">Sidebar</a></li>
+
+      <li><a href="drawer.html">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="buttons.html">Buttons</a></li>
+      <li><a href="forms.html">Forms</a></li>
+              <li><a href="rating.html">Rating</a></li>
+      <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="dialog.html">Dialog</a></li>
+      <li><a href="clipboard.html">Clipboard</a></li>
+
+      <li><a href="input-group.html">Input group</a></li>
+      <li><a href="button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="command.html">Command menu</a></li>
+      <li><a href="disclosure.html">Accordion</a></li>
+
+      <li><a href="dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="badges.html">Badges</a></li>
+      <li><a href="table.html">Table</a></li>
+      <li><a href="data-table.html">Data table</a></li>
+      <li><a href="board.html">Kanban board</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+
+      <li><a href="list-group.html">List group</a></li>
+      <li><a href="avatar.html">Avatar</a></li>
+      <li><a href="chart.html">Chart</a></li>
+              <li><a href="carousel.html">Carousel</a></li>
+              <li><a href="timeline.html">Timeline</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="banner.html">Banner</a></li>
+      <li><a href="toasts.html">Toasts & alerts</a></li>
+      <li><a href="tips.html">Tips & tooltips</a></li>
+
+      <li><a href="popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="loading.html">Loading</a></li>
+      <li><a href="states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="animations.html">一覧・使い方</a></li>
+        <li><a href="animations-entrances.html">表示・非表示</a></li>
+        <li><a href="animations-movement.html">移動・回転</a></li>
+        <li><a href="animations-attention.html">強調・揺れ</a></li>
+        <li><a href="animations-interactions.html">操作時の動き</a></li>
+        <li><a href="animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Typography</h1></header><p class="lede">ui.cssを読み込むだけで、クラスのないHTMLにも共通の文字デザインを適用します。文字色・大きさ・太さ・行間などを変えたい場合はクラスを組み合わせます。JavaScriptは不要です。</p>
+<section class="specimen" id="type-defaults"><h2>クラスなしのHTMLも共通デザイン</h2><p>ui.cssを読み込むだけで、本文・h1〜h6・リンク・リスト・引用・コードなどに共通の書体・色・大きさ・太さ・余白を適用します。文字の基本表示にJavaScriptやclassは不要です。以下の見本の中身にはクラスを指定していません。</p><div class="example" data-example data-typography-defaults>
+<h1>ページの見出し</h1>
+<h2>セクションの見出し</h2>
+<h3>項目の見出し</h3>
+<h4>小さな見出し</h4>
+<h5>補足の見出し</h5>
+<h6>詳細の見出し</h6>
+<p>通常の本文です。<strong>重要な情報</strong>と<em>強調する表現</em>、<mark>確認する箇所</mark>を記載できます。</p>
+<p><a href="forms.html">フォームの見本を見る</a> · <small>最終更新：10月22日</small></p>
+<ul><li>目的を確認する</li><li>担当者を決める<ul><li>作業日を共有する</li></ul></li></ul>
+<ol><li>変更を保存する</li><li>結果を確認する</li></ol>
+<dl><dt>プロジェクト</dt><dd>共通UIのデザインカタログ</dd></dl>
+<blockquote><p>判断の理由も残しておくと、次の担当者へ作業を引き継げます。</p></blockquote>
+<p><code>project_001</code>を開き、<kbd>Ctrl</kbd> + <kbd>S</kbd>で保存します。</p>
+<pre><code>const project = 'design-catalog';
+console.log(project);</code></pre>
+<hr>
+<p><del>以前の案</del>から<ins>新しい案</ins>へ更新しました。<abbr title="User Interface">UI</abbr>の基本スタイルです。</p>
+</div><p>ベースは低いCSS優先度の<code>:where()</code>で定義しています。既存のコンポーネントクラスや<code>type-size-*</code>・<code>type-color-*</code>などで調整できます。タグの意味やブラウザの標準操作は維持します。</p></section>
+<section class="specimen" id="type-roles"><h2>役割から選ぶ</h2><p>従来のクラスも使用できます。見た目の大きさと見出しの階層は別です。文書構造に応じてh1〜h6を選び、クラスで見た目を指定してください。</p><div class="example" data-example>
+<div class="type-sample"><code class="type-caption type-wrap">type-title</code><p class="m-0 type-title">プロジェクトの概要</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-heading</code><p class="m-0 type-heading">進行中のタスク</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-body</code><p class="m-0 type-body">今日のタスクは5件です。</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-small</code><p class="m-0 type-small">保存後すぐに反映されます。</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-caption</code><p class="m-0 type-caption">最終更新：10月21日 10:30</p></div>
+</div></section>
+<p>端末別の文字サイズは<code>type-size-2xl tablet:type-size-xl mobile:type-size-lg</code>のように指定できます。<a href="layouts.html#responsive-devices">PC・タブレット・スマートフォンの使い分け →</a></p><section class="specimen" id="type-sizes"><h2>文字サイズ</h2><p><code>type-size-*</code>は文字サイズだけを変更します。remはブラウザの文字サイズに追従します。pxは標準16pxでの目安です。</p><div class="example" data-example>
+<div class="type-sample"><code class="type-caption type-wrap">type-size-xs · 12px</code><p class="m-0 type-size-xs">文字の大きさ Aa</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-size-sm · 13px</code><p class="m-0 type-size-sm">文字の大きさ Aa</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-size-base · 14px</code><p class="m-0 type-size-base">文字の大きさ Aa</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-size-lg · 16px</code><p class="m-0 type-size-lg">文字の大きさ Aa</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-size-xl · 18px</code><p class="m-0 type-size-xl">文字の大きさ Aa</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-size-2xl · 24px</code><p class="m-0 type-size-2xl">文字の大きさ Aa</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-size-3xl · 30px</code><p class="m-0 type-size-3xl">文字の大きさ Aa</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-size-4xl · 36px</code><p class="m-0 type-size-4xl">文字の大きさ Aa</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-size-5xl · 48px</code><p class="m-0 type-size-5xl">文字の大きさ Aa</p></div>
+</div></section>
+<section class="specimen" id="type-colors"><h2>文字色</h2><p>ライト／ダークで切り替わる既存のテーマ色を使います。success・danger・warning・infoは本文向けの強調色です。状態は色だけに頼らず、文章やアイコンでも伝えてください。</p><div class="example" data-example>
+<div class="type-sample"><code class="type-caption type-wrap">type-color-body</code><p class="m-0 type-color-body">通常の本文</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-color-muted</code><p class="m-0 type-color-muted">補足・更新日時</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-color-primary</code><p class="m-0 type-color-primary">主要な情報</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-color-success</code><p class="m-0 type-color-success">保存しました</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-color-danger</code><p class="m-0 type-color-danger">入力内容を確認してください</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-color-warning</code><p class="m-0 type-color-warning">未保存の変更があります</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-color-info</code><p class="m-0 type-color-info">詳細をご確認ください</p></div>
+<p class="type-color-primary">親の色を<span class="type-color-inherit type-weight-bold">inheritで引き継ぎます</span>。</p>
+</div></section>
+<section class="specimen" id="type-weights"><h2>文字の太さ</h2><p><code>type-weight-*</code>は100〜900を指定します。実際の見た目は使用フォントが持つウェイトによって異なり、隣り合う太さが同じ表示になる場合があります。</p><div class="example" data-example>
+<div class="type-sample"><code class="type-caption type-wrap">type-weight-thin · 100</code><p class="m-0 type-weight-thin">文字の太さ Weight</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-weight-extralight · 200</code><p class="m-0 type-weight-extralight">文字の太さ Weight</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-weight-light · 300</code><p class="m-0 type-weight-light">文字の太さ Weight</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-weight-normal · 400</code><p class="m-0 type-weight-normal">文字の太さ Weight</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-weight-medium · 500</code><p class="m-0 type-weight-medium">文字の太さ Weight</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-weight-semibold · 600</code><p class="m-0 type-weight-semibold">文字の太さ Weight</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-weight-bold · 700</code><p class="m-0 type-weight-bold">文字の太さ Weight</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-weight-extrabold · 800</code><p class="m-0 type-weight-extrabold">文字の太さ Weight</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-weight-black · 900</code><p class="m-0 type-weight-black">文字の太さ Weight</p></div>
+</div></section>
+<section class="specimen" id="type-leading"><h2>行間</h2><p><code>type-leading-*</code>で行の高さを変更します。noneは短い見出し向けです。日本語の長文にはnormal〜looseを選んでください。</p><div class="example" data-example>
+<div class="type-sample"><code class="type-caption type-wrap">type-leading-none · 1</code><p class="m-0 type-leading-none">タスクごとに目的と完了条件を記載します。<br>判断の理由も残し、次の担当者へ引き継ぎます。</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-leading-tight · 1.3</code><p class="m-0 type-leading-tight">タスクごとに目的と完了条件を記載します。<br>判断の理由も残し、次の担当者へ引き継ぎます。</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-leading-snug · 1.4</code><p class="m-0 type-leading-snug">タスクごとに目的と完了条件を記載します。<br>判断の理由も残し、次の担当者へ引き継ぎます。</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-leading-normal · 1.6</code><p class="m-0 type-leading-normal">タスクごとに目的と完了条件を記載します。<br>判断の理由も残し、次の担当者へ引き継ぎます。</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-leading-relaxed · 1.8</code><p class="m-0 type-leading-relaxed">タスクごとに目的と完了条件を記載します。<br>判断の理由も残し、次の担当者へ引き継ぎます。</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-leading-loose · 2</code><p class="m-0 type-leading-loose">タスクごとに目的と完了条件を記載します。<br>判断の理由も残し、次の担当者へ引き継ぎます。</p></div>
+</div></section>
+<section class="specimen" id="type-tracking"><h2>文字間隔</h2><p><code>type-tracking-*</code>は文字間隔だけを変更します。長文はnormalを基準に、短い見出しで調整してください。</p><div class="example" data-example>
+<div class="type-sample"><code class="type-caption type-wrap">type-tracking-tight</code><p class="m-0 type-tracking-tight">Design catalog / デザインカタログ</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-tracking-normal</code><p class="m-0 type-tracking-normal">Design catalog / デザインカタログ</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-tracking-wide</code><p class="m-0 type-tracking-wide">Design catalog / デザインカタログ</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-tracking-wider</code><p class="m-0 type-tracking-wider">Design catalog / デザインカタログ</p></div>
+</div></section>
+<section class="specimen" id="type-alignment"><h2>配置</h2><p>start・endは文字の方向に合わせます。justifyは最終行以外を両端揃えにします。</p><div class="example" data-example>
+<div class="type-sample"><code class="type-caption type-wrap">type-align-start</code><p class="m-0 type-align-start">プロジェクトの説明と進行状況を確認します。チームのメンバーへ最新の情報を共有します。</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-align-center</code><p class="m-0 type-align-center">プロジェクトの説明と進行状況を確認します。チームのメンバーへ最新の情報を共有します。</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-align-end</code><p class="m-0 type-align-end">プロジェクトの説明と進行状況を確認します。チームのメンバーへ最新の情報を共有します。</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-align-justify</code><p class="m-0 type-align-justify">プロジェクトの説明と進行状況を確認します。チームのメンバーへ最新の情報を共有します。</p></div>
+</div></section>
+<section class="specimen" id="type-styles"><h2>装飾・英字の変換</h2><p>意味のある強調にはstrong・em、削除にはdelなどのHTMLを併用してください。装飾クラスは見た目だけを変更します。</p><div class="example" data-example>
+<div class="type-sample"><code class="type-caption type-wrap">type-italic</code><p class="m-0 type-italic">Italic / 斜体</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-upright</code><p class="m-0 type-upright">Upright / 標準</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-underline</code><p class="m-0 type-underline">下線のある文字</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-strike</code><p class="m-0 type-strike">取り消し線のある文字</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-no-decoration</code><p class="m-0 type-no-decoration">装飾なし</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-uppercase</code><p class="m-0 type-uppercase">Design catalog</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-lowercase</code><p class="m-0 type-lowercase">Design CATALOG</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-capitalize</code><p class="m-0 type-capitalize">design catalog</p></div>
+<div class="type-sample"><code class="type-caption type-wrap">type-normal-case</code><p class="m-0 type-normal-case">Design catalog</p></div>
+</div></section>
+<section class="specimen" id="type-fonts"><h2>フォント・数値</h2><p><code>type-font-mono</code>はフォントだけを変更します。従来の<code>type-mono</code>は小さな文字と折り返しも含みます。数値の桁幅は<code>type-numeric</code>で揃えます。</p><div class="example" data-example>
+<p class="type-font-sans">標準フォント：Design catalog</p>
+<p class="type-font-mono">project_001 / src/ui.js</p>
+<p class="type-numeric type-font-mono">12,345 件 · 00:12:48 · 98.6%</p>
+</div></section>
+<section class="specimen" id="type-wrapping"><h2>折り返し・省略</h2><p><code>type-wrap</code>は長い文字列を必要に応じて折り返します。break-allは単語の途中でも改行します。nowrapは横にはみ出すため、短いラベルなどに限定してください。</p><div class="example" data-example>
+<p class="type-wrap">very-long-project-name-without-spaces-for-responsive-layout-review_2026_001</p>
+<p class="type-break-all">abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz0123456789</p>
+<p class="type-whitespace-normal">type-whitespace-normal：通常の折り返し</p>
+<p class="type-nowrap">type-nowrap：短いラベル</p>
+<p class="type-pre-wrap">type-pre-wrap：改行を保持
+  字下げも保持します。</p>
+<p class="type-truncate">プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。</p>
+<p class="type-small">↑ type-truncate：1行省略。全文は下にも記載しています。</p>
+<p class="type-clamp-2">プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。</p>
+<p class="type-small">↑ type-clamp-2：2行省略。type-clamp-3なら3行です。</p>
+<details><summary>全文を読む</summary><p class="type-wrap">プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。プロジェクトの公開前チェックリストと運用手順の更新について、担当者と作業日を確認します。</p></details>
+<p class="type-break-normal">type-break-normalで通常の単語区切りに戻します。</p>
+</div></section>
+<section class="specimen" id="type-prose"><h2>長文・リスト</h2><p><code>type-prose</code>は幅65ch・行間1.8の長文向け設定です。リストの見た目を変えてもul・olによる意味は維持されます。</p><div class="example" data-example>
+<article class="type-prose"><h3 class="type-heading">チームで作業を進める</h3><p>タスクごとに目的と完了条件を記載します。担当者が変わっても作業を引き継げるよう、判断の理由も残しておきます。</p><p>本文の幅を抑え、段落の間に余白を設けます。</p><ul class="type-list-disc"><li>目的を確認する</li><li>担当者を決める</li></ul><ol class="type-list-decimal"><li>変更を保存する</li><li>結果を確認する</li></ol><ul class="type-list-none" role="list"><li>type-list-none：マーカーなし</li><li>リスト構造は維持します</li></ul></article>
+</div></section>
+<section class="specimen" id="type-combine"><h2>組み合わせ</h2><p>役割クラスを基本に、変更したいプロパティのクラスを組み合わせます。クラス属性内の順番は優先順位に影響しません。同じプロパティを変更するクラスは1つだけ選んでください。</p><div class="example" data-example>
+<h3 class="type-heading type-size-2xl type-weight-bold type-color-primary">プロジェクトの概要</h3>
+<p class="type-body type-size-lg type-leading-relaxed">本文の大きさと行間を調整できます。</p>
+<p class="type-caption type-color-danger type-weight-semibold"><span icon="mdi-alert" aria-hidden="true"></span> 入力内容を確認してください。</p>
+</div></section>
+<details class="source"><summary>使用ファイル・取り込み方</summary><p>文字のスタイルは共通のui.cssだけで使えます。アイコン属性も使う場合はui.jsを読み込みます。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+
+</body></html>
