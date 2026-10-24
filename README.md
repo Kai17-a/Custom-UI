@@ -5,9 +5,11 @@ npm・ビルド不要のHTML/CSS/JavaScript UIフレームワークです。デ�
 
 ## AIエージェントで使う
 
-[AIエージェント用ガイド](docs/ai-agents.html)から、[Kav-UIスキル](skills/kav-ui/SKILL.md)と[llms.txt](llms.txt)を参照できます。スキルは`skills/kav-ui`を参照資料ごと利用先へコピーして使います。個人のエージェント設定は自動変更しません。
+[AIエージェント用ガイド](docs/ai-agents.html)から、[Kav-UIスキル](skills/kav-ui/SKILL.md)と[llms.txt](docs/llms.txt)を参照できます。`skills/kav-ui`をフォルダごとエージェントのスキル配置先へコピーすると、別プロジェクトでも使えます。導入・レイアウト・フォーム・ナビゲーション・通知・データ表示・Vue/Astroの資料を同梱しており、このリポジトリのcloneやドキュメントへの通信は不要です。
 
-`llms.txt`は導入・用途別コンポーネントへの入口です。リンク先の`docs/**/*.html.md`にはHTML本文とサンプルだけをまとめています。編集元のHTMLを更新したら、次で再生成します。
+スキルは実装方法の資料です。アプリには別途、同じ版のKav-UIのCSS/JSまたはパッケージを導入します。配置先や公開URLは利用先へ合わせます。個人のエージェント設定は自動変更しません。
+
+`docs/llms.txt`は導入・用途別コンポーネントへの入口です。リンク先の`docs/**/*.html.md`にはHTML本文とサンプルだけをまとめています。編集元のHTMLを更新したら、次で再生成します。
 
 ```bash
 python3 scripts/generate-ai-docs.py
@@ -28,10 +30,10 @@ docs/               # カタログ・導入ガイド・HTMLテンプレート
   assets/            # カタログとテンプレート専用のCSS・JS・画像
   components/        # コンポーネントの説明と操作サンプル
   templates/         # サービス画面のHTMLテンプレート
+  llms.txt           # AI向けの資料一覧
 packages/            # core・Vue・Astroのパッケージと公開API
 examples/            # Vue・Astroでの利用例
 skills/kav-ui/       # 利用先へコピーできるAIエージェント用スキル
-llms.txt             # AI向けの資料一覧
 scripts/             # 梱包・リリース・保守・AI資料生成のスクリプト
 tests/              # ブラウザ・パッケージ・配布検証
 vendor/              # バンドル元となる外部ソースと出典

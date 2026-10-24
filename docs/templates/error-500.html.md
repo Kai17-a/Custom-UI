@@ -1,6 +1,6 @@
 <!-- Generated from docs/templates/error-500.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](error-500.html) · [llms.txt](../../llms.txt)
+[HTML版](error-500.html) · [llms.txt](../llms.txt)
 
 500
 

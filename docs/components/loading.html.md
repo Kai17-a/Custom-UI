@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/loading.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](loading.html) · [llms.txt](../../llms.txt)
+[HTML版](loading.html) · [llms.txt](../llms.txt)
 
 # Loading
 

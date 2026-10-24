@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/forms.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](forms.html) · [llms.txt](../../llms.txt)
+[HTML版](forms.html) · [llms.txt](../llms.txt)
 
 # Forms
 

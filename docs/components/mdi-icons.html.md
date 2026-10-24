@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/mdi-icons.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](mdi-icons.html) · [llms.txt](../../llms.txt)
+[HTML版](mdi-icons.html) · [llms.txt](../llms.txt)
 
 # MDI icons
 

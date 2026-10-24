@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/button-group.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](button-group.html) · [llms.txt](../../llms.txt)
+[HTML版](button-group.html) · [llms.txt](../llms.txt)
 
 # Button group
 

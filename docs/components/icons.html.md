@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/icons.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](icons.html) · [llms.txt](../../llms.txt)
+[HTML版](icons.html) · [llms.txt](../llms.txt)
 
 # Icons
 

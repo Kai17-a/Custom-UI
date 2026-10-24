@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/themes.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](themes.html) · [llms.txt](../../llms.txt)
+[HTML版](themes.html) · [llms.txt](../llms.txt)
 
 # UI themes
 

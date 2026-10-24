@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/theme-switcher.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](theme-switcher.html) · [llms.txt](../../llms.txt)
+[HTML版](theme-switcher.html) · [llms.txt](../llms.txt)
 
 # Theme switcher
 

@@ -1,6 +1,6 @@
 <!-- Generated from docs/templates/dashboard.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](dashboard.html) · [llms.txt](../../llms.txt)
+[HTML版](dashboard.html) · [llms.txt](../llms.txt)
 
 WORKSPACE / ANALYTICS
 

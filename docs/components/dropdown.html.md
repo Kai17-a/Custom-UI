@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/dropdown.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](dropdown.html) · [llms.txt](../../llms.txt)
+[HTML版](dropdown.html) · [llms.txt](../llms.txt)
 
 # Dropdown
 

@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/flex-grid.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](flex-grid.html) · [llms.txt](../../llms.txt)
+[HTML版](flex-grid.html) · [llms.txt](../llms.txt)
 
 # Flex grid
 

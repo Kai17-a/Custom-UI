@@ -1,6 +1,15 @@
 # Kav-UI 組み込みリファレンス
 
-この資料はスキルのフォルダ内で完結する基本例。詳細を調べる際のパスは、インストールしたスキルの場所ではなくKav-UIのソースを基準とする。ソースにある`llms.txt`、または利用者が指定したドキュメントから必要なページへ進む。
+利用先のアプリへ配布済みのCSS/JSを組み込む。Kav-UIのソース、カタログ、開発用コマンドは不要。このスキルは実装方法を案内する資料で、ランタイム資材自体は含まない。
+
+## 配布資材と配置先
+
+- 導入済みなら既存の読み込み方を使う。ファイル名だけでなくCSSの入口とimport先、JS、版を確認する。
+- 未導入なら利用者が用意した配布ZIPを使う。必要なら[GitHub Releases](https://github.com/Kai17-a/Custom-UI/releases)で利用可能な版を確認する。公開されていない版のURLやCDN・npm公開を仮定しない。配布物がなければ必要な資材を明示する。
+- HTML版はZIP内の`assets/css/`一式と`assets/js/ui.js`を、アプリの静的公開ディレクトリへ配置する。例えば`public/vendor/kav-ui/`に配置した場合、公開URLは一般に`/vendor/kav-ui/css/ui.css`などになるが、アプリの公開設定とサブパスを確認する。
+- スキルはエージェントの設定先へ置き、CSS/JSとは別に管理する。アプリへスキルや元リポジトリのフォルダをコピーする必要はない。
+
+以下の相対URLは単体HTMLの配置例。静的サイト、Vue/Astro、サブパス配信では実際の公開URLへ変更する。
 
 ## 通常HTMLの最小構成
 
@@ -29,64 +38,6 @@
 
 `ui.css`だけを取り出すとimport先が欠ける。HTMLからは入口のCSSを1つ指定し、フォルダ構成は保つ。MDIとMaterial Color Utilitiesの同梱ライセンス・クレジットも保持する。
 
-## ダイアログの開閉
-
-```html
-<button type="button" class="btn btn-outline-primary"
-  data-ui-toggle="dialog" data-ui-target="#confirm-dialog">確認する</button>
-<dialog id="confirm-dialog" class="ui-dialog" data-ui-dialog aria-label="保存の確認">
-  <p>この内容で保存しますか？</p>
-  <button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button>
-</dialog>
-```
-
-開閉、フォーカスの復帰、標準の出現・退出モーションは共通UIが扱う。IDはページ内で重複させない。実際の保存処理はアプリ側で接続する。
-
-## 小さなデータテーブル
-
-```html
-<div class="ui-data-table" data-ui-data-table data-ui-page-size="0">
-  <div class="ui-table-scroll" tabindex="0" role="region" aria-label="在庫一覧">
-    <table class="table">
-      <caption>在庫一覧</caption>
-      <thead><tr>
-        <th scope="col"><button type="button" class="ui-data-table-sort"
-          data-ui-table-sort="text">商品</button></th>
-        <th scope="col"><button type="button" class="ui-data-table-sort"
-          data-ui-table-sort="number">在庫</button></th>
-      </tr></thead>
-      <tbody>
-        <tr><td>ノート</td><td data-ui-sort-value="10">10個</td></tr>
-        <tr><td>ペン</td><td data-ui-sort-value="2">2個</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-```
-
-列名を押すと昇順・降順・元の順序へ切り替わる。`data-ui-sort-value`で表示と比較値を分ける。検索・表示件数・選択・イベントの全例はソースの`docs/components/data-table.html.md`にある。
-
-## テーマとレスポンシブ
-
-| 対象 | 指定先 | 例 |
-| --- | --- | --- |
-| 明暗 | html | `data-bs-theme="light"`、`dark` |
-| 明暗の設定・追従 | コントロール/API | `KavUI.setColorTheme('system', {persist: true})` |
-| 質感 | body | `data-ui-theme="glass"`、`glassmorphism`、`flat`、`soft`、`default` |
-| 配色 | html | `data-ui-palette="sage"`、`slate`、`teal`、`mauve`、`sand`、`clay`、`default` |
-
-明暗のsystemは設定値で、実際の`data-bs-theme`は解決後のlight/darkになる。保存済み設定を初回から復元する場合だけ、CSSより前へ同期の`theme-init.js`を追加し、bodyへ`data-ui-theme-persist`を指定する。
-
-```html
-<div class="fx-grid fx-grid-3 tablet:fx-grid-2 mobile:fx-grid-1 fx-gap-4">
-  <section class="ui-card"><div class="ui-card-body">概要</div></section>
-  <section class="ui-card"><div class="ui-card-body">履歴</div></section>
-  <section class="ui-card"><div class="ui-card-body">設定</div></section>
-</div>
-```
-
-PCは1024px以上、tabletは768px以上1024px未満、mobileは768px未満。対応するユーティリティはソースの`docs/components/flex-grid.html.md`・`spacing.html.md`を確認する。
-
 ## 動的な内容
 
 ```javascript
@@ -100,12 +51,14 @@ KavUI.destroy(container);
 
 ## Vue/Astroを使う場合
 
-既存のアプリにフレームワークがあるときは、利用版の`packages/README.md`を先に読む。
+既存のアプリにフレームワークがあるときは、同梱の[Vue/Astroへの組み込み](frameworks.md)を読む。
 
 - Vueは`@kav-ui/core/style.css`と`@kav-ui/vue`の部品を利用する。通常HTMLを保持する境界には`KavWidget`を使うと初期化と破棄を任せられる。`html`へ渡す文字列は信頼できるマークアップに限り、利用者の値は適切にエスケープする。
 - Astroは既存の`KavProvider`とコンポーネントを使う。`KavProvider`はCSSを読み込む。対話的な部品は必要な初期化を持ち、クライアント遷移にも対応する。
 - パッケージはローカルtarballとGitHub Releases用の構成。公開npmレジストリから取得できるとは扱わない。アプリが既に導入済みならその依存を使い、通常HTML版の`ui.js`を重ねて読み込まない。
 
-## ソースを変更する場合だけ
+## 対応する版と調査の範囲
 
-編集元は`assets/css/`・`assets/js/ui.js`、カタログは`docs/`。生成されたパッケージやMarkdownを直接修正しない。HTML資料を更新したら`python3 scripts/generate-ai-docs.py`で再生成し、`--check`で同期を確認する。
+同梱例の確認元はKav-UIのコミット`0b80d49`。同じパッケージバージョンでも開発途中の配布物と差があり得るため、利用先の資材・型が優先される。確認元の識別はネットワーク取得の指示ではない。
+
+未確認の機能を使う場合だけ、利用者が指定した資料や導入済みの型・CSS/JSを追加で確認する。Kav-UI本体の編集、ビルド、リリースはこのスキルの通常の画面実装には不要。

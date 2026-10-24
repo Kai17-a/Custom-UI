@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/disclosure.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](disclosure.html) · [llms.txt](../../llms.txt)
+[HTML版](disclosure.html) · [llms.txt](../llms.txt)
 
 # Accordion
 

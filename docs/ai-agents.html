@@ -16,7 +16,7 @@
 
 
 <!-- Kav-UI AI discovery -->
-<link rel="describedby" type="text/plain" href="../llms.txt">
+<link rel="describedby" type="text/plain" href="llms.txt">
 <link rel="alternate" type="text/markdown" href="ai-agents.html.md">
 <!-- /Kav-UI AI discovery -->
 </head>
@@ -124,27 +124,34 @@
   <section class="specimen" id="agent-resources"><h2>スキルと資料の入口</h2>
     <ul><li><a href="../skills/kav-ui/SKILL.md">Kav-UIスキル</a>：部品選択、通常HTML/Vue/Astro、テーマ、動的なDOMの扱い。</li>
       <li><a href="../skills/kav-ui/references/integration.md">組み込みリファレンス</a>：スキルと一緒にコピーできる基本例。</li>
-      <li><a href="../llms.txt">llms.txt</a>：導入・用途別コンポーネント・パッケージの資料一覧。</li>
+      <li><a href="llms.txt">llms.txt</a>：導入・用途別コンポーネント・パッケージの資料一覧。</li>
       <li><a href="ai-agents.html.md">このページのMarkdown版</a>：サイドバーを除いた本文。</li></ul>
     <p>スキルは<a href="https://agentskills.io/specification">Agent Skillsの形式</a>、資料の入口は<a href="https://llmstxt.org/">llms.txtの提案</a>を参考に用意しています。</p>
   </section>
   <section class="specimen" id="agent-skill"><h2>スキルを利用先へコピーする</h2>
-    <p>Kav-UIのソースにある<code>skills/kav-ui</code>を、利用するエージェントのスキル配置先へフォルダごとコピーします。ソースは<a href="installation.html#installation-download">ソースZIPまたはGitHubから入手</a>できます。取得した版に次のファイルが揃っているか確認してください。</p>
+    <p><code>skills/kav-ui</code>を、利用するエージェントのスキル配置先へフォルダごとコピーします。スキルの取得元は<a href="installation.html#installation-download">ソースZIPまたはGitHub</a>です。取得後は利用先にKav-UIのソースやカタログを置く必要はなく、同梱資料を使って別のプロジェクトでも実装できます。</p>
     <pre class="setup-code"><code>skills/
   kav-ui/
     SKILL.md
     agents/openai.yaml
-    references/integration.md</code></pre>
-    <p><code>references</code>も含めてコピーすると、Kav-UIのソースとは別の場所へ配置した後も基本例を読めます。登録先や呼び出し方は利用するエージェントの設定に合わせてください。このリポジトリから個人のエージェント設定への自動インストールは行いません。</p>
+    references/
+      integration.md
+      styling.md
+      forms-navigation.md
+      feedback-data.md
+      widgets.md
+      frameworks.md</code></pre>
+    <p>導入、レイアウト、フォーム、ナビゲーション、通知、表・チャートなどの部品、Vue/Astroの例を同梱しています。必要なファイルだけを読み、ネットワーク接続がない環境でも参照できます。登録先や呼び出し方は利用するエージェントの設定に合わせてください。個人の設定への自動インストールは行いません。</p>
+    <div class="alert alert-info"><p>スキルは実装方法を案内する資料です。アプリ用のCSS/JSやパッケージは含まれないため、利用先へ別途導入します。スキルの配置先と、アプリで公開する資材の配置先は別です。</p></div>
     <p>スキル名で呼び出せる環境では、例えば次のように依頼できます。</p>
     <pre class="setup-code"><code>$kav-ui を使って、プロジェクト一覧の画面を実装してください。
 既存のKav-UIの配色と余白に合わせ、Data tableの検索と行選択を使ってください。</code></pre>
     <p>ファイルを直接指定する場合は、次のように依頼します。</p>
-    <pre class="setup-code"><code>skills/kav-ui/SKILL.mdを読み、Kav-UIで設定画面を作成してください。
-利用先の既存の構成を確認し、必要なコンポーネントだけを使ってください。</code></pre>
+    <pre class="setup-code"><code>配置したKav-UIスキルのSKILL.mdを読み、このアプリの設定画面を作成してください。
+スキル内の資料と、アプリに導入済みのCSS/JSを使ってください。</code></pre>
   </section>
   <section class="specimen" id="agent-llms"><h2>llms.txtから必要な仕様を読む</h2>
-    <p>エージェントへ<code>llms.txt</code>のファイルパス、またはこのサイトで開いた<code>llms.txt</code>のURLを渡します。導入資料と用途別のリンクがあり、リンク先の<code>.html.md</code>には本文とサンプルコードが入っています。</p>
+    <p>このサイトの詳しい資料も参照する場合は、エージェントへ<code>llms.txt</code>のファイルパスまたはURLを渡します。スキル単独の利用にこのファイルは必須ではありません。導入資料と用途別のリンクがあり、リンク先の<code>.html.md</code>には本文とサンプルコードが入っています。</p>
     <pre class="setup-code"><code>llms.txtを入口に、Kav-UIのData tableの仕様を確認してください。
 検索・数値ソート・ページ送りのある一覧を、外部ライブラリを追加せず実装してください。</code></pre>
     <p>HTMLの各ページにはMarkdown版とllms.txtへのメタデータも付けています。Markdownの先頭にある「HTML版」から、対応する画面へ戻れます。</p>

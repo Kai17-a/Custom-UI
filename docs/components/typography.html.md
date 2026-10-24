@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/typography.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](typography.html) · [llms.txt](../../llms.txt)
+[HTML版](typography.html) · [llms.txt](../llms.txt)
 
 # Typography
 

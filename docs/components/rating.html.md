@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/rating.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](rating.html) · [llms.txt](../../llms.txt)
+[HTML版](rating.html) · [llms.txt](../llms.txt)
 
 # Rating
 

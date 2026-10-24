@@ -1,6 +1,6 @@
 <!-- Generated from docs/templates/error-503.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](error-503.html) · [llms.txt](../../llms.txt)
+[HTML版](error-503.html) · [llms.txt](../llms.txt)
 
 503
 

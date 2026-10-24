@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/data-table.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](data-table.html) · [llms.txt](../../llms.txt)
+[HTML版](data-table.html) · [llms.txt](../llms.txt)
 
 # Data table
 

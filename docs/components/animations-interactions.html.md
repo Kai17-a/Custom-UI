@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/animations-interactions.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](animations-interactions.html) · [llms.txt](../../llms.txt)
+[HTML版](animations-interactions.html) · [llms.txt](../llms.txt)
 
 Animations
 

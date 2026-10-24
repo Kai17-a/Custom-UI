@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/foundations.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](foundations.html) · [llms.txt](../../llms.txt)
+[HTML版](foundations.html) · [llms.txt](../llms.txt)
 
 # Foundations
 

@@ -1,6 +1,6 @@
 <!-- Generated from docs/templates/changelog.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](changelog.html) · [llms.txt](../../llms.txt)
+[HTML版](changelog.html) · [llms.txt](../llms.txt)
 
 WORKSPACE / CHANGELOG
 

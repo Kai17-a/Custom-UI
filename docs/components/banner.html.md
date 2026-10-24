@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/banner.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](banner.html) · [llms.txt](../../llms.txt)
+[HTML版](banner.html) · [llms.txt](../llms.txt)
 
 # Banner
 

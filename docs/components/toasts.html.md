@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/toasts.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](toasts.html) · [llms.txt](../../llms.txt)
+[HTML版](toasts.html) · [llms.txt](../llms.txt)
 
 # Toasts & alerts
 

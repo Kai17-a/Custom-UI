@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/command.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](command.html) · [llms.txt](../../llms.txt)
+[HTML版](command.html) · [llms.txt](../llms.txt)
 
 # Command menu
 

@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/drawer.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](drawer.html) · [llms.txt](../../llms.txt)
+[HTML版](drawer.html) · [llms.txt](../llms.txt)
 
 # Drawer
 

@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/sidebar.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](sidebar.html) · [llms.txt](../../llms.txt)
+[HTML版](sidebar.html) · [llms.txt](../llms.txt)
 
 # Sidebar
 

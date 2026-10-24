@@ -1,6 +1,6 @@
 <!-- Generated from docs/templates.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](templates.html) · [llms.txt](../llms.txt)
+[HTML版](templates.html) · [llms.txt](llms.txt)
 
 # Service templates
 

@@ -1,6 +1,6 @@
 <!-- Generated from docs/templates/error-404.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](error-404.html) · [llms.txt](../../llms.txt)
+[HTML版](error-404.html) · [llms.txt](../llms.txt)
 
 404
 

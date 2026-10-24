@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/layouts.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](layouts.html) · [llms.txt](../../llms.txt)
+[HTML版](layouts.html) · [llms.txt](../llms.txt)
 
 # Layouts
 

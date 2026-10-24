@@ -1,6 +1,6 @@
 <!-- Generated from docs/starter.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](starter.html) · [llms.txt](../llms.txt)
+[HTML版](starter.html) · [llms.txt](llms.txt)
 
 # 共通2ファイルだけで動くサンプル
 

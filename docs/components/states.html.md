@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/states.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](states.html) · [llms.txt](../../llms.txt)
+[HTML版](states.html) · [llms.txt](../llms.txt)
 
 # States
 

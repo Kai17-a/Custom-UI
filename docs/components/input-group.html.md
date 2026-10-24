@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/input-group.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](input-group.html) · [llms.txt](../../llms.txt)
+[HTML版](input-group.html) · [llms.txt](../llms.txt)
 
 # Input group
 

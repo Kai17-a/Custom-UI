@@ -47,7 +47,6 @@ class AiDocumentationTests(unittest.TestCase):
             (copied / 'scripts').mkdir()
             shutil.copy2(ROOT / 'scripts/generate-ai-docs.py', copied / 'scripts/generate-ai-docs.py')
             shutil.copy2(ROOT / 'index.html', copied / 'index.html')
-            shutil.copy2(ROOT / 'llms.txt', copied / 'llms.txt')
             target = copied / 'docs/components/buttons.html.md'
             original = target.read_text()
             changed = original + '\nStale fixture\n'
@@ -62,15 +61,15 @@ class AiDocumentationTests(unittest.TestCase):
             self.assertEqual(target.read_text(), original)
 
     def test_llms_routes_to_every_public_component(self):
-        index = ROOT / 'llms.txt'
+        index = ROOT / 'docs/llms.txt'
         actual = {(index.parent / unquote(urlsplit(value).path)).resolve()
-                  for value in links(index) if value.startswith('docs/components/')}
+                  for value in links(index) if value.startswith('components/')}
         expected = {Path(str(page) + '.md').resolve()
                     for page in (ROOT / 'docs/components').glob('*.html') if page.name != 'preview.html'}
         self.assertEqual(actual, expected)
 
     def test_local_markdown_references_resolve(self):
-        for page in [ROOT / 'llms.txt', *(ROOT / 'docs').rglob('*.html.md'), *(ROOT / 'skills/kav-ui').rglob('*.md')]:
+        for page in [ROOT / 'docs/llms.txt', *(ROOT / 'docs').rglob('*.html.md'), *(ROOT / 'skills/kav-ui').rglob('*.md')]:
             for value in links(page):
                 url = urlsplit(value)
                 if url.scheme or url.netloc or not url.path or url.path.startswith('/'):
@@ -105,3 +104,18 @@ class AiDocumentationTests(unittest.TestCase):
                         self.assertTrue(target.is_file(), (path.name, value))
                         local.append(target)
             self.assertIn(copied / 'references/integration.md', local)
+            # A copied skill must lead to every bundled reference without the source tree.
+            reachable = set()
+            pending = [copied / 'SKILL.md']
+            while pending:
+                path = pending.pop()
+                if path in reachable:
+                    continue
+                reachable.add(path)
+                for value in links(path):
+                    url = urlsplit(value)
+                    if not url.scheme and not url.netloc and url.path:
+                        target = (path.parent / unquote(url.path)).resolve()
+                        if target.suffix == '.md':
+                            pending.append(target)
+            self.assertEqual(reachable, set(copied.rglob('*.md')))

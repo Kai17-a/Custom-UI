@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/calendar.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](calendar.html) · [llms.txt](../../llms.txt)
+[HTML版](calendar.html) · [llms.txt](../llms.txt)
 
 # Calendar
 

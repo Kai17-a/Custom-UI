@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/cards.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](cards.html) · [llms.txt](../../llms.txt)
+[HTML版](cards.html) · [llms.txt](../llms.txt)
 
 # Cards
 

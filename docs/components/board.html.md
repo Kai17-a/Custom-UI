@@ -1,6 +1,6 @@
 <!-- Generated from docs/components/board.html; run python3 scripts/generate-ai-docs.py. -->
 
-[HTML版](board.html) · [llms.txt](../../llms.txt)
+[HTML版](board.html) · [llms.txt](../llms.txt)
 
 # Kanban board
 
