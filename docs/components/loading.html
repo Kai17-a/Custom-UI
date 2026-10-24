@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loading — Kav-UI design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
+<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../../llms.txt">
+<link rel="alternate" type="text/markdown" href="loading.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../installation.html">ダウンロード・導入</a>
+<a class="overview-link" href="../getting-started.html">使い方・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a>
+<a class="overview-link" href="../ai-agents.html">AIエージェント向け</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="foundations.html">Foundations</a></li>
+      <li><a href="themes.html">UI themes</a></li>
+      <li><a href="theme-switcher.html">Theme switcher</a></li>
+      <li><a href="color-palettes.html">Color palettes</a></li>
+      <li><a href="typography.html">Typography</a></li>
+      <li><a href="spacing.html">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="mdi-icons.html">MDIアイコン</a></li><li><a href="icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="layouts.html">Layouts</a></li>
+      <li><a href="splitter.html">Splitter</a></li>
+      <li><a href="flex.html">Flexbox</a></li>
+      <li><a href="flex-grid.html">Flex grid</a></li>
+      <li><a href="cards.html">Cards</a></li>
+      <li><a href="sidebar.html">Sidebar</a></li>
+
+      <li><a href="drawer.html">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="buttons.html">Buttons</a></li>
+      <li><a href="forms.html">Forms</a></li>
+              <li><a href="rating.html">Rating</a></li>
+      <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="dialog.html">Dialog</a></li>
+      <li><a href="clipboard.html">Clipboard</a></li>
+
+      <li><a href="input-group.html">Input group</a></li>
+      <li><a href="button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="command.html">Command menu</a></li>
+      <li><a href="disclosure.html">Accordion</a></li>
+
+      <li><a href="dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="badges.html">Badges</a></li>
+      <li><a href="table.html">Table</a></li>
+      <li><a href="data-table.html">Data table</a></li>
+      <li><a href="board.html">Kanban board</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+
+      <li><a href="list-group.html">List group</a></li>
+      <li><a href="avatar.html">Avatar</a></li>
+      <li><a href="chart.html">Chart</a></li>
+              <li><a href="carousel.html">Carousel</a></li>
+              <li><a href="timeline.html">Timeline</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="banner.html">Banner</a></li>
+      <li><a href="toasts.html">Toasts & alerts</a></li>
+      <li><a href="tips.html">Tips & tooltips</a></li>
+
+      <li><a href="popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="loading.html" aria-current="page">Loading</a></li>
+      <li><a href="states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="animations.html">一覧・使い方</a></li>
+        <li><a href="animations-entrances.html">表示・非表示</a></li>
+        <li><a href="animations-movement.html">移動・回転</a></li>
+        <li><a href="animations-attention.html">強調・揺れ</a></li>
+        <li><a href="animations-interactions.html">操作時の動き</a></li>
+        <li><a href="animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Loading</h1></header><p class="lede">処理を待つ間の表示。スピナーアーク、ボタン、ボーダー、進捗バーを用途に合わせて使えます。</p>
+<section class="specimen"><h2>スピナーアーク</h2><p class="dim">円弧を回転させるCSSスピナー。色は親要素の文字色を引き継ぎます。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-6 fx-items-center">
+  <span class="ui-loading-status" role="status"><span class="ui-spinner ui-spinner-sm" aria-hidden="true"></span><span>読み込み中…</span></span>
+  <span class="ui-loading-status ui-loading-primary" role="status"><span class="ui-spinner ui-spinner-lg" aria-hidden="true"></span><span>データを取得中…</span></span>
+</div>
+</div></section>
+<section class="specimen"><h2>サイズ・色</h2><p class="dim">標準の<code>ui-spinner</code>は20pxです。サイズを変える場合は、<code>ui-spinner-xs</code>（12px）・<code>ui-spinner-sm</code>（16px）・<code>ui-spinner-lg</code>（32px）・<code>ui-spinner-xl</code>（48px）を使います。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-6 fx-items-center" role="status" aria-label="読み込み中">
+  <span class="ui-spinner ui-spinner-xs" aria-hidden="true"></span>
+  <span class="ui-spinner ui-spinner-sm" aria-hidden="true"></span>
+  <span class="ui-spinner ui-spinner-lg" aria-hidden="true"></span>
+  <span class="ui-spinner ui-spinner-xl" aria-hidden="true"></span>
+  <span class="ui-loading-success"><span class="ui-spinner ui-spinner-lg" aria-hidden="true"></span></span>
+  <span class="ui-loading-danger"><span class="ui-spinner ui-spinner-lg" aria-hidden="true"></span></span>
+</div>
+</div></section>
+<section class="specimen" id="skeleton-shimmer"><h2>スケルトンシマー</h2><p class="dim">読み込み後の形を示すプレースホルダーです。<code>skeleton</code>に<code>skeleton-shimmer</code>を追加すると、光が左から右へ流れます。</p><div class="example" data-example>
+<div aria-busy="true" aria-label="タスク一覧">
+  <div aria-hidden="true">
+    <div class="skeleton skeleton-shimmer skeleton-title" style="width:60%"></div>
+    <div class="skeleton skeleton-shimmer" style="width:90%"></div>
+    <div class="skeleton skeleton-shimmer" style="width:75%"></div>
+  </div>
+</div>
+<p class="dim small" role="status">タスクを読み込み中…</p>
+</div><p class="dim small">skeletonだけなら静止表示です。シマーはJavaScript不要で動作し、動きを減らすOS設定では静止表示になります。</p></section>
+<section class="specimen"><h2>カード・画像・アバターのシマー</h2><div class="example" data-example>
+<div class="fx-grid fx-grid-md-2 fx-gap-4">
+  <div class="ui-card" aria-busy="true" aria-label="記事カード">
+    <div class="ui-card-body" aria-hidden="true">
+      <div class="skeleton skeleton-shimmer skeleton-media"></div>
+      <div class="skeleton skeleton-shimmer skeleton-title" style="width:70%"></div>
+      <div class="skeleton skeleton-shimmer"></div>
+      <div class="skeleton skeleton-shimmer" style="width:80%"></div>
+    </div>
+  </div>
+  <div class="ui-card" aria-busy="true" aria-label="プロフィールカード">
+    <div class="ui-card-body" aria-hidden="true">
+      <div class="fx fx-items-center fx-gap-3">
+        <div class="skeleton skeleton-shimmer skeleton-circle"></div>
+        <div class="skeleton skeleton-shimmer skeleton-title" style="width:50%"></div>
+      </div>
+      <div class="skeleton skeleton-shimmer"></div>
+      <div class="skeleton skeleton-shimmer" style="width:85%"></div>
+      <div class="skeleton skeleton-shimmer" style="width:65%"></div>
+    </div>
+  </div>
+</div>
+<p class="dim small" role="status">記事とプロフィールを読み込み中…</p>
+</div><p>見出しは<code>skeleton-title</code>、円形は<code>skeleton-circle</code>、画像枠は<code>skeleton-media</code>を併用します。円のサイズは<code>--skeleton-size</code>、横幅は<code>width</code>で調整できます。</p><p>取得完了後はプレースホルダーを実際の内容に置き換え、<code>aria-hidden</code>を外し、親の<code>aria-busy</code>をfalseにします。読み込み結果を伝える<code>role="status"</code>は、その領域の外で更新してください。</p></section>
+<section class="specimen"><h2>ボタン内のローディング</h2><p class="dim"><code>ui-loading-button</code>に<code>aria-busy="true"</code>と<code>disabled</code>を付けます。処理中の再クリックを防ぎ、元の文字は読み上げ名として残します。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+<button type="button" class="btn btn-primary ui-loading-button" aria-busy="true" disabled>
+  <span class="ui-loading-label">保存する</span>
+  <span class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true"></span>
+</button>
+<button type="button" class="btn btn-outline-secondary ui-loading-button" aria-busy="true" disabled>
+  <span class="ui-loading-label">変更を保存</span>
+  <span class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true"></span>
+</button>
+<button type="button" class="btn btn-sm btn-primary ui-loading-button" aria-busy="true" disabled>
+  <span class="ui-loading-label">再計算</span>
+  <span class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true"></span>
+</button>
+</div>
+<p class="dim small" role="status">保存中… ボタンの幅を保ったまま、ラベルをスピナーに切り替えます。</p>
+</div></section>
+<section class="specimen"><h2>アイコンボタン</h2><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+<button type="button" class="btn btn-outline-secondary ui-loading-button ui-loading-icon" aria-label="データを更新" >
+  <span class="ui-loading-label"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.75 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h8V3z"/></svg></span>
+  <span class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true"></span>
+</button>
+<button type="button" class="btn btn-outline-secondary ui-loading-button ui-loading-icon" aria-label="データを更新中" aria-busy="true" disabled>
+  <span class="ui-loading-label"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.75 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h8V3z"/></svg></span>
+  <span class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true"></span>
+</button>
+</div>
+<p class="dim small">通常時 → 更新中。アイコンだけのボタンにはaria-labelで名前を指定します。</p>
+</div></section>
+<section class="specimen"><h2>ボーダーのローディング</h2><p class="dim">ui-loading-borderをカードやパネルに追加します。枠線は操作を遮りません。</p><div class="example" data-example>
+<div class="fx-grid fx-grid-md-2 fx-gap-4">
+  <article class="ui-card ui-loading-border" aria-busy="true">
+    <div class="ui-card-body"><h3 class="ui-card-title">レポートを作成中</h3><p class="ui-card-description">枠線に沿ってアークが移動します。</p></div>
+  </article>
+  <article class="ui-card ui-loading-border" aria-busy="false">
+    <div class="ui-card-body"><h3 class="ui-card-title">レポートの作成完了</h3><p class="ui-card-description">aria-busyをfalseにすると枠線が通常の状態に戻ります。</p></div>
+  </article>
+</div>
+</div></section>
+<section class="specimen"><h2>進捗バー（進捗が分かる処理）</h2><p class="dim">標準のprogress要素を使用します。value / maxで進捗を指定し、結果は文字でも伝えます。</p><div class="example" data-example>
+<div class="stack">
+  <div><div class="ui-progress-heading"><label for="loading-upload">ファイルをアップロード中</label><span>60%</span></div><progress id="loading-upload" class="ui-progress" max="100" value="60">60%</progress></div>
+  <div><div class="ui-progress-heading"><label for="loading-complete">アップロード完了</label><span>100%</span></div><progress id="loading-complete" class="ui-progress ui-progress-success" max="100" value="100">100%</progress></div>
+  <div><div class="ui-progress-heading"><label for="loading-failed">アップロードに失敗 — 再試行してください</label><span>40%</span></div><progress id="loading-failed" class="ui-progress ui-progress-danger" max="100" value="40">40%</progress></div>
+  <div><div class="ui-progress-heading"><label for="loading-small">細いバー</label><span>25%</span></div><progress id="loading-small" class="ui-progress ui-progress-sm" max="100" value="25">25%</progress></div>
+  <div><div class="ui-progress-heading"><label for="loading-large">太いバー</label><span>75%</span></div><progress id="loading-large" class="ui-progress ui-progress-lg ui-progress-warning" max="100" value="75">75%</progress></div>
+</div>
+</div></section>
+<section class="specimen"><h2>進捗バー（進捗が分からない処理）</h2><p class="dim">value属性を省略すると、往復するバーになります。進捗が不明な場合に架空の割合を表示する必要はありません。</p><div class="example" data-example>
+<div><label for="loading-indeterminate">接続を確認中…</label><progress id="loading-indeterminate" class="ui-progress" max="100">処理中</progress></div>
+</div></section>
+<section class="specimen"><h2>動作を試す</h2><p class="dim">ローカルの模擬処理です。通信は行いません。処理中は両方のボタンを無効化し、完了・失敗後に再び操作できます。</p><div class="example" data-example>
+<div class="stack" data-demo-loading>
+  <div class="fx fx-wrap fx-gap-3">
+    <button type="button" class="btn btn-primary ui-loading-button" data-demo-loading-start="success">
+  <span class="ui-loading-label">保存を試す（デモ）</span>
+  <span class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true"></span>
+</button>
+    <button type="button" class="btn btn-outline-secondary ui-loading-button" data-demo-loading-start="error">
+  <span class="ui-loading-label">失敗・再試行を試す（デモ）</span>
+  <span class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true"></span>
+</button>
+  </div>
+  <div class="ui-card ui-loading-border" data-demo-loading-panel>
+    <div class="ui-card-body"><div class="ui-progress-heading"><label for="loading-demo-progress">データの保存</label><span data-demo-loading-percent>0%</span></div><progress id="loading-demo-progress" class="ui-progress" max="100" value="0">0%</progress></div>
+  </div>
+  <p role="status" data-demo-loading-result>ボタンを押すと、進捗と結果を確認できます。</p>
+</div>
+</div></section>
+<section class="specimen"><h2>アプリとの連携</h2><p>見た目は共通のui.cssとHTMLだけで利用できます。共通ui.jsの<code>KavUI.loading(要素またはセレクター, true / false)</code>を使うと、aria-busyとボタンのdisabledをまとめて切り替え、終了時に開始前の状態へ戻します。通信や進捗の更新はアプリ側で行います。</p><pre class="setup-code"><code>// ui-loading-buttonのHTMLを配置した後、アプリの処理から呼びます。
+async function save(button, values) {
+  if (button.disabled) return;
+  KavUI.loading(button, true);
+  try {
+    await saveProject(values); // 自分の保存処理
+    KavUI.toast({ title: &#x27;保存しました&#x27;, variant: &#x27;success&#x27; });
+  } catch {
+    KavUI.toast({ title: &#x27;保存できませんでした&#x27;, body: &#x27;再試行してください。&#x27;, variant: &#x27;danger&#x27; });
+  } finally {
+    KavUI.loading(button, false);
+  }
+}
+
+// 要素の代わりにセレクターも指定できます。
+KavUI.loading(&#x27;#save-button&#x27;, true);
+KavUI.loading(&#x27;#save-button&#x27;, false);
+
+// progressは通常のDOM APIで更新できます。
+progressElement.value = 60;
+// 不明な進捗に切り替える場合：
+progressElement.removeAttribute(&#x27;value&#x27;);</code></pre><p>ボーダーのあるパネルにも同じAPIを使えます。APIと直接の属性操作は同じ処理内で混在させず、対応するtrue / falseを1組で呼んでください。</p><p>スピナーは装飾としてaria-hiddenにし、読み込み状況を文字で示します。結果を読み上げるrole="status"は、aria-busyを付けた領域の外に置いてください。動きを減らすOS設定では回転・移動を止め、文字や静止した枠線で状態を示します。</p></section>
+<details class="source"><summary>使用ファイル・取り込み方</summary><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p>npmは不要です。assetsフォルダの構造を維持してコピーしてください。</p><p><a href="../../assets/css/components/loading.css">loading.css</a> / <a href="../../assets/css/components/skeleton.css">skeleton.css</a> / <a href="../getting-started.html">導入手順</a> / <a href="states.html">スケルトン・空状態</a></p><p class="dim">catalog-demo.jsとdata-demo-*は見本用です。アプリに取り込む際は外し、実際の処理に置き換えてください。</p></details>
+</main></div>
+</body></html>

@@ -1,6 +1,67 @@
 # Custom-UI / Kav-UI
 
-npm・ビルド不要のHTML/CSS/JavaScript UIフレームワークです。デザインカタログは`index.html`、導入例は`getting-started.html`で確認できます。
+npm・ビルド不要のHTML/CSS/JavaScript UIフレームワークです。デザインカタログは`docs/index.html`、ダウンロードから導入までの手順は[導入ガイド](docs/installation.html)、属性と導入例は[Getting started](docs/getting-started.html)で確認できます。ルートの`index.html`からもカタログを開けます。
+
+
+## AIエージェントで使う
+
+[AIエージェント用ガイド](docs/ai-agents.html)から、[Kav-UIスキル](skills/kav-ui/SKILL.md)と[llms.txt](llms.txt)を参照できます。スキルは`skills/kav-ui`を参照資料ごと利用先へコピーして使います。個人のエージェント設定は自動変更しません。
+
+`llms.txt`は導入・用途別コンポーネントへの入口です。リンク先の`docs/**/*.html.md`にはHTML本文とサンプルだけをまとめています。編集元のHTMLを更新したら、次で再生成します。
+
+```bash
+python3 scripts/generate-ai-docs.py
+python3 scripts/generate-ai-docs.py --check
+```
+
+形式の参考は[Agent Skills](https://agentskills.io/specification)と[llms.txt](https://llmstxt.org/)です。
+
+## リポジトリの構成
+
+```text
+assets/              # 配布用UIの正本。アプリはこのCSS・JSを読み込む
+  css/components/    # コンポーネントのスタイル
+  js/                # ui.jsと任意のtheme-init.js
+  icons/mdi/         # 同梱SVGとライセンス
+  vendor/            # 配布物に必要な外部コードのクレジット
+docs/               # カタログ・導入ガイド・HTMLテンプレート
+  assets/            # カタログとテンプレート専用のCSS・JS・画像
+  components/        # コンポーネントの説明と操作サンプル
+  templates/         # サービス画面のHTMLテンプレート
+packages/            # core・Vue・Astroのパッケージと公開API
+examples/            # Vue・Astroでの利用例
+skills/kav-ui/       # 利用先へコピーできるAIエージェント用スキル
+llms.txt             # AI向けの資料一覧
+scripts/             # 梱包・リリース・保守・AI資料生成のスクリプト
+tests/              # ブラウザ・パッケージ・配布検証
+vendor/              # バンドル元となる外部ソースと出典
+index.html           # docs/index.htmlへの入口
+```
+
+`assets/`にはカタログ専用のファイルを置きません。新しいコンポーネントの共通スタイルは`assets/css/components/`へ、使い方やサンプルは`docs/components/`へ追加します。`packages/core/dist/`・`dist/`・導入例のビルド結果は生成物で、編集元にしません。
+
+`docs/index.html`はブラウザで直接開けます。HTTPで確認する場合はリポジトリのルートで次を実行し、`http://localhost:8000/docs/`を開きます。`docs/`は配布用の`../assets/`を参照するため、HTTPサーバーの公開ルートもリポジトリのルートにします。
+
+```bash
+python3 -m http.server 8000
+```
+
+構成と相対参照の検証は`python3 -m unittest discover -s tests -p 'test_documentation_structure.py'`で実行できます。構成だけを変更するときは、移動前に`node tests/run-visual-comparison.mjs capture /tmp/kav-ui-baseline`、変更後に`node tests/run-visual-comparison.mjs compare /tmp/kav-ui-baseline`を実行すると、同じ162パターンの表示を比較できます。輪郭のごく小さな描画差は別項目で記録し、位置ずれや広範囲の色変化は失敗として検出します。ブラウザの実行ファイルは必要に応じて`CHROME_BIN`で指定します。
+
+ページ内リンクや領域内の移動は、`ui-scroll-smooth`で滑らかにできます。`data-ui-scroll-active`を付けた領域は現在地を自動表示します。[Navigationの使用例](docs/components/navigation.html#nav-smooth-scroll)を参照してください。
+
+[Data table](docs/components/data-table.html)では、HTMLの表に検索・文字/数値/日付ソート・ページ送り・表示件数・行選択を追加できます。ルートに`data-ui-data-table`を指定し、共通CSS/JSで利用します。
+
+## 検索・スライド・時系列・評価
+
+既存のCSS・JSを読み込むだけで利用できる部品を追加しました。
+
+- [Command menu](docs/components/command.html)：検索・項目のグループ化・キーボード選択・任意のショートカット。
+- [Carousel](docs/components/carousel.html)：前後移動・インジケーター・スワイプ・任意のループ。自動再生はありません。
+- [Timeline](docs/components/timeline.html)：日時・進行状況・アイコン・コンパクト表示。CSSのみで利用できます。
+- [Rating](docs/components/rating.html)：radioによる星評価・未評価への解除・サイズ・読み取り専用表示。フォーム送信とresetは標準HTMLの動作です。
+
+各ページにHTML例と属性・イベントの説明、機能を参考にしたOSSの公式ページへのリンクがあります。Vue・Astroでは汎用の`KavWidget`で同じHTMLを利用できます。
 
 ## ZIPからアプリへ取り込む
 
@@ -40,7 +101,7 @@ sha256sum --check kav-ui-vX.Y.Z.zip.sha256
 
 ## ユーザーが自分の配色を指定する
 
-`data-ui-palette-editor`のフォームで基準色と彩度を選べます。HTML例と保存方法は`components/color-palettes.html#palette-custom`に掲載しています。
+`data-ui-palette-editor`のフォームで基準色と彩度を選べます。HTML例と保存方法は`docs/components/color-palettes.html#palette-custom`に掲載しています。
 
 ```javascript
 KavUI.setCustomPalette('#7d6b91', {chroma: 24, persist: true});

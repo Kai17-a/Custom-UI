@@ -10,6 +10,8 @@
 
 現在はローカルのtarballとして配布できます。npmレジストリには公開していません。パッケージは `private: true` とし、レジストリ公開の前に名前の利用権とプロジェクト自体のライセンスを決める必要があります。MDIとMaterial Color Utilitiesのライセンス・クレジットはcoreに同梱します。
 
+Data table・Command menu・Carouselは既存の`KavWidget`内で`data-ui-data-table`・`data-ui-command`・`data-ui-carousel`を指定して利用できます。Timeline・Ratingはクラスを指定した標準HTMLで利用できます。専用のVue/Astroコンポーネント名は追加していません。[HTML例と属性一覧](../docs/index.html)を参照してください。
+
 ## 開発・配布ファイル作成
 
 リポジトリのルートで実行します。開発・検証環境にはNode 24.13以降とnpmを使用します。

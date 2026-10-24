@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toasts & alerts — Kav-UI design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
+<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../../llms.txt">
+<link rel="alternate" type="text/markdown" href="toasts.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../installation.html">ダウンロード・導入</a>
+<a class="overview-link" href="../getting-started.html">使い方・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a>
+<a class="overview-link" href="../ai-agents.html">AIエージェント向け</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="foundations.html">Foundations</a></li>
+      <li><a href="themes.html">UI themes</a></li>
+      <li><a href="theme-switcher.html">Theme switcher</a></li>
+      <li><a href="color-palettes.html">Color palettes</a></li>
+      <li><a href="typography.html">Typography</a></li>
+      <li><a href="spacing.html">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="mdi-icons.html">MDIアイコン</a></li><li><a href="icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="layouts.html">Layouts</a></li>
+      <li><a href="splitter.html">Splitter</a></li>
+      <li><a href="flex.html">Flexbox</a></li>
+      <li><a href="flex-grid.html">Flex grid</a></li>
+      <li><a href="cards.html">Cards</a></li>
+      <li><a href="sidebar.html">Sidebar</a></li>
+
+      <li><a href="drawer.html">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="buttons.html">Buttons</a></li>
+      <li><a href="forms.html">Forms</a></li>
+              <li><a href="rating.html">Rating</a></li>
+      <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="dialog.html">Dialog</a></li>
+      <li><a href="clipboard.html">Clipboard</a></li>
+
+      <li><a href="input-group.html">Input group</a></li>
+      <li><a href="button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="command.html">Command menu</a></li>
+      <li><a href="disclosure.html">Accordion</a></li>
+
+      <li><a href="dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="badges.html">Badges</a></li>
+      <li><a href="table.html">Table</a></li>
+      <li><a href="data-table.html">Data table</a></li>
+      <li><a href="board.html">Kanban board</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+
+      <li><a href="list-group.html">List group</a></li>
+      <li><a href="avatar.html">Avatar</a></li>
+      <li><a href="chart.html">Chart</a></li>
+              <li><a href="carousel.html">Carousel</a></li>
+              <li><a href="timeline.html">Timeline</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="banner.html">Banner</a></li>
+      <li><a href="toasts.html" aria-current="page">Toasts & alerts</a></li>
+      <li><a href="tips.html">Tips & tooltips</a></li>
+
+      <li><a href="popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="loading.html">Loading</a></li>
+      <li><a href="states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="animations.html">一覧・使い方</a></li>
+        <li><a href="animations-entrances.html">表示・非表示</a></li>
+        <li><a href="animations-movement.html">移動・回転</a></li>
+        <li><a href="animations-attention.html">強調・揺れ</a></li>
+        <li><a href="animations-interactions.html">操作時の動き</a></li>
+        <li><a href="animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Toasts & alerts</h1></header><p class="lede">標準幅は360px。長いタイトル・本文・URLは折り返し、狭い画面では画面幅に収めます。タイトル・本文・補足を属性またはJavaScriptで指定できます。</p><section class="specimen"><h2>本文だけの通知（従来の書き方）</h2><div class="example" data-example>
+  <div class="row">
+    <button class="btn btn-sm btn-success" data-ui-toast="保存しました。" data-ui-variant="success">成功通知を表示</button>
+    <button class="btn btn-sm btn-outline-danger" data-ui-toast="接続が切れたため保存できませんでした。" data-ui-variant="danger">エラー通知を表示</button>
+  </div>
+
+</div></section><section class="specimen"><h2>画面内に置くアラート</h2><div class="example" data-example>
+  <div class="row" style="flex-direction:column; align-items:stretch; max-width:40rem;">
+    <div class="alert alert-success py-2 px-3 shadow-sm notice" role="status"><span class="words">Saved.</span><button class="btn-close" data-ui-dismiss="alert" aria-label="Close"></button></div>
+    <div class="alert alert-danger py-2 px-3 shadow-sm notice" role="alert"><span class="words">Something went wrong, so it stays until it is closed.</span><button class="btn-close" data-ui-dismiss="alert" aria-label="Close"></button></div>
+  </div>
+
+</div></section><section class="specimen"><h2>タイトル＋本文＋補足</h2><p>通知の内容を次の属性で指定します。必要な項目だけ設定できます。</p><ul><li><code>data-ui-title</code>：タイトル</li><li><code>data-ui-body</code>：本文</li><li><code>data-ui-meta</code>：日時などの補足</li></ul><div class="example" data-example><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="保存しました" data-ui-body="プロジェクト「デザインカタログ」の変更を保存しました。" data-ui-variant="success" data-ui-meta="たった今">保存完了の通知</button></div></section><section class="specimen"><h2>成功・情報・警告・エラー</h2><p><code>data-ui-variant</code>に<code>success</code>・<code>info</code>・<code>warning</code>・<code>danger</code>を指定して、通知の意味に合う色を選びます。</p><div class="example" data-example><div class="fx fx-wrap fx-gap-2"><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="アップロード完了" data-ui-body="3件のファイルをアップロードしました。" data-ui-variant="success">成功</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="メンテナンス予定" data-ui-body="本日22:00から10分間、アップロードを停止します。" data-ui-variant="info">情報</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="残容量が少なくなっています" data-ui-body="残り500MBです。不要なファイルを整理してください。" data-ui-variant="warning">警告</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="保存できませんでした" data-ui-body="接続が切れました。編集内容をコピーし、接続を確認してください。" data-ui-variant="danger">エラー</button></div></div></section><section class="specimen"><h2>長文・改行・長いURLの折り返し</h2><div class="example" data-example><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="長いプロジェクト名を含む通知も、幅を変えずに複数行で表示します" data-ui-body="更新対象が多いため、処理に時間がかかる場合があります。タスク一覧から進捗を確認してください。
+詳細：https://example.test/projects/design-catalog-notifications-with-a-very-long-unbroken-identifier-2026-001" data-ui-variant="info" data-ui-meta="処理ログ" data-ui-duration="0">長文の通知を表示</button></div></section><section class="specimen"><h2>タイトルだけ・本文だけ</h2><div class="example" data-example><div class="fx fx-wrap fx-gap-2"><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="処理が完了しました" data-ui-body="" data-ui-variant="success">タイトルだけ</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast="本文だけの通知も引き続き使えます。" data-ui-variant="info">本文だけ</button></div></div></section><section class="specimen"><h2>表示時間を指定する</h2><p><code>data-ui-duration</code>で表示時間をミリ秒単位で指定します。<code>10000</code>なら10秒、<code>0</code>なら閉じるまで表示します。</p><div class="example" data-example><div class="fx fx-wrap fx-gap-2"><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="データを更新しました" data-ui-body="10秒後に自動で閉じます。" data-ui-variant="success" data-ui-duration="10000">10秒で閉じる</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="確認が必要です" data-ui-body="閉じるボタンを押すまで表示します。" data-ui-variant="warning" data-ui-duration="0">閉じるまで残す</button></div><p class="dim small">標準は6秒、エラーは自動消去なしです。マウスが重なっている間と、閉じるボタンにフォーカスしている間は消去を止めます。</p></div></section><section class="specimen" id="toast-copy"><h2>コピーアイコンを付ける（任意）</h2><p><code>data-ui-toast-copy</code>を追加すると、トーストの本文末尾に、文字と同じサイズのコピーアイコンを表示します。タイトルだけの通知ではタイトル末尾に付き、タイトルをコピーします。長いメッセージでは文末の文字と一緒に折り返し、アイコンだけの行になるのを防ぎます。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-2">
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="共有URL" data-ui-body="https://example.test/projects/design-catalog" data-ui-toast-copy data-ui-duration="0">本文をコピーできる通知</button>
+  <button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast data-ui-title="処理に失敗しました" data-ui-body="お問い合わせの際は、エラーIDをお伝えください。" data-ui-variant="danger" data-ui-toast-copy data-ui-copy-text="ERR-2026-001" data-ui-copy-label="エラーIDをコピー">別の文字列をコピーできる通知</button>
+</div>
+</div><p><code>data-ui-copy-text</code>でコピー対象を、<code>data-ui-copy-label</code>で読み上げ名・ホバー時の説明を変更できます。</p><p>成功時はチェックマークに切り替わり、2秒後に元に戻ります。コピー中・フォーカス中・マウスが重なっている間は自動消去を止めます。</p><pre class="setup-code"><code>KavUI.toast({
+  title: '共有URL',
+  body: 'https://example.test/projects/design-catalog',
+  copy: true,
+  duration: 0
+});
+
+KavUI.toast({
+  title: '処理に失敗しました',
+  body: 'エラーIDをお問い合わせ時にお伝えください。',
+  variant: 'danger',
+  copy: true,
+  copyText: 'ERR-2026-001',
+  copyLabel: 'エラーIDをコピー'
+});</code></pre><p><a href="clipboard.html">単独で使えるクリップボードコンポーネント →</a></p></section><section class="specimen"><h2>JavaScriptから表示</h2><pre class="setup-code"><code>KavUI.toast({
+  title: &#x27;保存しました&#x27;,
+  body: &#x27;プロジェクトの変更を保存しました。&#x27;,
+  meta: &#x27;たった今&#x27;,
+  variant: &#x27;success&#x27;,
+  duration: 6000
+});
+
+// 従来の書き方も利用できます。
+KavUI.toast(&#x27;変更を保存しました。&#x27;, { title: &#x27;保存完了&#x27; });</code></pre></section><section class="specimen"><h2>幅を変更する</h2><p>全通知の幅はCSS変数で指定できます。スマートフォンでは左右16pxを確保し、高さは本文に合わせて伸びます。通知が画面の高さを超える場合は、通知領域をスクロールできます。</p><pre class="setup-code"><code>:root { --ui-toast-width: 420px; }</code></pre></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+
+</body></html>

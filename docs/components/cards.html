@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cards — Kav-UI design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+<link rel="stylesheet" href="../assets/css/flex-demos.css">
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
+<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../../llms.txt">
+<link rel="alternate" type="text/markdown" href="cards.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../installation.html">ダウンロード・導入</a>
+<a class="overview-link" href="../getting-started.html">使い方・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a>
+<a class="overview-link" href="../ai-agents.html">AIエージェント向け</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="foundations.html">Foundations</a></li>
+      <li><a href="themes.html">UI themes</a></li>
+      <li><a href="theme-switcher.html">Theme switcher</a></li>
+      <li><a href="color-palettes.html">Color palettes</a></li>
+      <li><a href="typography.html">Typography</a></li>
+      <li><a href="spacing.html">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="mdi-icons.html">MDIアイコン</a></li><li><a href="icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="layouts.html">Layouts</a></li>
+      <li><a href="splitter.html">Splitter</a></li>
+      <li><a href="flex.html">Flexbox</a></li>
+      <li><a href="flex-grid.html">Flex grid</a></li>
+      <li><a href="cards.html" aria-current="page">Cards</a></li>
+      <li><a href="sidebar.html">Sidebar</a></li>
+
+      <li><a href="drawer.html">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="buttons.html">Buttons</a></li>
+      <li><a href="forms.html">Forms</a></li>
+              <li><a href="rating.html">Rating</a></li>
+      <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="dialog.html">Dialog</a></li>
+      <li><a href="clipboard.html">Clipboard</a></li>
+
+      <li><a href="input-group.html">Input group</a></li>
+      <li><a href="button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="command.html">Command menu</a></li>
+      <li><a href="disclosure.html">Accordion</a></li>
+
+      <li><a href="dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="badges.html">Badges</a></li>
+      <li><a href="table.html">Table</a></li>
+      <li><a href="data-table.html">Data table</a></li>
+      <li><a href="board.html">Kanban board</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+
+      <li><a href="list-group.html">List group</a></li>
+      <li><a href="avatar.html">Avatar</a></li>
+      <li><a href="chart.html">Chart</a></li>
+              <li><a href="carousel.html">Carousel</a></li>
+              <li><a href="timeline.html">Timeline</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="banner.html">Banner</a></li>
+      <li><a href="toasts.html">Toasts & alerts</a></li>
+      <li><a href="tips.html">Tips & tooltips</a></li>
+
+      <li><a href="popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="loading.html">Loading</a></li>
+      <li><a href="states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="animations.html">一覧・使い方</a></li>
+        <li><a href="animations-entrances.html">表示・非表示</a></li>
+        <li><a href="animations-movement.html">移動・回転</a></li>
+        <li><a href="animations-attention.html">強調・揺れ</a></li>
+        <li><a href="animations-interactions.html">操作時の動き</a></li>
+        <li><a href="animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Cards</h1></header><p class="lede">情報をひとまとまりにするカード。基本・リンク・選択・メディア・統計・同じ高さの並びを用意しています。</p>
+<section class="specimen">
+<h2>基本のカードと控えめな背景</h2>
+<div class="example" data-example>
+<div class="fx-grid fx-grid-md-2"><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">プロジェクトの概要</h3><p class="ui-card-description">説明とメタデータをまとめる、基本のカードです。</p></div></article><article class="ui-card ui-card-subtle"><div class="ui-card-body"><h3 class="ui-card-title">チームメモ</h3><p class="ui-card-description">背景に少し差を付けて、補足情報をまとめます。</p></div></article></div>
+</div>
+</section>
+<section class="specimen">
+<h2>ヘッダー・本文・フッター</h2>
+<div class="example" data-example>
+<article class="ui-card"><header class="ui-card-header"><span class="badge text-bg-success">進行中</span></header><div class="ui-card-body"><h3 class="ui-card-title">デザインカタログ</h3><p class="ui-card-description">共通のUIパーツを整理し、アプリに取り込みます。</p><p class="ui-card-meta">最終更新：10月21日 · 担当：自分</p></div><footer class="ui-card-footer"><a class="btn btn-sm btn-primary" href="forms.html">設定を編集</a><a class="btn btn-sm btn-outline-secondary" href="table.html">一覧を見る</a></footer></article>
+</div>
+</section>
+<section class="specimen">
+<h2>リンクカード</h2>
+<div class="example" data-example>
+<a class="ui-card ui-card-link" href="flex.html"><div class="ui-card-body"><h3 class="ui-card-title">Flexboxを使う →</h3><p class="ui-card-description">カード全体がリンクです。TabとEnterでも移動できます。</p></div></a>
+</div>
+</section>
+<section class="specimen">
+<h2>選択できるカード</h2>
+<div class="example" data-example>
+<fieldset class="fx fx-wrap fx-gap-4"><legend>表示密度を選択</legend><label class="ui-card fx-basis fx-grow"><span class="ui-card-body"><input type="radio" class="form-check-input" name="card-density" value="comfortable" checked> 標準<br><span class="ui-card-description">読みやすさを優先した余白</span></span></label><label class="ui-card fx-basis fx-grow"><span class="ui-card-body"><input type="radio" class="form-check-input" name="card-density" value="compact"> コンパクト<br><span class="ui-card-description">一画面の情報量を増やす</span></span></label></fieldset>
+</div>
+</section>
+<section class="specimen">
+<h2>メディア付き・横型カード</h2>
+<div class="example" data-example>
+<article class="ui-card ui-card-horizontal"><svg class="ui-card-media" viewBox="0 0 240 160" role="img" aria-label="カタログのレイアウト見本"><rect width="240" height="160" fill="var(--bs-secondary-bg)"/><rect x="24" y="24" width="48" height="112" rx="4" fill="var(--bs-primary-border-subtle)"/><rect x="84" y="24" width="132" height="24" rx="4" fill="var(--bs-primary)"/><rect x="84" y="60" width="60" height="76" rx="4" fill="var(--bs-border-color)"/><rect x="156" y="60" width="60" height="76" rx="4" fill="var(--bs-border-color)"/></svg><div class="ui-card-body"><h3 class="ui-card-title">アプリの画面設計</h3><p class="ui-card-description">サムネイルと説明を横に並べます。480px以下では縦並びになります。</p><p class="ui-card-meta">画像はSVGの見本です。img要素にも置き換えられます。</p></div></article>
+</div>
+</section>
+<section class="specimen">
+<h2>統計カード</h2>
+<div class="example" data-example>
+<div class="fx-grid fx-grid-md-3"><article class="ui-card"><div class="ui-card-body"><h3 class="ui-card-title">すべてのタスク</h3><p class="ui-card-stat">24<span class="type-caption"> 件</span></p><p class="ui-card-description">今月作成したタスク</p></div></article><article class="ui-card"><div class="ui-card-body"><h3 class="ui-card-title">完了</h3><p class="ui-card-stat">18<span class="type-caption"> 件</span></p><p class="ui-card-description">完了率 75%</p></div></article><article class="ui-card"><div class="ui-card-body"><h3 class="ui-card-title">レビュー待ち</h3><p class="ui-card-stat">3<span class="type-caption"> 件</span></p><p class="ui-card-description">担当者の確認待ち</p></div></article></div>
+</div>
+</section>
+<section class="specimen">
+<h2>高さを揃え、フッターを下端に置く</h2>
+<div class="example" data-example>
+<div class="fx-grid fx-grid-md-3 fx-items-stretch"><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">小さなタスク</h3><p class="ui-card-description">説明が短いカードです。</p></div><footer class="ui-card-footer"><a href="board.html">タスクを見る</a></footer></article><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">共有コンポーネントを整理する</h3><p class="ui-card-description">目的、使い方、関連するUIをまとめた長めの説明です。本文の長さが違っても、同じ行のカードの高さとフッター位置が揃います。</p></div><footer class="ui-card-footer"><a href="foundations.html">基準を見る</a></footer></article><article class="ui-card "><div class="ui-card-body"><h3 class="ui-card-title">レビュー</h3><p class="ui-card-description">担当者の確認を待っています。</p></div><footer class="ui-card-footer"><a href="table.html">一覧を見る</a></footer></article></div>
+</div>
+</section>
+<details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+
+</body></html>

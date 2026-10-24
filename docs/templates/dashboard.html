@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ダッシュボード — Workspace</title>
+    <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+    <script src="../../assets/js/theme-init.js"></script>
+    <link rel="stylesheet" href="../../assets/css/ui.css">
+    <link rel="stylesheet" href="../assets/css/templates.css">
+    <script defer src="../../assets/js/ui.js"></script>
+    <script defer src="../assets/js/templates.js"></script>
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../../llms.txt">
+<link rel="alternate" type="text/markdown" href="dashboard.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+  <body class="ui-app service-template" data-template="dashboard" data-ui-theme-persist>
+    <a class="template-skip" href="#main">コンテンツへ移動</a>
+    <header class="ui-header ui-header-sticky">
+      <div class="ui-container ui-header-inner">
+        <a class="ui-brand" href="dashboard.html"><span class="template-brand-mark" icon="mdi-view-dashboard" aria-hidden="true"></span> Workspace</a>
+        <nav class="ui-header-nav" aria-label="サービス">
+          <a href="docs.html">ドキュメント</a>
+          <a href="dashboard.html" aria-current="page">ダッシュボード</a>
+          <a href="changelog.html">更新履歴</a>
+        </nav>
+        <div class="ui-header-actions">
+          <label class="template-palette-label">
+            <span class="visually-hidden">カラーパレット</span>
+            <select class="form-select form-select-sm" data-ui-palette-select>
+              <option value="default">標準</option>
+              <option value="slate">スレート</option>
+              <option value="sage">セージ</option>
+              <option value="teal">ティール</option>
+              <option value="mauve">モーブ</option>
+              <option value="sand">サンド</option>
+              <option value="clay">クレイ</option>
+            </select>
+          </label>
+          <label class="template-design-label">
+            <span class="visually-hidden">デザインテーマ</span>
+            <select class="form-select form-select-sm" data-ui-theme-select>
+              <option value="default">標準</option>
+              <option value="glass">ガラス</option>
+              <option value="glassmorphism">グラスモーフィズム</option>
+              <option value="flat">フラット</option>
+              <option value="soft">ソフト</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button>
+        </div>
+      </div>
+    </header>
+    <div class="ui-container ui-app-main template-dashboard">
+      <main id="main" class="ui-page-body">
+        <header class="ui-page-header">
+          <div class="ui-page-heading">
+            <p class="ui-page-eyebrow">WORKSPACE / ANALYTICS</p>
+            <h1 class="ui-page-title">ダッシュボード</h1>
+            <p class="ui-page-description">売上と利用状況を確認できます。</p>
+          </div>
+          <div class="ui-page-actions">
+            <button id="dashboard-export" type="button" class="btn btn-sm btn-outline-secondary"><span icon="mdi-download" aria-hidden="true"></span>CSVを書き出す</button>
+          </div>
+        </header>
+        <div class="template-dashboard-toolbar">
+          <p class="type-size-sm type-color-muted">サンプルデータ · 2026年10月22日時点</p>
+          <label class="ui-cluster" for="dashboard-period">
+            <span class="type-size-sm">集計期間</span>
+            <select id="dashboard-period" class="form-select form-select-sm">
+              <option value="7">過去7日</option>
+              <option value="30">過去30日</option>
+            </select>
+          </label>
+        </div>
+        <p class="visually-hidden" role="status" id="dashboard-status"></p>
+        <div class="template-metrics">
+          <article class="ui-card">
+            <div class="ui-card-body">
+              <p class="template-stat-label">売上合計</p>
+              <p class="ui-card-stat" data-metric="revenue">¥482,000</p>
+              <p class="template-stat-change">サンプルの売上データ</p>
+            </div>
+          </article>
+          <article class="ui-card">
+            <div class="ui-card-body">
+              <p class="template-stat-label">注文数</p>
+              <p class="ui-card-stat" data-metric="orders">126</p>
+              <p class="template-stat-change">集計期間内の件数</p>
+            </div>
+          </article>
+          <article class="ui-card">
+            <div class="ui-card-body">
+              <p class="template-stat-label">新規ユーザー</p>
+              <p class="ui-card-stat" data-metric="users">84</p>
+              <p class="template-stat-change">初回登録の人数</p>
+            </div>
+          </article>
+          <article class="ui-card">
+            <div class="ui-card-body">
+              <p class="template-stat-label">平均注文額</p>
+              <p class="ui-card-stat" data-metric="average">¥3,825</p>
+              <p class="template-stat-change">売上合計 ÷ 注文数</p>
+            </div>
+          </article>
+        </div>
+        <div class="template-dashboard-charts">
+          <section class="ui-card">
+            <div class="ui-card-body">
+              <figure id="revenue-chart" class="ui-chart" data-ui-chart="area">
+                <figcaption>売上の推移</figcaption>
+                <script type="application/json" data-ui-chart-data>
+{
+  "label": "売上の推移",
+  "labels": [
+    "10/16",
+    "10/17",
+    "10/18",
+    "10/19",
+    "10/20",
+    "10/21",
+    "10/22"
+  ],
+  "series": [
+    {
+      "name": "売上",
+      "values": [
+        52000,
+        64000,
+        58000,
+        81000,
+        69000,
+        74000,
+        84000
+      ]
+    }
+  ],
+  "unit": "円"
+}
+</script>
+                <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
+              </figure>
+            </div>
+          </section>
+          <section class="ui-card">
+            <div class="ui-card-body">
+              <figure id="channel-chart" class="ui-chart" data-ui-chart="donut">
+                <figcaption>流入元</figcaption>
+                <script type="application/json" data-ui-chart-data>
+{
+  "label": "流入元",
+  "labels": [
+    "検索",
+    "直接アクセス",
+    "紹介",
+    "その他"
+  ],
+  "series": [
+    {
+      "name": "訪問数",
+      "values": [
+        420,
+        280,
+        190,
+        110
+      ]
+    }
+  ],
+  "unit": "件"
+}
+</script>
+                <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
+              </figure>
+            </div>
+          </section>
+        </div>
+        <div class="template-dashboard-bottom">
+          <section class="ui-card">
+            <div class="ui-card-header">
+              <h2 class="ui-card-title">直近の注文</h2>
+              <p class="ui-card-description">期間指定によらず、直近5件を表示（サンプル）</p>
+            </div>
+            <div class="ui-card-body">
+              <div class="ui-table-scroll" tabindex="0" role="region" aria-label="直近の注文">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">注文番号</th>
+                      <th scope="col">顧客</th>
+                      <th scope="col">日付</th>
+                      <th scope="col">状態</th>
+                      <th scope="col" class="template-number">金額</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">ORD-1048</th>
+                      <td>佐藤 あかり</td>
+                      <td>10/22</td>
+                      <td>
+                        <span class="template-order-state">完了</span>
+                      </td>
+                      <td class="template-number">¥8,400</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">ORD-1047</th>
+                      <td>田中 蓮</td>
+                      <td>10/22</td>
+                      <td>
+                        <span class="template-order-state">処理中</span>
+                      </td>
+                      <td class="template-number">¥3,600</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">ORD-1046</th>
+                      <td>鈴木 みな</td>
+                      <td>10/21</td>
+                      <td>
+                        <span class="template-order-state">完了</span>
+                      </td>
+                      <td class="template-number">¥12,000</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">ORD-1045</th>
+                      <td>高橋 海</td>
+                      <td>10/21</td>
+                      <td>
+                        <span class="template-order-state">完了</span>
+                      </td>
+                      <td class="template-number">¥6,800</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">ORD-1044</th>
+                      <td>伊藤 はる</td>
+                      <td>10/20</td>
+                      <td>
+                        <span class="template-order-state">確認待ち</span>
+                      </td>
+                      <td class="template-number">¥4,200</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+          <aside class="ui-card">
+            <div class="ui-card-header">
+              <h2 class="ui-card-title">チームからのお知らせ</h2>
+            </div>
+            <div class="ui-card-body">
+              <ul class="template-activity">
+                <li>
+                  <span class="ui-avatar ui-avatar-sm" aria-hidden="true">AK</span>
+                  <div>
+                    <p>あかりさんが月次レポートを更新</p>
+                    <time datetime="2026-10-22T10:30:00+09:00">今日 10:30</time>
+                  </div>
+                </li>
+                <li>
+                  <span class="ui-avatar ui-avatar-sm" aria-hidden="true">RN</span>
+                  <div>
+                    <p>蓮さんが新しいガイドを公開</p>
+                    <time datetime="2026-10-21T16:00:00+09:00">昨日 16:00</time>
+                  </div>
+                </li>
+              </ul>
+              <a class="btn btn-sm btn-outline-primary" href="docs.html">ガイドを読む</a>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+    <footer class="ui-footer">
+      <div class="ui-container ui-footer-inner">
+        <p>Workspace · Kav-UI サービステンプレート</p>
+        <div class="ui-cluster">
+          <a href="../templates.html">テンプレート一覧</a>
+          <a href="../index.html">UIカタログ</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

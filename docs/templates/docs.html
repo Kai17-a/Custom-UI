@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ドキュメント — Workspace</title>
+    <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+    <script src="../../assets/js/theme-init.js"></script>
+    <link rel="stylesheet" href="../../assets/css/ui.css">
+    <link rel="stylesheet" href="../assets/css/templates.css">
+    <script defer src="../../assets/js/ui.js"></script>
+    <script defer src="../assets/js/templates.js"></script>
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../../llms.txt">
+<link rel="alternate" type="text/markdown" href="docs.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+  <body class="ui-app service-template" data-template="docs" data-ui-theme-persist>
+    <a class="template-skip" href="#main">コンテンツへ移動</a>
+    <header class="ui-header ui-header-sticky">
+      <div class="ui-container ui-header-inner">
+        <a class="ui-brand" href="dashboard.html"><span class="template-brand-mark" icon="mdi-view-dashboard" aria-hidden="true"></span> Workspace</a>
+        <nav class="ui-header-nav" aria-label="サービス">
+          <a href="docs.html" aria-current="page">ドキュメント</a>
+          <a href="dashboard.html">ダッシュボード</a>
+          <a href="changelog.html">更新履歴</a>
+        </nav>
+        <div class="ui-header-actions">
+          <label class="template-palette-label">
+            <span class="visually-hidden">カラーパレット</span>
+            <select class="form-select form-select-sm" data-ui-palette-select>
+              <option value="default">標準</option>
+              <option value="slate">スレート</option>
+              <option value="sage">セージ</option>
+              <option value="teal">ティール</option>
+              <option value="mauve">モーブ</option>
+              <option value="sand">サンド</option>
+              <option value="clay">クレイ</option>
+            </select>
+          </label>
+          <label class="template-design-label">
+            <span class="visually-hidden">デザインテーマ</span>
+            <select class="form-select form-select-sm" data-ui-theme-select>
+              <option value="default">標準</option>
+              <option value="glass">ガラス</option>
+              <option value="glassmorphism">グラスモーフィズム</option>
+              <option value="flat">フラット</option>
+              <option value="soft">ソフト</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button>
+        </div>
+      </div>
+    </header>
+    <div class="ui-container template-doc-layout ui-app-main">
+      <aside class="template-doc-aside">
+        <details class="template-doc-menu" open>
+          <summary>ドキュメントメニュー</summary>
+          <div class="template-doc-menu-body">
+            <label class="form-label" for="doc-search">ドキュメント内を検索</label>
+            <input id="doc-search" class="form-control form-control-sm" type="search" placeholder="例：メンバー、権限" data-doc-search>
+            <p class="type-size-xs type-color-muted" role="status" data-doc-results>すべてのセクションを表示</p>
+            <nav class="ui-aside-nav" aria-label="ドキュメント">
+              <p class="ui-aside-title">はじめに</p>
+              <a href="#overview" aria-current="location">概要</a>
+              <a href="#quickstart">クイックスタート</a>
+              <a href="#members">メンバーと権限</a>
+              <a href="#notifications">通知設定</a>
+              <a href="#faq">よくある質問</a>
+            </nav>
+            <div class="template-doc-help">
+              <span icon="mdi-information-outline" aria-hidden="true"></span>
+              <p>設定で迷ったときは、<a href="#faq">よくある質問</a>を確認してください。</p>
+            </div>
+          </div>
+        </details>
+      </aside>
+      <main id="main" class="template-doc-article">
+        <header class="ui-page-header">
+          <div class="ui-page-heading">
+            <p class="ui-page-eyebrow">WORKSPACE / GUIDE</p>
+            <h1 class="ui-page-title">Workspaceを使い始める</h1>
+            <p class="ui-page-description">チームのプロジェクトと情報を、ひとつの場所に。</p>
+          </div>
+          <span class="type-size-xs type-color-muted">ガイドのサンプル</span>
+        </header>
+        <p class="template-doc-lead">このガイドでは、ワークスペースの作成からメンバーの招待、通知の調整までを説明します。初めて利用する方は、クイックスタートから読み進めてください。</p>
+        <section id="overview" class="template-doc-section" data-doc-section>
+          <h2>概要</h2>
+          <p>Workspaceは、プロジェクトの進行とチームのナレッジをまとめて管理するサービスです。プロジェクトごとに担当者、期限、作業の状態を共有できます。</p>
+          <div class="template-callout">
+            <span icon="mdi-information-outline" aria-hidden="true"></span>
+            <p>この画面はサービスのドキュメント用テンプレートです。説明や数値はサンプルで、アカウントの作成・通信は行いません。</p>
+          </div>
+          <h3>できること</h3>
+          <ul>
+            <li>プロジェクトとタスクの進行を整理する</li>
+            <li>ドキュメントをチームに共有する</li>
+            <li>ダッシュボードで作業の傾向を確認する</li>
+          </ul>
+        </section>
+        <section id="quickstart" class="template-doc-section" data-doc-section>
+          <h2>クイックスタート</h2>
+          <p>次の3つの手順で、チームの作業場所を整えます。</p>
+          <ol class="template-steps">
+            <li>
+              <h3>ワークスペースを作成</h3>
+              <p>チーム名と表示名を入力します。名前は、作成後に設定画面から変更できます。</p>
+            </li>
+            <li>
+              <h3>最初のプロジェクトを追加</h3>
+              <p>「プロジェクトを作成」から目的と担当者を設定します。最初は小さな単位で始めると、進行を確認しやすくなります。</p>
+            </li>
+            <li>
+              <h3>メンバーを招待</h3>
+              <p>招待する相手のメールアドレスを入力し、必要な権限を選択します。権限の違いは次の表を参照してください。</p>
+            </li>
+          </ol>
+          <div class="ui-card">
+            <div class="ui-card-body">
+              <h3 class="ui-card-title">進行状況を確認する</h3>
+              <p class="ui-card-description">ダッシュボードのテンプレートには、集計期間の切り替えとCSV出力の例があります。</p>
+            </div>
+            <div class="ui-card-footer">
+              <a class="btn btn-sm btn-outline-primary" href="dashboard.html">ダッシュボードを開く <span icon="mdi-arrow-right" aria-hidden="true"></span></a>
+            </div>
+          </div>
+        </section>
+        <section id="members" class="template-doc-section" data-doc-section>
+          <h2>メンバーと権限</h2>
+          <p>チーム内で必要な操作に合わせて権限を選びます。変更する際は、進行中の作業への影響を確認してください。</p>
+          <div class="ui-table-scroll" role="region" aria-label="権限の比較" tabindex="0">
+            <table class="table">
+              <caption>役割ごとの操作範囲（サンプル仕様）</caption>
+              <thead>
+                <tr>
+                  <th scope="col">役割</th>
+                  <th scope="col">閲覧</th>
+                  <th scope="col">編集</th>
+                  <th scope="col">メンバー管理</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">管理者</th>
+                  <td>可能</td>
+                  <td>可能</td>
+                  <td>可能</td>
+                </tr>
+                <tr>
+                  <th scope="row">メンバー</th>
+                  <td>可能</td>
+                  <td>可能</td>
+                  <td>不可</td>
+                </tr>
+                <tr>
+                  <th scope="row">ゲスト</th>
+                  <td>招待された範囲</td>
+                  <td>不可</td>
+                  <td>不可</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section id="notifications" class="template-doc-section" data-doc-section>
+          <h2>通知設定</h2>
+          <p>通知は自分に関係する更新を受け取るための機能です。メンション、担当タスクの更新、期限のリマインダーを個別に設定できます。</p>
+          <h3>おすすめの初期設定</h3>
+          <ul>
+            <li>自分へのメンション：オン</li>
+            <li>担当タスクの変更：オン</li>
+            <li>プロジェクト全体の更新：必要な場合のみ</li>
+          </ul>
+          <p>メール通知とアプリ内通知は、それぞれの設定で調整できます。</p>
+        </section>
+        <section id="faq" class="template-doc-section" data-doc-section>
+          <h2>よくある質問</h2>
+          <details class="template-faq">
+            <summary>プロジェクト名は後から変更できますか？</summary>
+            <p>編集権限を持つメンバーは、プロジェクト設定から変更できます。</p>
+          </details>
+          <details class="template-faq">
+            <summary>通知が多すぎる場合は？</summary>
+            <p>プロジェクト全体の更新をオフにし、メンションと担当タスクの通知だけを受け取る設定から始めてください。</p>
+          </details>
+          <details class="template-faq">
+            <summary>新しい機能はどこで確認できますか？</summary>
+            <p><a href="changelog.html">更新履歴</a>で、新機能・改善・修正を分類して確認できます。</p>
+          </details>
+        </section>
+        <p class="template-empty" data-doc-empty hidden>該当する説明がありません。別のキーワードを試してください。</p>
+        <nav class="template-doc-next" aria-label="関連ページ">
+          <a href="dashboard.html">ダッシュボードを見る →</a>
+          <a href="changelog.html">最近の更新 →</a>
+        </nav>
+      </main>
+      <aside class="template-doc-toc">
+        <nav aria-label="このページの目次">
+          <p class="ui-aside-title">このページの目次</p>
+          <a href="#overview">概要</a>
+          <a href="#quickstart">クイックスタート</a>
+          <a href="#members">メンバーと権限</a>
+          <a href="#notifications">通知設定</a>
+          <a href="#faq">よくある質問</a>
+        </nav>
+        <p class="type-size-xs type-color-muted">
+          最終更新：2026年10月22日
+          <br>
+          読了目安：4分
+        </p>
+      </aside>
+    </div>
+    <footer class="ui-footer">
+      <div class="ui-container ui-footer-inner">
+        <p>Workspace · Kav-UI サービステンプレート</p>
+        <div class="ui-cluster">
+          <a href="../templates.html">テンプレート一覧</a>
+          <a href="../index.html">UIカタログ</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

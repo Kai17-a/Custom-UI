@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI themes — Kav-UI design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
+<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../../llms.txt">
+<link rel="alternate" type="text/markdown" href="themes.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../installation.html">ダウンロード・導入</a>
+<a class="overview-link" href="../getting-started.html">使い方・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a>
+<a class="overview-link" href="../ai-agents.html">AIエージェント向け</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="foundations.html">Foundations</a></li>
+      <li><a href="themes.html" aria-current="page">UI themes</a></li>
+      <li><a href="theme-switcher.html">Theme switcher</a></li>
+      <li><a href="color-palettes.html">Color palettes</a></li>
+      <li><a href="typography.html">Typography</a></li>
+      <li><a href="spacing.html">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="mdi-icons.html">MDIアイコン</a></li><li><a href="icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="layouts.html">Layouts</a></li>
+      <li><a href="splitter.html">Splitter</a></li>
+      <li><a href="flex.html">Flexbox</a></li>
+      <li><a href="flex-grid.html">Flex grid</a></li>
+      <li><a href="cards.html">Cards</a></li>
+      <li><a href="sidebar.html">Sidebar</a></li>
+
+      <li><a href="drawer.html">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="buttons.html">Buttons</a></li>
+      <li><a href="forms.html">Forms</a></li>
+              <li><a href="rating.html">Rating</a></li>
+      <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="dialog.html">Dialog</a></li>
+      <li><a href="clipboard.html">Clipboard</a></li>
+
+      <li><a href="input-group.html">Input group</a></li>
+      <li><a href="button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="command.html">Command menu</a></li>
+      <li><a href="disclosure.html">Accordion</a></li>
+
+      <li><a href="dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="badges.html">Badges</a></li>
+      <li><a href="table.html">Table</a></li>
+      <li><a href="data-table.html">Data table</a></li>
+      <li><a href="board.html">Kanban board</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+
+      <li><a href="list-group.html">List group</a></li>
+      <li><a href="avatar.html">Avatar</a></li>
+      <li><a href="chart.html">Chart</a></li>
+              <li><a href="carousel.html">Carousel</a></li>
+              <li><a href="timeline.html">Timeline</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="banner.html">Banner</a></li>
+      <li><a href="toasts.html">Toasts & alerts</a></li>
+      <li><a href="tips.html">Tips & tooltips</a></li>
+
+      <li><a href="popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="loading.html">Loading</a></li>
+      <li><a href="states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="animations.html">一覧・使い方</a></li>
+        <li><a href="animations-entrances.html">表示・非表示</a></li>
+        <li><a href="animations-movement.html">移動・回転</a></li>
+        <li><a href="animations-attention.html">強調・揺れ</a></li>
+        <li><a href="animations-interactions.html">操作時の動き</a></li>
+        <li><a href="animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>UI themes</h1></header><p><a href="color-palettes.html">色合いを変えたい場合はカラーパレット →</a></p><p class="lede">UI全体の質感を選ぶテーマです。ライト／ダークとは別に、背景・面・角丸・影をまとめて切り替えます。</p>
+<section class="specimen"><h2>ページ全体で比較する</h2><p><a href="theme-switcher.html">テーマ切り替えコンポーネント（ボタン・選択式） →</a></p><div class="example" data-example>
+<label class="fx fx-wrap fx-items-center fx-gap-3">デザインテーマ
+  <select class="form-select form-select-sm" data-ui-theme-select style="width:auto"><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select>
+</label>
+</div><p>ヘッダーの選択欄と連動します。カタログでは選択をブラウザに保存します。右上のライト／ダーク切り替えと組み合わせて、5種類×2通りの表示を確認できます。</p></section>
+<section class="specimen" id="theme-background">
+  <h2>ガラスの背景に画像を設定する（任意）</h2>
+  <p>glass・glassmorphismでは、背景画像をテーマの色と重ねて薄く表示できます。画像は画面に固定され、長いページをスクロールしても途切れません。画像を指定しなければ従来のグラデーション背景になります。ライト・ダークやカラーパレットにも追従します。</p>
+  <h3>カタログで見え方を試す</h3>
+  <div class="example" data-example data-demo-theme-background>
+    <div class="ui-stack">
+      <div class="ui-cluster">
+        <button class="btn btn-primary" type="button" data-demo-background-action="sample">サンプル画像を表示</button>
+        <button class="btn btn-outline-secondary" type="button" data-demo-background-action="clear">画像を解除</button>
+      </div>
+      <div class="ui-file-drop" data-ui-file-drop>
+        <input class="form-control" id="theme-background-file" type="file" accept="image/*" aria-describedby="theme-background-file-help theme-background-status">
+        <label class="ui-file-dropzone" data-ui-file-zone for="theme-background-file"><span icon="mdi-image" aria-hidden="true"></span><strong>手元の画像をドロップ</strong><span>またはクリックして選択</span><span class="ui-file-hint" id="theme-background-file-help">このページ内だけでプレビューします。アップロード・保存はしません。</span></label>
+      </div>
+      <label class="field" for="theme-background-opacity">画像の濃さ：<output for="theme-background-opacity">18%</output><input class="form-range" id="theme-background-opacity" type="range" min="0" max="100" step="1" value="18"></label>
+      <p class="type-caption" id="theme-background-status" role="status" data-demo-background-status>画像は未設定です。サンプルまたは手元の画像を選んでください。</p>
+    </div>
+  </div>
+  <p>ガラス以外のテーマで画像を選ぶと、プレビューではグラスモーフィズムへ切り替えます。画像を設定したまま標準・フラット・ソフトに変えると画像は表示されず、ガラスへ戻すと再表示されます。再読み込み時は画像なしに戻ります。</p>
+  <h3>アプリではCSSクラスで指定する</h3>
+  <pre class="setup-code"><code>/* アプリのCSSへ追加。URLは使用する画像の場所に変更してください。 */
+.app-glass-background {
+  --ui-theme-background-image: url("/images/background.jpg");
+  --ui-theme-background-opacity: 18%;
+  --ui-theme-background-position: center;
+  --ui-theme-background-size: cover;
+}</code></pre>
+  <pre class="setup-code"><code>&lt;body class="app-glass-background" data-ui-theme="glassmorphism"&gt;
+  ...
+&lt;/body&gt;
+
+&lt;!-- ガラスでも同じクラスを使用できます。 --&gt;
+&lt;body class="app-glass-background" data-ui-theme="glass"&gt;
+  ...
+&lt;/body&gt;</code></pre>
+  <p>この指定はui.cssだけで動きます。opacityは0%で見えなくなり、100%で元の濃さになります（既存の装飾グラデーションは重なります）。既定値は18%。positionはcenter、sizeはcoverが既定値です。例のURLはWebサーバーのルートからのパスです。</p>
+  <h3>画像を使わない・一時的に外す</h3>
+  <pre class="setup-code"><code>/* クラスを付けない場合は画像なし。付けたまま外す場合も指定できます。 */
+.app-glass-background.is-background-off {
+  --ui-theme-background-image: none;
+}</code></pre>
+  <p>画像が読み込めない場合も、テーマの背景色とグラデーションが残ります。高コントラスト表示では画像を表示しません。サンプルのプレビュー操作はcatalog-demo.js専用で、アプリの配布に取り込む必要はありません。</p>
+</section>
+<section class="specimen"><h2>カード・フォーム・サイドバー</h2><div class="example" data-example>
+<div class="app-shell">
+  <aside class="app-sidebar" aria-label="テーマ見本のメニュー">
+    <h3 class="app-sidebar-title">Workspace</h3>
+    <nav class="app-sidebar-group" aria-label="テーマ見本の移動先"><a href="#theme-project" aria-current="page">プロジェクト</a><a href="#theme-overlays">通知とモーダル</a></nav>
+    <p class="app-sidebar-footer">Design catalog</p>
+  </aside>
+  <div class="app-content stack">
+    <article class="ui-card" id="theme-project"><div class="ui-card-header"><h3 class="ui-card-title">デザインカタログ</h3></div><div class="ui-card-body"><p class="ui-card-description">コンポーネントの構造を変えずに、面・角丸・影がテーマに合わせて変化します。</p><p class="ui-card-meta">更新：今日 · 12コンポーネントを確認</p></div><footer class="ui-card-footer"><button type="button" class="btn btn-primary" data-ui-toggle="dialog" data-ui-target="#theme-dialog">詳細を確認</button><button type="button" class="btn btn-outline-secondary" data-ui-tooltip="テーマを変えても操作方法は同じです。">ヒント</button></footer></article>
+    <form class="stack" data-ui-validate data-demo-form>
+      <div class="field" data-ui-field><label for="theme-name">プロジェクト名</label><input id="theme-name" name="project" class="form-control" value="Design catalog" required><small data-ui-error hidden></small></div>
+      <div class="field"><label for="theme-visibility">公開範囲</label><select id="theme-visibility" class="form-select" name="visibility"><option>自分のみ</option><option>チーム</option></select></div>
+      <div class="fx fx-wrap fx-gap-2"><button type="submit" class="btn btn-primary">入力を確認</button><button type="reset" class="btn btn-soft-secondary">リセット</button></div><p role="status" data-demo-result></p>
+    </form>
+  </div>
+</div>
+</div></section>
+<section class="specimen" id="theme-overlays"><h2>通知・モーダル・日付選択</h2><div class="example" data-example>
+<div class="stack">
+  <div class="alert alert-success" role="status">設定を保存しました。成功・警告・エラーの意味を表す色は維持します。</div>
+  <div class="fx fx-wrap fx-gap-2"><button type="button" class="btn btn-outline-primary" data-ui-toast data-ui-title="保存しました" data-ui-body="テーマを変えても、通知の意味を色と文字で伝えます。" data-ui-toast-copy data-ui-duration="0">コピー付きトースト</button><button type="button" class="btn btn-outline-danger" data-ui-toast="接続を確認して再試行してください。" data-ui-variant="danger">エラーのトースト</button><button type="button" class="btn btn-outline-secondary" data-ui-toggle="dialog" data-ui-target="#theme-dialog">モーダルを開く</button></div>
+  <div class="field"><label for="theme-date">実施日</label><div class="ui-datepicker" data-ui-datepicker data-ui-datepicker-button="icon"><input id="theme-date" class="form-control" type="date" value="2026-10-21"></div></div>
+</div>
+<dialog id="theme-dialog" class="ui-dialog" data-ui-dialog aria-labelledby="theme-dialog-title"><h2 id="theme-dialog-title">プロジェクトの確認</h2><p>モーダルにも選んだデザインテーマが適用されます。</p><div class="field"><label for="theme-dialog-input">プロジェクト名</label><input class="form-control" id="theme-dialog-input" value="Design catalog"></div><div class="buttons"><button type="button" class="btn btn-outline-secondary" data-ui-tooltip="テーマを変えてもヒントの位置と操作を維持します。">ヒント</button><button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button></div></dialog>
+</div></section>
+<section class="specimen"><h2>テーマの違い</h2><div class="example"><table class="table"><thead><tr><th scope="col">値</th><th scope="col">デザイン</th></tr></thead><tbody><tr><th scope="row"><code>default</code></th><td>標準。従来の色・角丸・影。</td></tr><tr><th scope="row"><code>glass</code></th><td>ガラス。背景の色の重なり、半透明の面、背景のぼかし。ぼかし非対応のブラウザでは不透明の面を使用。</td></tr><tr><th scope="row"><code>glassmorphism</code></th><td>グラスモーフィズム。透明感のある面、24pxの背景ぼかし、光沢のある縁、色が重なる背景。</td></tr><tr><th scope="row"><code>flat</code></th><td>フラット。小さな角丸と罫線。影を抑えた表示。</td></tr><tr><th scope="row"><code>soft</code></th><td>ソフト。淡い背景、大きめの角丸と柔らかな影。</td></tr></tbody></table></div></section>
+<section class="specimen"><h2>グラスモーフィズムを使う</h2><p>デザイン選択欄の「グラスモーフィズム」でページ全体に適用できます。半透明の面と背景の色の重なり、ぼかし、内側の光沢で質感を示します。入力欄とモーダルは透明度を抑えて読みやすさを保ちます。</p><pre class="setup-code"><code>&lt;body data-ui-theme="glassmorphism"&gt;</code></pre><pre class="setup-code"><code>KavUI.setDesignTheme('glassmorphism');</code></pre><p>ライト／ダーク両対応です。ぼかし非対応のブラウザでは、不透明な背景に切り替わります。</p></section><section class="specimen"><h2>アプリへの取り込み</h2><p>共通のui.cssにテーマも含まれます。bodyの属性だけで適用でき、静的なテーマ指定にはJavaScriptは不要です。</p><pre class="setup-code"><code>&lt;html lang=&quot;ja&quot; data-bs-theme=&quot;light&quot;&gt;
+  &lt;head&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/ui.css&quot;&gt;
+    &lt;script defer src=&quot;assets/js/ui.js&quot;&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body data-ui-theme=&quot;glass&quot;&gt;
+    &lt;!-- いつものコンポーネントを配置 --&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre><p>明暗はhtmlのdata-bs-theme、デザインはbodyのdata-ui-themeで別々に指定します。指定を省略するかdefaultにすると標準に戻ります。</p><h3>選択欄を置く</h3><pre class="setup-code"><code>&lt;label&gt;デザインテーマ
+  &lt;select data-ui-theme-select&gt;
+    &lt;option value=&quot;default&quot;&gt;標準&lt;/option&gt;
+    &lt;option value=&quot;glass&quot;&gt;ガラス&lt;/option&gt;
+    &lt;option value=&quot;glassmorphism&quot;&gt;グラスモーフィズム&lt;/option&gt;
+    &lt;option value=&quot;flat&quot;&gt;フラット&lt;/option&gt;
+    &lt;option value=&quot;soft&quot;&gt;ソフト&lt;/option&gt;
+  &lt;/select&gt;
+&lt;/label&gt;</code></pre><p>選択欄の動作にはui.jsが必要です。複数の選択欄も自動で同期します。</p><h3>JavaScriptと選択の保存</h3><pre class="setup-code"><code>KavUI.setDesignTheme(&#x27;glass&#x27;);
+KavUI.setDesignTheme(&#x27;default&#x27;); // 標準へ戻す
+
+// 保存も行う場合（省略時は保存しません）：
+KavUI.setDesignTheme(&#x27;soft&#x27;, { persist: true });
+
+document.addEventListener(&#x27;ui:designchange&#x27;, event =&gt; {
+  const theme = event.detail.theme;
+});</code></pre><p>次回表示時も選択を復元したい場合は、bodyに<code>data-ui-theme-persist</code>を追加します。その場合、選択欄からの変更も保存します。bodyに明示したdata-ui-themeがあれば、保存値より優先されます。保存が利用できなくても、現在のページでの切り替えは動作します。</p><pre class="setup-code"><code>&lt;body data-ui-theme-persist&gt;</code></pre><p>独自の背景色・影をstyle属性や独自CSSで指定した部品には、その指定が優先される場合があります。</p></section>
+<details class="source"><summary>使用ファイル・取り込み方</summary><p><a href="../../assets/css/themes.css">themes.css</a>はui.cssから自動で読み込まれます。assetsフォルダの構造を維持してコピーしてください。npm不要です。</p><p><a href="../getting-started.html">導入手順</a> / <a href="../starter.html">共通ファイルだけのアプリ見本</a></p></details>
+</main></div></body></html>

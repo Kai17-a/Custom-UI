@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flexbox — Kav-UI design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+<link rel="stylesheet" href="../assets/css/flex-demos.css">
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
+<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+<script defer src="../assets/js/flex-playground.js"></script>
+
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../../llms.txt">
+<link rel="alternate" type="text/markdown" href="flex.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../installation.html">ダウンロード・導入</a>
+<a class="overview-link" href="../getting-started.html">使い方・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a>
+<a class="overview-link" href="../ai-agents.html">AIエージェント向け</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="foundations.html">Foundations</a></li>
+      <li><a href="themes.html">UI themes</a></li>
+      <li><a href="theme-switcher.html">Theme switcher</a></li>
+      <li><a href="color-palettes.html">Color palettes</a></li>
+      <li><a href="typography.html">Typography</a></li>
+      <li><a href="spacing.html">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="mdi-icons.html">MDIアイコン</a></li><li><a href="icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="layouts.html">Layouts</a></li>
+      <li><a href="splitter.html">Splitter</a></li>
+      <li><a href="flex.html" aria-current="page">Flexbox</a></li>
+      <li><a href="flex-grid.html">Flex grid</a></li>
+      <li><a href="cards.html">Cards</a></li>
+      <li><a href="sidebar.html">Sidebar</a></li>
+
+      <li><a href="drawer.html">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="buttons.html">Buttons</a></li>
+      <li><a href="forms.html">Forms</a></li>
+              <li><a href="rating.html">Rating</a></li>
+      <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="dialog.html">Dialog</a></li>
+      <li><a href="clipboard.html">Clipboard</a></li>
+
+      <li><a href="input-group.html">Input group</a></li>
+      <li><a href="button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="command.html">Command menu</a></li>
+      <li><a href="disclosure.html">Accordion</a></li>
+
+      <li><a href="dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="badges.html">Badges</a></li>
+      <li><a href="table.html">Table</a></li>
+      <li><a href="data-table.html">Data table</a></li>
+      <li><a href="board.html">Kanban board</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+
+      <li><a href="list-group.html">List group</a></li>
+      <li><a href="avatar.html">Avatar</a></li>
+      <li><a href="chart.html">Chart</a></li>
+              <li><a href="carousel.html">Carousel</a></li>
+              <li><a href="timeline.html">Timeline</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="banner.html">Banner</a></li>
+      <li><a href="toasts.html">Toasts & alerts</a></li>
+      <li><a href="tips.html">Tips & tooltips</a></li>
+
+      <li><a href="popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="loading.html">Loading</a></li>
+      <li><a href="states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="animations.html">一覧・使い方</a></li>
+        <li><a href="animations-entrances.html">表示・非表示</a></li>
+        <li><a href="animations-movement.html">移動・回転</a></li>
+        <li><a href="animations-attention.html">強調・揺れ</a></li>
+        <li><a href="animations-interactions.html">操作時の動き</a></li>
+        <li><a href="animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Flexbox</h1></header><p class="lede">基本プロパティから実用パターンまで。fx- 接頭辞のクラスで組み合わせでき、既存の row や d-flex と名前が重なりません。</p>
+<p><a href="flex-grid.html">Flexグリッド・12カラム・レスポンシブの例 →</a></p><section class="specimen" id="playground"><h2>Flexbox playground</h2><form id="flex-controls"><fieldset class="flex-controls"><legend>親要素と子要素のプロパティ</legend><label class="flex-control" for="flex-direction">flex-direction<select id="flex-direction" name="direction" class="form-select form-select-sm"><option selected>row</option><option>row-reverse</option><option>column</option><option>column-reverse</option></select></label><label class="flex-control" for="flex-wrap">flex-wrap<select id="flex-wrap" name="wrap" class="form-select form-select-sm"><option selected>nowrap</option><option>wrap</option><option>wrap-reverse</option></select></label><label class="flex-control" for="flex-justify">justify-content<select id="flex-justify" name="justify" class="form-select form-select-sm"><option selected>flex-start</option><option>center</option><option>flex-end</option><option>space-between</option><option>space-around</option><option>space-evenly</option></select></label><label class="flex-control" for="flex-items">align-items<select id="flex-items" name="items" class="form-select form-select-sm"><option selected>stretch</option><option>flex-start</option><option>center</option><option>flex-end</option><option>baseline</option></select></label><label class="flex-control" for="flex-content">align-content<select id="flex-content" name="content" class="form-select form-select-sm"><option selected>normal</option><option>flex-start</option><option>center</option><option>flex-end</option><option>space-between</option><option>space-around</option><option>space-evenly</option><option>stretch</option></select></label><label class="flex-control" for="flex-sizing">子要素のflex<select id="flex-sizing" name="sizing" class="form-select form-select-sm"><option selected>0 1 84px</option><option>1 1 0%</option><option>1 1 auto</option><option>0 0 84px</option></select></label><label class="flex-control" for="flex-self">2番目のalign-self<select id="flex-self" name="self" class="form-select form-select-sm"><option selected>auto</option><option>flex-start</option><option>center</option><option>flex-end</option><option>stretch</option><option>baseline</option></select></label><label class="flex-control" for="flex-gap">gap（px）<input id="flex-gap" name="gap" type="range" min="0" max="48" step="4" value="12"></label><label class="flex-control" for="flex-width">コンテナ幅（px）<input id="flex-width" name="width" type="range" min="240" max="900" step="20" value="640"></label></fieldset><button type="button" class="btn btn-sm btn-outline-secondary" id="flex-reset">初期値に戻す</button></form><p class="dim small" id="flex-width-value">640px（表示幅は親要素の幅まで）</p><div class="flex-demo-viewport" id="flex-viewport"><div class="flex-playground" id="flex-preview" role="group" aria-label="レイアウトのプレビュー"><div>1<br>Item</div><div>2<br>Item</div><div>3<br>Item</div><div>4<br>Item</div><div>5<br>Item</div><div>6<br>Item</div></div></div><details class="source" open><summary>現在のCSS</summary><pre><code id="flex-output">.container { display: flex; gap: 12px; }</code></pre></details><p class="dim small">wrap と狭いコンテナ幅で折り返しを比較できます。align-content は複数行に折り返し、交差軸に余剰スペースがある場合に違いが出ます。column では主軸が縦になります。</p><noscript>プロパティの変更にはJavaScriptが必要です。以下の固定サンプルはそのまま確認できます。</noscript></section><section class="specimen">
+<h2>display: flex / inline-flex</h2>
+<div class="example" data-example>
+<p>文章の中に <span class="fx-inline fx-gap-1"><span class="flex-demo-item">A</span><span class="flex-demo-item">B</span></span> を置けます。通常の fx はブロックとして幅を使います。</p>
+</div>
+</section>
+<section class="specimen" id="direction">
+<h2>方向：row / row-reverse / column / column-reverse</h2>
+<div class="example" data-example>
+<div class="flex-demo-compare"><section><h3>row</h3><div class="fx flex-demo fx-gap-2 fx-row"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div></div></section><section><h3>row-reverse</h3><div class="fx flex-demo fx-gap-2 fx-row-reverse"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div></div></section><section><h3>column</h3><div class="fx flex-demo fx-gap-2 fx-column"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div></div></section><section><h3>column-reverse</h3><div class="fx flex-demo fx-gap-2 fx-column-reverse"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div></div></section></div><p class="dim small">reverseやorderを変えても、読み上げ・キーボードの順番はHTMLの記述順です。</p>
+</div>
+</section>
+<section class="specimen" id="wrap">
+<h2>折り返し：nowrap / wrap / wrap-reverse</h2>
+<div class="example" data-example>
+<div class="stack"><div><p class="type-caption">nowrap</p><div class="fx flex-demo fx-gap-2 fx-nowrap"><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">1</div><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">2</div><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">3</div><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">4</div><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">5</div></div></div><div><p class="type-caption">wrap</p><div class="fx flex-demo fx-gap-2 fx-wrap"><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">1</div><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">2</div><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">3</div><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">4</div><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">5</div></div></div><div><p class="type-caption">wrap-reverse</p><div class="fx flex-demo fx-gap-2 fx-wrap-reverse"><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">1</div><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">2</div><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">3</div><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">4</div><div class="flex-demo-item fx-shrink-0" style="flex-basis:7rem">5</div></div></div></div>
+</div>
+</section>
+<section class="specimen" id="justify">
+<h2>主軸：justify-content</h2>
+<div class="example" data-example>
+<div class="stack"><div><p class="type-caption">start</p><div class="fx flex-demo fx-gap-1 fx-justify-start"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div></div></div><div><p class="type-caption">center</p><div class="fx flex-demo fx-gap-1 fx-justify-center"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div></div></div><div><p class="type-caption">end</p><div class="fx flex-demo fx-gap-1 fx-justify-end"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div></div></div><div><p class="type-caption">between</p><div class="fx flex-demo fx-gap-1 fx-justify-between"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div></div></div><div><p class="type-caption">around</p><div class="fx flex-demo fx-gap-1 fx-justify-around"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div></div></div><div><p class="type-caption">evenly</p><div class="fx flex-demo fx-gap-1 fx-justify-evenly"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div></div></div></div>
+</div>
+</section>
+<section class="specimen" id="align">
+<h2>交差軸：align-items</h2>
+<div class="example" data-example>
+<div class="flex-demo-compare"><section><h3>start</h3><div class="fx flex-demo fx-gap-2 flex-demo-tall fx-items-start"><div class="flex-demo-item " style="font-size:12px">Small</div><div class="flex-demo-item " style="font-size:24px">Large</div><div class="flex-demo-item ">2行<br>Label</div></div></section><section><h3>center</h3><div class="fx flex-demo fx-gap-2 flex-demo-tall fx-items-center"><div class="flex-demo-item " style="font-size:12px">Small</div><div class="flex-demo-item " style="font-size:24px">Large</div><div class="flex-demo-item ">2行<br>Label</div></div></section><section><h3>end</h3><div class="fx flex-demo fx-gap-2 flex-demo-tall fx-items-end"><div class="flex-demo-item " style="font-size:12px">Small</div><div class="flex-demo-item " style="font-size:24px">Large</div><div class="flex-demo-item ">2行<br>Label</div></div></section><section><h3>stretch</h3><div class="fx flex-demo fx-gap-2 flex-demo-tall fx-items-stretch"><div class="flex-demo-item " style="font-size:12px">Small</div><div class="flex-demo-item " style="font-size:24px">Large</div><div class="flex-demo-item ">2行<br>Label</div></div></section><section><h3>baseline</h3><div class="fx flex-demo fx-gap-2 flex-demo-tall fx-items-baseline"><div class="flex-demo-item " style="font-size:12px">Small</div><div class="flex-demo-item " style="font-size:24px">Large</div><div class="flex-demo-item ">2行<br>Label</div></div></section></div>
+</div>
+</section>
+<section class="specimen">
+<h2>子要素だけの整列：align-self</h2>
+<div class="example" data-example>
+<div class="fx flex-demo fx-gap-2 fx-items-start flex-demo-tall"><div class="flex-demo-item ">start</div><div class="flex-demo-item fx-self-center">center</div><div class="flex-demo-item fx-self-end">end</div><div class="flex-demo-item fx-self-stretch">stretch</div></div>
+</div>
+</section>
+<section class="specimen" id="content">
+<h2>複数行の配置：align-content</h2>
+<div class="example" data-example>
+<div class="flex-demo-compare"><section><h3>start</h3><div class="fx flex-demo fx-wrap fx-gap-2 flex-demo-lines fx-content-start"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div><div class="flex-demo-item ">5</div><div class="flex-demo-item ">6</div></div></section><section><h3>center</h3><div class="fx flex-demo fx-wrap fx-gap-2 flex-demo-lines fx-content-center"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div><div class="flex-demo-item ">5</div><div class="flex-demo-item ">6</div></div></section><section><h3>end</h3><div class="fx flex-demo fx-wrap fx-gap-2 flex-demo-lines fx-content-end"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div><div class="flex-demo-item ">5</div><div class="flex-demo-item ">6</div></div></section><section><h3>between</h3><div class="fx flex-demo fx-wrap fx-gap-2 flex-demo-lines fx-content-between"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div><div class="flex-demo-item ">5</div><div class="flex-demo-item ">6</div></div></section><section><h3>around</h3><div class="fx flex-demo fx-wrap fx-gap-2 flex-demo-lines fx-content-around"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div><div class="flex-demo-item ">5</div><div class="flex-demo-item ">6</div></div></section><section><h3>evenly</h3><div class="fx flex-demo fx-wrap fx-gap-2 flex-demo-lines fx-content-evenly"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div><div class="flex-demo-item ">5</div><div class="flex-demo-item ">6</div></div></section><section><h3>stretch</h3><div class="fx flex-demo fx-wrap fx-gap-2 flex-demo-lines fx-content-stretch"><div class="flex-demo-item ">1</div><div class="flex-demo-item ">2</div><div class="flex-demo-item ">3</div><div class="flex-demo-item ">4</div><div class="flex-demo-item ">5</div><div class="flex-demo-item ">6</div></div></section></div>
+</div>
+</section>
+<section class="specimen">
+<h2>gap / row-gap / column-gap</h2>
+<div class="example" data-example>
+<div class="fx flex-demo fx-wrap sp-gap-y-6 sp-gap-x-2"><div class="flex-demo-item fx-basis" style="--fx-basis:7rem">1</div><div class="flex-demo-item fx-basis" style="--fx-basis:7rem">2</div><div class="flex-demo-item fx-basis" style="--fx-basis:7rem">3</div><div class="flex-demo-item fx-basis" style="--fx-basis:7rem">4</div><div class="flex-demo-item fx-basis" style="--fx-basis:7rem">5</div><div class="flex-demo-item fx-basis" style="--fx-basis:7rem">6</div></div>
+</div>
+</section>
+<section class="specimen" id="sizing">
+<h2>均等幅：flex: 1 1 0%</h2>
+<div class="example" data-example>
+<div class="fx flex-demo fx-gap-2"><div class="flex-demo-item fx-flex-1 fx-min-0">短い</div><div class="flex-demo-item fx-flex-1 fx-min-0">文字数が長くても同じ幅</div><div class="flex-demo-item fx-flex-1 fx-min-0">3番目</div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>内容の幅を基準に伸ばす：flex: 1 1 auto</h2>
+<div class="example" data-example>
+<div class="fx flex-demo fx-gap-2"><div class="flex-demo-item fx-flex-auto">短い</div><div class="flex-demo-item fx-flex-auto">内容が長い分だけ基準幅も広くなる</div><div class="flex-demo-item fx-flex-auto">3番目</div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>余剰スペースの配分：grow 1 : 2</h2>
+<div class="example" data-example>
+<div class="fx flex-demo fx-gap-2"><div class="flex-demo-item fx-basis-0 fx-grow fx-min-0">grow: 1</div><div class="flex-demo-item fx-basis-0 fx-grow-2 fx-min-0">grow: 2</div></div><p class="dim small">flex-grow は余ったスペースの配分比です。padding・最小幅・内容幅があると、最終幅そのものが1:2になるとは限りません。</p>
+</div>
+</section>
+<section class="specimen">
+<h2>縮める / 固定する：flex-shrink</h2>
+<div class="example" data-example>
+<div class="fx flex-demo fx-gap-2"><div class="flex-demo-item fx-shrink-0" style="width:96px">固定 96px</div><div class="flex-demo-item fx-shrink fx-min-0" style="flex-basis:32rem">長い内容は残りの幅に収める</div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>basis：初期サイズ・全幅の改行</h2>
+<div class="example" data-example>
+<div class="fx flex-demo fx-wrap fx-gap-2"><div class="flex-demo-item fx-basis" style="--fx-basis:10rem">basis: 10rem</div><div class="flex-demo-item fx-flex-1 fx-min-0">残りを使用</div><div class="flex-demo-item fx-basis-full">basis: 100% / 行を分ける</div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>order：見た目の並び替え</h2>
+<div class="example" data-example>
+<div class="fx flex-demo fx-gap-2"><div class="flex-demo-item fx-order-last">HTML 1 / 最後</div><div class="flex-demo-item ">HTML 2 / 中央</div><div class="flex-demo-item fx-order-first">HTML 3 / 最初</div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>自動マージン：右寄せと中央配置</h2>
+<div class="example" data-example>
+<div class="fx flex-demo fx-gap-2 fx-items-center"><div class="flex-demo-item ">プロジェクト</div><div class="flex-demo-item fx-ms-auto">右端へ</div></div><br><div class="fx flex-demo flex-demo-tall"><div class="flex-demo-item fx-m-auto">上下左右中央</div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>レスポンシブ：モバイルは縦、768pxから横</h2>
+<div class="example" data-example>
+<div class="fx flex-demo fx-column fx-md-row fx-gap-4"><div class="flex-demo-item fx-flex-1 fx-min-0">検索領域</div><div class="flex-demo-item fx-flex-none">絞り込み</div></div>
+</div>
+</section>
+<section class="specimen" id="patterns">
+<h2>実用例：折り返すツールバー</h2>
+<div class="example" data-example>
+<div class="fx fx-wrap fx-items-center fx-gap-2"><strong>タスク一覧</strong><span class="type-caption">24件</span><a class="btn btn-sm btn-outline-secondary fx-ms-auto" href="forms.html">絞り込み</a><a class="btn btn-sm btn-primary" href="board.html">ボードを見る</a></div>
+</div>
+</section>
+<section class="specimen">
+<h2>実用例：アイコン＋長い文字列＋操作</h2>
+<div class="example" data-example>
+<div class="fx fx-items-center fx-gap-3"><span class="flex-demo-avatar fx-shrink-0" aria-hidden="true">KT</span><div class="fx-flex-1 fx-min-0"><strong class="type-wrap">プロジェクト管理者</strong><p class="flex-demo-clip type-small" title="project-administrator@example-long-domain.test">project-administrator@example-long-domain.test</p></div><a class="btn btn-sm btn-outline-secondary fx-shrink-0" href="forms.html">編集</a></div><p class="type-caption">長い文字列には min-width: 0 を組み合わせます。</p>
+</div>
+</section>
+<section class="specimen">
+<h2>実用例：フッターを下端に置く</h2>
+<div class="example" data-example>
+<div class="fx flex-demo fx-column fx-gap-3 flex-demo-column"><div class="flex-demo-item ">ヘッダー</div><div class="flex-demo-item ">短い本文</div><div class="flex-demo-item fx-mt-auto">フッター</div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>実用例：横スクロールする一覧</h2>
+<div class="example" data-example>
+<div class="fx-scroll" tabindex="0" role="region" aria-label="横スクロールするタグ一覧"><div class="flex-demo-item ">すべてのプロジェクト</div><div class="flex-demo-item ">デザインシステム</div><div class="flex-demo-item ">フロントエンド</div><div class="flex-demo-item ">バックエンド</div><div class="flex-demo-item ">ドキュメント</div><div class="flex-demo-item ">レビュー待ち</div><div class="flex-demo-item ">アーカイブ</div></div><p class="type-caption">領域にフォーカスして矢印キーでもスクロールできます。</p>
+</div>
+</section>
+<section class="specimen" id="reference"><h2>取り込み用クラス一覧</h2><p class="dim small">{...} はカンマで区切った候補のいずれか1つです。fx-gap-1 は4px、2は8px、4は16pxです。競合する同じ種類のクラスは1つだけ指定してください。</p><div class="example"><table class="flex-reference"><caption>Flexboxユーティリティ</caption><thead><tr><th scope="col">用途</th><th scope="col">クラス</th><th scope="col">対応するCSS</th></tr></thead><tbody><tr><th scope="row">表示・方向</th><td><code>fx / fx-inline / fx-row / fx-column / fx-row-reverse / fx-column-reverse</code></td><td>display / flex-direction</td></tr><tr><th scope="row">折り返し</th><td><code>fx-wrap / fx-nowrap / fx-wrap-reverse</code></td><td>flex-wrap</td></tr><tr><th scope="row">主軸の整列</th><td><code>fx-justify-{start,end,center,between,around,evenly}</code></td><td>justify-content</td></tr><tr><th scope="row">交差軸の整列</th><td><code>fx-items-{start,end,center,stretch,baseline}</code></td><td>align-items</td></tr><tr><th scope="row">複数行の整列</th><td><code>fx-content-{start,end,center,between,around,evenly,stretch}</code></td><td>align-content</td></tr><tr><th scope="row">子の整列</th><td><code>fx-self-{auto,start,end,center,stretch,baseline}</code></td><td>align-self</td></tr><tr><th scope="row">伸縮の組み合わせ</th><td><code>fx-flex-1 / fx-flex-auto / fx-flex-initial / fx-flex-none</code></td><td>flex shorthand</td></tr><tr><th scope="row">伸びる比率</th><td><code>fx-grow-0 / fx-grow / fx-grow-2</code></td><td>flex-grow: 0 / 1 / 2</td></tr><tr><th scope="row">縮む・固定</th><td><code>fx-shrink / fx-shrink-0</code></td><td>flex-shrink: 1 / 0</td></tr><tr><th scope="row">初期サイズ</th><td><code>fx-basis-0 / fx-basis-auto / fx-basis-full / fx-basis</code></td><td>flex-basis / --fx-basis</td></tr><tr><th scope="row">はみ出し対策</th><td><code>fx-min-0</code></td><td>min-width: 0 / min-height: 0</td></tr><tr><th scope="row">表示順序</th><td><code>fx-order-first / fx-order-0 / fx-order-1 / fx-order-2 / fx-order-last</code></td><td>order</td></tr><tr><th scope="row">自動マージン</th><td><code>fx-ms-auto / fx-me-auto / fx-mt-auto / fx-mb-auto / fx-m-auto</code></td><td>margin</td></tr><tr><th scope="row">間隔</th><td><code>fx-gap-{0,1,2,3,4,6,8,12} / fx-gap / fx-row-gap / fx-column-gap</code></td><td>gap / --fx-gap / --fx-row-gap / --fx-column-gap</td></tr><tr><th scope="row">レスポンシブ</th><td><code>fx-responsive / fx-md-row / fx-md-column / fx-md-wrap / fx-md-nowrap / fx-lg-row / fx-lg-column</code></td><td>md: 768px / lg: 1024px</td></tr><tr><th scope="row">自動配置・スクロール</th><td><code>fx-auto-grid / fx-scroll</code></td><td>--fx-min / --fx-gap</td></tr></tbody></table></div></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+
+</body></html>

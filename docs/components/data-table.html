@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data table — Kav-UI design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
+<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../../llms.txt">
+<link rel="alternate" type="text/markdown" href="data-table.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../installation.html">ダウンロード・導入</a>
+<a class="overview-link" href="../getting-started.html">使い方・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a>
+<a class="overview-link" href="../ai-agents.html">AIエージェント向け</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="foundations.html">Foundations</a></li>
+      <li><a href="themes.html">UI themes</a></li>
+      <li><a href="theme-switcher.html">Theme switcher</a></li>
+      <li><a href="color-palettes.html">Color palettes</a></li>
+      <li><a href="typography.html">Typography</a></li>
+      <li><a href="spacing.html">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="mdi-icons.html">MDIアイコン</a></li><li><a href="icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="layouts.html">Layouts</a></li>
+      <li><a href="splitter.html">Splitter</a></li>
+      <li><a href="flex.html">Flexbox</a></li>
+      <li><a href="flex-grid.html">Flex grid</a></li>
+      <li><a href="cards.html">Cards</a></li>
+      <li><a href="sidebar.html">Sidebar</a></li>
+
+      <li><a href="drawer.html">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="buttons.html">Buttons</a></li>
+      <li><a href="forms.html">Forms</a></li>
+              <li><a href="rating.html">Rating</a></li>
+      <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="dialog.html">Dialog</a></li>
+      <li><a href="clipboard.html">Clipboard</a></li>
+
+      <li><a href="input-group.html">Input group</a></li>
+      <li><a href="button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="command.html">Command menu</a></li>
+      <li><a href="disclosure.html">Accordion</a></li>
+
+      <li><a href="dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="badges.html">Badges</a></li>
+      <li><a href="table.html">Table</a></li>
+      <li><a href="data-table.html" aria-current="page">Data table</a></li>
+      <li><a href="board.html">Kanban board</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+
+      <li><a href="list-group.html">List group</a></li>
+      <li><a href="avatar.html">Avatar</a></li>
+      <li><a href="chart.html">Chart</a></li>
+              <li><a href="carousel.html">Carousel</a></li>
+              <li><a href="timeline.html">Timeline</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="banner.html">Banner</a></li>
+      <li><a href="toasts.html">Toasts & alerts</a></li>
+      <li><a href="tips.html">Tips & tooltips</a></li>
+
+      <li><a href="popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="loading.html">Loading</a></li>
+      <li><a href="states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="animations.html">一覧・使い方</a></li>
+        <li><a href="animations-entrances.html">表示・非表示</a></li>
+        <li><a href="animations-movement.html">移動・回転</a></li>
+        <li><a href="animations-attention.html">強調・揺れ</a></li>
+        <li><a href="animations-interactions.html">操作時の動き</a></li>
+        <li><a href="animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Data table</h1></header><p class="lede">検索・並べ替え・ページ送り・行選択を組み合わせたデータテーブルです。HTMLに書いたデータをブラウザ内で操作し、既存の配色とデザインテーマに対応します。</p>
+<section class="specimen" id="data-table-project-example"><h2>検索・ソート・ページ送り・行選択</h2><p>列名を押すと昇順・降順・元の順序へ切り替わります。検索語や表示件数を変えると最初のページに戻ります。予算の表示には円記号と区切り文字を付け、比較には数値を指定しています。</p><div class="example" data-example><div class="ui-data-table" id="data-table-projects" data-ui-data-table data-ui-page-size="5">
+  <div class="ui-data-table-toolbar" data-ui-table-controls>
+    <label class="ui-data-table-search">プロジェクトを検索<input class="form-control" type="search" data-ui-table-search placeholder="名前・状態・担当者" autocomplete="off"></label>
+    <label class="ui-data-table-size">表示件数<select class="form-select form-select-sm" data-ui-table-page-size><option value="5">5件</option><option value="10">10件</option><option value="0">すべて</option></select></label>
+  </div>
+  <div class="ui-table-scroll" tabindex="0" role="region" aria-label="プロジェクト一覧（横スクロール可能）">
+    <table class="table table-hover">
+      <caption>プロジェクト一覧</caption>
+      <thead><tr>
+        <th scope="col" class="ui-data-table-check"><input class="form-check-input" type="checkbox" data-ui-table-select-all aria-label="表示中の行をすべて選択"></th>
+        <th scope="col"><button class="ui-data-table-sort" type="button" data-ui-table-sort="text">プロジェクト</button></th>
+        <th scope="col"><button class="ui-data-table-sort" type="button" data-ui-table-sort="text">状態</button></th>
+        <th scope="col"><button class="ui-data-table-sort" type="button" data-ui-table-sort="text">担当者</button></th>
+        <th scope="col"><button class="ui-data-table-sort" type="button" data-ui-table-sort="date">更新日</button></th>
+        <th scope="col" class="ui-data-table-number"><button class="ui-data-table-sort" type="button" data-ui-table-sort="number">予算</button></th>
+      </tr></thead>
+      <tbody>
+        <tr data-ui-row-id="project-01" data-ui-table-keywords="design catalog ドキュメント">
+          <td class="ui-data-table-check" data-ui-table-ignore><input class="form-check-input" type="checkbox" data-ui-row-select aria-label="デザインカタログを選択"></td>
+          <td>デザインカタログ</td><td><span class="badge badge-neutral">進行中</span></td><td>蒼井</td>
+          <td data-ui-sort-value="2026-10-24"><time datetime="2026-10-24">2026/10/24</time></td>
+          <td class="ui-data-table-number" data-ui-sort-value="120000">¥120,000</td>
+        </tr>
+        <tr data-ui-row-id="project-02" data-ui-table-keywords="">
+          <td class="ui-data-table-check" data-ui-table-ignore><input class="form-check-input" type="checkbox" data-ui-row-select aria-label="予約管理を選択"></td>
+          <td>予約管理</td><td><span class="badge text-bg-warning">レビュー</span></td><td>森</td>
+          <td data-ui-sort-value="2026-10-20"><time datetime="2026-10-20">2026/10/20</time></td>
+          <td class="ui-data-table-number" data-ui-sort-value="85000">¥85,000</td>
+        </tr>
+        <tr data-ui-row-id="project-03" data-ui-table-keywords="">
+          <td class="ui-data-table-check" data-ui-table-ignore><input class="form-check-input" type="checkbox" data-ui-row-select aria-label="ヘルプセンターを選択"></td>
+          <td>ヘルプセンター</td><td><span class="badge text-bg-success">完了</span></td><td>佐藤</td>
+          <td data-ui-sort-value="2026-10-22"><time datetime="2026-10-22">2026/10/22</time></td>
+          <td class="ui-data-table-number" data-ui-sort-value="18000">¥18,000</td>
+        </tr>
+        <tr data-ui-row-id="project-04" data-ui-table-keywords="">
+          <td class="ui-data-table-check" data-ui-table-ignore><input class="form-check-input" type="checkbox" data-ui-row-select aria-label="顧客ポータルを選択"></td>
+          <td>顧客ポータル</td><td><span class="badge badge-neutral">進行中</span></td><td>伊藤</td>
+          <td data-ui-sort-value="2026-10-18"><time datetime="2026-10-18">2026/10/18</time></td>
+          <td class="ui-data-table-number" data-ui-sort-value="120000">¥120,000</td>
+        </tr>
+        <tr data-ui-row-id="project-05" data-ui-table-keywords="">
+          <td class="ui-data-table-check" data-ui-table-ignore><input class="form-check-input" type="checkbox" data-ui-row-select aria-label="ファイル共有を選択"></td>
+          <td>ファイル共有</td><td><span class="badge badge-neutral">計画中</span></td><td>森</td>
+          <td data-ui-sort-value="2026-10-21"><time datetime="2026-10-21">2026/10/21</time></td>
+          <td class="ui-data-table-number" data-ui-sort-value="">未設定</td>
+        </tr>
+        <tr data-ui-row-id="project-06" data-ui-table-keywords="">
+          <td class="ui-data-table-check" data-ui-table-ignore><input class="form-check-input" type="checkbox" data-ui-row-select aria-label="分析ダッシュボードを選択"></td>
+          <td>分析ダッシュボード</td><td><span class="badge text-bg-success">完了</span></td><td>蒼井</td>
+          <td data-ui-sort-value="2026-10-19"><time datetime="2026-10-19">2026/10/19</time></td>
+          <td class="ui-data-table-number" data-ui-sort-value="45000">¥45,000</td>
+        </tr>
+        <tr data-ui-row-id="project-07" data-ui-table-keywords="">
+          <td class="ui-data-table-check" data-ui-table-ignore><input class="form-check-input" type="checkbox" data-ui-row-select aria-label="モバイル設定を選択"></td>
+          <td>モバイル設定</td><td><span class="badge badge-neutral">計画中</span></td><td>佐藤</td>
+          <td data-ui-sort-value="2026-10-23"><time datetime="2026-10-23">2026/10/23</time></td>
+          <td class="ui-data-table-number" data-ui-sort-value="36000">¥36,000</td>
+        </tr>
+        <tr data-ui-row-id="project-08" data-ui-table-keywords="">
+          <td class="ui-data-table-check" data-ui-table-ignore><input class="form-check-input" type="checkbox" data-ui-row-select aria-label="通知センターを選択"></td>
+          <td>通知センター</td><td><span class="badge badge-neutral">進行中</span></td><td>伊藤</td>
+          <td data-ui-sort-value="2026-10-15"><time datetime="2026-10-15">2026/10/15</time></td>
+          <td class="ui-data-table-number" data-ui-sort-value="72000">¥72,000</td>
+        </tr>
+        <tr data-ui-row-id="project-09" data-ui-table-keywords="">
+          <td class="ui-data-table-check" data-ui-table-ignore><input class="form-check-input" type="checkbox" data-ui-row-select aria-label="請求管理を選択"></td>
+          <td>請求管理</td><td><span class="badge text-bg-warning">レビュー</span></td><td>森</td>
+          <td data-ui-sort-value="2026-10-17"><time datetime="2026-10-17">2026/10/17</time></td>
+          <td class="ui-data-table-number" data-ui-sort-value="96000">¥96,000</td>
+        </tr>
+        <tr data-ui-row-id="project-10" data-ui-table-keywords="">
+          <td class="ui-data-table-check" data-ui-table-ignore><input class="form-check-input" type="checkbox" data-ui-row-select aria-label="検索機能を選択"></td>
+          <td>検索機能</td><td><span class="badge badge-neutral">進行中</span></td><td>蒼井</td>
+          <td data-ui-sort-value="2026-10-16"><time datetime="2026-10-16">2026/10/16</time></td>
+          <td class="ui-data-table-number" data-ui-sort-value="54000">¥54,000</td>
+        </tr>
+        <tr data-ui-row-id="project-11" data-ui-table-keywords="">
+          <td class="ui-data-table-check" data-ui-table-ignore><input class="form-check-input" type="checkbox" data-ui-row-select aria-label="チーム管理を選択"></td>
+          <td>チーム管理</td><td><span class="badge text-bg-success">完了</span></td><td>伊藤</td>
+          <td data-ui-sort-value="2026-10-14"><time datetime="2026-10-14">2026/10/14</time></td>
+          <td class="ui-data-table-number" data-ui-sort-value="24000">¥24,000</td>
+        </tr>
+        <tr data-ui-row-id="project-12" data-ui-table-keywords="">
+          <td class="ui-data-table-check" data-ui-table-ignore><input class="form-check-input" type="checkbox" data-ui-row-select aria-label="権限設定を選択" disabled></td>
+          <td>権限設定</td><td><span class="badge badge-neutral">計画中</span></td><td>佐藤</td>
+          <td data-ui-sort-value="2026-10-13"><time datetime="2026-10-13">2026/10/13</time></td>
+          <td class="ui-data-table-number" data-ui-sort-value="30000">¥30,000</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="ui-data-table-footer" data-ui-table-controls>
+    <div class="ui-data-table-summary"><p data-ui-table-status role="status"></p><p data-ui-table-selection role="status"></p></div>
+    <nav class="ui-data-table-pagination" aria-label="プロジェクトのページ送り"><button class="btn btn-sm btn-outline-secondary" type="button" data-ui-table-prev>前へ</button><span data-ui-table-page-status></span><button class="btn btn-sm btn-outline-secondary" type="button" data-ui-table-next>次へ</button></nav>
+  </div>
+</div></div></section>
+<section class="specimen" id="data-table-selection"><h2>選択状態とキーボード操作</h2><p>ヘッダーのcheckboxは、現在表示している選択可能な行だけを選択・解除します。検索やページ切り替えの後も選択を保持し、一部だけ選択されているときは中間状態を表示します。「権限設定」の行はdisabledの例です。</p><p>Tabで検索欄・列名・checkbox・ページボタンへ移動できます。列名はEnter／Space、checkboxはSpaceで操作します。横に長い表は領域へTabで移動し、矢印キーでもスクロールできます。</p></section>
+<section class="specimen" id="data-table-minimal"><h2>並べ替えだけを使う</h2><p>検索欄・表示件数・選択・ページ送りは必要なものだけを置けます。すべての行を表示する場合は<code>data-ui-page-size="0"</code>を指定します。ページ内に複数の表を置いても操作は独立します。</p><div class="example" data-example><div class="ui-data-table" id="data-table-stock" data-ui-data-table data-ui-page-size="0">
+  <div class="ui-table-scroll" tabindex="0" role="region" aria-label="在庫一覧（横スクロール可能）">
+    <table class="table"><caption>在庫一覧</caption><thead><tr><th scope="col"><button class="ui-data-table-sort" type="button" data-ui-table-sort="text">商品</button></th><th scope="col" class="ui-data-table-number"><button class="ui-data-table-sort" type="button" data-ui-table-sort="number">在庫数</button></th></tr></thead><tbody>
+      <tr><td>ノート</td><td class="ui-data-table-number">10</td></tr><tr><td>ペン</td><td class="ui-data-table-number">2</td></tr><tr><td>カード</td><td class="ui-data-table-number">0</td></tr>
+    </tbody></table>
+  </div>
+</div></div></section>
+<section class="specimen" id="data-table-empty-demo"><h2>データがない場合</h2><p>元のデータが0件の場合と、検索結果が0件の場合に空の表示を出します。初期HTMLで<code>hidden</code>を指定した行は件数・検索の対象に含めません。</p><div class="example" data-example><div class="ui-data-table" id="data-table-empty-demo-root" data-ui-data-table data-ui-table-empty="表示できるデータがありません。"><div class="ui-table-scroll" tabindex="0" role="region" aria-label="空のデータ一覧"><table class="table"><caption>未登録のプロジェクト</caption><thead><tr><th scope="col">名前</th><th scope="col">状態</th></tr></thead><tbody></tbody></table></div><div class="ui-data-table-footer" data-ui-table-controls><p class="type-caption" data-ui-table-status role="status"></p></div></div></div></section>
+<section class="specimen" id="data-table-attributes"><h2>属性と設定</h2><div class="ui-table-scroll" tabindex="0" role="region" aria-label="データテーブルの属性一覧"><table class="table"><thead><tr><th scope="col">属性</th><th scope="col">指定方法</th></tr></thead><tbody><tr><th scope="row"><code>data-ui-data-table</code></th><td>ルートのラッパーへ指定します。最初のtableの最初のtbodyを対象にします。</td></tr><tr><th scope="row"><code>data-ui-page-size=&quot;5&quot;</code></th><td>1ページの件数。省略時は10件、0は全件表示です。</td></tr><tr><th scope="row"><code>data-ui-table-search</code></th><td>検索欄に指定します。複数の語を空白で区切ると、すべてを含む行を表示します。全角英数字・大文字小文字を揃えて検索します。</td></tr><tr><th scope="row"><code>data-ui-table-page-size</code></th><td>表示件数のselectに指定します。選択値がルートの件数指定より優先されます。</td></tr><tr><th scope="row"><code>data-ui-table-sort=&quot;text / number / date&quot;</code></th><td>th内のbuttonへ指定。昇順→降順→元の順序の順に切り替えます。数値の欠損・無効な値は両方向で末尾に並びます。</td></tr><tr><th scope="row"><code>data-ui-sort-value</code></th><td>tdの表示と比較する値を分けます。数値は120000など、日付は2026-10-24などを指定します。</td></tr><tr><th scope="row"><code>data-ui-table-keywords / data-ui-table-ignore</code></th><td>行に検索語を追加するか、セルを検索対象から外します。</td></tr><tr><th scope="row"><code>data-ui-row-select / data-ui-table-select-all</code></th><td>行のcheckboxと、現在ページの一括選択用checkboxへ指定します。disabledの行は選択対象から外れます。</td></tr><tr><th scope="row"><code>data-ui-row-id</code></th><td>選択イベントへ渡す行の識別子。重複しない値を指定します。省略時はtrのid、どちらもなければ初回登録時の番号を使います。</td></tr><tr><th scope="row"><code>data-ui-table-prev / next / first / last</code></th><td>前・次・最初・最後のページへ移動するbuttonです。各属性にはdata-ui-table-を付けます。</td></tr><tr><th scope="row"><code>data-ui-table-page=&quot;2&quot;</code></th><td>指定ページへ移動するbuttonに付けます。</td></tr><tr><th scope="row"><code>data-ui-table-status / page-status / selection</code></th><td>表示件数、ページ番号、選択件数の出力先。各属性にはdata-ui-table-を付けます。</td></tr><tr><th scope="row"><code>data-ui-table-empty=&quot;説明文&quot;</code></th><td>ルートへ指定すると、データがない場合の文言を変更できます。</td></tr></tbody></table></div><p>ソート用の列は、各行で同じ列順になるように配置してください。データ部分のcolspan／rowspanを使った複雑な表の並べ替えには対応しません。JavaScriptがない場合も、通常の表として行の内容を確認できます。</p></section>
+<section class="specimen" id="data-table-events"><h2>アプリの処理と組み合わせる</h2><p><code>ui:tablechange</code>で検索・ソート・ページの状態を取得し、<code>ui:tableselect</code>で選択した行のIDと要素を取得できます。sortは未指定時にnull、指定時は0始まりのcolumn・type・directionを返します。pageSizeの0は全件表示です。</p><pre class="setup-code"><code>const table = document.getElementById(&#x27;data-table-projects&#x27;);
+table.addEventListener(&#x27;ui:tablechange&#x27;, event =&gt; {
+  const { search, page, pageSize, total, filtered, sort } = event.detail;
+  console.log({ search, page, pageSize, total, filtered, sort });
+});
+table.addEventListener(&#x27;ui:tableselect&#x27;, event =&gt; {
+  console.log(event.detail.selected); // [&#x27;project-01&#x27;, ...]
+  console.log(event.detail.rows);     // 選択したtr要素
+});</code></pre><p>データの取得・保存・サーバー側の絞り込みはアプリ側で実装します。このコンポーネントはDOM上の行を操作する方式で、仮想スクロールやサーバーページングは含みません。</p></section>
+<section class="specimen" id="data-table-lifecycle"><h2>行の更新と後始末</h2><pre class="setup-code"><code>const table = document.getElementById(&#x27;data-table-projects&#x27;);
+// tbodyへ行を追加・削除した後、またはセルの内容を更新した後
+KavUI.init(table);
+// 表全体のHTMLを作り直す前、またはアンマウント時
+KavUI.destroy(table);</code></pre><p>再初期化では現在の検索・ソート・選択を保ちながら表示を更新します。元の順序は最初に登録したときの並びで、後から追加した行はその後ろに登録されます。破棄すると元の行順・hidden・ARIAを戻します。ユーザーが変更した行のcheckboxの値は保持します。フォームのresetは検索欄・表示件数・選択を初期値に戻し、ソートとページをリセットします。</p><p>Vue・Astroでは、既存の<code>KavWidget</code>で同じHTMLを利用できます。<a href="../../packages/README.md">パッケージの導入方法</a>も参照してください。</p></section>
+<details class="source"><summary>使用ファイル・取り込み方</summary><p>共通のui.cssとui.jsを読み込み、必要なサンプルのHTMLを配置します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../installation.html">ダウンロード・導入</a> / <a href="table.html">静的なTable</a> / <a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a></p></details></main></div></body></html>

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIエージェントで使う — Kav-UI</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script src="../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="assets/css/catalog.css">
+
+
+<script defer src="assets/js/catalog.js"></script>
+<script defer src="assets/js/catalog-navigation.js"></script>
+<script defer src="../assets/js/ui.js"></script>
+<script defer src="assets/js/catalog-demo.js"></script>
+
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../llms.txt">
+<link rel="alternate" type="text/markdown" href="ai-agents.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="index.html">カタログ一覧</a><a class="overview-link" href="installation.html">ダウンロード・導入</a>
+<a class="overview-link" href="getting-started.html">使い方・属性一覧</a><a class="overview-link" href="starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="templates.html">サービステンプレート ↗</a>
+<a class="overview-link" href="ai-agents.html" aria-current="page">AIエージェント向け</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="components/foundations.html">Foundations</a></li>
+      <li><a href="components/themes.html">UI themes</a></li>
+      <li><a href="components/theme-switcher.html">Theme switcher</a></li>
+      <li><a href="components/color-palettes.html">Color palettes</a></li>
+      <li><a href="components/typography.html">Typography</a></li>
+      <li><a href="components/spacing.html">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="components/mdi-icons.html">MDIアイコン</a></li><li><a href="components/icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="components/layouts.html">Layouts</a></li>
+      <li><a href="components/splitter.html">Splitter</a></li>
+      <li><a href="components/flex.html">Flexbox</a></li>
+      <li><a href="components/flex-grid.html">Flex grid</a></li>
+      <li><a href="components/cards.html">Cards</a></li>
+      <li><a href="components/sidebar.html">Sidebar</a></li>
+
+      <li><a href="components/drawer.html">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="components/buttons.html">Buttons</a></li>
+      <li><a href="components/forms.html">Forms</a></li>
+      <li><a href="components/rating.html">Rating</a></li>
+      <li><a href="components/datepicker.html">Date picker</a></li>
+      <li><a href="components/dialog.html">Dialog</a></li>
+      <li><a href="components/clipboard.html">Clipboard</a></li>
+
+      <li><a href="components/input-group.html">Input group</a></li>
+      <li><a href="components/button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="components/navigation.html">Navigation</a></li>
+      <li><a href="components/command.html">Command menu</a></li>
+      <li><a href="components/disclosure.html">Accordion</a></li>
+
+      <li><a href="components/dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="components/badges.html">Badges</a></li>
+      <li><a href="components/table.html">Table</a></li>
+      <li><a href="components/data-table.html">Data table</a></li>
+      <li><a href="components/board.html">Kanban board</a></li>
+      <li><a href="components/calendar.html">Calendar</a></li>
+
+      <li><a href="components/list-group.html">List group</a></li>
+      <li><a href="components/avatar.html">Avatar</a></li>
+      <li><a href="components/chart.html">Chart</a></li>
+      <li><a href="components/carousel.html">Carousel</a></li>
+      <li><a href="components/timeline.html">Timeline</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="components/alerts.html">Alerts</a></li>
+      <li><a href="components/banner.html">Banner</a></li>
+      <li><a href="components/toasts.html">Toasts & alerts</a></li>
+      <li><a href="components/tips.html">Tips & tooltips</a></li>
+
+      <li><a href="components/popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="components/loading.html">Loading</a></li>
+      <li><a href="components/states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="components/animations.html">一覧・使い方</a></li>
+        <li><a href="components/animations-entrances.html">表示・非表示</a></li>
+        <li><a href="components/animations-movement.html">移動・回転</a></li>
+        <li><a href="components/animations-attention.html">強調・揺れ</a></li>
+        <li><a href="components/animations-interactions.html">操作時の動き</a></li>
+        <li><a href="components/animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main">
+  <header class="page-heading"><p class="eyebrow">Kav-UI / AI AGENTS</p><h1>AIエージェントで使う</h1></header>
+  <p class="lede">Kav-UIのスキルとllms.txtを使って、導入方法やコンポーネントの仕様をAIエージェントへ渡せます。必要な資料だけを読み、既存のデザインとAPIに沿って実装するための入口です。</p>
+  <section class="specimen" id="agent-resources"><h2>スキルと資料の入口</h2>
+    <ul><li><a href="../skills/kav-ui/SKILL.md">Kav-UIスキル</a>：部品選択、通常HTML/Vue/Astro、テーマ、動的なDOMの扱い。</li>
+      <li><a href="../skills/kav-ui/references/integration.md">組み込みリファレンス</a>：スキルと一緒にコピーできる基本例。</li>
+      <li><a href="../llms.txt">llms.txt</a>：導入・用途別コンポーネント・パッケージの資料一覧。</li>
+      <li><a href="ai-agents.html.md">このページのMarkdown版</a>：サイドバーを除いた本文。</li></ul>
+    <p>スキルは<a href="https://agentskills.io/specification">Agent Skillsの形式</a>、資料の入口は<a href="https://llmstxt.org/">llms.txtの提案</a>を参考に用意しています。</p>
+  </section>
+  <section class="specimen" id="agent-skill"><h2>スキルを利用先へコピーする</h2>
+    <p>Kav-UIのソースにある<code>skills/kav-ui</code>を、利用するエージェントのスキル配置先へフォルダごとコピーします。ソースは<a href="installation.html#installation-download">ソースZIPまたはGitHubから入手</a>できます。取得した版に次のファイルが揃っているか確認してください。</p>
+    <pre class="setup-code"><code>skills/
+  kav-ui/
+    SKILL.md
+    agents/openai.yaml
+    references/integration.md</code></pre>
+    <p><code>references</code>も含めてコピーすると、Kav-UIのソースとは別の場所へ配置した後も基本例を読めます。登録先や呼び出し方は利用するエージェントの設定に合わせてください。このリポジトリから個人のエージェント設定への自動インストールは行いません。</p>
+    <p>スキル名で呼び出せる環境では、例えば次のように依頼できます。</p>
+    <pre class="setup-code"><code>$kav-ui を使って、プロジェクト一覧の画面を実装してください。
+既存のKav-UIの配色と余白に合わせ、Data tableの検索と行選択を使ってください。</code></pre>
+    <p>ファイルを直接指定する場合は、次のように依頼します。</p>
+    <pre class="setup-code"><code>skills/kav-ui/SKILL.mdを読み、Kav-UIで設定画面を作成してください。
+利用先の既存の構成を確認し、必要なコンポーネントだけを使ってください。</code></pre>
+  </section>
+  <section class="specimen" id="agent-llms"><h2>llms.txtから必要な仕様を読む</h2>
+    <p>エージェントへ<code>llms.txt</code>のファイルパス、またはこのサイトで開いた<code>llms.txt</code>のURLを渡します。導入資料と用途別のリンクがあり、リンク先の<code>.html.md</code>には本文とサンプルコードが入っています。</p>
+    <pre class="setup-code"><code>llms.txtを入口に、Kav-UIのData tableの仕様を確認してください。
+検索・数値ソート・ページ送りのある一覧を、外部ライブラリを追加せず実装してください。</code></pre>
+    <p>HTMLの各ページにはMarkdown版とllms.txtへのメタデータも付けています。Markdownの先頭にある「HTML版」から、対応する画面へ戻れます。</p>
+  </section>
+  <section class="specimen" id="agent-conventions"><h2>スキルが案内する実装方法</h2>
+    <ul><li>通常HTMLでは共通CSS・JSを読み込み、classとdata属性で部品を指定します。</li>
+      <li>CSSフォルダの階層、動的DOMの初期化と後始末、カタログ専用の処理をアプリへ持ち込まないことを確認します。</li>
+      <li>明暗・質感・配色を分け、既存のトークンとレスポンシブ指定を使います。</li>
+      <li>Vue/Astroでは導入済みのパッケージや汎用Widgetを選び、そのライフサイクルに合わせます。</li></ul>
+    <p><a href="installation.html">通常HTMLの導入方法</a> / <a href="../packages/README.md">Vue/Astroの導入方法</a></p>
+  </section>
+  <section class="specimen" id="agent-maintenance"><h2>HTMLの説明を更新したとき</h2>
+    <p>本文の編集元は従来どおりHTMLです。資料を更新した後、リポジトリのルートで次を実行すると、Markdownとllms.txtを生成できます。Python標準ライブラリだけで動きます。</p>
+    <pre class="setup-code"><code>python3 scripts/generate-ai-docs.py
+python3 scripts/generate-ai-docs.py --check</code></pre>
+    <p><code>--check</code>は書き換えずに同期を確認し、更新が必要なファイルがあれば終了コード1を返します。スキルの説明や参照資料は<code>skills/kav-ui</code>内を編集してください。</p>
+  </section>
+</main></div></body></html>

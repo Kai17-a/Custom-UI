@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spacing — Kav-UI design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
+<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../../llms.txt">
+<link rel="alternate" type="text/markdown" href="spacing.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../installation.html">ダウンロード・導入</a>
+<a class="overview-link" href="../getting-started.html">使い方・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a>
+<a class="overview-link" href="../ai-agents.html">AIエージェント向け</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="foundations.html">Foundations</a></li>
+      <li><a href="themes.html">UI themes</a></li>
+      <li><a href="theme-switcher.html">Theme switcher</a></li>
+      <li><a href="color-palettes.html">Color palettes</a></li>
+      <li><a href="typography.html">Typography</a></li>
+      <li><a href="spacing.html" aria-current="page">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="mdi-icons.html">MDIアイコン</a></li><li><a href="icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="layouts.html">Layouts</a></li>
+      <li><a href="splitter.html">Splitter</a></li>
+      <li><a href="flex.html">Flexbox</a></li>
+      <li><a href="flex-grid.html">Flex grid</a></li>
+      <li><a href="cards.html">Cards</a></li>
+      <li><a href="sidebar.html">Sidebar</a></li>
+
+      <li><a href="drawer.html">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="buttons.html">Buttons</a></li>
+      <li><a href="forms.html">Forms</a></li>
+              <li><a href="rating.html">Rating</a></li>
+      <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="dialog.html">Dialog</a></li>
+      <li><a href="clipboard.html">Clipboard</a></li>
+
+      <li><a href="input-group.html">Input group</a></li>
+      <li><a href="button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="command.html">Command menu</a></li>
+      <li><a href="disclosure.html">Accordion</a></li>
+
+      <li><a href="dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="badges.html">Badges</a></li>
+      <li><a href="table.html">Table</a></li>
+      <li><a href="data-table.html">Data table</a></li>
+      <li><a href="board.html">Kanban board</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+
+      <li><a href="list-group.html">List group</a></li>
+      <li><a href="avatar.html">Avatar</a></li>
+      <li><a href="chart.html">Chart</a></li>
+              <li><a href="carousel.html">Carousel</a></li>
+              <li><a href="timeline.html">Timeline</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="banner.html">Banner</a></li>
+      <li><a href="toasts.html">Toasts & alerts</a></li>
+      <li><a href="tips.html">Tips & tooltips</a></li>
+
+      <li><a href="popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="loading.html">Loading</a></li>
+      <li><a href="states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="animations.html">一覧・使い方</a></li>
+        <li><a href="animations-entrances.html">表示・非表示</a></li>
+        <li><a href="animations-movement.html">移動・回転</a></li>
+        <li><a href="animations-attention.html">強調・揺れ</a></li>
+        <li><a href="animations-interactions.html">操作時の動き</a></li>
+        <li><a href="animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Spacing</h1></header><p class="lede">余白を数値と使用例で比較できます。内側はpadding、要素間はgap、外側はmarginで調整します。</p>
+<section class="specimen" id="spacing-classes">
+<h2>クラスで指定する</h2>
+<p>新しい余白クラスには <code>sp-</code> を付けます。使用できる数値は <code>0 / 1 / 2 / 3 / 4 / 6 / 8 / 12</code> です。例えば <code>sp-p-6</code> は24px相当、<code>sp-gap-3</code> は12px相当になります。値はrem単位で、ブラウザの文字サイズに追従します。</p>
+<table class="table table-sm"><thead><tr><th scope="col">クラス</th><th scope="col">対象</th></tr></thead><tbody>
+<tr><th scope="row"><code>sp-p-*</code></th><td>内側の全方向</td></tr>
+<tr><th scope="row"><code>sp-px-*</code> / <code>sp-py-*</code></th><td>内側の左右 / 上下</td></tr>
+<tr><th scope="row"><code>sp-pt-*</code> / <code>sp-pr-*</code><br><code>sp-pb-*</code> / <code>sp-pl-*</code></th><td>内側の上 / 右 / 下 / 左</td></tr>
+<tr><th scope="row"><code>sp-ps-*</code> / <code>sp-pe-*</code></th><td>内側の開始側 / 終了側。RTLでは左右が入れ替わります。</td></tr>
+<tr><th scope="row"><code>sp-m-*</code></th><td>外側。pと同じx・y・t・r・b・l・s・eの方向指定が使えます。</td></tr>
+<tr><th scope="row"><code>sp-m-auto</code></th><td>外側をautoにします。方向指定も使えます。例：sp-mx-auto、sp-ms-auto。</td></tr>
+<tr><th scope="row"><code>sp-gap-*</code></th><td>flex / gridの要素間隔</td></tr>
+<tr><th scope="row"><code>sp-gap-x-*</code> / <code>sp-gap-y-*</code></th><td>列の間隔 / 行の間隔。fx-gridの列幅計算にも連動します。</td></tr>
+</tbody></table>
+<p>余白の調整にはJavaScriptは不要です。既存の <code>inset</code>・<code>stack</code>・<code>cluster</code> と組み合わせられます。</p>
+</section>
+<section class="specimen">
+<h2>余白スケール</h2>
+<div class="example" data-example>
+<div class="space-measure"><code>--space-0<br>0px / 0rem</code><div class="space-measure-bar space-measure-0"></div></div>
+<div class="space-measure"><code>--space-1<br>4px / 0.25rem</code><div class="space-measure-bar space-measure-1"></div></div>
+<div class="space-measure"><code>--space-2<br>8px / 0.5rem</code><div class="space-measure-bar space-measure-2"></div></div>
+<div class="space-measure"><code>--space-3<br>12px / 0.75rem</code><div class="space-measure-bar space-measure-3"></div></div>
+<div class="space-measure"><code>--space-4<br>16px / 1rem</code><div class="space-measure-bar space-measure-4"></div></div>
+<div class="space-measure"><code>--space-6<br>24px / 1.5rem</code><div class="space-measure-bar space-measure-6"></div></div>
+<div class="space-measure"><code>--space-8<br>32px / 2rem</code><div class="space-measure-bar space-measure-8"></div></div>
+<div class="space-measure"><code>--space-12<br>48px / 3rem</code><div class="space-measure-bar space-measure-12"></div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>Padding：コンテナの内側</h2>
+<div class="example" data-example>
+<div class="spacing-grid"><div class="space-demo sp-p-2"><div class="space-demo-item">padding: 8px<br>コンパクトな補助領域</div></div><div class="space-demo sp-p-4"><div class="space-demo-item">padding: 16px<br>通常のパネル</div></div><div class="space-demo sp-p-6"><div class="space-demo-item">padding: 24px<br>まとまった情報の領域</div></div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>Gap：要素どうしの間隔</h2>
+<div class="example" data-example>
+<div class="stack sp-gap-6"><div><p class="type-caption">横並び・折り返し / gap: 8px</p><div class="cluster sp-gap-2"><span class="space-demo-item">デザイン</span><span class="space-demo-item">開発</span><span class="space-demo-item">レビュー</span></div></div><div><p class="type-caption">縦並び / gap: 16px</p><div class="stack sp-gap-4"><div class="space-demo-item">プロジェクト名</div><div class="space-demo-item">プロジェクトの説明</div><div class="space-demo-item">公開範囲</div></div></div></div>
+</div>
+</section>
+<section class="specimen">
+<h2>Margin：独立したブロックの外側</h2>
+<div class="example" data-example>
+<div class="space-demo sp-p-4"><div class="space-demo-item">前のセクション</div><div class="space-demo-item sp-mt-8">margin-top: 32px<br>次のセクション</div></div>
+</div>
+</section>
+<section class="specimen"><h2>全方向と左右を組み合わせる</h2><div class="example" data-example>
+<div class="space-demo sp-p-6 sp-px-2"><div class="space-demo-item">上下24px・左右8px</div></div>
+</div></section>
+<section class="specimen"><h2>autoで端に寄せる</h2><div class="example" data-example>
+<div class="cluster sp-gap-2"><span class="space-demo-item">左側の内容</span><span class="space-demo-item sp-ms-auto">終了側へ寄せる</span></div>
+</div></section>
+<section class="specimen" id="spacing-responsive"><h2>画面幅で切り替える</h2><p>指定なしは全画面、<code>md:</code> は768px以上、<code>lg:</code> は1024px以上に適用します。すべての新しい余白クラスで使えます。</p><div class="example" data-example>
+<div id="spacing-responsive-demo" class="space-demo sp-p-2 md:sp-p-6 lg:sp-p-8"><div class="space-demo-item">内側の余白：通常8px → mdで24px → lgで32px</div></div>
+</div></section>
+<section class="specimen"><h2>既存クラスとの使い分け</h2><p>従来の <code>gap-3</code> と <code>px-3</code> は16px相当のままです。新しい <code>sp-gap-3</code> と <code>sp-px-3</code> は12px相当です。既存の <code>fx-gap-*</code> も変更していません。新しく組む画面ではsp-の系列に統一してください。</p><p>余白クラスはコンポーネントの標準値を上書きできるように <code>!important</code> を使用しています。HTMLのクラス記述順では優先順位を変更できません。同じ箇所に <code>sp-p-2 sp-p-6</code> のような重複指定は避けてください。全方向 → x/y → 各方向の順に具体的な指定が優先され、md・lgはそれぞれ対象幅で通常指定を上書きします。</p><p>特殊な値・負の余白・動的な計算が必要な場合は、引き続きstyleや独自CSSを使えます。同じプロパティの余白クラスは外してください。Tailwindの任意値構文（p-[13px]など）には対応していません。</p></section>
+<p class="dim small">4〜8pxはラベルや小さな要素間、12〜16pxは同じグループ内、24〜32pxは別のグループ間、48pxは大きな領域の区切りに使います。横並びにはcluster、縦並びにはstackを使い、間隔をsp-gap-*で調整できます。内側はsp-p-*、外側はsp-m-*で指定します。</p><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+
+</body></html>

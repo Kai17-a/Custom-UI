@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kav-UI"
+  short_description: "Kav-UIの既存デザインとAPIを使って画面・コンポーネントを実装する"
+  default_prompt: "$kav-ui を使って、既存のデザインに合わせた画面を実装してください。"

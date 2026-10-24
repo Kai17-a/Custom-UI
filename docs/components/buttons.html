@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buttons — Kav-UI design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
+<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../../llms.txt">
+<link rel="alternate" type="text/markdown" href="buttons.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../installation.html">ダウンロード・導入</a>
+<a class="overview-link" href="../getting-started.html">使い方・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a>
+<a class="overview-link" href="../ai-agents.html">AIエージェント向け</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="foundations.html">Foundations</a></li>
+      <li><a href="themes.html">UI themes</a></li>
+      <li><a href="theme-switcher.html">Theme switcher</a></li>
+      <li><a href="color-palettes.html">Color palettes</a></li>
+      <li><a href="typography.html">Typography</a></li>
+      <li><a href="spacing.html">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="mdi-icons.html">MDIアイコン</a></li><li><a href="icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="layouts.html">Layouts</a></li>
+      <li><a href="splitter.html">Splitter</a></li>
+      <li><a href="flex.html">Flexbox</a></li>
+      <li><a href="flex-grid.html">Flex grid</a></li>
+      <li><a href="cards.html">Cards</a></li>
+      <li><a href="sidebar.html">Sidebar</a></li>
+
+      <li><a href="drawer.html">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="buttons.html" aria-current="page">Buttons</a></li>
+      <li><a href="forms.html">Forms</a></li>
+              <li><a href="rating.html">Rating</a></li>
+      <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="dialog.html">Dialog</a></li>
+      <li><a href="clipboard.html">Clipboard</a></li>
+
+      <li><a href="input-group.html">Input group</a></li>
+      <li><a href="button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="command.html">Command menu</a></li>
+      <li><a href="disclosure.html">Accordion</a></li>
+
+      <li><a href="dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="badges.html">Badges</a></li>
+      <li><a href="table.html">Table</a></li>
+      <li><a href="data-table.html">Data table</a></li>
+      <li><a href="board.html">Kanban board</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+
+      <li><a href="list-group.html">List group</a></li>
+      <li><a href="avatar.html">Avatar</a></li>
+      <li><a href="chart.html">Chart</a></li>
+              <li><a href="carousel.html">Carousel</a></li>
+              <li><a href="timeline.html">Timeline</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="banner.html">Banner</a></li>
+      <li><a href="toasts.html">Toasts & alerts</a></li>
+      <li><a href="tips.html">Tips & tooltips</a></li>
+
+      <li><a href="popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="loading.html">Loading</a></li>
+      <li><a href="states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="animations.html">一覧・使い方</a></li>
+        <li><a href="animations-entrances.html">表示・非表示</a></li>
+        <li><a href="animations-movement.html">移動・回転</a></li>
+        <li><a href="animations-attention.html">強調・揺れ</a></li>
+        <li><a href="animations-interactions.html">操作時の動き</a></li>
+        <li><a href="animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Buttons</h1></header><p class="lede">塗りつぶし・アウトライン・淡い背景・枠なしのボタン。アイコンの有無、位置、サイズや形をクラス指定で選べます。</p>
+<section class="specimen"><h2>塗りつぶし</h2><p class="dim"><code>btn</code>に<code>btn-色名</code>を組み合わせます。主要な操作や、確定・削除など明確に強調したい操作に使います。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+<button type="button" class="btn btn-primary" >新規作成</button>
+<button type="button" class="btn btn-secondary" >キャンセル</button>
+<button type="button" class="btn btn-success" >承認</button>
+<button type="button" class="btn btn-danger" >削除</button>
+<button type="button" class="btn btn-warning" >注意事項</button>
+<button type="button" class="btn btn-info" >詳細情報</button>
+</div>
+</div></section>
+<section class="specimen"><h2>アウトライン</h2><p class="dim"><code>btn</code>に<code>btn-outline-色名</code>を組み合わせます。塗りつぶしより控えめに、操作できる範囲を枠線で示します。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+<button type="button" class="btn btn-outline-primary" >新規作成</button>
+<button type="button" class="btn btn-outline-secondary" >キャンセル</button>
+<button type="button" class="btn btn-outline-success" >承認</button>
+<button type="button" class="btn btn-outline-danger" >削除</button>
+<button type="button" class="btn btn-outline-warning" >注意事項</button>
+<button type="button" class="btn btn-outline-info" >詳細情報</button>
+</div>
+</div></section>
+<section class="specimen"><h2>淡い背景（Soft）</h2><p class="dim"><code>btn</code>に<code>btn-soft-色名</code>を組み合わせます。通常の操作にはこの淡い背景を使うと、カードやフォームになじみます。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+<button type="button" class="btn btn-soft-primary" >新規作成</button>
+<button type="button" class="btn btn-soft-secondary" >キャンセル</button>
+<button type="button" class="btn btn-soft-success" >承認</button>
+<button type="button" class="btn btn-soft-danger" >削除</button>
+<button type="button" class="btn btn-soft-warning" >注意事項</button>
+<button type="button" class="btn btn-soft-info" >詳細情報</button>
+</div>
+</div></section>
+<section class="specimen"><h2>枠なし（Ghost）</h2><p class="dim"><code>btn</code>に<code>btn-ghost-色名</code>を組み合わせます。ツールバーなど、同じ領域に複数の操作を並べる場合に使えます。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+<button type="button" class="btn btn-ghost-primary" >新規作成</button>
+<button type="button" class="btn btn-ghost-secondary" >キャンセル</button>
+<button type="button" class="btn btn-ghost-success" >承認</button>
+<button type="button" class="btn btn-ghost-danger" >削除</button>
+<button type="button" class="btn btn-ghost-warning" >注意事項</button>
+<button type="button" class="btn btn-ghost-info" >詳細情報</button>
+</div>
+</div></section>
+<section class="specimen"><h2>アイコン＋文字（左・右）</h2><p class="dim">SVGにbtn-iconを付けると、大きさ・間隔・色がボタンに揃います。HTML内の順序で左右を指定できます。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+<button type="button" class="btn btn-primary" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg> 新規作成</button>
+<button type="button" class="btn btn-outline-primary" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 9h-4V3H9v6H5l7 7 7-7M5 18v3h14v-3H5z"/></svg> ダウンロード</button>
+<button type="button" class="btn btn-soft-success" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> 変更を保存</button>
+<button type="button" class="btn btn-ghost-secondary" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> 編集</button>
+<button type="button" class="btn btn-outline-secondary" >次へ <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4 10.6 5.4 16.2 11H4v2h12.2l-5.6 5.6L12 20l8-8z"/></svg></button>
+</div>
+</div></section>
+<section class="specimen"><h2>アイコン付きでもデザインを選ぶ</h2><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+<button type="button" class="btn btn-primary" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> 編集</button>
+<button type="button" class="btn btn-outline-primary" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> 編集</button>
+<button type="button" class="btn btn-soft-primary" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> 編集</button>
+<button type="button" class="btn btn-ghost-primary" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> 編集</button>
+</div>
+</div></section>
+<section class="specimen"><h2>アイコンのみ</h2><p class="dim">btn-icon-onlyで正方形にします。aria-labelで操作名を付け、titleでも説明を表示します。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+<button type="button" class="btn btn-primary btn-icon-only" aria-label="追加" title="追加" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></button>
+<button type="button" class="btn btn-outline-secondary btn-icon-only" aria-label="編集" title="編集" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+<button type="button" class="btn btn-soft-primary btn-icon-only" aria-label="検索" title="検索" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.5 3a6.5 6.5 0 1 0 4.1 11.54L19.06 20 20.5 18.56l-5.46-5.46A6.5 6.5 0 0 0 9.5 3m0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z"/></svg></button>
+<button type="button" class="btn btn-ghost-danger btn-icon-only" aria-label="削除" title="削除" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+</div>
+</div></section>
+<section class="specimen"><h2>サイズと形</h2><p class="dim">本文と共通の書体を使い、通常は14px・太さ500・行間1.4・字間0です。btn-smは13px、btn-lgは16px。btn-pillで角丸を変更できます。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+<button type="button" class="btn btn-outline-primary btn-sm" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg> 追加</button>
+<button type="button" class="btn btn-outline-primary" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg> 追加</button>
+<button type="button" class="btn btn-outline-primary btn-lg" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg> 追加</button>
+<button type="button" class="btn btn-primary btn-pill" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg> 追加</button>
+<button type="button" class="btn btn-soft-primary btn-icon-only btn-sm" aria-label="追加" title="追加" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></button>
+<button type="button" class="btn btn-outline-primary btn-icon-only btn-lg btn-pill" aria-label="追加" title="追加" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg></button>
+</div>
+</div></section>
+<section class="specimen"><h2>無効状態</h2><p class="dim">操作できないボタンにはdisabledを指定します。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+<button type="button" class="btn btn-primary" disabled><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> 保存</button>
+<button type="button" class="btn btn-outline-primary" disabled><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> 保存</button>
+<button type="button" class="btn btn-soft-primary btn-icon-only" aria-label="編集" title="編集" disabled><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+<button type="button" class="btn btn-ghost-danger btn-icon-only" aria-label="削除" title="削除" disabled><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+</div>
+</div></section>
+<section class="specimen"><h2>横幅いっぱいのボタン</h2><div class="example" data-example>
+<button type="button" class="btn btn-primary btn-block" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> 変更を保存</button>
+</div></section>
+<section class="specimen"><h2>操作を試す</h2><p class="dim">クリックまたはTabでフォーカスしてEnter / Spaceで通知を表示できます。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+<button type="button" class="btn btn-outline-primary" data-ui-toast="アイコン付きボタンを操作しました（デモ）。"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> サンプル通知を表示</button>
+</div>
+</div></section>
+<section class="specimen"><h2>クラス一覧</h2><div class="example"><table class="table"><thead><tr><th scope="col">クラス</th><th scope="col">用途</th></tr></thead><tbody><tr><th scope="row"><code>btn</code></th><td>ボタンの基本。すべてのデザインに併用します。</td></tr><tr><th scope="row"><code>btn-{色}</code></th><td>塗りつぶし。primary / secondary / success / danger / warning / info。</td></tr><tr><th scope="row"><code>btn-outline-{色}</code></th><td>枠線で示すデザイン。同じ6色を指定できます。</td></tr><tr><th scope="row"><code>btn-soft-{色}</code></th><td>淡い背景。同じ6色を指定できます。</td></tr><tr><th scope="row"><code>btn-ghost-{色}</code></th><td>枠なし。同じ6色を指定できます。</td></tr><tr><th scope="row"><code>btn-icon</code></th><td>子のSVGに指定。文字色を引き継ぎます。</td></tr><tr><th scope="row"><code>btn-icon-only</code></th><td>アイコンのみの正方形ボタン。aria-labelも指定します。</td></tr><tr><th scope="row"><code>btn-sm / btn-lg</code></th><td>小・大サイズ。省略時は標準サイズ。</td></tr><tr><th scope="row"><code>btn-pill / btn-block</code></th><td>丸い形状／横幅いっぱいに表示。</td></tr></tbody></table></div><p>デザイン用クラスは1つ選び、サイズや形状を組み合わせます。外部のアイコンライブラリは不要です。サンプルのSVGは「HTMLを表示」からそのままコピーできます。</p><p><a href="icons.html">アイコン一覧</a> / <a href="loading.html">ボタンのローディング</a> / <a href="clipboard.html">コピー操作のボタン</a></p></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+
+</body></html>

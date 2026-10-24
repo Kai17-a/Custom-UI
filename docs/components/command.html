@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Command menu — Kav-UI design catalog</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script src="../../assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="../assets/css/catalog.css">
+
+
+<script defer src="../assets/js/catalog.js"></script>
+<script defer src="../assets/js/catalog-navigation.js"></script>
+<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/js/catalog-demo.js"></script>
+
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../../llms.txt">
+<link rel="alternate" type="text/markdown" href="command.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+<body data-ui-theme-persist>
+<a class="skip-link" href="#main">コンテンツへ移動</a>
+<header class="catalog-header"><a class="brand" href="../index.html">Kav-UI <span>design catalog</span></a><div class="catalog-toolbar"><label class="catalog-theme-control"><span>デザイン</span><select class="form-select form-select-sm" data-ui-theme-select><option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option></select></label><label class="catalog-theme-control"><span>配色</span><select class="form-select form-select-sm" data-ui-palette-select><option value="default">標準</option><option value="slate">スレート</option><option value="sage">セージ</option><option value="teal">ティール</option><option value="mauve">モーブ</option><option value="sand">サンド</option><option value="clay">クレイ</option></select></label><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div></header>
+<div class="catalog-layout"><aside class="catalog-sidebar"><a class="overview-link" href="../index.html">カタログ一覧</a><a class="overview-link" href="../installation.html">ダウンロード・導入</a>
+<a class="overview-link" href="../getting-started.html">使い方・属性一覧</a><a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a><a class="overview-link" href="../templates.html">サービステンプレート ↗</a>
+<a class="overview-link" href="../ai-agents.html">AIエージェント向け</a><p class="eyebrow">COMPONENTS</p><nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href="foundations.html">Foundations</a></li>
+      <li><a href="themes.html">UI themes</a></li>
+      <li><a href="theme-switcher.html">Theme switcher</a></li>
+      <li><a href="color-palettes.html">Color palettes</a></li>
+      <li><a href="typography.html">Typography</a></li>
+      <li><a href="spacing.html">Spacing</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="mdi-icons.html">MDIアイコン</a></li><li><a href="icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href="layouts.html">Layouts</a></li>
+      <li><a href="splitter.html">Splitter</a></li>
+      <li><a href="flex.html">Flexbox</a></li>
+      <li><a href="flex-grid.html">Flex grid</a></li>
+      <li><a href="cards.html">Cards</a></li>
+      <li><a href="sidebar.html">Sidebar</a></li>
+
+      <li><a href="drawer.html">Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href="buttons.html">Buttons</a></li>
+      <li><a href="forms.html">Forms</a></li>
+              <li><a href="rating.html">Rating</a></li>
+      <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="dialog.html">Dialog</a></li>
+      <li><a href="clipboard.html">Clipboard</a></li>
+
+      <li><a href="input-group.html">Input group</a></li>
+      <li><a href="button-group.html">Button group</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href="navigation.html">Navigation</a></li>
+              <li><a href="command.html" aria-current="page">Command menu</a></li>
+      <li><a href="disclosure.html">Accordion</a></li>
+
+      <li><a href="dropdown.html">Dropdown</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href="badges.html">Badges</a></li>
+      <li><a href="table.html">Table</a></li>
+      <li><a href="data-table.html">Data table</a></li>
+      <li><a href="board.html">Kanban board</a></li>
+      <li><a href="calendar.html">Calendar</a></li>
+
+      <li><a href="list-group.html">List group</a></li>
+      <li><a href="avatar.html">Avatar</a></li>
+      <li><a href="chart.html">Chart</a></li>
+              <li><a href="carousel.html">Carousel</a></li>
+              <li><a href="timeline.html">Timeline</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補足</h2>
+    <ul>
+      <li><a href="alerts.html">Alerts</a></li>
+      <li><a href="banner.html">Banner</a></li>
+      <li><a href="toasts.html">Toasts & alerts</a></li>
+      <li><a href="tips.html">Tips & tooltips</a></li>
+
+      <li><a href="popover.html">Popover</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href="loading.html">Loading</a></li>
+      <li><a href="states.html">States</a></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="animations"><summary>Animations</summary><ul>
+        <li><a href="animations.html">一覧・使い方</a></li>
+        <li><a href="animations-entrances.html">表示・非表示</a></li>
+        <li><a href="animations-movement.html">移動・回転</a></li>
+        <li><a href="animations-attention.html">強調・揺れ</a></li>
+        <li><a href="animations-interactions.html">操作時の動き</a></li>
+        <li><a href="animations-processing.html">処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+</nav><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Command menu</h1></header><p class="lede">検索からページや操作を選ぶメニュー。インライン・ダイアログ・キーボード選択・グループ・空結果に対応します。</p>
+<section class="specimen" id="command-inline"><h2>検索して操作を選ぶ</h2><p><code>data-ui-command</code>に検索欄と操作一覧を配置します。ラベルと<code>data-ui-keywords</code>を部分一致で検索でき、全角英数字にも対応します。</p><div class="example" data-example>
+<div class="ui-command" id="command-inline-demo" data-ui-command aria-label="操作を検索">
+  <div class="ui-command-search"><span icon="mdi-magnify" aria-hidden="true"></span><input class="ui-command-input" data-ui-command-input type="search" aria-label="操作を検索" placeholder="名前やキーワードを入力" autocomplete="off"></div>
+  <div class="ui-command-list" data-ui-command-list>
+    <div class="ui-command-group" data-ui-command-group="ページ">
+      <h3 class="ui-command-group-title" aria-hidden="true">ページ</h3>
+      <button type="button" class="ui-command-item" data-ui-command-item data-ui-value="projects" data-ui-keywords="プロジェクト project 一覧"><span icon="mdi-folder-outline" aria-hidden="true"></span>プロジェクト一覧</button>
+      <button type="button" class="ui-command-item" data-ui-command-item data-ui-value="settings" data-ui-keywords="設定 settings"><span icon="mdi-cog-outline" aria-hidden="true"></span>表示設定</button>
+    </div>
+    <div class="ui-command-group" data-ui-command-group="操作">
+      <h3 class="ui-command-group-title" aria-hidden="true">操作</h3>
+      <button type="button" class="ui-command-item" data-ui-command-item data-ui-value="save" data-ui-keywords="保存 save" data-ui-toast="保存しました" data-ui-variant="success"><span icon="mdi-check" aria-hidden="true"></span>変更を保存</button>
+      <button type="button" class="ui-command-item" data-ui-command-item data-ui-value="admin" disabled>管理者専用の操作</button>
+    </div>
+  </div>
+  <p class="ui-command-empty" data-ui-command-empty hidden>一致する操作がありません。別の言葉で検索してください。</p>
+  <div class="ui-command-footer"><span data-ui-command-status role="status"></span><span>↑↓ 選択・Enter 実行</span></div>
+</div>
+<p class="type-caption sp-mt-3" data-demo-command-result role="status">操作を選ぶと、ここに結果を表示します。</p>
+</div></section>
+<section class="specimen" id="command-dialog"><h2>ダイアログとショートカット</h2><p>通常のダイアログ属性と組み合わせます。<code>data-ui-command-shortcut="k"</code>を付けた場合だけ、Ctrl／⌘＋Kで開閉できます。外側の入力欄で編集中はショートカットを奪いません。</p><div class="example" data-example>
+<button type="button" class="btn btn-soft-primary" data-ui-toggle="dialog" data-ui-target="#command-dialog-demo">操作を検索 <kbd>Ctrl / ⌘ K</kbd></button>
+<dialog class="ui-command ui-dialog" id="command-dialog-demo" data-ui-command data-ui-dialog data-ui-command-shortcut="k" aria-label="操作を検索">
+  <div class="ui-command-search"><span icon="mdi-magnify" aria-hidden="true"></span><input class="ui-command-input" data-ui-command-input type="search" aria-label="操作を検索" placeholder="名前やキーワードを入力" autocomplete="off"></div>
+  <div class="ui-command-list" data-ui-command-list>
+    <div class="ui-command-group" data-ui-command-group="ページ">
+      <h3 class="ui-command-group-title" aria-hidden="true">ページ</h3>
+      <button type="button" class="ui-command-item" data-ui-command-item data-ui-value="projects" data-ui-keywords="プロジェクト project 一覧"><span icon="mdi-folder-outline" aria-hidden="true"></span>プロジェクト一覧</button>
+      <button type="button" class="ui-command-item" data-ui-command-item data-ui-value="settings" data-ui-keywords="設定 settings"><span icon="mdi-cog-outline" aria-hidden="true"></span>表示設定</button>
+    </div>
+    <div class="ui-command-group" data-ui-command-group="操作">
+      <h3 class="ui-command-group-title" aria-hidden="true">操作</h3>
+      <button type="button" class="ui-command-item" data-ui-command-item data-ui-value="save" data-ui-keywords="保存 save" data-ui-toast="保存しました" data-ui-variant="success"><span icon="mdi-check" aria-hidden="true"></span>変更を保存</button>
+      <button type="button" class="ui-command-item" data-ui-command-item data-ui-value="admin" disabled>管理者専用の操作</button>
+    </div>
+  </div>
+  <p class="ui-command-empty" data-ui-command-empty hidden>一致する操作がありません。別の言葉で検索してください。</p>
+  <div class="ui-command-footer"><span data-ui-command-status role="status"></span><span>↑↓ 選択・Enter 実行</span><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-dismiss="dialog">閉じる</button></div>
+</dialog>
+<p class="type-caption sp-mt-3" data-demo-command-result role="status">操作を選ぶと、ここに結果を表示します。</p>
+</div></section>
+<section class="specimen" id="command-keyboard"><h2>キーボード・無効項目・空結果</h2><ul><li>↑↓で操作を選び、Enterで実行します。IMEでの変換確定では実行しません。</li><li>無効な操作は<code>disabled</code>または<code>aria-disabled="true"</code>で指定します。</li><li>一致する項目がないときは<code>data-ui-command-empty</code>を表示します。</li><li>Escapeでダイアログを閉じて元の操作へ戻ります。インラインでは検索語を消します。</li></ul></section>
+<section class="specimen" id="command-events"><h2>選択イベントと動的な更新</h2><p>操作の実行処理はアプリ側で接続します。選択時には<code>ui:commandselect</code>が発火し、<code>detail.value</code>と<code>detail.item</code>を取得できます。ボタンの通常のclickや、既存のトースト属性も利用できます。</p><pre class="setup-code"><code>const command = document.querySelector(&#x27;[data-ui-command]&#x27;);
+command.addEventListener(&#x27;ui:commandselect&#x27;, event =&gt; {
+  console.log(event.detail.value);
+});
+
+// 操作項目を追加した後
+KavUI.init(command);
+// DOM全体を作り直す前
+KavUI.destroy(command);</code></pre><p>機能の参考：<a href="https://ui.shadcn.com/docs/components/base/command">shadcn/ui Command</a>。表示と実装はKav-UI独自で、外部ライブラリは読み込みません。</p></section>
+<details class="source"><summary>使用ファイル・取り込み方</summary><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a>。Vue・Astroでは既存の<code>KavWidget</code>に同じHTMLを渡して利用できます。<a href="../../packages/README.md">パッケージの使い方</a>も参照してください。</p></details></main></div></body></html>
