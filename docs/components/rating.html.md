@@ -64,4 +64,4 @@ JavaScriptは不要です。機能の参考：[daisyUI Rating](https://daisyui.c
 <script defer src="assets/js/ui.js"></script>
 ```
 
-[ui.css](../../assets/css/ui.css) / [ui.js](../../assets/js/ui.js)。Vue・Astroでは既存の`KavWidget`に同じHTMLを渡して利用できます。[パッケージの使い方](../../packages/README.md)も参照してください。
+[ui.css](../assets/ui/css/ui.css) / [ui.js](../assets/ui/js/ui.js)。Vue・Astroでは既存の`KavWidget`に同じHTMLを渡して利用できます。[パッケージの使い方](../packages/README.md)も参照してください。

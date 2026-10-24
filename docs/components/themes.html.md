@@ -196,6 +196,6 @@ document.addEventListener('ui:designchange', event => {
 
 使用ファイル・取り込み方
 
-[themes.css](../../assets/css/themes.css)はui.cssから自動で読み込まれます。assetsフォルダの構造を維持してコピーしてください。npm不要です。
+[themes.css](../assets/ui/css/themes.css)はui.cssから自動で読み込まれます。assetsフォルダの構造を維持してコピーしてください。npm不要です。
 
 [導入手順](../getting-started.html.md) / [共通ファイルだけのアプリ見本](../starter.html.md)

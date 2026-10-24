@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flexbox — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<script src="../../assets/js/theme-init.js"></script>
+<script src="../assets/ui/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 <link rel="stylesheet" href="../assets/css/flex-demos.css">
 
 <script defer src="../assets/js/catalog.js"></script>
 <script defer src="../assets/js/catalog-navigation.js"></script>
-<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/ui/js/ui.js"></script>
 <script defer src="../assets/js/catalog-demo.js"></script>
 <script defer src="../assets/js/flex-playground.js"></script>
 
@@ -242,6 +242,6 @@
 </div>
 </section>
 <section class="specimen" id="reference"><h2>取り込み用クラス一覧</h2><p class="dim small">{...} はカンマで区切った候補のいずれか1つです。fx-gap-1 は4px、2は8px、4は16pxです。競合する同じ種類のクラスは1つだけ指定してください。</p><div class="example"><table class="flex-reference"><caption>Flexboxユーティリティ</caption><thead><tr><th scope="col">用途</th><th scope="col">クラス</th><th scope="col">対応するCSS</th></tr></thead><tbody><tr><th scope="row">表示・方向</th><td><code>fx / fx-inline / fx-row / fx-column / fx-row-reverse / fx-column-reverse</code></td><td>display / flex-direction</td></tr><tr><th scope="row">折り返し</th><td><code>fx-wrap / fx-nowrap / fx-wrap-reverse</code></td><td>flex-wrap</td></tr><tr><th scope="row">主軸の整列</th><td><code>fx-justify-{start,end,center,between,around,evenly}</code></td><td>justify-content</td></tr><tr><th scope="row">交差軸の整列</th><td><code>fx-items-{start,end,center,stretch,baseline}</code></td><td>align-items</td></tr><tr><th scope="row">複数行の整列</th><td><code>fx-content-{start,end,center,between,around,evenly,stretch}</code></td><td>align-content</td></tr><tr><th scope="row">子の整列</th><td><code>fx-self-{auto,start,end,center,stretch,baseline}</code></td><td>align-self</td></tr><tr><th scope="row">伸縮の組み合わせ</th><td><code>fx-flex-1 / fx-flex-auto / fx-flex-initial / fx-flex-none</code></td><td>flex shorthand</td></tr><tr><th scope="row">伸びる比率</th><td><code>fx-grow-0 / fx-grow / fx-grow-2</code></td><td>flex-grow: 0 / 1 / 2</td></tr><tr><th scope="row">縮む・固定</th><td><code>fx-shrink / fx-shrink-0</code></td><td>flex-shrink: 1 / 0</td></tr><tr><th scope="row">初期サイズ</th><td><code>fx-basis-0 / fx-basis-auto / fx-basis-full / fx-basis</code></td><td>flex-basis / --fx-basis</td></tr><tr><th scope="row">はみ出し対策</th><td><code>fx-min-0</code></td><td>min-width: 0 / min-height: 0</td></tr><tr><th scope="row">表示順序</th><td><code>fx-order-first / fx-order-0 / fx-order-1 / fx-order-2 / fx-order-last</code></td><td>order</td></tr><tr><th scope="row">自動マージン</th><td><code>fx-ms-auto / fx-me-auto / fx-mt-auto / fx-mb-auto / fx-m-auto</code></td><td>margin</td></tr><tr><th scope="row">間隔</th><td><code>fx-gap-{0,1,2,3,4,6,8,12} / fx-gap / fx-row-gap / fx-column-gap</code></td><td>gap / --fx-gap / --fx-row-gap / --fx-column-gap</td></tr><tr><th scope="row">レスポンシブ</th><td><code>fx-responsive / fx-md-row / fx-md-column / fx-md-wrap / fx-md-nowrap / fx-lg-row / fx-lg-column</code></td><td>md: 768px / lg: 1024px</td></tr><tr><th scope="row">自動配置・スクロール</th><td><code>fx-auto-grid / fx-scroll</code></td><td>--fx-min / --fx-gap</td></tr></tbody></table></div></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
-&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/ui/css/ui.css">ui.css</a> / <a href="../assets/ui/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
 
 </body></html>

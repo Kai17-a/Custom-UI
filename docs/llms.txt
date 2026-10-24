@@ -11,8 +11,8 @@
 - [ダウンロード・導入](installation.html.md): ZIPの入手、assets配置、最小HTML、テーマ復元。
 - [使い方・属性一覧](getting-started.html.md): data属性とイベント、初期化、アプリとの組み合わせ。
 - [AIエージェント用ガイド](ai-agents.html.md): スキルの持ち出し方と資料の更新方法。
-- [Kav-UIスキル](../skills/kav-ui/SKILL.md): 別プロジェクトで使える同梱資料付きスキル。元ソース・通信なしでHTML/Vue/Astroの実装を案内。
-- [組み込みリファレンス](../skills/kav-ui/references/integration.md): 持ち出せる基本HTMLと連携の例。
+- [Kav-UIスキル](skills/kav-ui/SKILL.md): 別プロジェクトで使える同梱資料付きスキル。元ソース・通信なしでHTML/Vue/Astroの実装を案内。
+- [組み込みリファレンス](skills/kav-ui/references/integration.md): 持ち出せる基本HTMLと連携の例。
 
 ## 基本スタイル
 
@@ -87,14 +87,14 @@
 
 ## Optional
 
-- [Vue/Astroパッケージ](../packages/README.md): ローカルtarball・GitHub Releases向けの導入と対応範囲。
-- [Vue](../packages/vue/README.md): props、slots、v-modelとKavWidget。
-- [Astro](../packages/astro/README.md): Provider、静的HTMLとクライアント遷移。
+- [Vue/Astroパッケージ](packages/README.md): ローカルtarball・GitHub Releases向けの導入と対応範囲。
+- [Vue](packages/vue/README.md): props、slots、v-modelとKavWidget。
+- [Astro](packages/astro/README.md): Provider、静的HTMLとクライアント遷移。
 - [テンプレート](templates.html.md): ドキュメント・ダッシュボード・changelog・エラー画面。
 - [動く最小HTML](starter.html): ブラウザで開く実例。
-- [共通CSS](../assets/css/ui.css): CSSの入口。フォルダ内の参照先も必要。
-- [共通JavaScript](../assets/js/ui.js): 自動初期化する通常HTML用ランタイム。
-- [初期テーマ復元](../assets/js/theme-init.js): 任意の同期headスクリプト。
-- [README](../README.md): 配布構成・開発・生成と検証。
-- [MDIライセンス](../assets/icons/mdi/LICENSE): 同梱アイコンの出典。
-- [Material Color Utilitiesライセンス](../assets/vendor/material-color-utilities/LICENSE): HCTの出典。
+- [共通CSS](assets/ui/css/ui.css): CSSの入口。フォルダ内の参照先も必要。
+- [共通JavaScript](assets/ui/js/ui.js): 自動初期化する通常HTML用ランタイム。
+- [初期テーマ復元](assets/ui/js/theme-init.js): 任意の同期headスクリプト。
+- [ソースリポジトリ](https://github.com/Kai17-a/Custom-UI): 配布構成・開発・生成と検証。
+- [MDIライセンス](assets/ui/icons/mdi/LICENSE): 同梱アイコンの出典。
+- [Material Color Utilitiesライセンス](assets/ui/vendor/material-color-utilities/LICENSE): HCTの出典。

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Kav-UI"
+  short_description: "同梱資料を使い、他プロジェクトへKav-UIの画面とコンポーネントを実装する"
+  default_prompt: "$kav-ui の同梱資料を使い、このプロジェクトの構成と導入済みのKav-UIに合わせて画面を実装してください。"

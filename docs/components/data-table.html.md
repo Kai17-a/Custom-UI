@@ -202,7 +202,7 @@ KavUI.destroy(table);
 
 再初期化では現在の検索・ソート・選択を保ちながら表示を更新します。元の順序は最初に登録したときの並びで、後から追加した行はその後ろに登録されます。破棄すると元の行順・hidden・ARIAを戻します。ユーザーが変更した行のcheckboxの値は保持します。フォームのresetは検索欄・表示件数・選択を初期値に戻し、ソートとページをリセットします。
 
-Vue・Astroでは、既存の`KavWidget`で同じHTMLを利用できます。[パッケージの導入方法](../../packages/README.md)も参照してください。
+Vue・Astroでは、既存の`KavWidget`で同じHTMLを利用できます。[パッケージの導入方法](../packages/README.md)も参照してください。
 
 使用ファイル・取り込み方
 
@@ -213,4 +213,4 @@ Vue・Astroでは、既存の`KavWidget`で同じHTMLを利用できます。[�
 <script defer src="assets/js/ui.js"></script>
 ```
 
-[ダウンロード・導入](../installation.html.md) / [静的なTable](table.html.md) / [ui.css](../../assets/css/ui.css) / [ui.js](../../assets/js/ui.js)
+[ダウンロード・導入](../installation.html.md) / [静的なTable](table.html.md) / [ui.css](../assets/ui/css/ui.css) / [ui.js](../assets/ui/js/ui.js)

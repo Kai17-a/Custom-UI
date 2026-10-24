@@ -162,4 +162,4 @@ Releaseに`kav-ui-vX.Y.Z.zip.sha256`がある場合は、ZIPと同じフォル�
 sha256sum --check kav-ui-vX.Y.Z.zip.sha256
 ```
 
-Vue・Astro向けのパッケージで使う場合は、[パッケージの導入手順](../packages/README.md)を参照してください。
+Vue・Astro向けのパッケージで使う場合は、[パッケージの導入手順](packages/README.md)を参照してください。

@@ -222,6 +222,6 @@ progressElement.removeAttribute('value');
 
 npmは不要です。assetsフォルダの構造を維持してコピーしてください。
 
-[loading.css](../../assets/css/components/loading.css) / [skeleton.css](../../assets/css/components/skeleton.css) / [導入手順](../getting-started.html.md) / [スケルトン・空状態](states.html.md)
+[loading.css](../assets/ui/css/components/loading.css) / [skeleton.css](../assets/ui/css/components/skeleton.css) / [導入手順](../getting-started.html.md) / [スケルトン・空状態](states.html.md)
 
 catalog-demo.jsとdata-demo-*は見本用です。アプリに取り込む際は外し、実際の処理に置き換えてください。

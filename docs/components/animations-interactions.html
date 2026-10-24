@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Animations · 操作時の動き — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<script src="../../assets/js/theme-init.js"></script>
+<script src="../assets/ui/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
 <script defer src="../assets/js/catalog.js"></script>
 <script defer src="../assets/js/catalog-navigation.js"></script>
-<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/ui/js/ui.js"></script>
 <script defer src="../assets/js/catalog-demo.js"></script>
 
 
@@ -142,6 +142,6 @@
 <tr><th scope="row">処理・デザイン変更</th><td><a href="loading.html">進捗バー・ローディング</a>の更新、<a href="themes.html">明暗・デザインテーマ</a>の切り替え。</td></tr>
 </tbody></table></div><p>カレンダーの月切り替えと日付選択は、アニメーションなしで反映します。その他の動きは短く統一しています。アプリでは共通のui.css / ui.jsを使うだけで適用され、アニメーション用の属性は不要です。OSの「動きを減らす」設定では移動・フェードを止め、状態をすぐに切り替えます。</p></section>
 <details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
-&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/ui/css/ui.css">ui.css</a> / <a href="../assets/ui/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
 
 </body></html>

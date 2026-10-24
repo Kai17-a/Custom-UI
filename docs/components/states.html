@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>States — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<script src="../../assets/js/theme-init.js"></script>
+<script src="../assets/ui/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
 <script defer src="../assets/js/catalog.js"></script>
 <script defer src="../assets/js/catalog-navigation.js"></script>
-<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/ui/js/ui.js"></script>
 <script defer src="../assets/js/catalog-demo.js"></script>
 
 
@@ -119,6 +119,6 @@
   </div>
 </nav><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
 <main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>States</h1></header><p class="lede">データが揃う前や、操作が完了しなかったときの表示例です。</p><section class="specimen"><h2>読み込み中</h2><div class="example" data-example><div role="status" aria-label="タスクを読み込み中"><p class="dim">タスクを読み込み中…</p><div aria-hidden="true"><div class="skeleton skeleton-shimmer" style="width:60%"></div><div class="skeleton skeleton-shimmer" style="width:90%"></div><div class="skeleton skeleton-shimmer" style="width:75%"></div></div></div></div></section><p><a href="loading.html#skeleton-shimmer">スケルトンシマーのカード・画像・アバターの例 →</a></p><section class="specimen"><h2>進捗</h2><div class="example" data-example><label for="upload-progress">ファイルをアップロード中 — 60%</label><div><progress id="upload-progress" max="100" value="60">60%</progress></div></div></section><section class="specimen"><h2>空の状態</h2><div class="example" data-example><div class="state-panel" data-demo-state><h3>タスクはまだありません</h3><p>最初のタスクを作成して、プロジェクトを始めましょう。</p><button type="button" data-demo-create class="btn btn-sm btn-primary">サンプルタスクを作成</button><p data-demo-result role="status"></p></div></div></section><section class="specimen"><h2>エラーと再試行</h2><div class="example" data-example><div class="alert alert-danger" data-demo-state><h3>タスクを取得できませんでした</h3><p>接続がタイムアウトしました。接続を確認してから再試行してください。</p><button type="button" data-demo-retry class="btn btn-sm btn-outline-danger">再試行（デモ）</button><p data-demo-result role="status"></p></div></div></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
-&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/ui/css/ui.css">ui.css</a> / <a href="../assets/ui/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
 
 </body></html>

@@ -133,4 +133,4 @@ KavUI.init(calendarElement);
 <script defer src="assets/js/ui.js"></script>
 ```
 
-[カレンダーのCSS](../../assets/css/components/calendar.css) / [導入手順](../getting-started.html.md)
+[カレンダーのCSS](../assets/ui/css/components/calendar.css) / [導入手順](../getting-started.html.md)

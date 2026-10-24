@@ -74,7 +74,7 @@ try {
   await send('Runtime.enable');await send('Page.enable');
   // Block deferred UI code to expose the document's first rendered theme.
   await send('Network.enable');
-  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js']});
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js']});
   async function firstPaintPage(path) {
     const url=pathToFileURL(documentPath(path)).href;
     await send('Page.navigate',{url});
@@ -897,7 +897,7 @@ try {
   const removed=await evaluate(`(async()=>{const root=document.getElementById('splitter-basic'),handle=root.querySelector('[role=separator]');root.addEventListener('ui:splitterend',e=>{window.__splitterRemovedCancelled=e.detail.cancelled;});handle.scrollIntoView({behavior:"instant",block:'center'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));const b=handle.getBoundingClientRect();return {x:b.x+b.width/2,y:b.y+b.height/2};})()`);
   await send('Input.dispatchMouseEvent',{type:'mousePressed',...removed,button:'left',clickCount:1});await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:removed.x+20,y:removed.y,buttons:1});await evaluate('document.getElementById("splitter-basic").remove()');await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:removed.x+20,y:removed.y,button:'left',clickCount:1});
   if(!await evaluate('window.__splitterRemovedCancelled===true && !document.documentElement.hasAttribute("data-ui-splitter-resizing")'))throw new Error('Splitter removal must release drag state');
-  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js']});await firstPaintPage('components/splitter.html');
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js']});await firstPaintPage('components/splitter.html');
   if(!await evaluate('!document.querySelector("[role=separator]") && [...document.querySelectorAll("#splitter-basic > [data-ui-splitter-panel]")].every(p=>p.getBoundingClientRect().width>0) && document.documentElement.scrollWidth<=innerWidth+1'))throw new Error('Splitter no-JS equal panels');
   await send('Network.setBlockedURLs',{urls:[]});
   const splitterBlockedStorage=await send('Page.addScriptToEvaluateOnNewDocument',{source:"Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Storage unavailable','SecurityError');}});"});
@@ -946,7 +946,7 @@ try {
   if(!await evaluate('getComputedStyle(document.body).backgroundImage==="none"'))throw new Error('Wallpaper hidden in forced colors');
   await send('Emulation.setEmulatedMedia',{features:[]});
   // A static application can configure an image without loading ui.js.
-  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js']});
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js']});
   const wallpaperSeed=await send('Page.addScriptToEvaluateOnNewDocument',{source:`const observer=new MutationObserver(()=>{if(document.body){document.body.dataset.uiTheme='glass';document.body.style.setProperty('--ui-theme-background-image','url("'+new URL('assets/images/theme-background.svg',location.href).href+'")');observer.disconnect();}});observer.observe(document,{childList:true,subtree:true});`});
   await firstPaintPage('starter.html');
   if(!await evaluate('typeof KavUI==="undefined" && getComputedStyle(document.body).backgroundImage.includes("theme-background.svg")'))throw new Error('Wallpaper CSS-only application');
@@ -1048,7 +1048,7 @@ try {
   await send('Emulation.setDeviceMetricsOverride',{width:320,height:1000,deviceScaleFactor:1,mobile:false});await delay(60);
   if(!await evaluate('document.activeElement.matches("[data-ui-navbar-toggle]") && document.querySelector("#nav-navbar [data-ui-navbar-panel]").hidden'))throw new Error('Navbar shrinking focus return');
   // CSS-only navigation keeps links available and its toggle hidden without scripts.
-  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js']});await firstPaintPage('components/navigation.html');
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js']});await firstPaintPage('components/navigation.html');
   if(!await evaluate('[...document.querySelectorAll("[data-ui-navbar-panel]")].every(panel=>getComputedStyle(panel).display!=="none") && [...document.querySelectorAll("[data-ui-navbar-toggle]")].every(button=>getComputedStyle(button).display==="none")'))throw new Error('Navbar no-JS fallback');
   await send('Network.setBlockedURLs',{urls:[]});
   console.log('Expanded navigation: 3 widths × 10 themes/modes, native navbar/dropdown/Escape/link/focus, manual vertical tabs Enter/Space/Home/End, live 768/1024 breakpoints and no-JS link fallback');
@@ -1080,7 +1080,7 @@ try {
   await navigate('components/color-palettes.html');
   await evaluate('KavUI.setCustomPalette("#7d6b91",{chroma:24,persist:true})');
   const customSaved=await evaluate('JSON.parse(localStorage.getItem("kav-ui-custom-palette"))');
-  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js','*assets/js/templates.js']});
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js','*assets/js/templates.js']});
   for(const mode of ['light','dark']) {
     const {identifier}=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-theme',${JSON.stringify(mode)});`});
     for(const path of ['index.html','starter.html','components/color-palettes.html','templates/dashboard.html']) {
@@ -1142,7 +1142,7 @@ try {
     await evaluate('KavUI.setPalette("default",{persist:true});KavUI.setDesignTheme("default",{persist:true});KavUI.setColorTheme("light",{persist:true})');
   }
   // Block ui.js to prove CSS-only palettes and pre-paint restoration on all entry types.
-  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js','*assets/js/templates.js']});
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js','*assets/js/templates.js']});
   for(const mode of ['light','dark']) {
     const {identifier}=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-theme',${JSON.stringify(mode)});localStorage.setItem('kav-ui-palette','sage');localStorage.removeItem('kav-ui-design-theme');`});
     for(const path of ['index.html','getting-started.html','starter.html','components/color-palettes.html','templates.html','templates/docs.html','templates/dashboard.html','templates/changelog.html']) {
@@ -1191,7 +1191,7 @@ try {
       }
     }
   }
-  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/templates.js']});
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/templates.js']});
   for(const code of ['404','403','500','503']) {
     await firstPaintPage('templates/error-'+code+'.html');
     if(!await evaluate('document.getElementById("error-title").getClientRects().length>0 && [...document.querySelectorAll("main a")].some(a=>a.getAttribute("href")==="dashboard.html") && (!document.querySelector("[data-template-reload]") || document.querySelector("[data-template-reload]").hidden)'))throw new Error('Error page no-JS recovery '+code);
@@ -1372,7 +1372,7 @@ try {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});await navigate(path);
     if(!await evaluate(`document.documentElement.scrollWidth<=innerWidth+1`))throw new Error('Existing sidebar consumer overflow '+path+' '+width);
   }
-  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js']});
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js']});
   await send('Emulation.setDeviceMetricsOverride',{width:320,height:1000,deviceScaleFactor:1,mobile:false});await firstPaintPage('components/sidebar.html');
   if(!await evaluate(`[...document.querySelectorAll('.app-shell[data-ui-sidebar] > .app-sidebar')].every(panel=>panel.getBoundingClientRect().width>0&&!panel.hidden)&&document.documentElement.scrollWidth<=innerWidth+1`))throw new Error('Sidebar no-JS fallback');
   await send('Network.setBlockedURLs',{urls:[]});
@@ -1431,7 +1431,7 @@ try {
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
   if(!await evaluate(`KavUI.show('#banner-dismissible');getComputedStyle(document.getElementById('banner-dismissible')).animationName==='none'`))throw new Error('Banner reduced motion');
   await send('Emulation.setEmulatedMedia',{features:[]});
-  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js']});await firstPaintPage('components/banner.html');
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js']});await firstPaintPage('components/banner.html');
   if(!await evaluate(`getComputedStyle(document.querySelector('.ui-banner-inner')).display==='flex' && document.querySelector('#banner-floating-example').hidden && document.documentElement.scrollWidth<=innerWidth+1`))throw new Error('Banner no-JS content');
   await send('Network.setBlockedURLs',{urls:[]});
   console.log('Banner: responsive actions @320/768/1440 × light/dark × 5 designs; 7 palettes × 6 colors × 3 styles contrast; native pointer/keyboard, focus return, floating placement, reduced motion and no-JS');
@@ -1505,7 +1505,7 @@ try {
       }
     }
   }
-  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js']});
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js']});
   for(const component of ['carousel','timeline','rating']) {
     await send('Page.navigate',{url:pathToFileURL(documentPath('components/'+component+'.html')).href});
     for(let i=0;i<150;i++){await delay(20);if(await evaluate('document.readyState==="complete"'))break;}
@@ -1551,7 +1551,7 @@ try {
   await evaluate(`scrollTo({top:0,behavior:"instant"});document.querySelectorAll('.catalog-toc-link')[5].focus({preventScroll:true})`);await key('Enter');await delay(70);
   if(!await evaluate(`Math.abs(document.getElementById(decodeURIComponent(location.hash.slice(1))).getBoundingClientRect().top-document.querySelector('.catalog-header').getBoundingClientRect().bottom-20)<3`))throw new Error('Reduced motion page anchor');
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
-  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js']});
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js']});
   await send('Page.navigate',{url:pathToFileURL(documentPath('components/navigation.html')).href});
   for(let i=0;i<150;i++){await delay(20);if(await evaluate(`document.readyState==='complete'&&typeof KavUI==='undefined'`))break;}
   if(!await evaluate(`getComputedStyle(document.documentElement).scrollBehavior==='smooth'&&getComputedStyle(document.querySelector('#scroll-active-demo')).overflowY==='auto'`))throw new Error('Smooth CSS works without runtime');
@@ -1586,7 +1586,7 @@ try {
   const cache=await evaluate(`KavUI.setCustomPalette('#52796f',{chroma:20,persist:true});JSON.parse(localStorage.getItem('kav-ui-custom-palette'))`);
   const legacy=structuredClone(cache);legacy.version=1;legacy.light['--md-sys-color-surface']=legacy.light['--bs-body-bg']=cache.light['--md-sys-color-surface-container-lowest'];legacy.light['--md-sys-color-surface-container-lowest']='#ffffff';
   const seed=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-custom-palette',${JSON.stringify(JSON.stringify(legacy))});localStorage.setItem('kav-ui-palette','custom');localStorage.setItem('kav-ui-theme','light');`});
-  await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js','*assets/js/templates.js']});
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js','*assets/js/templates.js']});
   for(const path of ['index.html','components/toasts.html','templates/dashboard.html']){
     await send('Page.navigate',{url:pathToFileURL(documentPath(path)).href});
     for(let i=0;i<150;i++){await delay(20);if(await evaluate(`document.readyState==='complete'&&typeof KavUI==='undefined'`))break;}
@@ -1644,7 +1644,7 @@ try {
   await send('Emulation.setEmulatedMedia',{features:[{name:'forced-colors',value:'active'}]});
   if(!await evaluate(`parseFloat(getComputedStyle(document.querySelector('#data-table-projects tr[data-ui-row-selected]')).outlineWidth)>0`))throw new Error('Data table forced-colors selection');
   await send('Emulation.setEmulatedMedia',{features:[]});
-  await send('Network.enable');await send('Network.setBlockedURLs',{urls:['*assets/js/ui.js','*assets/js/catalog-demo.js']});
+  await send('Network.enable');await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js']});
   await send('Page.navigate',{url:pathToFileURL(documentPath('components/data-table.html')).href});
   for(let i=0;i<150;i++){await delay(20);if(await evaluate(`document.readyState==='complete'&&typeof KavUI==='undefined'`))break;}
   if(!await evaluate(`document.querySelectorAll('#data-table-projects tbody tr:not([hidden])').length===12&&getComputedStyle(document.querySelector('#data-table-projects [data-ui-table-controls]')).display==='none'&&document.documentElement.scrollWidth<=innerWidth+1`))throw new Error('Data table no-JS fallback');

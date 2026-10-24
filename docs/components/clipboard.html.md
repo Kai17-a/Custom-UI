@@ -106,4 +106,4 @@ APIはPromiseを返し、失敗時はrejectします。ボタン操作から呼�
 
 assetsフォルダの構造を維持してコピーしてください。npmは不要です。
 
-[clipboard.css](../../assets/css/components/clipboard.css) / [導入手順](../getting-started.html.md)
+[clipboard.css](../assets/ui/css/components/clipboard.css) / [導入手順](../getting-started.html.md)

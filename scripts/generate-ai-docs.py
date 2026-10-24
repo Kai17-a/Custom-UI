@@ -203,16 +203,14 @@ def outputs():
         relative = page.relative_to(ROOT).as_posix()
         llms = Path(os.path.relpath(LLMS, page.parent)).as_posix()
         generated[Path(str(page) + '.md')] = '<!-- Generated from ' + relative + '; run python3 scripts/generate-ai-docs.py. -->\n\n[HTML版](' + page.name + ') · [llms.txt](' + llms + ')\n\n' + body.strip() + '\n'
-    root_index = ROOT / 'index.html'
-    generated[root_index] = discovery(root_index, root_index.read_text(), markdown=False)
     lines = ['# Kav-UI', '', '> npm・ビルド不要のHTML/CSS/JavaScript UIフレームワーク。classで見た目、data-ui-*属性で操作を指定します。Vue/Astro向けの追加パッケージもあります。', '',
              '通常HTMLはassets/css/ui.cssとdefer付きのassets/js/ui.jsで自動初期化します。CSSはimport先を含めフォルダ一式を配置します。動的なDOMにはKavUI.init、置き換え前にはKavUI.destroyを使います。', '',
              '以下は本文・コード例のMarkdown版です。必要な部品だけを読み、外部フレームワークのクラスや未確認のAPIを推測で追加しないでください。リンクはこのファイルからの相対パスです。', '', '## 導入とAIエージェント', '',
              '- [ダウンロード・導入](installation.html.md): ZIPの入手、assets配置、最小HTML、テーマ復元。',
              '- [使い方・属性一覧](getting-started.html.md): data属性とイベント、初期化、アプリとの組み合わせ。',
              '- [AIエージェント用ガイド](ai-agents.html.md): スキルの持ち出し方と資料の更新方法。',
-             '- [Kav-UIスキル](../skills/kav-ui/SKILL.md): 別プロジェクトで使える同梱資料付きスキル。元ソース・通信なしでHTML/Vue/Astroの実装を案内。',
-             '- [組み込みリファレンス](../skills/kav-ui/references/integration.md): 持ち出せる基本HTMLと連携の例。']
+             '- [Kav-UIスキル](skills/kav-ui/SKILL.md): 別プロジェクトで使える同梱資料付きスキル。元ソース・通信なしでHTML/Vue/Astroの実装を案内。',
+             '- [組み込みリファレンス](skills/kav-ui/references/integration.md): 持ち出せる基本HTMLと連携の例。']
     index = documents[(DOCS / 'index.html').resolve()][0]
     for group in (node for node in index.root.walk() if node.has_class('catalog-nav-group')):
         title = next((node.text() for node in group.walk() if node.tag == 'h2'), 'コンポーネント')
@@ -228,17 +226,17 @@ def outputs():
             summary = summary if len(summary) <= 100 else summary[:97] + '…'
             lines.append('- [' + compact(anchor.text()) + '](' + target.relative_to(DOCS).as_posix() + '.md)' + (': ' + summary + '。' if summary else ''))
     lines.extend(['', '## Optional', '',
-                  '- [Vue/Astroパッケージ](../packages/README.md): ローカルtarball・GitHub Releases向けの導入と対応範囲。',
-                  '- [Vue](../packages/vue/README.md): props、slots、v-modelとKavWidget。',
-                  '- [Astro](../packages/astro/README.md): Provider、静的HTMLとクライアント遷移。',
+                  '- [Vue/Astroパッケージ](packages/README.md): ローカルtarball・GitHub Releases向けの導入と対応範囲。',
+                  '- [Vue](packages/vue/README.md): props、slots、v-modelとKavWidget。',
+                  '- [Astro](packages/astro/README.md): Provider、静的HTMLとクライアント遷移。',
                   '- [テンプレート](templates.html.md): ドキュメント・ダッシュボード・changelog・エラー画面。',
                   '- [動く最小HTML](starter.html): ブラウザで開く実例。',
-                  '- [共通CSS](../assets/css/ui.css): CSSの入口。フォルダ内の参照先も必要。',
-                  '- [共通JavaScript](../assets/js/ui.js): 自動初期化する通常HTML用ランタイム。',
-                  '- [初期テーマ復元](../assets/js/theme-init.js): 任意の同期headスクリプト。',
-                  '- [README](../README.md): 配布構成・開発・生成と検証。',
-                  '- [MDIライセンス](../assets/icons/mdi/LICENSE): 同梱アイコンの出典。',
-                  '- [Material Color Utilitiesライセンス](../assets/vendor/material-color-utilities/LICENSE): HCTの出典。', ''])
+                  '- [共通CSS](assets/ui/css/ui.css): CSSの入口。フォルダ内の参照先も必要。',
+                  '- [共通JavaScript](assets/ui/js/ui.js): 自動初期化する通常HTML用ランタイム。',
+                  '- [初期テーマ復元](assets/ui/js/theme-init.js): 任意の同期headスクリプト。',
+                  '- [ソースリポジトリ](https://github.com/Kai17-a/Custom-UI): 配布構成・開発・生成と検証。',
+                  '- [MDIライセンス](assets/ui/icons/mdi/LICENSE): 同梱アイコンの出典。',
+                  '- [Material Color Utilitiesライセンス](assets/ui/vendor/material-color-utilities/LICENSE): HCTの出典。', ''])
     generated[LLMS] = '\n'.join(lines)
     return generated
 

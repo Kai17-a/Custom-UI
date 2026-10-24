@@ -46,7 +46,6 @@ class AiDocumentationTests(unittest.TestCase):
             shutil.copytree(ROOT / 'docs', copied / 'docs')
             (copied / 'scripts').mkdir()
             shutil.copy2(ROOT / 'scripts/generate-ai-docs.py', copied / 'scripts/generate-ai-docs.py')
-            shutil.copy2(ROOT / 'index.html', copied / 'index.html')
             target = copied / 'docs/components/buttons.html.md'
             original = target.read_text()
             changed = original + '\nStale fixture\n'

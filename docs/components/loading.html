@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Loading — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<script src="../../assets/js/theme-init.js"></script>
+<script src="../assets/ui/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
 <script defer src="../assets/js/catalog.js"></script>
 <script defer src="../assets/js/catalog-navigation.js"></script>
-<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/ui/js/ui.js"></script>
 <script defer src="../assets/js/catalog-demo.js"></script>
 
 
@@ -262,6 +262,6 @@ progressElement.value = 60;
 // 不明な進捗に切り替える場合：
 progressElement.removeAttribute(&#x27;value&#x27;);</code></pre><p>ボーダーのあるパネルにも同じAPIを使えます。APIと直接の属性操作は同じ処理内で混在させず、対応するtrue / falseを1組で呼んでください。</p><p>スピナーは装飾としてaria-hiddenにし、読み込み状況を文字で示します。結果を読み上げるrole="status"は、aria-busyを付けた領域の外に置いてください。動きを減らすOS設定では回転・移動を止め、文字や静止した枠線で状態を示します。</p></section>
 <details class="source"><summary>使用ファイル・取り込み方</summary><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
-&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p>npmは不要です。assetsフォルダの構造を維持してコピーしてください。</p><p><a href="../../assets/css/components/loading.css">loading.css</a> / <a href="../../assets/css/components/skeleton.css">skeleton.css</a> / <a href="../getting-started.html">導入手順</a> / <a href="states.html">スケルトン・空状態</a></p><p class="dim">catalog-demo.jsとdata-demo-*は見本用です。アプリに取り込む際は外し、実際の処理に置き換えてください。</p></details>
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p>npmは不要です。assetsフォルダの構造を維持してコピーしてください。</p><p><a href="../assets/ui/css/components/loading.css">loading.css</a> / <a href="../assets/ui/css/components/skeleton.css">skeleton.css</a> / <a href="../getting-started.html">導入手順</a> / <a href="states.html">スケルトン・空状態</a></p><p class="dim">catalog-demo.jsとdata-demo-*は見本用です。アプリに取り込む際は外し、実際の処理に置き換えてください。</p></details>
 </main></div>
 </body></html>

@@ -1,6 +1,6 @@
 # Custom-UI / Kav-UI
 
-npm・ビルド不要のHTML/CSS/JavaScript UIフレームワークです。デザインカタログは`docs/index.html`、ダウンロードから導入までの手順は[導入ガイド](docs/installation.html)、属性と導入例は[Getting started](docs/getting-started.html)で確認できます。ルートの`index.html`からもカタログを開けます。
+npm・ビルド不要のHTML/CSS/JavaScript UIフレームワークです。デザインカタログは`docs/index.html`、ダウンロードから導入までの手順は[導入ガイド](docs/installation.html)、属性と導入例は[Getting started](docs/getting-started.html)で確認できます。公開サイトは`docs/`の中身だけで動作します。
 
 
 ## AIエージェントで使う
@@ -12,8 +12,8 @@ npm・ビルド不要のHTML/CSS/JavaScript UIフレームワークです。デ�
 `docs/llms.txt`は導入・用途別コンポーネントへの入口です。リンク先の`docs/**/*.html.md`にはHTML本文とサンプルだけをまとめています。編集元のHTMLを更新したら、次で再生成します。
 
 ```bash
-python3 scripts/generate-ai-docs.py
-python3 scripts/generate-ai-docs.py --check
+python3 scripts/build-docs.py
+python3 scripts/build-docs.py --check
 ```
 
 形式の参考は[Agent Skills](https://agentskills.io/specification)と[llms.txt](https://llmstxt.org/)です。
@@ -27,7 +27,10 @@ assets/              # 配布用UIの正本。アプリはこのCSS・JSを読�
   icons/mdi/         # 同梱SVGとライセンス
   vendor/            # 配布物に必要な外部コードのクレジット
 docs/               # カタログ・導入ガイド・HTMLテンプレート
-  assets/            # カタログとテンプレート専用のCSS・JS・画像
+  assets/            # カタログ用のCSS・JS・画像
+    ui/              # 共通UIの公開用コピー（自動同期）
+  skills/kav-ui/     # スキルと参照資料の公開用コピー
+  packages/          # パッケージ導入ガイドの公開用コピー
   components/        # コンポーネントの説明と操作サンプル
   templates/         # サービス画面のHTMLテンプレート
   llms.txt           # AI向けの資料一覧
@@ -37,16 +40,19 @@ skills/kav-ui/       # 利用先へコピーできるAIエージェント用ス�
 scripts/             # 梱包・リリース・保守・AI資料生成のスクリプト
 tests/              # ブラウザ・パッケージ・配布検証
 vendor/              # バンドル元となる外部ソースと出典
-index.html           # docs/index.htmlへの入口
 ```
 
 `assets/`にはカタログ専用のファイルを置きません。新しいコンポーネントの共通スタイルは`assets/css/components/`へ、使い方やサンプルは`docs/components/`へ追加します。`packages/core/dist/`・`dist/`・導入例のビルド結果は生成物で、編集元にしません。
 
-`docs/index.html`はブラウザで直接開けます。HTTPで確認する場合はリポジトリのルートで次を実行し、`http://localhost:8000/docs/`を開きます。`docs/`は配布用の`../assets/`を参照するため、HTTPサーバーの公開ルートもリポジトリのルートにします。
+`docs/index.html`はブラウザで直接開けます。HTTPで確認する場合はリポジトリのルートで次を実行し、`http://localhost:8000/`を開きます。
 
 ```bash
-python3 -m http.server 8000
+python3 -m http.server 8000 --directory docs
 ```
+
+S3には`docs`フォルダ自体ではなく、その**中身**を配置します。サイトの入口は`index.html`です。相対URLのため、同じ構成をサブパスへ置くこともできます。S3の設定やアップロードは、このリポジトリのスクリプトでは行いません。
+
+共通UIやスキル・パッケージ資料の編集元は引き続きルートの`assets/`・`skills/kav-ui/`・`packages/`です。変更後は`python3 scripts/build-docs.py`で公開用コピーとMarkdownを更新し、`--check`で更新漏れを検出します。`docs/assets/ui/`・`docs/skills/kav-ui/`・`docs/packages/`は生成物なので直接編集しません。公開用コピーはコミット対象に含めるため、公開時にnpmやビルド環境は不要です。
 
 構成と相対参照の検証は`python3 -m unittest discover -s tests -p 'test_documentation_structure.py'`で実行できます。構成だけを変更するときは、移動前に`node tests/run-visual-comparison.mjs capture /tmp/kav-ui-baseline`、変更後に`node tests/run-visual-comparison.mjs compare /tmp/kav-ui-baseline`を実行すると、同じ162パターンの表示を比較できます。輪郭のごく小さな描画差は別項目で記録し、位置ずれや広範囲の色変化は失敗として検出します。ブラウザの実行ファイルは必要に応じて`CHROME_BIN`で指定します。
 

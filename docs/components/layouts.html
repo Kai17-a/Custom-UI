@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Layouts — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<script src="../../assets/js/theme-init.js"></script>
+<script src="../assets/ui/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
 <script defer src="../assets/js/catalog.js"></script>
 <script defer src="../assets/js/catalog-navigation.js"></script>
-<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/ui/js/ui.js"></script>
 <script defer src="../assets/js/catalog-demo.js"></script>
 
 
@@ -255,6 +255,6 @@
 <p><code>ui-page-aside-sticky</code>をasideに追加すると、横並びのときだけ追従します。上に固定ヘッダーがある場合は<code>--ui-layout-offset</code>に実際のヘッダー高を指定してください。追従領域が長い場合は領域内をスクロールできます。固定が不要ならこれらのクラスは省略します。</p>
 <p>余白は<code>sp-*</code>、整列は<code>fx-*</code>の既存ユーティリティを併用できます。カラムの切り替えにはCSS Container Queriesを使います。未対応ブラウザでは縦並びで表示されます。</p></section>
 <details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
-&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/ui/css/ui.css">ui.css</a> / <a href="../assets/ui/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main></div>
 
 </body></html>

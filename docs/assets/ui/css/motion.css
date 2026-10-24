@@ -1,0 +1,42 @@
+/* Automatic interaction feedback. No animation options are required. */
+.btn { transition:color 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease, scale 120ms ease; }
+.btn:active:not(:disabled):not([aria-disabled="true"]) { scale:.97; }
+.ui-copy-icon, .btn-close { transition:color 150ms ease, background-color 150ms ease, opacity 150ms ease, scale 120ms ease; }
+.ui-copy-icon:active:not(:disabled):not([aria-disabled="true"]), .btn-close:active { scale:.94; }
+:is(.tabs [role="tab"], .nav-pills .nav-link, .pagination button, .app-sidebar a, .ui-calendar-day, .ui-calendar-nav) { transition:color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
+.alert { transition:color 160ms ease, background-color 160ms ease, border-color 160ms ease; }
+.form-check-input, .switch input { transition:background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
+.switch input::after { transition:left 180ms ease, background-color 180ms ease; }
+.ui-loading-label { transition:opacity 140ms ease; }
+.ui-loading-button[aria-busy="true"] > .ui-loading-indicator { animation:ui-spinner-turn .8s linear infinite; }
+.ui-copy-icon[data-ui-copy-state="success"] svg { animation:ui-check-pop 180ms ease-out; }
+.ui-copy-status[data-ui-copy-state="success"], .ui-copy-status[data-ui-copy-state="error"],
+[data-ui-error]:not([hidden]), [data-ui-empty]:not([hidden]) { animation:ui-appear 160ms ease-out; }
+.ui-toast:not([hidden]) { animation:ui-appear 160ms ease-out; }
+.ui-tooltip { animation:ui-appear 160ms ease-out, ui-content-enter 160ms ease-out; }
+.ui-datepicker-popup:not([hidden]) { animation:ui-appear 160ms ease-out; }
+[data-ui-panel]:not([hidden]), .accordion details[open] > :not(summary), .tip-disclosure[open] > :not(summary) { animation:ui-appear 160ms ease-out, ui-content-enter 180ms ease-out; }
+progress[value]::-webkit-progress-value { transition:width 200ms ease-out, background-color 160ms ease; }
+progress[value]::-moz-progress-bar { transition:width 200ms ease-out, background-color 160ms ease; }
+[data-ui-card] { transition:opacity 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
+[data-ui-column] { transition:background-color 160ms ease, outline-color 160ms ease; }
+/* Calendar redraws are immediate, including calendars embedded in date pickers. */
+.ui-calendar :is(.btn, .ui-calendar-day, .ui-calendar-nav) { transition:none; }
+.ui-calendar .btn:active:not(:disabled):not([aria-disabled="true"]) { scale:none; }
+@keyframes ui-content-enter { from { translate:0 4px; } to { translate:0 0; } }
+@keyframes ui-check-pop { from { scale:.75; } to { scale:1; } }
+@media (prefers-reduced-motion:reduce) {
+  .btn, .ui-copy-icon, .btn-close,
+  :is(.tabs [role="tab"], .nav-pills .nav-link, .pagination button, .app-sidebar a, .ui-calendar-day, .ui-calendar-nav),
+  .alert, .form-control, .form-select, .form-check-input, .switch input, .switch input::after, .ui-loading-label,
+  [data-ui-card], [data-ui-column] { transition:none; }
+  .btn:active:not(:disabled):not([aria-disabled="true"]), .ui-copy-icon:active:not(:disabled):not([aria-disabled="true"]), .btn-close:active { scale:none; }
+  .ui-copy-icon[data-ui-copy-state="success"] svg,
+  .ui-copy-status[data-ui-copy-state="success"], .ui-copy-status[data-ui-copy-state="error"],
+  [data-ui-error]:not([hidden]), [data-ui-empty]:not([hidden]),
+  .ui-toast:not([hidden]), .ui-tooltip, .ui-datepicker-popup:not([hidden]),
+  [data-ui-panel]:not([hidden]), .accordion details[open] > :not(summary), .tip-disclosure[open] > :not(summary),
+  .ui-loading-button[aria-busy="true"] > .ui-loading-indicator { animation:none; }
+  progress[value]::-webkit-progress-value { transition:none; }
+  progress[value]::-moz-progress-bar { transition:none; }
+}

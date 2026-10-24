@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AIエージェントで使う — Kav-UI</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<script src="../assets/js/theme-init.js"></script>
+<script src="assets/ui/js/theme-init.js"></script>
 <link rel="stylesheet" href="assets/css/catalog.css">
 
 
 <script defer src="assets/js/catalog.js"></script>
 <script defer src="assets/js/catalog-navigation.js"></script>
-<script defer src="../assets/js/ui.js"></script>
+<script defer src="assets/ui/js/ui.js"></script>
 <script defer src="assets/js/catalog-demo.js"></script>
 
 
@@ -122,8 +122,8 @@
   <header class="page-heading"><p class="eyebrow">Kav-UI / AI AGENTS</p><h1>AIエージェントで使う</h1></header>
   <p class="lede">Kav-UIのスキルとllms.txtを使って、導入方法やコンポーネントの仕様をAIエージェントへ渡せます。必要な資料だけを読み、既存のデザインとAPIに沿って実装するための入口です。</p>
   <section class="specimen" id="agent-resources"><h2>スキルと資料の入口</h2>
-    <ul><li><a href="../skills/kav-ui/SKILL.md">Kav-UIスキル</a>：部品選択、通常HTML/Vue/Astro、テーマ、動的なDOMの扱い。</li>
-      <li><a href="../skills/kav-ui/references/integration.md">組み込みリファレンス</a>：スキルと一緒にコピーできる基本例。</li>
+    <ul><li><a href="skills/kav-ui/SKILL.md">Kav-UIスキル</a>：部品選択、通常HTML/Vue/Astro、テーマ、動的なDOMの扱い。</li>
+      <li><a href="skills/kav-ui/references/integration.md">組み込みリファレンス</a>：スキルと一緒にコピーできる基本例。</li>
       <li><a href="llms.txt">llms.txt</a>：導入・用途別コンポーネント・パッケージの資料一覧。</li>
       <li><a href="ai-agents.html.md">このページのMarkdown版</a>：サイドバーを除いた本文。</li></ul>
     <p>スキルは<a href="https://agentskills.io/specification">Agent Skillsの形式</a>、資料の入口は<a href="https://llmstxt.org/">llms.txtの提案</a>を参考に用意しています。</p>
@@ -161,12 +161,12 @@
       <li>CSSフォルダの階層、動的DOMの初期化と後始末、カタログ専用の処理をアプリへ持ち込まないことを確認します。</li>
       <li>明暗・質感・配色を分け、既存のトークンとレスポンシブ指定を使います。</li>
       <li>Vue/Astroでは導入済みのパッケージや汎用Widgetを選び、そのライフサイクルに合わせます。</li></ul>
-    <p><a href="installation.html">通常HTMLの導入方法</a> / <a href="../packages/README.md">Vue/Astroの導入方法</a></p>
+    <p><a href="installation.html">通常HTMLの導入方法</a> / <a href="packages/README.md">Vue/Astroの導入方法</a></p>
   </section>
   <section class="specimen" id="agent-maintenance"><h2>HTMLの説明を更新したとき</h2>
-    <p>本文の編集元は従来どおりHTMLです。資料を更新した後、リポジトリのルートで次を実行すると、Markdownとllms.txtを生成できます。Python標準ライブラリだけで動きます。</p>
-    <pre class="setup-code"><code>python3 scripts/generate-ai-docs.py
-python3 scripts/generate-ai-docs.py --check</code></pre>
+    <p>本文の編集元は従来どおりHTMLです。資料を更新した後、リポジトリのルートで次を実行すると、公開用のCSS・JS・スキル資料と、Markdown・llms.txtを同期できます。Python標準ライブラリだけで動きます。</p>
+    <pre class="setup-code"><code>python3 scripts/build-docs.py
+python3 scripts/build-docs.py --check</code></pre>
     <p><code>--check</code>は書き換えずに同期を確認し、更新が必要なファイルがあれば終了コード1を返します。スキルの説明や参照資料は<code>skills/kav-ui</code>内を編集してください。</p>
   </section>
 </main></div></body></html>

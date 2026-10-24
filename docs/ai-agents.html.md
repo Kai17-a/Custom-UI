@@ -10,8 +10,8 @@ Kav-UIのスキルとllms.txtを使って、導入方法やコンポーネント
 
 ## スキルと資料の入口
 
-- [Kav-UIスキル](../skills/kav-ui/SKILL.md)：部品選択、通常HTML/Vue/Astro、テーマ、動的なDOMの扱い。
-- [組み込みリファレンス](../skills/kav-ui/references/integration.md)：スキルと一緒にコピーできる基本例。
+- [Kav-UIスキル](skills/kav-ui/SKILL.md)：部品選択、通常HTML/Vue/Astro、テーマ、動的なDOMの扱い。
+- [組み込みリファレンス](skills/kav-ui/references/integration.md)：スキルと一緒にコピーできる基本例。
 - [llms.txt](llms.txt)：導入・用途別コンポーネント・パッケージの資料一覧。
 - [このページのMarkdown版](ai-agents.html.md)：サイドバーを除いた本文。
 
@@ -77,17 +77,17 @@ HTMLの各ページにはMarkdown版とllms.txtへのメタデータも付けて
 - 明暗・質感・配色を分け、既存のトークンとレスポンシブ指定を使います。
 - Vue/Astroでは導入済みのパッケージや汎用Widgetを選び、そのライフサイクルに合わせます。
 
-[通常HTMLの導入方法](installation.html.md) / [Vue/Astroの導入方法](../packages/README.md)
+[通常HTMLの導入方法](installation.html.md) / [Vue/Astroの導入方法](packages/README.md)
 
 <a id="agent-maintenance"></a>
 
 ## HTMLの説明を更新したとき
 
-本文の編集元は従来どおりHTMLです。資料を更新した後、リポジトリのルートで次を実行すると、Markdownとllms.txtを生成できます。Python標準ライブラリだけで動きます。
+本文の編集元は従来どおりHTMLです。資料を更新した後、リポジトリのルートで次を実行すると、公開用のCSS・JS・スキル資料と、Markdown・llms.txtを同期できます。Python標準ライブラリだけで動きます。
 
 ```
-python3 scripts/generate-ai-docs.py
-python3 scripts/generate-ai-docs.py --check
+python3 scripts/build-docs.py
+python3 scripts/build-docs.py --check
 ```
 
 `--check`は書き換えずに同期を確認し、更新が必要なファイルがあれば終了コード1を返します。スキルの説明や参照資料は`skills/kav-ui`内を編集してください。

@@ -403,7 +403,7 @@ catalog.css / layout.css / catalog.js / catalog-navigation.js / catalog-demo.js 
 
 ## 動作テスト
 
-[ブラウザテストを開く](../tests/ui.html)と、自動で共通UIの動作を検証します。Chromiumがインストールされている環境では `node tests/run-browser.mjs` でも実行できます。npmのインストールは不要です。
+[ブラウザテストを開く](https://github.com/Kai17-a/Custom-UI/blob/main/tests/ui.html)と、自動で共通UIの動作を検証します。Chromiumがインストールされている環境では `node tests/run-browser.mjs` でも実行できます。npmのインストールは不要です。
 
 <a id="banner-guide"></a>
 

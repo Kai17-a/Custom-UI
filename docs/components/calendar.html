@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calendar — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<script src="../../assets/js/theme-init.js"></script>
+<script src="../assets/ui/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
 <script defer src="../assets/js/catalog.js"></script>
 <script defer src="../assets/js/catalog-navigation.js"></script>
-<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/ui/js/ui.js"></script>
 <script defer src="../assets/js/catalog-demo.js"></script>
 
 
@@ -179,6 +179,6 @@ document.addEventListener('ui:dayopen', event =&gt; {
 
 // 予定や属性を変更したときは再描画できます。
 KavUI.init(calendarElement);</code></pre><p>日付を選ぶとui:datechange、表示月が変わるとui:monthchangeが発生します。data-ui-nameを指定してform内に置くと、選択値をFormDataで取得できます。日付はローカルの日付として扱います。</p></section><section class="specimen"><h2>キーボード操作</h2><ul><li>Tab：月切替ボタン・日付へ移動</li><li>左右矢印：前日・翌日、上下矢印：前週・翌週</li><li>Home / End：その週の先頭・末尾へ移動</li><li>PageUp / PageDown：前月・翌月、Shiftと併用すると前年・翌年</li><li>Enter / Space：フォーカスした日付を選択</li></ul></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の2ファイルを読み込んで、サンプルのHTMLを配置します。assetsフォルダの構造は維持してください。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
-&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../../assets/css/components/calendar.css">カレンダーのCSS</a> / <a href="../getting-started.html">導入手順</a></p></details></main></div>
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/ui/css/components/calendar.css">カレンダーのCSS</a> / <a href="../getting-started.html">導入手順</a></p></details></main></div>
 
 </body></html>

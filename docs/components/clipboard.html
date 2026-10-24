@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Clipboard — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<script src="../../assets/js/theme-init.js"></script>
+<script src="../assets/ui/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
 <script defer src="../assets/js/catalog.js"></script>
 <script defer src="../assets/js/catalog-navigation.js"></script>
-<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/ui/js/ui.js"></script>
 <script defer src="../assets/js/catalog-demo.js"></script>
 
 
@@ -175,6 +175,6 @@ document.addEventListener(&#x27;ui:copyerror&#x27;, event =&gt; {
   // 失敗時の処理
 });</code></pre><p>APIはPromiseを返し、失敗時はrejectします。ボタン操作から呼び出してください。コピー先はOSのクリップボードで、履歴や保存機能はありません。</p><p>ブラウザのClipboard APIを使用します。HTTPS / localhostなどの利用環境とブラウザの許可が必要です。ファイルを直接開いた場合の動作はブラウザに依存します。利用できない場合や許可されない場合は、成功と表示せず手動コピーを案内します。</p><p><a href="toasts.html#toast-copy">トーストにコピーボタンを付ける →</a></p></section>
 <details class="source"><summary>使用ファイル・取り込み方</summary><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
-&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p>assetsフォルダの構造を維持してコピーしてください。npmは不要です。</p><p><a href="../../assets/css/components/clipboard.css">clipboard.css</a> / <a href="../getting-started.html">導入手順</a></p></details>
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p>assetsフォルダの構造を維持してコピーしてください。npmは不要です。</p><p><a href="../assets/ui/css/components/clipboard.css">clipboard.css</a> / <a href="../getting-started.html">導入手順</a></p></details>
 </main></div>
 </body></html>

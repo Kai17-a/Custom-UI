@@ -153,4 +153,4 @@ KavUI.init(root);
 <script defer src="assets/js/ui.js"></script>
 ```
 
-[ui.css](../../assets/css/ui.css) / [ui.js](../../assets/js/ui.js)。後から追加した要素にはKavUI.init()を呼びます。
+[ui.css](../assets/ui/css/ui.css) / [ui.js](../assets/ui/js/ui.js)。後から追加した要素にはKavUI.init()を呼びます。

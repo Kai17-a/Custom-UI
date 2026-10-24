@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Data table — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<script src="../../assets/js/theme-init.js"></script>
+<script src="../assets/ui/js/theme-init.js"></script>
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
 <script defer src="../assets/js/catalog.js"></script>
 <script defer src="../assets/js/catalog-navigation.js"></script>
-<script defer src="../../assets/js/ui.js"></script>
+<script defer src="../assets/ui/js/ui.js"></script>
 <script defer src="../assets/js/catalog-demo.js"></script>
 
 
@@ -239,6 +239,6 @@ table.addEventListener(&#x27;ui:tableselect&#x27;, event =&gt; {
 // tbodyへ行を追加・削除した後、またはセルの内容を更新した後
 KavUI.init(table);
 // 表全体のHTMLを作り直す前、またはアンマウント時
-KavUI.destroy(table);</code></pre><p>再初期化では現在の検索・ソート・選択を保ちながら表示を更新します。元の順序は最初に登録したときの並びで、後から追加した行はその後ろに登録されます。破棄すると元の行順・hidden・ARIAを戻します。ユーザーが変更した行のcheckboxの値は保持します。フォームのresetは検索欄・表示件数・選択を初期値に戻し、ソートとページをリセットします。</p><p>Vue・Astroでは、既存の<code>KavWidget</code>で同じHTMLを利用できます。<a href="../../packages/README.md">パッケージの導入方法</a>も参照してください。</p></section>
+KavUI.destroy(table);</code></pre><p>再初期化では現在の検索・ソート・選択を保ちながら表示を更新します。元の順序は最初に登録したときの並びで、後から追加した行はその後ろに登録されます。破棄すると元の行順・hidden・ARIAを戻します。ユーザーが変更した行のcheckboxの値は保持します。フォームのresetは検索欄・表示件数・選択を初期値に戻し、ソートとページをリセットします。</p><p>Vue・Astroでは、既存の<code>KavWidget</code>で同じHTMLを利用できます。<a href="../packages/README.md">パッケージの導入方法</a>も参照してください。</p></section>
 <details class="source"><summary>使用ファイル・取り込み方</summary><p>共通のui.cssとui.jsを読み込み、必要なサンプルのHTMLを配置します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
-&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../installation.html">ダウンロード・導入</a> / <a href="table.html">静的なTable</a> / <a href="../../assets/css/ui.css">ui.css</a> / <a href="../../assets/js/ui.js">ui.js</a></p></details></main></div></body></html>
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../installation.html">ダウンロード・導入</a> / <a href="table.html">静的なTable</a> / <a href="../assets/ui/css/ui.css">ui.css</a> / <a href="../assets/ui/js/ui.js">ui.js</a></p></details></main></div></body></html>

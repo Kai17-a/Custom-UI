@@ -3,6 +3,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 import re
+import shutil
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,12 +23,45 @@ class References(HTMLParser):
 
 
 class DocumentationStructureTests(unittest.TestCase):
+    def test_docs_copy_resolves_without_repository_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            copied = Path(directory) / 'site'
+            shutil.copytree(DOCS, copied)
+            for page in copied.rglob('*'):
+                if page.suffix == '.html':
+                    parser = References()
+                    parser.feed(page.read_text())
+                    urls = parser.urls
+                elif page.suffix == '.css':
+                    urls = re.findall(r'url\([\'"]?([^\'"()]+)[\'"]?\)', page.read_text())
+                elif page.suffix in ('.md', '.txt'):
+                    source = re.sub(r'(?ms)^(`{3,})[^\n]*\n.*?^\1\s*$', '', page.read_text())
+                    urls = re.findall(r'\[[^\]\n]*\]\(([^)\s]+)\)', source)
+                else:
+                    continue
+                for value in urls:
+                    url = urlsplit(value)
+                    if url.scheme or url.netloc or not url.path or url.path.startswith('/'):
+                        continue
+                    target = (page.parent / unquote(url.path)).resolve()
+                    self.assertTrue(target.is_relative_to(copied), (page.relative_to(copied), value))
+                    self.assertTrue(target.is_file(), (page.relative_to(copied), value))
+
+    def test_public_runtime_and_skill_match_their_sources(self):
+        for source, destination in [(ROOT / 'assets', DOCS / 'assets/ui'),
+                                    (ROOT / 'skills/kav-ui', DOCS / 'skills/kav-ui')]:
+            for path in source.rglob('*'):
+                if path.is_file():
+                    target = destination / path.relative_to(source)
+                    self.assertTrue(target.is_file(), str(target.relative_to(ROOT)))
+                    self.assertEqual(path.read_bytes(), target.read_bytes(), str(path.relative_to(ROOT)))
+
     def test_documentation_has_its_own_entry_and_assets(self):
         for name in ('index.html', 'installation.html', 'getting-started.html', 'starter.html',
                      'components/buttons.html', 'templates/dashboard.html',
                      'assets/css/catalog.css', 'assets/css/icons.css', 'assets/js/catalog-demo.js'):
             self.assertTrue((DOCS / name).is_file(), name)
-        self.assertIn('docs/index.html', (ROOT / 'index.html').read_text())
+        self.assertFalse((ROOT / 'index.html').exists())
         self.assertFalse((ROOT / 'components').exists())
 
     def test_catalog_navigation_lists_every_component(self):
@@ -42,7 +77,7 @@ class DocumentationStructureTests(unittest.TestCase):
                 self.assertEqual([Path(href).name for href, attrs in links if 'aria-current="page"' in attrs], [page.name])
 
     def test_documentation_local_references_resolve(self):
-        pages = [ROOT / 'index.html', *DOCS.rglob('*.html'), *(ROOT / 'tests').glob('*.html')]
+        pages = [*DOCS.rglob('*.html'), *(ROOT / 'tests').glob('*.html')]
         self.assertGreater(len(pages), 40)
         for page in pages:
             parser = References()
