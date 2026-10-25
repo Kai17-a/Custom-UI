@@ -43,5 +43,11 @@ window.catalogTestsDone = (() => {
     assert(parsed.querySelector('path').namespaceURI==='http://www.w3.org/2000/svg','SVGの名前空間を保持');
     assert(text.includes('<!-- メモ -->'),'コメントを保持');
   });
+  test('各サンプルは元HTMLのコピー操作と状態表示を持つ', () => {
+    const {example,text}=sample('nested'),source=example.nextElementSibling;
+    const copy=source.querySelector('[data-ui-copy]');
+    assert(copy && copy.dataset.uiCopy===text,'表示コードと同じ元のHTMLをコピー');
+    assert(source.querySelector('[data-ui-copy-status][role="status"]'),'コピー結果の出力先');
+  });
   return {passed,failures};
 })();

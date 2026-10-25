@@ -24,6 +24,29 @@ window.uiTestsDone = (async () => {
       await wait(0);
     }
   }
+  await test('Validation reset: 値・検証表示・説明参照を初期状態へ戻す', async () => {
+    mount('<form data-ui-validate novalidate><div data-ui-field><label for="reset-validation">名前</label><input id="reset-validation" class="form-control" required aria-describedby="reset-hint"><small id="reset-hint">補足説明</small><small data-ui-error hidden></small></div><button type="submit">送信</button><button type="reset">戻す</button></form>');
+    const form=find('form'),input=find('input'),error=find('[data-ui-error]');
+    form.requestSubmit();assert(input.getAttribute('aria-invalid')==='true' && !error.hidden,'不正送信を表示');
+    form.reset();await wait(20);
+    assert(!input.hasAttribute('aria-invalid') && error.hidden && !error.textContent,'reset後は検証前へ戻る');
+    assert(input.getAttribute('aria-describedby')==='reset-hint','元の補足説明だけを保持');
+  });
+  await test('Validation reset: キャンセルと初期ARIA・エラーを保持する', async () => {
+    mount('<form data-ui-validate novalidate><div data-ui-field><input class="form-control" required aria-invalid="false"><small data-ui-error hidden>初期の説明</small></div></form>');
+    const form=find('form'),input=find('input'),error=find('[data-ui-error]');
+    form.requestSubmit();const before=error.textContent;
+    form.addEventListener('reset',event=>event.preventDefault(),{once:true});form.reset();await wait(20);
+    assert(input.getAttribute('aria-invalid')==='true' && error.textContent===before && !error.hidden,'取消時はエラーを保持');
+    form.reset();await wait(20);
+    assert(input.getAttribute('aria-invalid')==='false' && error.hidden && error.textContent==='初期の説明','初期の属性・内容を復元');
+  });
+  await test('Validation reset: 生成エラーとselectの表示状態を復元する', async () => {
+    mount('<form data-ui-validate novalidate><input class="form-control" required><select class="form-select" required><option value="">選択</option><option value="one">1</option></select></form>');
+    const form=find('form');form.requestSubmit();assert(many('[data-ui-error]').length>0,'エラーを自動生成');
+    form.reset();await wait(20);
+    assert(!many('[aria-invalid=true]').length && !many('[data-ui-error]').length,'生成エラーと選択ボタンを復元');
+  });
   const fileDropMarkup = (attrs='multiple',options='') => '<form><div data-ui-file-drop '+options+'><input type="file" id="test-file-drop" name="files" '+attrs+'><label class="ui-file-dropzone" data-ui-file-zone for="test-file-drop">ファイルを選択</label></div><button type="reset">戻す</button></form>';
   const dropFiles = (files,zone=find('[data-ui-file-zone]')) => {
     const data=new DataTransfer();files.forEach(file=>data.items.add(file));

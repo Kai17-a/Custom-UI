@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="assets/css/catalog.css">
 
 
+<script defer src="assets/js/catalog-search.js"></script>
 <script defer src="assets/js/catalog.js"></script>
 <script defer src="assets/js/catalog-navigation.js"></script>
 <script defer src="assets/ui/js/ui.js"></script>
@@ -211,7 +212,7 @@
   </section>
 
   <section class="specimen" id="installation-troubleshooting">
-    <h2>表示・操作が反映されない場合</h2>
+    <h2>表示・操作が反映されない場合</h2><p>特定の開くボタンだけ反応しない場合は、data-ui-targetが指すIDの存在と重複を確認してください。開発者ツールで<code>document.querySelector(ボタンのdata-ui-targetの値)</code>が対象要素を返すか確認できます。フレームワークは存在しない対象を開きません。</p>
     <dl><dt>標準のHTMLの見た目になる</dt><dd><code>ui.css</code>のパスと、参照されるCSS一式が揃っているか確認してください。ブラウザの開発者ツールのNetworkで404になっているCSSを確認できます。</dd>
       <dt>ボタンを押しても通知やモーダルが開かない</dt><dd><code>ui.js</code>の読み込み先と<code>defer</code>を確認し、各ページの<code>data-ui-*</code>属性もコピーしてください。スクリプトの読み込みはページ内で1回にします。</dd>
       <dt>別フォルダのHTMLだけ表示が崩れる</dt><dd>相対パスはHTMLの場所が基準です。例えば<code>pages/settings.html</code>から上の構成のCSSを読む場合は<code>../assets/css/ui.css</code>を指定します。</dd>

@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="../assets/css/catalog.css">
 
 
+<script defer src="../assets/js/catalog-search.js"></script>
 <script defer src="../assets/js/catalog.js"></script>
 <script defer src="../assets/js/catalog-navigation.js"></script>
 <script defer src="../assets/ui/js/ui.js"></script>
@@ -156,7 +157,7 @@
 <pre class="setup-code"><code>&lt;div class="ui-table-scroll" tabindex="0" role="region" aria-label="プロジェクト一覧（横スクロール可能）"&gt;
   &lt;table class="table"&gt;…&lt;/table&gt;
 &lt;/div&gt;</code></pre>
-<p>画像・動画・canvasはクラスなしでも親幅に収まり、縦横比を維持します。SVGも親幅を超えません。アプリのui-pageは利用できる領域幅でカラムを切り替えます。カタログの目次は本文幅を確保できる1280px以上で右側、それ未満では本文上部に表示します。目次の一覧はどちらも常時表示です。</p>
+<p>画像・動画・canvasはクラスなしでも親幅に収まり、縦横比を維持します。SVGも親幅を超えません。アプリのui-pageは利用できる領域幅でカラムを切り替えます。カタログの目次は本文幅を確保できる1280px以上で右側、それ未満では本文上部に表示します。目次はPC・タブレットでは表示され、スマートフォンでは必要なときに展開できます。</p>
 </section>
 <section class="specimen" id="layout-shell"><h2>アプリ全体：ヘッダー・メイン・フッター</h2>
 <p>実際のアプリではbodyに<code>ui-app</code>、本文のmainに<code>ui-app-main</code>を指定すると、短いページでもフッターが画面下に配置されます。以下はカタログ内の縮小例です。</p>

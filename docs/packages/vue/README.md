@@ -21,3 +21,5 @@ const value=ref(''),open=ref(false);
 `KavWidget` のhtmlには開発者が管理する信頼済みHTMLだけを渡します。未専用化の既存部品もこのアダプターで使用できます。
 
 全コンポーネント・対応範囲・Astroとの連携・ローカルtarball導入はソースの `packages/README.md` と `examples/vue` を参照してください。レジストリへの公開はしていません。
+
+KavInput・KavSelectの`label`は読み上げ名を指定します。画面に項目名を表示する場合は、`KavField`の`label`・`for`と入力の`id`を組み合わせてください。

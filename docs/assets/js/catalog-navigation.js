@@ -19,9 +19,9 @@
   const headings = [...main.querySelectorAll(':scope > h2, :scope > section > h2')];
   let toc, tocRail;
   if (headings.length >= 4) {
-    toc = document.createElement('div');
+    toc = document.createElement('details');
     toc.className = 'catalog-page-toc';
-    const label = document.createElement('p');
+    const label = document.createElement('summary');
     label.className = 'catalog-toc-heading';
     label.textContent = 'このページの目次';
     const title = document.createElement('p');
@@ -54,7 +54,9 @@
       item.append(link); list.append(item);
       return {target, link};
     });
-    nav.append(list); toc.append(label, title, nav);
+    const desktopLabel=document.createElement('p');
+    desktopLabel.className='catalog-toc-heading-desktop';desktopLabel.textContent=label.textContent;
+    nav.append(list); toc.append(label, desktopLabel, title, nav);
     const content = document.createElement('div');
     content.className = 'catalog-content';
     tocRail = document.createElement('aside');
@@ -121,7 +123,9 @@
   footer.append(...overview.slice(3));
   const note = sidebar.querySelector(':scope > .sidebar-note');
   if (note) footer.append(note);
-  sidebar.append(header, body, footer);
+  const panel=document.createElement('details');panel.className='catalog-mobile-menu';
+  const panelLabel=document.createElement('summary');panelLabel.textContent='カタログメニュー';
+  panel.append(panelLabel,header,body,footer);sidebar.append(panel);
 
   const categories = [...navigation.querySelectorAll('.catalog-nav-group')].map((group, index) => {
     const heading = group.querySelector('h2');
@@ -159,13 +163,13 @@
       savedOpen = new Map([...navigation.querySelectorAll('details')].map(item => [item,item.open]));
       savedMenuOpen = menu.open;
     }
-    if (query) menu.open = true;
+    if (query) { menu.open = true; panel.open = true; }
     let matches = 0;
     for (const category of categories) {
       const categoryMatch = query && normalize(category.querySelector('summary').textContent).includes(query);
       let visible = 0;
       for (const link of category.querySelectorAll('a')) {
-        const match = !query || categoryMatch || normalize(link.textContent).includes(query) || normalize(link.getAttribute('href')).includes(query);
+        const match = !query || (window.KavCatalogSearch ? KavCatalogSearch.matches(link,query) : categoryMatch || normalize(link.textContent).includes(query) || normalize(link.getAttribute('href')).includes(query));
         link.closest('li').hidden = !match;
         if (match) { visible++; matches++; }
       }
@@ -199,6 +203,11 @@
   const compact = matchMedia('(width < 768px)');
   const sync = () => {
     menu.open = !compact.matches;
+    panel.hidden = !compact.matches;
+    if(compact.matches)panel.append(header,body,footer);
+    else sidebar.append(header,body,footer);
+    panel.open = !compact.matches;
+    if(toc)toc.open = !compact.matches;
   };
   compact.addEventListener('change', sync);
   sync();

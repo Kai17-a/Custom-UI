@@ -228,3 +228,19 @@ dialog .buttons { flex-wrap:wrap; }
   .catalog-theme-control .ui-select { width:100%; min-width:0; }
   .catalog-theme-control .form-select { width:100%; min-width:0; font-size:12px; }
 }
+
+/* Desktop keeps its navigation rails; mobile starts with the destination title. */
+.catalog-mobile-menu { display:flex; flex-direction:column; min-height:0; height:100%; }
+.catalog-mobile-menu > summary { display:none; }
+.catalog-toc-heading { display:none; list-style:none; }
+.catalog-toc-heading-desktop { margin:0 0 8px; padding:8px 0; font-size:12px; font-weight:600; }
+.catalog-toc-heading::-webkit-details-marker { display:none; }
+@media (width < 768px) {
+  .catalog-mobile-menu { display:block; height:auto; }
+  .catalog-mobile-menu > summary { display:list-item; cursor:pointer; padding:12px 16px; min-height:44px; font-weight:600; }
+  .catalog-toc-rail { padding-top:0; }
+  .catalog-toc-heading-desktop { display:none; }
+  .catalog-toc-heading { display:list-item; cursor:pointer; margin:0; padding:12px 0; min-height:44px; }
+  .catalog-toc-heading::-webkit-details-marker { display:inline; }
+  .catalog-page-toc:not([open]) > :not(summary), .catalog-mobile-menu:not([open]) > :not(summary) { display:none; }
+}

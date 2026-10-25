@@ -10,9 +10,9 @@ export default defineComponent({name:'KavExample',setup(){
  h(KavBanner,{...bind(notice),title:'パッケージ版',closable:true,'data-testid':'vue-banner'},()=> '共通スタイルを使ったVue用コンポーネントです。'),
  h(KavCard,{title:'設定',class:'sp-mt-4'},{default:()=>h('div',{class:'ui-stack sp-gap-4'},[
  h(KavField,{label:'名前',for:'vue-name'},()=>h(KavInput,{...bind(name),id:'vue-name',name:'name','data-testid':'vue-input'})),
- h(KavSelect,{...bind(selection),label:'プラン',name:'plan',options:[{value:1,label:'個人'},{value:2,label:'チーム'}],'data-testid':'vue-select'}),
+ h(KavField,{label:'プラン',for:'vue-plan'},()=>h(KavSelect,{...bind(selection),id:'vue-plan',label:'プラン',name:'plan',options:[{value:1,label:'個人'},{value:2,label:'チーム'}],'data-testid':'vue-select'})),
  h(KavCheckbox,{...bind(checked),label:'通知を受け取る','data-testid':'vue-checkbox'}),
- h(KavInput,{...bind(date),type:'date',name:'date',label:'日付','data-testid':'vue-date'}),
+ h(KavField,{label:'日付',for:'vue-date'},()=>h(KavInput,{...bind(date),id:'vue-date',type:'date',name:'date',label:'日付','data-testid':'vue-date'})),
  h('pre',{'data-testid':'vue-state'},JSON.stringify({name:name.value,plan:selection.value,checked:checked.value,date:date.value},null,2)),
  h(KavButton,{onClick:()=>open.value=true,'data-testid':'vue-open'},()=> 'モーダルを開く'),
  h(KavButton,{variant:'outline',onClick:()=>toast({title:'保存しました',body:name.value,variant:'success'})},()=> '通知を表示')]),footer:()=>h('p','イベントと入力値はVueで管理します。')}),
