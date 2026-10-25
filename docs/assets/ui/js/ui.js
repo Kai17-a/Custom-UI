@@ -855,8 +855,13 @@
     if (notify && page !== previousPage) items.filter(item=>!item.hidden).forEach(enterMotion);
     if (notify) emit(group, 'pagechange', {page, pageSize:size, total:items.length});
   }
+  const validationStates = new WeakMap();
   function fields(form) { return all(form, 'input, select, textarea').filter(field => field.willValidate && !field.closest('.ui-input-popup')); }
   function validateField(field) {
+    const form=field.form;
+    let state=validationStates.get(form);
+    if(!state)validationStates.set(form,state={fields:new Map(),errors:new Map(),generated:new Set()});
+    if(!state.fields.has(field))state.fields.set(field,rememberAttributes(field,['aria-invalid','aria-describedby']));
     const valid = field.checkValidity();
     if (!valid && field.getAttribute('aria-invalid') !== 'true') motion(field,[{translate:'-3px 0'},{translate:'3px 0'},{translate:'0 0'}],160);
     field.setAttribute('aria-invalid', String(!valid));
@@ -866,7 +871,11 @@
       error = doc.createElement('small');
       error.className = 'ui-invalid-feedback';
       error.setAttribute('data-ui-error','');
-      field.after(error);
+      field.after(error);state.generated.add(error);
+    }
+    if(error && !state.generated.has(error) && !state.errors.has(error)) {
+      const restore=rememberAttributes(error,['id','hidden','aria-live']),text=error.textContent;
+      state.errors.set(error,()=>{restore();error.textContent=text;});
     }
     if (error) {
       describedBy(field, id(error), true);
@@ -3987,6 +3996,17 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
     const play = prepareExit(dialog);
     setTimeout(() => { if (!event.defaultPrevented && !dialog.open) play(); }, 0);
   }, true);
+  doc.addEventListener('reset', event => {
+    const form=event.target,state=validationStates.get(form);
+    if(!state)return;
+    setTimeout(()=>{
+      if(event.defaultPrevented)return;
+      for(const restore of state.fields.values())restore();
+      for(const restore of state.errors.values())restore();
+      for(const error of state.generated)error.remove();
+      validationStates.delete(form);
+    },0);
+  });
   doc.addEventListener('submit', event => {
     const form = event.target;
     const dialog = form.closest('dialog[data-ui-dialog][open]');
