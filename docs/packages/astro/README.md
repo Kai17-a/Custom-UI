@@ -19,3 +19,5 @@ import {KavProvider,KavCard,KavSelect} from '@kav-ui/astro';
 Vue版も使う場合は公式の `@astrojs/vue` を導入し、Vueコンポーネントへ `client:load` 等を指定します。Astro専用部品に `v-model` はなく、通常のHTMLフォームやCustomEventを使います。
 
 対応範囲とAstro 7のSSR/prerender設定はソースの `packages/README.md`・`examples/astro` を参照してください。レジストリへの公開はしていません。
+
+KavInput・KavSelectの`label`は読み上げ名を指定します。画面に項目名を表示する場合は、`KavField`の`label`・`for`と入力の`id`を組み合わせてください。

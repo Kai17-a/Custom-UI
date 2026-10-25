@@ -99,6 +99,7 @@ try {
   await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
   await visit(vue,`document.querySelector('[data-testid=vue-select] .ui-select-trigger')&&document.querySelector('[data-testid=vue-widget] .ui-chart-output')`);
   assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'Vue overflow '+width);
+  assert(await evaluate(`[...document.querySelectorAll('input[name=name],select[name=plan],input[name=date]')].every(input=>input.labels.length>0&&[...input.labels].every(label=>label.getClientRects().length>0))`),'Vue visible field labels '+width);
   await until(`document.querySelector('[data-testid=vue-chart] svg')`,'Vue default chart renders');
   await click('[data-testid=vue-input]');await send('Input.insertText',{text:' 追加'});await until(`document.querySelector('[data-testid=vue-state]').textContent.includes('追加')`,'Vue v-model input');
   await click('[data-testid=vue-select] .ui-select-trigger');await key('End');await key('Enter');await until(`JSON.parse(document.querySelector('[data-testid=vue-state]').textContent).plan===2`,'Vue numeric v-model select');
@@ -119,6 +120,7 @@ try {
   await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
   await visit(astro,`document.querySelector('.ui-select-trigger')&&document.querySelector('[data-testid=astro-vue] input')`);
   assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),'Astro overflow '+width);
+  assert(await evaluate(`[...document.querySelectorAll('input[name=name],select[name=plan],input[name=date],[data-testid=astro-vue] input')].every(input=>input.labels.length>0&&[...input.labels].every(label=>label.getClientRects().length>0))`),'Astro visible field labels '+width);
   await click('.ui-select-trigger');await key('End');await key('Enter');assert(await evaluate(`document.querySelector('select[name=plan]').value==='team'`),'Astro select');
   await click('[data-testid=astro-open]');await until(`document.getElementById('astro-dialog').open`,'Astro modal');await key('Escape');await until(`!document.getElementById('astro-dialog').open`,'Astro Escape');
   await click('[data-testid=astro-vue] input');await send('Input.insertText',{text:' / Vue'});await until(`document.querySelector('[data-testid=astro-vue] output').textContent.includes('/ Vue')`,'Astro Vue island hydration');
