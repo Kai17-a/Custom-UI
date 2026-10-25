@@ -642,13 +642,13 @@ try {
   for(let i=0;i<100;i++){await delay(10);if(await evaluate('location.href==="about:blank" && document.readyState==="complete"'))break;}
   await evaluate('document.body.style.color="rgb(47,111,196)";document.body.innerHTML='+JSON.stringify(copiedSVG));
   if(!await evaluate('document.querySelector("svg").getBoundingClientRect().width===24 && document.querySelector("path").getBBox().width>0 && getComputedStyle(document.querySelector("path")).fill==="rgb(47, 111, 196)" && !document.styleSheets.length && typeof KavUI==="undefined"'))throw new Error('Copied SVG must render alone without CSS or JS');
-  await send('Network.enable');await send('Network.setBlockedURLs',{urls:['*assets/js/*','https://*','http://*']});
+  await send('Network.enable');await send('Network.setBlockedURLs',{urls:['*assets/ui/js/*','*assets/js/*','https://*','http://*']});
   await send('Page.navigate',{url:pathToFileURL(join(site,'components/mdi-icons.html')).href});
   for(let i=0;i<100;i++){await delay(20);if(await evaluate('document.readyState==="complete" && !!document.querySelector("[data-mdi-search]")'))break;}
   if(!await evaluate('typeof KavUI==="undefined" && document.querySelectorAll(".mdi-icon-preview > svg").length===128 && [...document.querySelectorAll(".mdi-icon-preview path")].every(path=>path.getBBox().width>0)'))throw new Error('MDI gallery SVGs must render with scripts/network blocked');
   await send('Network.setBlockedURLs',{urls:[]});
   console.log('MDI: 128 self-contained SVGs, English/Japanese search at 3 widths, native clipboard copy, standalone rendering with no CSS/JS, all previews with scripts/network blocked');
-  await send('Network.setBlockedURLs',{urls:['https://*','http://*','*assets/icons/mdi/*.svg']});
+  await send('Network.setBlockedURLs',{urls:['https://*','http://*','*assets/ui/icons/mdi/*.svg']});
   await navigate('components/mdi-icons.html');
   if(!await evaluate(`(async()=>{
     const container=document.createElement('div');container.style.cssText='position:fixed;left:-9999px;color:rgb(47,111,196)';
@@ -715,7 +715,7 @@ try {
   console.log('Added components: dropdown pointer/Arrow/Home/End/Tab/Enter/outside click at 3 widths × 10 modes/designs; rich popover/nested select; all 4 drawers × 3 widths × 10 modes/designs, scroll lock/Escape/focus return; input/button/list native values');
 
   // New device overrides must also work with JavaScript disabled.
-  await send('Network.enable');await send('Network.setBlockedURLs',{urls:['*assets/js/*']});
+  await send('Network.enable');await send('Network.setBlockedURLs',{urls:['*assets/ui/js/*','*assets/js/*']});
   for(const width of [320,375,767,768,820,1023,1024,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     await send('Page.navigate',{url:pathToFileURL(join(site,'components/layouts.html')).href});
@@ -813,7 +813,7 @@ try {
   console.log('File drop: native OS file drag, click/keyboard chooser, FileList/FormData, removal/focus/reset and responsive bounds @320/1440 light/dark glassmorphism');
 
   // Typography must work using shared CSS, even when all UI scripts are blocked.
-  await send('Network.setBlockedURLs',{urls:['*assets/js/*']});
+  await send('Network.setBlockedURLs',{urls:['*assets/ui/js/*','*assets/js/*']});
   for(const width of [320,768,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     await send('Page.navigate',{url:pathToFileURL(join(site,'components/typography.html')).href});
