@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Control appearance regression fixture</title>
+  <link rel="stylesheet" href="../assets/css/ui.css">
+  <style>*, *::before, *::after { transition:none !important; animation:none !important; }</style>
+  <script defer src="../assets/js/ui.js"></script>
+</head>
+<body>
+  <main class="ui-container ui-stack">
+    <h1>操作要素の視認性</h1>
+    <div class="ui-cluster">
+      <button id="appearance-start" type="button">フォーカス開始</button>
+      <button id="appearance-button" class="btn btn-sm btn-primary" type="button">保存</button>
+      <label>名前<input id="appearance-input" class="form-control form-control-sm" placeholder="例：My app"></label>
+      <button class="btn btn-sm btn-icon-only" aria-label="設定" type="button"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+      <button class="btn-close" aria-label="閉じる" type="button"></button>
+      <label class="form-check"><input class="form-check-input" type="checkbox">通知</label>
+    </div>
+    <div class="ui-input-group ui-input-group-sm">
+      <input class="form-control" aria-label="グループ内の名前" placeholder="例：My app">
+      <select class="form-select" aria-label="グループ内の種類"><option>標準</option></select>
+      <input type="time" class="form-control" aria-label="グループ内の時刻">
+      <button type="button" class="btn btn-secondary">適用</button>
+    </div>
+    <label>種類<select class="form-select form-select-sm"><option>標準</option><option>その他</option></select></label>
+    <div data-ui-datepicker><input aria-label="日付" type="date" class="form-control form-control-sm"></div>
+    <label>時刻<input type="time" class="form-control form-control-sm"></label>
+    <div class="ui-calendar-compact" data-ui-calendar data-ui-month="2026-10"></div>
+  </main>
+</body>
+</html>

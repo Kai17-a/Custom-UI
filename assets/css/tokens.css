@@ -12,6 +12,9 @@
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   --bs-border-color: #e4e1db;
+  /* Interactive outlines must remain distinct from decorative separators. */
+  --ui-control-outline: #7c7972;
+  --ui-placeholder-color: var(--bs-secondary-color);
   --bs-border-color-translucent: rgba(0, 0, 0, .12);
   --bs-border-radius: .3rem;
   --bs-border-radius-sm: .1875rem;
@@ -67,6 +70,8 @@
   --bs-body-color: #c8c9cc;
 
   --bs-border-color: #383a3e;
+  --ui-control-outline: #898b90;
+  --ui-placeholder-color: var(--bs-secondary-color);
   --bs-border-color-translucent: rgba(255, 255, 255, .12);
 
   --bs-primary: #97adcc;

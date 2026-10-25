@@ -1,10 +1,11 @@
 /* --- form controls --- */
-.form-control, .form-select { display: block; width: 100%; min-width:0; max-width:100%; padding: .375rem .75rem; font-size: 1rem; font-weight: 400;
+.form-control, .form-select { display: block; width: 100%; min-width:0; max-width:100%; padding: .375rem .75rem; font-size:var(--ui-control-font-size,var(--text-base)); font-weight: 400;
   line-height: 1.5; color: var(--bs-body-color); background-color: var(--bs-body-bg);
   border: 1px solid var(--ui-control-outline,var(--bs-border-color)); border-radius: var(--bs-border-radius);
   transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out; }
-.form-control:focus-visible, .form-select:focus-visible { border-color: var(--bs-primary-border-subtle); outline: 0; box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb), .22); }
-.form-control-sm, .form-select-sm { padding: .25rem .5rem; font-size: .875rem; border-radius: var(--bs-border-radius-sm); }
+.form-control:focus-visible, .form-select:focus-visible { border-color:var(--bs-primary); outline:2px solid var(--bs-primary); outline-offset:3px; }
+.form-control::placeholder { color:var(--ui-placeholder-color,var(--bs-secondary-color)); opacity:1; }
+.form-control-sm, .form-select-sm { padding: .25rem .5rem; font-size:var(--ui-control-font-size-sm,var(--text-sm)); border-radius: var(--bs-border-radius-sm); }
 textarea.form-control { resize: vertical; }
 
 /* select arrow (data: SVG, like Bootstrap) */

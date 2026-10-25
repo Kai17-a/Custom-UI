@@ -106,7 +106,7 @@ btn-icon-onlyで正方形にします。aria-labelで操作名を付け、title�
 
 ## サイズと形
 
-本文と共通の書体を使い、通常は14px・太さ500・行間1.4・字間0です。btn-smは13px、btn-lgは16px。btn-pillで角丸を変更できます。
+本文と共通の書体を使い、通常は14px・太さ500・行間1.4・字間0です。btn-smも14pxを保ち、余白で密度を変えます。btn-lgは16pxです。btn-pillで角丸を変更できます。タッチ環境では小型・アイコンボタンも操作領域を44px以上に広げます。
 
 ```html
 <div class="fx fx-wrap fx-gap-3 fx-items-center">

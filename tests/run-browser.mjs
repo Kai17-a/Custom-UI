@@ -1,6 +1,7 @@
 /* node tests/run-browser.mjs — uses an installed Chromium, no npm dependencies.
    Set CHROME_BIN if Chromium is not installed in one of the detected locations. */
 import {spawn} from 'node:child_process';
+import {checkControlAppearance} from './control-appearance.mjs';
 import {existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync, rmSync} from 'node:fs';
 import {homedir, tmpdir} from 'node:os';
 import {join, resolve, dirname} from 'node:path';
@@ -119,6 +120,7 @@ try {
   await navigate('starter.html');
   await evaluate("localStorage.removeItem('kav-ui-theme');localStorage.removeItem('kav-ui-design-theme')");
   console.log('First paint with UI blocked: saved light/dark before rendering across 5 pages, glass restoration, OS fallback with absent/invalid/blocked storage');
+  await checkControlAppearance({navigate,evaluate,send,key});
   for (const width of [320,768,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     await navigate('tests/ui.html');
