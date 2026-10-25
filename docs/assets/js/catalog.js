@@ -5,7 +5,7 @@
     const query = search.value.trim().normalize('NFKC').toLowerCase();
     let count = 0;
     for (const item of items) {
-      item.hidden = !item.textContent.normalize('NFKC').toLowerCase().includes(query);
+      item.hidden = window.KavCatalogSearch ? !KavCatalogSearch.matches(item, query) : !item.textContent.normalize('NFKC').toLowerCase().includes(query);
       if (!item.hidden) count++;
     }
     document.getElementById('search-result').textContent = count + ' コンポーネント';
@@ -53,7 +53,16 @@
     const code = document.createElement('code');
     code.textContent = formatExample(example);
     pre.append(code);
-    details.append(summary, pre);
+    const clipboard = document.createElement('div');
+    clipboard.className = 'ui-clipboard ui-cluster';
+    const copy = document.createElement('button');
+    copy.type = 'button'; copy.className = 'btn btn-sm btn-outline-secondary';
+    copy.textContent = 'HTMLをコピー'; copy.dataset.uiCopy = code.textContent;
+    const status = document.createElement('span');
+    status.className = 'ui-copy-status'; status.dataset.uiCopyStatus = '';
+    status.setAttribute('role','status');
+    clipboard.append(copy,status);
+    details.append(summary, clipboard, pre);
     example.after(details);
   });
 })();

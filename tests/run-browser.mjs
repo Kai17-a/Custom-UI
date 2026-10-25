@@ -137,6 +137,19 @@ try {
   const formatting=await evaluate('window.catalogTestsDone');
   console.log('Source formatting tests:',JSON.stringify(formatting));
   if(formatting.failures.length)throw new Error(formatting.failures.join('\n'));
+  // Both search controls use the same canonical card descriptions and aliases.
+  await navigate('index.html');
+  for(const [query,expected] of [['フォーム','forms.html'],['ボタン','buttons.html'],['ＦＯＲＭＳ','forms.html'],['入力 検証','forms.html']]) {
+    const result=await evaluate(`(()=>{
+      const a=document.querySelector('#catalog-search'),b=document.querySelector('.catalog-sidebar-search input');
+      a.value=${JSON.stringify(query)};a.dispatchEvent(new Event('input',{bubbles:true}));b.value=a.value;b.dispatchEvent(new Event('input',{bubbles:true}));
+      const name=a=>a.getAttribute('href').split('/').pop(),all=[...document.querySelectorAll('[data-catalog-item]')];
+      const known=new Set(all.map(name));
+      return {main:all.filter(a=>!a.hidden).map(name).sort(),sidebar:[...document.querySelectorAll('.catalog-sidebar nav[aria-label="コンポーネント"] a')].filter(a=>!a.closest('li').hidden&&known.has(name(a))).map(name).sort()};
+    })()`);
+    if(!result.main.includes(expected)||JSON.stringify(result.main)!==JSON.stringify(result.sidebar))throw new Error('Japanese catalog search '+query+': '+JSON.stringify(result));
+  }
+  console.log('Catalog search: Japanese aliases, full-width normalization and multiple words agree across index/sidebar');
   // Audit file:// loading and responsive overflow across every catalog page.
   const componentDestinations=readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')&&name!=='preview.html').sort();
   const pages=['index.html','ai-agents.html','installation.html','getting-started.html','templates.html','starter.html',...readdirSync(join(site,'templates')).filter(name=>name.endsWith('.html')).map(name=>'templates/'+name),...readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')).map(name=>'components/'+name)];
@@ -160,8 +173,8 @@ try {
       if(path!=='starter.html' && !path.startsWith('templates/')) {
         const navigation=await evaluate(`(()=>{const nav=document.querySelector('.catalog-sidebar nav[aria-label="コンポーネント"]');const links=[...nav.querySelectorAll('a')];const toc=[...document.querySelectorAll('.catalog-toc-link')];return {paths:links.map(a=>a.href.split('/').pop()),active:links.filter(a=>a.getAttribute('aria-current')==='page').map(a=>a.href.split('/').pop()),tocValid:toc.every(a=>!!document.getElementById(decodeURIComponent(a.hash.slice(1)))),menuOpen:document.querySelector('.catalog-navigation').open,branch:document.querySelector('[data-catalog-family="animations"]').open};})()`);
         if(JSON.stringify([...navigation.paths].sort())!==JSON.stringify(componentDestinations) || new Set(navigation.paths).size!==componentDestinations.length || !navigation.tocValid || navigation.menuOpen!==(width>=768))throw new Error('Catalog navigation '+path+' '+width+': '+JSON.stringify(navigation));
-        const tocLayout=await evaluate(`(()=>{const toc=document.querySelector('.catalog-page-toc');if(!toc)return null;const rail=toc.closest('.catalog-toc-rail').getBoundingClientRect(),article=document.querySelector('.catalog-main').getBoundingClientRect();return {outside:!toc.closest('.catalog-sidebar'),expanded:!toc.matches("details") && !toc.querySelector("summary") && !!toc.querySelector("a")?.getClientRects().length,unlined:[toc,toc.closest(".catalog-toc-rail"),toc.querySelector("ol")].every(el=>getComputedStyle(el).borderInlineStartWidth==="0px" && getComputedStyle(el).borderBottomWidth==="0px"),right:rail.left>=article.right-1,above:rail.bottom<=article.top+1};})()`);
-        if(tocLayout && (!tocLayout.outside || !tocLayout.expanded || !tocLayout.unlined || !(width>=1280?tocLayout.right:tocLayout.above)))throw new Error('Catalog TOC rail placement '+path+' '+width+': '+JSON.stringify(tocLayout));
+        const tocLayout=await evaluate(`(()=>{const toc=document.querySelector('.catalog-page-toc');if(!toc)return null;const rail=toc.closest('.catalog-toc-rail').getBoundingClientRect(),article=document.querySelector('.catalog-main').getBoundingClientRect();return {outside:!toc.closest('.catalog-sidebar'),expanded:toc.open && !!toc.querySelector("a")?.getClientRects().length,unlined:[toc,toc.closest(".catalog-toc-rail"),toc.querySelector("ol")].every(el=>getComputedStyle(el).borderInlineStartWidth==="0px" && getComputedStyle(el).borderBottomWidth==="0px"),right:rail.left>=article.right-1,above:rail.bottom<=article.top+1};})()`);
+        if(tocLayout && (!tocLayout.outside || tocLayout.expanded!==(width>=768) || !tocLayout.unlined || !(width>=1280?tocLayout.right:tocLayout.above)))throw new Error('Catalog TOC rail placement '+path+' '+width+': '+JSON.stringify(tocLayout));
         const filename=path.split('/').pop();
         if(path.startsWith('components/') && filename!=='preview.html' && (navigation.active.length!==1 || navigation.active[0]!==filename))throw new Error('Current page destination: '+path);
         if(filename.startsWith('animations') && !navigation.branch)throw new Error('Current animation branch must open');
@@ -181,7 +194,8 @@ try {
   console.log('Responsive file:// checks:',checks,'pages/widths without document overflow or missing stylesheets');
   await send('Emulation.setDeviceMetricsOverride',{width:320,height:1000,deviceScaleFactor:1,mobile:false});
   await navigate('components/flex.html');
-  if(!await evaluate('!document.querySelector(".catalog-page-toc summary") && !!document.querySelector(".catalog-toc-link").getClientRects().length'))throw new Error('Mobile TOC must remain visible');
+  if(!await evaluate('!document.querySelector(".catalog-page-toc").open && document.querySelector(".catalog-main h1").getBoundingClientRect().top<innerHeight'))throw new Error('Mobile title must precede an expanded TOC');
+  await click('.catalog-page-toc > summary');
   await evaluate('document.querySelectorAll(".catalog-toc-link")[5].focus()');
   await key('Enter');await delay(1800);
   if(!await evaluate('document.activeElement.id===decodeURIComponent(location.hash.slice(1)) && document.querySelector(".catalog-toc-link[aria-current=location]").hash===location.hash'))throw new Error('TOC keyboard anchor/focus/location');
@@ -193,10 +207,10 @@ try {
   if(!await evaluate('Math.abs(document.querySelector(".catalog-toc-rail").getBoundingClientRect().top-document.querySelector(".catalog-header").getBoundingClientRect().bottom)<2 && document.querySelector(".catalog-toc-rail").getBoundingClientRect().bottom<=innerHeight+1'))throw new Error('Right TOC sticky viewport bounds');
   for(const width of [1279,1280]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});await delay(60);
-    if(!await evaluate('!!document.querySelector(".catalog-toc-link").getClientRects().length && document.documentElement.scrollWidth<=innerWidth+1'))throw new Error('TOC breakpoint/overflow '+width);
+    if(!await evaluate('document.querySelector(".catalog-page-toc").open==='+(width>=768)+' && document.documentElement.scrollWidth<=innerWidth+1'))throw new Error('TOC breakpoint/overflow '+width);
   }
   await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});await delay(60);
-  console.log('Catalog navigation: consistent component destinations; independent right TOC, always-visible unlined TOC, keyboard section focus, scroll location, bookmark reload, sticky bounds and 1280px boundary');
+  console.log('Catalog navigation: consistent component destinations; independent right TOC, compact mobile / expanded desktop unlined TOC, keyboard section focus, scroll location, bookmark reload, sticky bounds and 1280px boundary');
   const openCategories=await evaluate('[...document.querySelectorAll(".catalog-nav-category")].map(el=>el.open)');
   await evaluate(`(()=>{const input=document.querySelector('.catalog-sidebar-search input');input.value='heartbeat';input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
   // Destinations are searched by page name/label, never by hidden source code.
@@ -1524,7 +1538,7 @@ try {
   for(const width of [320,820,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:720,deviceScaleFactor:1,mobile:false});
     await navigate('components/flex.html');
-    await evaluate(`scrollTo({top:0,behavior:"instant"});document.querySelectorAll('.catalog-toc-link')[5].focus({preventScroll:true})`);
+    await evaluate(`document.querySelector('.catalog-page-toc').open=true;scrollTo({top:0,behavior:"instant"});document.querySelectorAll('.catalog-toc-link')[5].focus({preventScroll:true})`);
     await key('Enter');await delay(60);
     const middle=await evaluate(`({y:scrollY,top:document.getElementById(decodeURIComponent(location.hash.slice(1))).getBoundingClientRect().top})`);
     if(middle.y<=0||middle.top<=100)throw new Error('TOC scroll must animate through intermediate frames '+width+' '+JSON.stringify(middle));
@@ -1548,7 +1562,7 @@ try {
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
   await click('[data-demo-scroll-current=first]');await delay(70);
   if(!await evaluate(`document.querySelector('#scroll-active-demo').scrollTop===0&&getComputedStyle(document.documentElement).scrollBehavior==='auto'`))throw new Error('Reduced motion active item');
-  await evaluate(`scrollTo({top:0,behavior:"instant"});document.querySelectorAll('.catalog-toc-link')[5].focus({preventScroll:true})`);await key('Enter');await delay(70);
+  await evaluate(`document.querySelector('.catalog-page-toc').open=true;scrollTo({top:0,behavior:"instant"});document.querySelectorAll('.catalog-toc-link')[5].focus({preventScroll:true})`);await key('Enter');await delay(70);
   if(!await evaluate(`Math.abs(document.getElementById(decodeURIComponent(location.hash.slice(1))).getBoundingClientRect().top-document.querySelector('.catalog-header').getBoundingClientRect().bottom-20)<3`))throw new Error('Reduced motion page anchor');
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
   await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js']});

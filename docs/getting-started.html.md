@@ -8,6 +8,33 @@ Kav-UIはclassで見た目を、data-ui-*属性で動作を指定する共通UI�
 
 [CSS・JavaScriptのダウンロードと導入手順](installation.html.md)
 
+## 1. assetsフォルダをコピーする
+
+ui.css は同じフォルダ内のCSSを相対参照します。assetsフォルダの構造を保ってコピーしてください。npm・ビルド・CDN・サーバーは不要です。
+
+## 2. 共通2ファイルを読み込む
+
+```html
+<link rel="stylesheet" href="assets/css/ui.css">
+<script defer src="assets/js/ui.js"></script>
+```
+
+scriptにはdeferを付けます。ライト／ダーク切替は `data-ui-toggle="theme"` のボタンで利用できます。
+
+[実際に2ファイルだけで動くstarter.htmlを開く →](starter.html.md)
+
+<a id="recommended-conventions"></a>
+
+## まず覚えるルールとアプリ処理の接続
+
+新しい画面では、配置は`fx-*`、余白は`sp-*`、文字は`type-*`、ページ構成は`ui-*`を入口にしてください。互換性のため既存のstack・cluster・gap-*も使えますが、同じ数値が同じ大きさとは限りません。例えばsp-gap-3とfx-gap-3は12px相当、互換gap-3は16px相当です。
+
+`mobile:`は768px未満だけ、`tablet:`は768〜1023pxだけ、`md:`は768px以上です。同じプロパティではこれらを混在させません。全幅の入力ラッパーは`field ui-w-full`で指定できます。
+
+入力検証後の保存は`ui:valid`で接続します。[アプリ処理の接続例](#application-events)、[フォーム](components/forms.html.md)、[処理中・失敗・再試行](components/loading.html.md)を組み合わせます。項目間チェックは標準のsetCustomValidity、条件付き入力はrequired・disabledで指定でき、専用ルールエンジンは不要です。
+
+モバイルの上部リンクには[Navbar](components/navigation.html.md#nav-navbar)、管理画面のページ一覧には[Sidebar](components/sidebar.html.md#sidebar-responsive)が使えます。必要な方だけ選んでください。
+
 <a id="data-table-guide"></a>
 
 ## 検索・ソート付きのデータテーブル
@@ -123,21 +150,6 @@ ui.cssだけで、役割クラスと文字のユーティリティを組み合�
 ```
 
 [サイズ・アクセシビリティ・使い方 →](components/mdi-icons.html.md#mdi-attributes)
-
-## 1. assetsフォルダをコピーする
-
-ui.css は同じフォルダ内のCSSを相対参照します。assetsフォルダの構造を保ってコピーしてください。npm・ビルド・CDN・サーバーは不要です。
-
-## 2. 共通2ファイルを読み込む
-
-```html
-<link rel="stylesheet" href="assets/css/ui.css">
-<script defer src="assets/js/ui.js"></script>
-```
-
-scriptにはdeferを付けます。ライト／ダーク切替は `data-ui-toggle="theme"` のボタンで利用できます。
-
-[実際に2ファイルだけで動くstarter.htmlを開く →](starter.html.md)
 
 ## 閉じられるアラート
 
@@ -273,38 +285,15 @@ KavUI.setColorTheme('system', { persist: true });
 
 ## テーマを最初の描画から適用する
 
-ダークテーマでページを移動する際の白いちらつきを防ぐには、次の処理をhead内のCSS読み込みより前に配置します。このカタログとstarter.htmlには設定済みです。保存した明暗とデザインを先に復元し、保存が使えない場合はOSの明暗設定を使います。デザインの復元にはbodyのdata-ui-theme-persistが必要です。bodyに直接指定したdata-ui-themeは優先されます。
+保存済みの明暗・質感・配色を初回表示から復元する場合は、同梱のtheme-init.jsをCSSより前に読み込みます。deferは付けません。storageキーや復元処理をアプリへコピーする必要はありません。
 
 ```html
-<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
-<style>
-html { background:var(--bs-body-bg, #faf9f7); color-scheme:light; }
-html[data-bs-theme="dark"] { background:var(--bs-body-bg, #1b1c1e); color-scheme:dark; }
-</style>
-<script>
-(() => {
-  let mode = null, design = null, palette = null;
-  try { mode = localStorage.getItem('kav-ui-theme'); } catch { /* Storage is optional. */ }
-  try { design = localStorage.getItem('kav-ui-design-theme'); } catch { /* Storage is optional. */ }
-  const selected = ['light','dark','system'].includes(mode) ? mode : 'system';
-  document.documentElement.dataset.uiColorPreference = selected;
-  document.documentElement.dataset.bsTheme = selected === 'system'
-    ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : selected;
-  if (!['default','glass','glassmorphism','flat','soft'].includes(design)) return;
-  const restore = () => {
-    if (!document.body) return false;
-    if (document.body.hasAttribute('data-ui-theme-persist') && !document.body.hasAttribute('data-ui-theme')) {
-      document.body.dataset.uiTheme = design;
-    }
-    return true;
-  };
-  if (!restore()) {
-    const observer = new MutationObserver(() => { if (restore()) observer.disconnect(); });
-    observer.observe(document.documentElement, {childList:true, subtree:true});
-  }
-})();
-</script>
+<script src="assets/js/theme-init.js"></script>
+<link rel="stylesheet" href="assets/css/ui.css">
+<script defer src="assets/js/ui.js"></script>
 ```
+
+bodyに`data-ui-theme-persist`を付けます。[配置順と設定の説明](installation.html.md#installation-theme)を参照してください。
 
 ## UI全体のデザインテーマ
 
@@ -360,6 +349,8 @@ default / glass / glassmorphism / flat / softを選べます。明暗は従来�
 | `data-ui-board / data-ui-column="状態"` | HTMLのカンバン。data-ui-cardをドラッグ、またはdata-ui-moveのselectで移動します。 |
 | `data-ui-target="#任意のID"` | 別の要素を参照します。IDは利用側で自由に決め、ページ内で重複させないでください。 |
 | `data-ui-focus="#任意のID"` | 閉じる際のフォーカス移動先を明示できます。通常は関連ボタンまたは近くの操作へ戻ります。 |
+
+<a id="application-events"></a>
 
 ## アプリの処理と組み合わせる
 

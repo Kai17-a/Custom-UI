@@ -2,6 +2,8 @@
 """Synchronize the standalone docs site. Python stdlib only; never uploads files."""
 from __future__ import annotations
 import argparse
+import json
+from html.parser import HTMLParser
 import importlib.util
 from pathlib import Path
 import sys
@@ -9,6 +11,48 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / 'docs'
 MANAGED = (DOCS / 'assets/ui', DOCS / 'skills/kav-ui', DOCS / 'packages')
+
+
+class CatalogSearch(HTMLParser):
+    """Use index card descriptions and aliases for both catalog searches."""
+    def __init__(self):
+        super().__init__()
+        self.cards = {}
+        self.card = None
+        self.text = []
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == 'a' and 'data-catalog-item' in attrs:
+            self.card = Path(attrs['href']).name
+            self.text = [attrs.get('data-catalog-keywords', '')]
+
+    def handle_data(self, data):
+        if self.card:
+            self.text.append(data)
+
+    def handle_endtag(self, tag):
+        if tag == 'a' and self.card:
+            self.cards[self.card] = ' '.join(' '.join(self.text).split())
+            self.card = None
+
+
+def catalog_search_script():
+    parser = CatalogSearch()
+    parser.feed((DOCS / 'index.html').read_text())
+    data = json.dumps(parser.cards, ensure_ascii=False, sort_keys=True)
+    return ('''/* Generated from docs/index.html by scripts/build-docs.py. */
+(() => {
+  const metadata = ''' + data + ''';
+  const normalize = text => String(text || '').normalize('NFKC').toLowerCase().trim();
+  function matches(link, query) {
+    const filename = new URL(link.getAttribute('href'), document.baseURI).pathname.split('/').pop();
+    const text = normalize(metadata[filename] || `${link.textContent} ${filename}`);
+    return normalize(query).split(/\\s+/).every(word => text.includes(word));
+  }
+  window.KavCatalogSearch = Object.freeze({normalize, matches});
+})();
+''').encode()
 
 
 def public_files():
@@ -23,6 +67,7 @@ def public_files():
         # The package guide links back to the catalog, which is now the site root.
         text = source.read_text().replace('](../docs/index.html)', '](../index.html)')
         files[MANAGED[2] / name] = text.encode()
+    files[DOCS / 'assets/js/catalog-search.js'] = catalog_search_script()
     return files
 
 
