@@ -1691,6 +1691,7 @@ try {
   }
   await send('Emulation.setDeviceMetricsOverride',{width:320,height:900,deviceScaleFactor:1,mobile:false});
   await navigate('components/animations-processing.html');await delay(150);
+  for(const activation of ['click','Enter',' '])await verifyCatalogFold('.catalog-mobile-menu > summary',activation);
   for(const activation of ['click','Enter',' '])await verifyCatalogFold('.catalog-navigation > summary',activation);
   for(const activation of ['click','Enter',' '])await verifyCatalogFold('.catalog-nav-category > summary',activation);
   for(const activation of ['click','Enter',' '])await verifyCatalogFold('[data-catalog-family="icons"] > summary',activation);
