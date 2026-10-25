@@ -145,6 +145,42 @@ window.uiTestsDone = (async () => {
     } finally {KavUI.setPalette('default');KavUI.setDesignTheme(design);KavUI.setColorTheme(mode);}
   });
 
+  await test('Accordion: 段落・リスト・コード・表は本文色を継承し、入れ子の説明文を上書きしない', () => {
+    const state=paletteState();
+    try {
+      mount('<div class="accordion"><details open><summary>解答を見る</summary><p data-direct>直接の段落</p><div><p data-answer>回答</p><ul><li>箇条書き</li></ul><pre>コード</pre><table><tbody><tr><td>表</td></tr></tbody></table><article class="ui-card"><p class="ui-card-description">カードの説明</p></article></div></details></div><article class="ui-card"><p class="ui-card-description" data-reference>独立したカードの説明</p></article>');
+      KavUI.setPalette('default');KavUI.setDesignTheme('default');
+      for(const mode of ['light','dark']) {
+        KavUI.setColorTheme(mode);
+        const bodyColor=getComputedStyle(document.body).color;
+        for(const node of many('[data-direct], [data-answer], li, pre, td'))assert(getComputedStyle(node).color===bodyColor,mode+' '+node.tagName+'は本文色');
+        const nested=getComputedStyle(find('.accordion .ui-card-description')),reference=getComputedStyle(find('[data-reference]'));
+        assert(nested.color===reference.color && nested.paddingBottom===reference.paddingBottom,'入れ子カードの色と余白を保持');
+        assert(getComputedStyle(find('[data-direct]')).paddingBottom==='14px','直接の段落の余白を保持');
+      }
+    } finally {restorePaletteState(state);}
+  });
+  await test('Palette: 全7配色の明暗で補助文字色は同梱背景上で4.5:1以上', () => {
+    const state=paletteState();
+    const rgba=color=>color.match(/[\d.]+/g).map(Number);
+    const composite=(foreground,background)=>foreground.slice(0,3).map((value,i)=>value*(foreground[3]??1)+background[i]*(1-(foreground[3]??1)));
+    const luminance=rgb=>{const c=rgb.map(value=>{value/=255;return value<=.04045?value/12.92:((value+.055)/1.055)**2.4;});return c[0]*.2126+c[1]*.7152+c[2]*.0722;};
+    try {
+      mount('<p style="color:var(--bs-secondary-color)">補助文字</p><article class="ui-card"><p style="color:var(--bs-secondary-color)">カードの補助文字</p></article><article class="ui-card ui-card-subtle"><div class="state-panel"><p>状態の説明文</p></div></article><div style="background:var(--bs-secondary-bg)"><p style="color:var(--bs-secondary-color)">補助背景の文字</p></div>');
+      KavUI.setDesignTheme('default');
+      for(const palette of ['default','slate','sage','teal','mauve','sand','clay'])for(const mode of ['light','dark']) {
+        KavUI.setPalette(palette);KavUI.setColorTheme(mode);
+        for(const node of many('p')) {
+          const ancestors=[];for(let parent=node;parent;parent=parent.parentElement)ancestors.unshift(parent);
+          const background=ancestors.reduce((color,element)=>composite(rgba(getComputedStyle(element).backgroundColor),color),[255,255,255]);
+          const foreground=composite(rgba(getComputedStyle(node).color),background);
+          const values=[luminance(foreground),luminance(background)].sort((a,b)=>a-b),ratio=(values[1]+.05)/(values[0]+.05);
+          assert(ratio>=4.5,palette+' '+mode+' '+node.textContent+': '+ratio.toFixed(3)+':1');
+        }
+      }
+    } finally {restorePaletteState(state);}
+  });
+
   await test('Chart: 4種類のSVG・読み上げ名・正確なデータ表・安全な文字列', () => {
     mount('<figure id="chart-test" data-ui-chart="line"><figcaption>サンプル</figcaption><script type="application/json" data-ui-chart-data>{"labels":[],"series":[]}</script></figure>');
     const root=find('#chart-test');
