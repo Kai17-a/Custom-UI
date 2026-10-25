@@ -10,6 +10,8 @@
 
 ## Form controls
 
+入力欄とボタンの標準文字サイズは14pxです。小型指定では文字を小さくせず余白を抑えます。タッチ環境では入力文字を16px、操作領域の高さを44px以上にします。枠線は装飾罫線とは別の `--ui-control-outline`、入力例の色は `--ui-placeholder-color` で調整できます。キーボードのフォーカスは輪郭で示し、強制色モードにも対応します。
+
 ```html
 <div class="row sp-gap-4 fx-items-start">
     <input type="search" class="form-control form-control-sm" aria-label="タスクを検索" placeholder="search ( / )" style="max-width:18rem;">

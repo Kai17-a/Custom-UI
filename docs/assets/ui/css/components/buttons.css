@@ -1,7 +1,7 @@
 /* --- buttons --- */
 .btn {
   --bs-btn-padding-x: .75rem; --bs-btn-padding-y: .5rem;
-  --bs-btn-font-size: var(--text-base,.875rem); --bs-btn-font-weight: 500; --bs-btn-line-height: 1.4;
+  --bs-btn-font-size: var(--ui-control-font-size,var(--text-base,.875rem)); --bs-btn-font-weight: 500; --bs-btn-line-height: 1.4;
   --bs-btn-color: var(--bs-body-color); --bs-btn-bg: transparent;
   --bs-btn-border-color: transparent; --bs-btn-border-width: 1px;
   --bs-btn-border-radius: var(--bs-border-radius);
@@ -22,10 +22,10 @@
   transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 .btn:hover { color: var(--bs-btn-hover-color); background-color: var(--bs-btn-hover-bg); border-color: var(--bs-btn-hover-border-color); }
-.btn:focus-visible { outline: 0; box-shadow: 0 0 0 .25rem var(--ui-btn-focus-color,rgba(var(--bs-btn-focus-shadow-rgb), .5)); }
+.btn:focus-visible { outline:2px solid var(--bs-primary); outline-offset:3px; }
 .btn:active { box-shadow: var(--bs-btn-active-shadow); }
 .btn[aria-disabled="true"], .btn:disabled { opacity: .65; cursor: default; pointer-events: none; }
-.btn-sm { --bs-btn-padding-y: .25rem; --bs-btn-padding-x: .6rem; --bs-btn-font-size: var(--text-sm,.8125rem); }
+.btn-sm { --bs-btn-padding-y: .25rem; --bs-btn-padding-x: .6rem; --bs-btn-font-size: var(--ui-control-font-size-sm,var(--text-sm,.8125rem)); }
 
 :is(.btn-primary,.btn-success,.btn-danger,.btn-warning,.btn-info,
 .btn-outline-primary,.btn-outline-success,.btn-outline-danger,.btn-outline-warning,.btn-outline-info,

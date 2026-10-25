@@ -38,3 +38,24 @@ html[data-ui-focus-modality="pointer"] :is(button, a[href], summary, select, [ro
 html[data-ui-focus-modality="pointer"] .btn:focus:not(:active) { box-shadow:var(--ui-pointer-button-shadow,none); }
 html[data-ui-focus-modality="pointer"] :is(button.form-control, .form-select, .form-check-input):focus { box-shadow:none; }
 html[data-ui-focus-modality="pointer"] :is(button.form-control, .form-select):focus:not([aria-invalid="true"]) { border-color:var(--ui-control-outline,var(--bs-border-color)); }
+
+/* Preserve keyboard position when forced colors suppress shadows. */
+@media (forced-colors:active) {
+  :is(.btn, .form-control, .form-select):focus-visible { outline:2px solid Highlight; outline-offset:3px; }
+}
+
+/* Dense desktop controls retain their visual size; touch gets a shared hit area.
+   Seven-column calendars grow vertically so narrow months still fit the viewport. */
+@media (pointer:coarse) {
+  .btn, .ui-calendar-actions .btn { min-width:var(--ui-touch-target); min-height:var(--ui-touch-target); }
+  .btn-close { box-sizing:border-box; min-width:var(--ui-touch-target); min-height:var(--ui-touch-target); }
+  .form-check, .ui-rating-choice { min-height:var(--ui-touch-target); }
+  .ui-rating-choice { min-width:var(--ui-touch-target); }
+  :is(.form-control, .form-select):not(.ui-picker-native, .form-range, [type="range"], [type="color"]) {
+    min-height:var(--ui-touch-target);
+    /* Avoid automatic zoom of editable fields on mobile browsers. */
+    font-size:var(--text-lg);
+  }
+  .ui-select-trigger, .ui-input-picker-trigger { min-height:var(--ui-touch-target); }
+  :is(.ui-calendar-compact, .ui-datepicker-popup, .ui-input-popup) .ui-calendar-day { min-height:var(--ui-touch-target); }
+}

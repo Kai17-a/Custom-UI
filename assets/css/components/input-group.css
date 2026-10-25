@@ -6,9 +6,9 @@
 .ui-input-group > :not(:last-child) { border-start-end-radius:0; border-end-end-radius:0; }
 .ui-input-group > :focus-within, .ui-input-group > :focus-visible { z-index:1; }
 .ui-input-group > .ui-select > .ui-select-trigger, .ui-input-group > .ui-input-picker > .ui-input-picker-trigger { border-radius:inherit; }
-.ui-input-group-sm { font-size:var(--text-sm); }
+.ui-input-group-sm { font-size:var(--ui-control-font-size-sm,var(--text-base)); }
 .ui-input-group-sm > :is(.form-control,.form-select,.ui-input-addon) { font-size:inherit; padding:.25rem .5rem; }
-.ui-input-group-sm > .btn { --bs-btn-font-size:var(--text-sm); --bs-btn-padding-y:.25rem; }
+.ui-input-group-sm > .btn { --bs-btn-font-size:var(--ui-control-font-size-sm,var(--text-base)); --bs-btn-padding-y:.25rem; }
 @media (width < 768px) {
   .ui-input-group-stack { flex-direction:column; }
   .ui-input-group.ui-input-group-stack > * { width:100%; max-width:100%; flex-basis:auto; border-radius:0; }
@@ -18,3 +18,7 @@
 }
 
 .ui-input-group-sm > .ui-select > .ui-select-trigger, .ui-input-group-sm > .ui-input-picker > .ui-input-picker-trigger { font-size:inherit; padding:.25rem .5rem; }
+
+@media (pointer:coarse) {
+  .ui-input-group-sm { font-size:var(--text-lg); }
+}
