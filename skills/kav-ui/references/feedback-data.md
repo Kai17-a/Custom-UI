@@ -94,3 +94,13 @@ progressはvalueを省略すると進捗未確定。完了時にaria-busyとプ�
 `ui-agent-tree-parallel`で3分岐のノードの高さを揃え、`ui-agent-merge`でその合流を表示する。タスクツリーは`ui-agent-tasks`内で標準の`details / summary`と`label.ui-agent-task > input[type="checkbox"] + span`を使う。CSSだけで開閉とチェックが動き、標準の`toggle`・`change`イベントでアプリ処理を接続できる。データ保存やエージェントの実行は行わない。
 
 丸い曲がり角の接続線にボーダーチェイス（タスクカードのリングと同じ白い先端・青い尾・柔らかな発光）を付ける場合は、親へ`ui-agent-flowing`と`data-ui-agent-flow`を追加し、共通ui.jsを読み込む。`<label class="ui-agent-motion"><input type="checkbox" checked>接続線を動かす</label>`を親の直下に置くと停止・再開できる。速度は`--ui-agent-flow-duration`（既定2.4s）。画面外・非表示タブでは停止し、reduced motion・JS無効時は静止した図を表示する。ボーダーチェイスは視覚表現で、実際の通信・実行状態を表すものではない。
+
+## AIアプリの視覚表示
+
+`ui-ai`を親に、`ui-ai-message`と`ui-ai-disclosure`で回答と出典、`ui-ai-tool-list`で実行履歴、`ui-ai-result`で取得資料と抜粋を表示する。開閉には標準の`details / summary`を使い、共通CSSだけで利用できる。状態は`ui-ai-status`の`data-state="complete|error"`と文字の両方で示す。
+
+`ui-ai-budget-track`はコンテキスト使用量のバー、`ui-ai-budget-breakdown`は内訳。バーの各spanのflex-grow、凡例の数値、role="meter"のaria-valuenow/aria-valuemax/aria-valuetextは同じアプリデータから更新する。例示の128,000は特定モデルの上限ではない。
+
+`ui-ai-voice`内のcheckboxを切り替えると、`ui-ai-wave`と待機/解析の文字表示が切り替わる。波形は表示例で録音はしない。reduced motionでは変形の遷移を止める。通信・トークン計算・音声認識はアプリで接続し、実際のモデル内部の思考を表示するものとして使わない。
+
+意味マップは`ui-ai-map`と、横スクロール領域の`ui-ai-map-canvas`を使う。SVGへrole="img"とtitle/descの参照を付け、意味の近い資料の一覧もHTMLで掲載する。図の座標は例示であることを明示し、実アプリでは埋め込み・投影・類似度の計算結果へ置き換える。点の色に加えて形と文字でグループを区別する。

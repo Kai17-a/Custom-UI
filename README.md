@@ -166,3 +166,7 @@ npm run pack:packages
 パッケージ開発時のみNode/npmを使用します。HTML版の利用手順とZIP配布は変わりません。npmレジストリには未公開です。
 
 ライブラリ用のGitHub Releases公開は、HTML版とは別の `release-libraries.yml` を使います。`libraries-v0.1.0` のような専用タグから3つの `.tgz` とSHA-256を配置します。[公開・ダウンロード手順](packages/README.md#github-releasesへのライブラリ公開)を参照してください。
+
+## AI向けの表示パターン
+
+[AI visuals](docs/components/ai-visuals.html)では、回答と出典・ツール実行履歴・RAG検索結果・意味マップ・コンテキスト使用量・音声アクティビティの6種類を確認できます。共通CSSと標準HTMLで使え、開閉と表示切り替えはJavaScriptなしでも動作します。すべて例示データで、通信・トークン計算・音声認識はアプリ側で接続します。
