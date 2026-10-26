@@ -8,13 +8,16 @@
 
   document.documentElement.classList.add('ui-scroll-smooth');
 
-  // Keep destinations as real HTML links. Only the mobile presentation folds.
-  const menu = document.createElement('details');
-  menu.className = 'catalog-navigation';
-  const menuLabel = document.createElement('summary');
-  menuLabel.textContent = 'コンポーネント一覧';
-  navigation.before(menu);
-  menu.append(menuLabel, navigation);
+  // Authored details keep the catalog reachable when scripts are unavailable.
+  let menu = navigation.closest('details.catalog-navigation');
+  if (!menu) {
+    menu = document.createElement('details');
+    menu.className = 'catalog-navigation';
+    const menuLabel = document.createElement('summary');
+    menuLabel.textContent = 'コンポーネント一覧';
+    navigation.before(menu);
+    menu.append(menuLabel, navigation);
+  }
 
   const headings = [...main.querySelectorAll(':scope > h2, :scope > section > h2')];
   let toc, tocRail;
@@ -201,14 +204,16 @@
   if (pageHeader) new ResizeObserver(scheduleFit).observe(pageHeader);
   fitSidebar();
   const compact = matchMedia('(width < 768px)');
+  const wide = matchMedia('(width >= 1280px)');
   const sync = () => {
     menu.open = !compact.matches;
     panel.hidden = !compact.matches;
     if(compact.matches)panel.append(header,body,footer);
     else sidebar.append(header,body,footer);
     panel.open = !compact.matches;
-    if(toc)toc.open = !compact.matches;
+    if(toc)toc.open = wide.matches;
   };
   compact.addEventListener('change', sync);
+  wide.addEventListener('change', sync);
   sync();
 })();

@@ -7,6 +7,8 @@
 .service-template .ui-brand { display:inline-flex; align-items:center; gap:var(--space-2); flex:none; }
 .template-brand-mark { color:var(--bs-primary); }
 .template-design-label { max-width:11rem; }
+.template-design-label, .template-palette-label { display:grid; gap:var(--space-1); font-size:var(--text-xs); }
+.service-template .ui-header-actions { align-items:end; }
 .template-skip { position:fixed; inset-block-start:var(--space-2); inset-inline-start:var(--space-2); z-index:100; transform:translateY(-200%); padding:var(--space-3); background:var(--bs-body-bg); border:2px solid var(--bs-primary); border-radius:var(--bs-border-radius); }
 .template-skip:focus { transform:none; }
 .service-template :is(main,[id]) { scroll-margin-top:calc(var(--template-header-height) + var(--space-6)); }

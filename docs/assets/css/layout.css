@@ -107,6 +107,8 @@ dialog .buttons { flex-wrap:wrap; }
 /* Separate page destinations from the current page's section links. */
 .catalog-sidebar { position:sticky; top:var(--catalog-header-height,64px); align-self:start; max-height:100dvh; overflow-y:auto; scrollbar-width:thin; scrollbar-gutter:stable; }
 .catalog-navigation > summary { display:none; }
+html:not(.ui-scroll-smooth) .catalog-navigation > summary { display:list-item; cursor:pointer; min-height:44px; padding:10px; }
+html:not(.ui-scroll-smooth) .catalog-navigation:not([open]) > nav { display:none; }
 .catalog-nav-branch > summary { cursor:pointer; color:var(--bs-secondary-color); padding:7px 10px; border-radius:var(--bs-border-radius); }
 .catalog-nav-branch > summary:hover { background:var(--bs-tertiary-bg); color:var(--bs-body-color); }
 .catalog-nav-branch > ul { margin:4px 0 6px 14px; padding-inline-start:8px; border-inline-start:1px solid var(--bs-border-color); }
@@ -196,6 +198,13 @@ dialog .buttons { flex-wrap:wrap; }
 .catalog-page-toc a { display:block; padding:6px 8px; border-radius:var(--bs-border-radius); color:var(--bs-secondary-color); font-size:12px; line-height:1.5; text-decoration:none; overflow-wrap:anywhere; }
 .catalog-page-toc a:hover { color:var(--bs-body-color); background:var(--bs-tertiary-bg); }
 .catalog-page-toc a[aria-current="location"] { color:var(--bs-primary); background:var(--bs-primary-bg-subtle); font-weight:500; }
+@media (768px <= width < 1280px) {
+  .catalog-toc-rail { padding-block:12px 0; }
+  .catalog-page-toc > .catalog-toc-heading { display:list-item; list-style:revert; cursor:pointer; min-height:44px; padding:12px 0; }
+  .catalog-toc-heading::-webkit-details-marker { display:inline; }
+  .catalog-toc-heading-desktop { display:none; }
+  .catalog-page-toc:not([open]) > :not(summary) { display:none; }
+}
 @media (min-width:1280px) {
   .catalog-content { grid-template-columns:minmax(0,1fr) 224px; }
   .catalog-content > .catalog-main { grid-column:1; grid-row:1; }
@@ -248,4 +257,5 @@ dialog .buttons { flex-wrap:wrap; }
 /* Match the other header controls on touch devices. */
 @media (pointer:coarse) {
   .catalog-header .btn-icon-only { min-width:var(--ui-touch-target); min-height:var(--ui-touch-target); }
+  .catalog-sidebar nav a, .catalog-sidebar nav summary { min-height:var(--ui-touch-target); display:flex; align-items:center; }
 }
