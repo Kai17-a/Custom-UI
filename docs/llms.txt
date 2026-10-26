@@ -59,6 +59,7 @@
 - [Table](components/table.html.md): 静的な一覧表示です。
 - [Data table](components/data-table.html.md): 検索・並べ替え・ページ送り・行選択を組み合わせたデータテーブルです。
 - [Kanban board](components/board.html.md): タスクと進捗管理。
+- [Agent workflow](components/agent-workflow.html.md): AIエージェントの処理手順、役割の階層、並列実行、タスクの内訳を可視化します。
 - [Calendar](components/calendar.html.md): 月の切り替え・日付選択・予定表示に対応したカレンダー。
 - [List group](components/list-group.html.md): 一覧・操作・現在地・件数・チェック付きリスト。
 - [Avatar](components/avatar.html.md): イニシャル・画像・サイズ・ステータス・グループ。

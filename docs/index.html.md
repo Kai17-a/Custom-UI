@@ -7,9 +7,9 @@
 自作アプリのための、静かでコンパクトなUIパーツ集。
 ライト／ダーク両方で確認し、必要なパーツをアプリに取り込めます。
 
-コンポーネントを探す
+一覧のコンポーネントを絞り込む
 
-44 コンポーネント
+45 コンポーネント
 
 - [Foundations](components/foundations.html.md): 色・文字・余白の基準
 
@@ -98,6 +98,8 @@
 - [Rating](components/rating.html.md): 星評価・フォーム送信・リセット
 
 - [Data table](components/data-table.html.md): データテーブル・検索・ソート・ページ送り・行選択
+
+- [Agent workflow](components/agent-workflow.html.md): エージェントの処理・階層・並列連携・タスクツリー
 
 ## サービス画面のテンプレート
 

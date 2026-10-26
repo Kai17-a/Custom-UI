@@ -73,6 +73,48 @@ try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  // Agent diagrams retain native list, disclosure and form behavior without UI JavaScript.
+  await navigate('components/agent-workflow.html');
+  if(!await evaluate(`document.querySelectorAll('main [data-example]').length===4`))throw new Error('Agent workflow: four examples');
+  if(!await evaluate(`(() => {
+    const branches=[...document.querySelectorAll('.ui-agent-tree ul')];
+    const merge=document.querySelector('.ui-agent-merge');
+    return branches.every(el=>parseFloat(getComputedStyle(el).paddingTop)>0 && parseFloat(getComputedStyle(el,'::before').height)>0)
+      && parseFloat(getComputedStyle(merge).paddingTop)>0
+      && parseFloat(getComputedStyle(document.querySelector('.ui-agent-node')).borderTopLeftRadius)>0;
+  })()`))throw new Error('Agent graph must retain connector space and shared corner tokens');
+  if(!await evaluate(`(() => {
+    const nodes=[...document.querySelectorAll('.ui-agent-tree-parallel > li > ul > li > .ui-agent-node')].map(node=>node.getBoundingClientRect());
+    return Math.max(...nodes.map(r=>r.bottom))-Math.min(...nodes.map(r=>r.bottom))<1;
+  })()`))throw new Error('Parallel agent nodes must meet merge connectors at the same baseline');
+  await send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
+  await send('Emulation.setDeviceMetricsOverride',{width:375,height:900,deviceScaleFactor:1,mobile:true});
+  if(!await evaluate(`(() => {const r=document.querySelector('.catalog-header [data-ui-toggle="theme"]').getBoundingClientRect();return matchMedia('(pointer:coarse)').matches&&r.width>=44&&r.height>=44&&document.documentElement.scrollWidth<=innerWidth+1;})()`))throw new Error('Touch theme toggle minimum target');
+  await send('Emulation.setTouchEmulationEnabled',{enabled:false});
+  for(const activation of ['Enter',' ']) {
+    await evaluate(`document.querySelector('#task-tree details').open=true;document.querySelector('#task-tree summary').focus()`);
+    await key(activation);
+    if(!await evaluate(`!document.querySelector('#task-tree details').open && document.activeElement.matches('#task-tree summary')`))throw new Error('Task tree keyboard collapse '+activation);
+    await key(activation);
+    if(!await evaluate(`document.querySelector('#task-tree details').open`))throw new Error('Task tree keyboard expand '+activation);
+  }
+  await evaluate(`document.querySelector('#task-tree input:not(:checked)').focus()`);
+  await key(' ');
+  if(!await evaluate(`document.activeElement.checked`))throw new Error('Task completion by keyboard');
+  await evaluate(`document.querySelector('#task-tree form').reset()`);
+  if(!await evaluate(`!document.activeElement.checked`))throw new Error('Task reset restores authored state');
+  for(const width of [320,768,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    for(const mode of ['light','dark'])for(const design of ['default','glass','glassmorphism','flat','soft']) {
+      await evaluate(`KavUI.setColorTheme(${JSON.stringify(mode)});KavUI.setDesignTheme(${JSON.stringify(design)})`);
+      if(!await evaluate(`document.documentElement.scrollWidth<=innerWidth+1 && [...document.querySelectorAll('.ui-agent-node')].every(node=>node.getBoundingClientRect().width>0)`))throw new Error('Agent diagram bounds '+[width,mode,design]);
+    }
+    await evaluate(`KavUI.setColorTheme('${width===320?'dark':'light'}');KavUI.setDesignTheme('default');scrollTo({top:0,left:0,behavior:'instant'})`);
+    const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});
+    writeFileSync(join(artifacts,'agent-workflow-'+width+'.png'),Buffer.from(shot.data,'base64'));
+  }
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  console.log('Agent workflow: four examples, native Enter/Space disclosure, checkbox/reset, 3 widths × 10 themes/modes');
   // Block deferred UI code to expose the document's first rendered theme.
   await send('Network.enable');
   await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js']});

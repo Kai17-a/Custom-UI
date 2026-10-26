@@ -1,5 +1,5 @@
 ---
-interface Props {label?:string;for?:string;hint?:string;error?:string;class?:string;}
-const {label,hint,error,for:target,...rest}=Astro.props;
+interface Props {label?:string;for?:string;hint?:string;error?:string;hintId?:string;errorId?:string;class?:string;}
+const {label,hint,error,hintId,errorId,for:target,...rest}=Astro.props;
 ---
-<div {...rest} class:list={['field',rest.class]}>{label&&<label for={target}>{label}</label>}<slot/>{hint&&<small class="dim">{hint}</small>}{error&&<small class="ui-invalid-feedback" role="alert">{error}</small>}</div>
+<div {...rest} class:list={['field',rest.class]}>{label&&<label for={target}>{label}</label>}<slot/>{hint&&<small id={hintId||(target?`${target}-hint`:undefined)} class="dim">{hint}</small>}{error&&<small id={errorId||(target?`${target}-error`:undefined)} class="ui-invalid-feedback" role="alert">{error}</small>}</div>
