@@ -4,7 +4,7 @@
 
 # Agent workflow
 
-AIエージェントの処理手順、役割の階層、並列実行、タスクの内訳を可視化します。すべて架空の実行データです。接続線には配色に合わせたグラデーションが流れます。
+AIエージェントの処理手順、役割の階層、並列実行、タスクの内訳を可視化します。すべて架空の実行データです。接続線は丸い曲がり角でつなぎ、短い強調線が移動するボーダーチェイスで表示します。
 
 <a id="agent-flow"></a>
 
@@ -63,14 +63,14 @@ Coordinatorが3つの作業を並列に委任し、すべての結果をReviewer
 
 ## 取り込み方
 
-共通の `ui.css` を読み込み、各例の「HTMLを表示」からマークアップをコピーします。流動アニメーションには共通の `ui.js` も読み込みます。追加ライブラリは不要です。JavaScriptなしでも静止した図を表示します。
+共通の `ui.css` を読み込み、各例の「HTMLを表示」からマークアップをコピーします。ボーダーチェイスのアニメーションには共通の `ui.js` も読み込みます。追加ライブラリは不要です。JavaScriptなしでも静止した図を表示します。
 
 ```html
 <link rel="stylesheet" href="assets/css/ui.css">
 <script defer src="assets/js/ui.js"></script>
 ```
 
-- `ui-agent-flowing` と `data-ui-agent-flow`：接続線のグラデーション流動。`ui-agent-motion` 内のチェックで各図を停止・再開できます。画面外・非表示タブでは停止し、動きを減らす設定では静止します。速度は `--ui-agent-flow-duration`（既定2.8秒）で指定します。
+- `ui-agent-flowing` と `data-ui-agent-flow`：接続線のボーダーチェイス。`ui-agent-motion` 内のチェックで各図を停止・再開できます。画面外・非表示タブでは停止し、動きを減らす設定では静止します。速度は `--ui-agent-flow-duration`（既定2.8秒）で指定します。
 - `ui-agent-flow`：順番のある処理を `ol` で記述。
 - `ui-agent-tree`：役割の親子関係を `ul / li` の入れ子で記述。
 - `ui-agent-tree-parallel` と `ui-agent-merge`：高さを揃えた3分岐と合流先。直前の3ノード構成と組み合わせます。

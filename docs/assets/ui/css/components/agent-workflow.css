@@ -28,10 +28,15 @@
 .ui-agent-tree ul > li:first-child::before { left:50%; }
 .ui-agent-tree ul > li:last-child::before { right:50%; }
 .ui-agent-tree ul > li::after { content:""; position:absolute; top:0; left:50%; height:var(--space-6); border-left:1px solid var(--ui-agent-line); }
+/* Each outer branch owns its turn, so no straight stem cuts across the curve. */
+.ui-agent-tree ul > li:first-child:not(:only-child)::before { height:var(--space-6); border-left:1px solid var(--ui-agent-line); border-top-left-radius:var(--space-3); }
+.ui-agent-tree ul > li:last-child:not(:only-child)::before { height:var(--space-6); border-right:1px solid var(--ui-agent-line); border-top-right-radius:var(--space-3); }
+.ui-agent-tree ul > li:first-child:not(:only-child)::after,
+.ui-agent-tree ul > li:last-child:not(:only-child)::after { display:none; }
 .ui-agent-tree ul > li:only-child::before { display:none; }
 .ui-agent-tree-parallel > li > ul > li > .ui-agent-node { height:100%; }
 .ui-agent-merge { position:relative; display:flex; justify-content:center; min-width:42rem; padding-top:calc(var(--space-6) * 2); }
-.ui-agent-merge::before { content:""; position:absolute; top:0; left:16.6667%; right:16.6667%; height:var(--space-6); border:1px solid var(--ui-agent-line); border-top:0; }
+.ui-agent-merge::before { content:""; position:absolute; top:0; left:16.6667%; right:16.6667%; height:var(--space-6); border:1px solid var(--ui-agent-line); border-top:0; border-bottom-left-radius:var(--space-3); border-bottom-right-radius:var(--space-3); }
 .ui-agent-merge::after { content:""; position:absolute; top:0; left:50%; height:calc(var(--space-6) * 2); border-left:1px solid var(--ui-agent-line); }
 .ui-agent-merge .ui-agent-node { width:12rem; }
 .ui-agent-tasks { border:1px solid var(--ui-agent-line); border-radius:var(--bs-border-radius-lg); padding:var(--space-4); background:var(--ui-theme-surface,var(--bs-body-bg)); }
@@ -66,7 +71,8 @@
   --ui-agent-stream-angle:90deg;
   border-color:transparent;
   border-width:2px;
-  background-image:linear-gradient(var(--ui-agent-stream-angle),var(--ui-agent-line),var(--bs-primary),var(--bs-info-text-emphasis),var(--ui-agent-line));
+  /* A short, solid highlight chases along the quieter continuous track. */
+  background-image:linear-gradient(var(--ui-agent-stream-angle),var(--ui-agent-line) 0 36px,var(--bs-primary) 36px 48px,var(--ui-agent-line) 48px 96px);
   background-size:96px 100%;
   background-repeat:repeat;
   background-origin:border-box;
