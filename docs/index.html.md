@@ -9,7 +9,7 @@
 
 一覧のコンポーネントを絞り込む
 
-45 コンポーネント
+46 コンポーネント
 
 - [Foundations](components/foundations.html.md): 色・文字・余白の基準
 
@@ -100,6 +100,8 @@
 - [Data table](components/data-table.html.md): データテーブル・検索・ソート・ページ送り・行選択
 
 - [Agent workflow](components/agent-workflow.html.md): エージェントの処理・階層・並列連携・タスクツリー
+
+- [AI visuals](components/ai-visuals.html.md): 回答・ツール履歴・RAG・意味マップ・コンテキスト・音声
 
 ## サービス画面のテンプレート
 
