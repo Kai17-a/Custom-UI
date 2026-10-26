@@ -2467,9 +2467,26 @@
     refresh();
   }
 
+  const agentFlowStates=new WeakSet();
+  function initAgentFlow(root) {
+    if(agentFlowStates.has(root))return;
+    const restore=rememberAttributes(root,['data-ui-agent-visible']),listen=scopedEvents(root);
+    let visible=false,disposed=false;
+    const sync=()=>{if(!disposed)root.toggleAttribute('data-ui-agent-visible',visible&&!doc.hidden);};
+    // CSS-only and browsers without visibility observation keep a static gradient.
+    const observer=typeof IntersectionObserver==='function'?new IntersectionObserver(entries=>{
+      visible=entries.some(entry=>entry.isIntersecting&&entry.intersectionRatio>0);sync();
+    }):null;
+    root.removeAttribute('data-ui-agent-visible');observer?.observe(root);
+    listen(doc,'visibilitychange',sync);
+    agentFlowStates.add(root);
+    onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
+  }
+
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-agent-flow]').forEach(initAgentFlow);
     scan('[data-ui-data-table]').forEach(initDataTable);
     scan('[data-ui-scroll-active]').forEach(initScrollActive);
     scan('[data-ui-command]').forEach(initCommand);

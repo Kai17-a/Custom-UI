@@ -92,3 +92,5 @@ progressはvalueを省略すると進捗未確定。完了時にaria-busyとプ�
 `ui-agent-workflow`を親にし、処理順は`ol.ui-agent-flow`、親子関係は入れ子の`ul.ui-agent-tree`で記述する。各ノードは`ui-agent-node`、状態は`data-state="complete|running|pending|blocked"`と`ui-agent-state`内の文字で示す。図は`ui-agent-canvas`で囲み、`tabindex="0"`と説明のある`role="region"`・`aria-label`を付けると狭い画面でキーボードでも横スクロールできる。
 
 `ui-agent-tree-parallel`で3分岐のノードの高さを揃え、`ui-agent-merge`でその合流を表示する。タスクツリーは`ui-agent-tasks`内で標準の`details / summary`と`label.ui-agent-task > input[type="checkbox"] + span`を使う。CSSだけで開閉とチェックが動き、標準の`toggle`・`change`イベントでアプリ処理を接続できる。データ保存やエージェントの実行は行わない。
+
+接続線を流れるグラデーションにする場合は、親へ`ui-agent-flowing`と`data-ui-agent-flow`を追加し、共通ui.jsを読み込む。`<label class="ui-agent-motion"><input type="checkbox" checked>接続線を動かす</label>`を親の直下に置くと停止・再開できる。速度は`--ui-agent-flow-duration`（既定2.8s）。画面外・非表示タブでは停止し、reduced motion・JS無効時は静止した図を表示する。流動は視覚表現で、実際の通信・実行状態を表すものではない。
