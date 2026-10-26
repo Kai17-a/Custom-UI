@@ -93,4 +93,4 @@ progressはvalueを省略すると進捗未確定。完了時にaria-busyとプ�
 
 `ui-agent-tree-parallel`で3分岐のノードの高さを揃え、`ui-agent-merge`でその合流を表示する。タスクツリーは`ui-agent-tasks`内で標準の`details / summary`と`label.ui-agent-task > input[type="checkbox"] + span`を使う。CSSだけで開閉とチェックが動き、標準の`toggle`・`change`イベントでアプリ処理を接続できる。データ保存やエージェントの実行は行わない。
 
-丸い曲がり角の接続線にボーダーチェイス（短い強調線の移動）を付ける場合は、親へ`ui-agent-flowing`と`data-ui-agent-flow`を追加し、共通ui.jsを読み込む。`<label class="ui-agent-motion"><input type="checkbox" checked>接続線を動かす</label>`を親の直下に置くと停止・再開できる。速度は`--ui-agent-flow-duration`（既定2.8s）。画面外・非表示タブでは停止し、reduced motion・JS無効時は静止した図を表示する。ボーダーチェイスは視覚表現で、実際の通信・実行状態を表すものではない。
+丸い曲がり角の接続線にボーダーチェイス（タスクカードのリングと同じ白い先端・青い尾・柔らかな発光）を付ける場合は、親へ`ui-agent-flowing`と`data-ui-agent-flow`を追加し、共通ui.jsを読み込む。`<label class="ui-agent-motion"><input type="checkbox" checked>接続線を動かす</label>`を親の直下に置くと停止・再開できる。速度は`--ui-agent-flow-duration`（既定2.4s）。画面外・非表示タブでは停止し、reduced motion・JS無効時は静止した図を表示する。ボーダーチェイスは視覚表現で、実際の通信・実行状態を表すものではない。

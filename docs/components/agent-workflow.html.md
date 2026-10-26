@@ -4,7 +4,7 @@
 
 # Agent workflow
 
-AIエージェントの処理手順、役割の階層、並列実行、タスクの内訳を可視化します。すべて架空の実行データです。接続線は丸い曲がり角でつなぎ、短い強調線が移動するボーダーチェイスで表示します。
+AIエージェントの処理手順、役割の階層、並列実行、タスクの内訳を可視化します。すべて架空の実行データです。接続線は丸い曲がり角でつなぎ、「光が巡るリング（タスクカード）」と同じ白い先端・青い尾・柔らかな発光のボーダーチェイスで表示します。
 
 <a id="agent-flow"></a>
 
@@ -70,7 +70,7 @@ Coordinatorが3つの作業を並列に委任し、すべての結果をReviewer
 <script defer src="assets/js/ui.js"></script>
 ```
 
-- `ui-agent-flowing` と `data-ui-agent-flow`：接続線のボーダーチェイス。`ui-agent-motion` 内のチェックで各図を停止・再開できます。画面外・非表示タブでは停止し、動きを減らす設定では静止します。速度は `--ui-agent-flow-duration`（既定2.8秒）で指定します。
+- `ui-agent-flowing` と `data-ui-agent-flow`：接続線のボーダーチェイス。[光が巡るリング](animations-processing.html.md)の色・発光・周期を合わせ、光が線に沿って移動します。`ui-agent-motion` 内のチェックで各図を停止・再開できます。画面外・非表示タブでは停止し、動きを減らす設定では静止します。速度は `--ui-agent-flow-duration`（既定2.4秒）で指定します。
 - `ui-agent-flow`：順番のある処理を `ol` で記述。
 - `ui-agent-tree`：役割の親子関係を `ul / li` の入れ子で記述。
 - `ui-agent-tree-parallel` と `ui-agent-merge`：高さを揃えた3分岐と合流先。直前の3ノード構成と組み合わせます。
