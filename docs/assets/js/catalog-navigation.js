@@ -107,7 +107,7 @@
   searchLabel.className = 'catalog-sidebar-search';
   const searchText = document.createElement('span');
   searchText.className = 'catalog-search-label';
-  searchText.textContent = 'コンポーネントを検索';
+  searchText.textContent = 'メニュー内のコンポーネントを検索';
   const search = document.createElement('input');
   search.type = 'search'; search.className = 'form-control form-control-sm';
   search.placeholder = '名前で検索…';

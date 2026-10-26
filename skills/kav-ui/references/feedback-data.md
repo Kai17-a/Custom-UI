@@ -86,3 +86,9 @@ KavUI.toast({title:'保存しました', body:'プロジェクトを更新しま
 ```
 
 progressはvalueを省略すると進捗未確定。完了時にaria-busyとプレースホルダーを解除する。Badge・Avatar・List group・TimelineはCSSだけの表示を選べる。空データやエラーの文面、再試行の処理はアプリ側で用意する。
+
+## エージェントの処理・階層・タスクツリー
+
+`ui-agent-workflow`を親にし、処理順は`ol.ui-agent-flow`、親子関係は入れ子の`ul.ui-agent-tree`で記述する。各ノードは`ui-agent-node`、状態は`data-state="complete|running|pending|blocked"`と`ui-agent-state`内の文字で示す。図は`ui-agent-canvas`で囲み、`tabindex="0"`と説明のある`role="region"`・`aria-label`を付けると狭い画面でキーボードでも横スクロールできる。
+
+`ui-agent-tree-parallel`で3分岐のノードの高さを揃え、`ui-agent-merge`でその合流を表示する。タスクツリーは`ui-agent-tasks`内で標準の`details / summary`と`label.ui-agent-task > input[type="checkbox"] + span`を使う。CSSだけで開閉とチェックが動き、標準の`toggle`・`change`イベントでアプリ処理を接続できる。データ保存やエージェントの実行は行わない。

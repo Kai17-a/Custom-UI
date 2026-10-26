@@ -33,3 +33,14 @@ test('Vue: native aria-label reaches inputs and selects when label prop is omitt
  const override=await renderToString(createSSRApp({render:()=>h(KavInput,{label:'優先する名前','aria-label':'属性の名前'})}));
  assert.match(override,/<input[^>]*aria-label="優先する名前"/);
 });
+
+test('Vue: Field descriptions can be referenced from caller-owned input ARIA on the server',async()=>{
+ const {KavField,KavInput}=await import('../../packages/vue/src/index.js');
+ const html=await renderToString(createSSRApp({render:()=>h(KavField,{label:'メール',for:'email',hint:'業務用アドレス',error:'アドレスを確認'},()=>h(KavInput,{id:'email','aria-describedby':'existing email-hint email-error','aria-invalid':'true'}))}));
+ assert.match(html,/<label for="email">メール<\/label>/);
+ assert.match(html,/<small[^>]*id="email-hint"[^>]*>業務用アドレス<\/small>/);
+ assert.match(html,/<small[^>]*id="email-error"[^>]*role="alert"[^>]*>アドレスを確認<\/small>/);
+ assert.match(html,/<input[^>]*aria-describedby="existing email-hint email-error"[^>]*aria-invalid="true"/);
+ const custom=await renderToString(createSSRApp({render:()=>h(KavField,{for:'name',hint:'説明',hintId:'custom-hint',error:'エラー',errorId:'custom-error'})}));
+ assert.match(custom,/id="custom-hint"/);assert.match(custom,/id="custom-error"/);
+});

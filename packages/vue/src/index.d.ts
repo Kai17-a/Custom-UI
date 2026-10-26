@@ -10,7 +10,7 @@ export declare const KavContainer:Component<{size?:'sm'|'lg'|'fluid';as?:string}
 export declare const KavSpinner:Component<{size?:'xs'|'sm'|'lg'|'xl';label?:string}>;
 export declare const KavProgress:Component<{value?:number;max?:number;label?:string}>;
 export declare const KavBadge:Component<{color?:Color}>;
-export declare const KavField:Component<{label?:string;for?:string;hint?:string;error?:string}>;
+export declare const KavField:Component<{label?:string;for?:string;hint?:string;error?:string;hintId?:string;errorId?:string}>;
 export declare const KavWidget:Component<{html:string;as?:string;onReady?:(api:import('@kav-ui/core').KavUIRuntime)=>void;onError?:(error:Error)=>void}>;
 export declare const KavInput:Component<Model<string|number>&{type?:string;label?:string;id?:string;name?:string;disabled?:boolean;required?:boolean;placeholder?:string;min?:string|number;max?:string|number;step?:string|number}>;
 export declare const KavTextarea:Component<Model<string>>;

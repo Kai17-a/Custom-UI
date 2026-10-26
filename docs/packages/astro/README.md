@@ -4,11 +4,13 @@ Kav-UIのAstro用コンポーネント。静的HTMLと、必要な共通ブラ�
 
 ```astro
 ---
-import {KavProvider,KavCard,KavSelect} from '@kav-ui/astro';
+import {KavProvider,KavCard,KavField,KavSelect} from '@kav-ui/astro';
 ---
 <KavProvider />
 <KavCard title="設定">
-  <KavSelect label="プラン" name="plan" options={[{value:'personal',label:'個人'}]} />
+  <KavField label="プラン" for="plan">
+    <KavSelect id="plan" name="plan" options={[{value:'personal',label:'個人'}]} />
+  </KavField>
 </KavCard>
 ```
 
@@ -21,3 +23,17 @@ Vue版も使う場合は公式の `@astrojs/vue` を導入し、Vueコンポー�
 対応範囲とAstro 7のSSR/prerender設定はソースの `packages/README.md`・`examples/astro` を参照してください。レジストリへの公開はしていません。
 
 KavInput・KavSelectの`label`は読み上げ名を指定します。画面に項目名を表示する場合は、`KavField`の`label`・`for`と入力の`id`を組み合わせてください。
+
+## 説明・エラーと入力の関連付け
+
+`KavField`の`for="email"`を指定すると、説明には`email-hint`、エラーには`email-error`のIDが付きます。任意のIDには`hintId`・`errorId`を使えます。入力側の`aria-describedby`と`aria-invalid`はアプリで明示します。子要素や既存ARIA属性の自動書き換えは行いません。説明・エラーが表示されているときだけ対応するIDを参照し、既存の説明IDも残してください。
+
+以下は`error`をページ側で用意した例です。
+
+```astro
+<KavField label="メール" for="email" hint="業務用アドレスを入力" error={error}>
+  <KavInput id="email" name="email"
+    aria-describedby={error ? 'email-hint email-error' : 'email-hint'}
+    aria-invalid={error ? 'true' : undefined} />
+</KavField>
+```

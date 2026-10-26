@@ -1,5 +1,5 @@
 import {createApp,h,ref,nextTick} from 'vue';
-import {KavInput,KavSelect,KavTabs,KavSidebar,KavTextarea,KavWidget,KavCheckbox,KavRadio,KavSwitch} from '@kav-ui/vue';
+import {KavInput,KavField,KavSelect,KavTabs,KavSidebar,KavTextarea,KavWidget,KavCheckbox,KavRadio,KavSwitch} from '@kav-ui/vue';
 import '@kav-ui/core/style.css';
 const date=ref('2026-10-20'),choice=ref(1),items=ref([]),selected=ref(),overlay=ref(true),body=ref('Initial body'),tag=ref('div'),checked=ref(true),radio=ref('one'),enabled=ref(true),timeModel=ref('09:30');
 const extraVisible=ref(true);
@@ -7,6 +7,7 @@ const extraHTML='<div data-ui-command><input data-ui-command-input aria-label=Se
 let focused=0,blurred=0,keyed=0,committedInputs=0,committedChanges=0;
 const bind=state=>({modelValue:state.value,'onUpdate:modelValue':value=>state.value=value});
 createApp({setup:()=>()=>h('main',[
+ h(KavField,{for:'described-choice',label:'説明付き選択',hint:'ヒント',error:'確認してください'},()=>h(KavSelect,{id:'described-choice',options:['one','two'],'aria-describedby':'described-choice-hint described-choice-error','aria-invalid':'true'})),
  extraVisible.value?h(KavWidget,{id:'extra-components',html:extraHTML}):null,
  h('form',{id:'reset-form'},[
   h(KavInput,{...bind(date),type:'date',name:'date'}),
@@ -26,6 +27,8 @@ const wait=()=>new Promise(resolve=>setTimeout(resolve,30));
 const assert=(value,message)=>{if(!value)throw new Error(message);};
 window.runPackageRegressions=async()=>{
  await nextTick();await wait();
+ const described=document.getElementById('described-choice'),describedTrigger=described.closest('.ui-select').querySelector('.ui-select-trigger');
+ assert(describedTrigger.getAttribute('aria-describedby')==='described-choice-hint described-choice-error'&&describedTrigger.getAttribute('aria-invalid')==='true'&&described.labels[0].textContent==='説明付き選択'&&describedTrigger.getAttribute('aria-describedby').split(' ').every(id=>document.getElementById(id)),'Field descriptions and errors remain linked through select enhancement');
  assert(document.querySelector('.ui-sidebar-dialog').open,'Initial top sidebar must be visible');
  overlay.value=false;await nextTick();
  date.value='2026-10-25';choice.value=2;body.value='Edited body';await nextTick();await wait();

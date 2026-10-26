@@ -244,3 +244,8 @@ dialog .buttons { flex-wrap:wrap; }
   .catalog-toc-heading::-webkit-details-marker { display:inline; }
   .catalog-page-toc:not([open]) > :not(summary), .catalog-mobile-menu:not([open]) > :not(summary) { display:none; }
 }
+
+/* Match the other header controls on touch devices. */
+@media (pointer:coarse) {
+  .catalog-header .btn-icon-only { min-width:var(--ui-touch-target); min-height:var(--ui-touch-target); }
+}

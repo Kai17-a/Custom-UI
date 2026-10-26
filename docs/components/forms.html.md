@@ -14,7 +14,7 @@
 
 ```html
 <div class="row sp-gap-4 fx-items-start">
-    <input type="search" class="form-control form-control-sm" aria-label="タスクを検索" placeholder="search ( / )" style="max-width:18rem;">
+    <input type="search" class="form-control form-control-sm" aria-label="タスクを検索" placeholder="タスクを検索" style="max-width:18rem;">
     <select class="form-select form-select-sm w-auto" aria-label="tool">
       <option>Claude</option><option>Codex</option><option>Cline</option>
     </select>

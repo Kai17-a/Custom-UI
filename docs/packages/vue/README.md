@@ -6,11 +6,13 @@ Kav-UIのVue 3.5以降用コンポーネント。`@kav-ui/core` の同じバー�
 <script setup>
 import {ref} from 'vue';
 import '@kav-ui/core/style.css';
-import {KavInput,KavButton,KavDialog} from '@kav-ui/vue';
+import {KavInput,KavField,KavButton,KavDialog} from '@kav-ui/vue';
 const value=ref(''),open=ref(false);
 </script>
 <template>
-  <KavInput v-model="value" label="名前" />
+  <KavField label="名前" for="name">
+    <KavInput id="name" v-model="value" />
+  </KavField>
   <KavButton @click="open=true">確認</KavButton>
   <KavDialog v-model="open" title="確認">{{ value }}</KavDialog>
 </template>
@@ -23,3 +25,17 @@ const value=ref(''),open=ref(false);
 全コンポーネント・対応範囲・Astroとの連携・ローカルtarball導入はソースの `packages/README.md` と `examples/vue` を参照してください。レジストリへの公開はしていません。
 
 KavInput・KavSelectの`label`は読み上げ名を指定します。画面に項目名を表示する場合は、`KavField`の`label`・`for`と入力の`id`を組み合わせてください。
+
+## 説明・エラーと入力の関連付け
+
+`KavField`の`for="email"`を指定すると、説明には`email-hint`、エラーには`email-error`のIDが付きます。任意のIDには`hintId`・`errorId`を使えます。入力側の`aria-describedby`と`aria-invalid`はアプリで明示します。子要素や既存ARIA属性の自動書き換えは行いません。説明・エラーが表示されているときだけ対応するIDを参照し、既存の説明IDも残してください。
+
+以下は`email`と`error`をアプリ側のrefとして用意した例です。
+
+```vue
+<KavField label="メール" for="email" hint="業務用アドレスを入力" :error="error">
+  <KavInput id="email" v-model="email"
+    :aria-describedby="error ? 'email-hint email-error' : 'email-hint'"
+    :aria-invalid="error ? 'true' : undefined" />
+</KavField>
+```

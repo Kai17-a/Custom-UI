@@ -44,16 +44,20 @@ CSSはアプリの入口で1回読み込みます。パッケージJSをSSRでim
 <script setup>
 import {ref} from 'vue';
 import '@kav-ui/core/style.css';
-import {KavButton,KavInput,KavSelect,KavDialog} from '@kav-ui/vue';
+import {KavButton,KavField,KavInput,KavSelect,KavDialog} from '@kav-ui/vue';
 const name=ref('');
 const plan=ref(1);
 const open=ref(false);
 </script>
 
 <template>
-  <KavInput v-model="name" label="名前" />
-  <KavSelect v-model="plan" label="プラン"
-    :options="[{value:1,label:'個人'},{value:2,label:'チーム'}]" />
+  <KavField label="名前" for="name">
+    <KavInput id="name" v-model="name" />
+  </KavField>
+  <KavField label="プラン" for="plan">
+    <KavSelect id="plan" v-model="plan"
+      :options="[{value:1,label:'個人'},{value:2,label:'チーム'}]" />
+  </KavField>
   <KavButton variant="outline" icon="mdi-check" @click="open=true">確認</KavButton>
   <KavDialog v-model="open" title="入力内容">
     <p>{{ name }}</p>
@@ -102,14 +106,16 @@ npm install /path/to/kav-ui-core-0.1.0.tgz /path/to/kav-ui-astro-0.1.0.tgz
 
 ```astro
 ---
-import {KavProvider,KavButton,KavCard,KavSelect,KavDialog} from '@kav-ui/astro';
+import {KavProvider,KavButton,KavCard,KavField,KavSelect,KavDialog} from '@kav-ui/astro';
 ---
 <html lang="ja">
   <body>
     <KavProvider />
     <KavCard title="設定">
-      <KavSelect name="plan" label="プラン" value="personal"
-        options={[{value:'personal',label:'個人'},{value:'team',label:'チーム'}]} />
+      <KavField label="プラン" for="astro-plan">
+        <KavSelect id="astro-plan" name="plan" value="personal"
+          options={[{value:'personal',label:'個人'},{value:'team',label:'チーム'}]} />
+      </KavField>
       <KavButton data-ui-toggle="dialog" data-ui-target="#confirm">確認</KavButton>
     </KavCard>
     <KavDialog id="confirm" title="確認">
