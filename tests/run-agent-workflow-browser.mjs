@@ -76,20 +76,20 @@ try {
       await until(`flowRoot.hasAttribute('data-ui-agent-visible')`);
       const start=await evaluate(`({position:getComputedStyle(flowLine,flowPseudo).backgroundPosition,box:JSON.stringify(flowRoot.getBoundingClientRect()),border:getComputedStyle(flowLine,flowPseudo).borderImageSource})`);
       await delay(180);
-      assert(await evaluate(`getComputedStyle(flowLine,flowPseudo).backgroundPosition!==${JSON.stringify(start.position)} && getComputedStyle(flowLine,flowPseudo).backgroundImage.includes('gradient')`),'Gradient travels '+[width,mode,id]);
+      assert(await evaluate(`getComputedStyle(flowLine,flowPseudo).backgroundPosition!==${JSON.stringify(start.position)} && getComputedStyle(flowLine,flowPseudo).backgroundImage.includes('gradient')`),'Chase highlight travels '+[width,mode,id]);
       assert(await evaluate(`JSON.stringify(flowRoot.getBoundingClientRect())===${JSON.stringify(start.box)}&&document.documentElement.scrollWidth<=innerWidth+1`),'Motion does not move nodes or overflow '+[width,mode,id]);
       await evaluate(`flowRoot.querySelector('input[type=checkbox]').focus()`);await key(' ');
       await evaluate(`new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
       const paused=await evaluate(`getComputedStyle(flowLine,flowPseudo).backgroundPosition`);await delay(100);
-      assert(await evaluate(`getComputedStyle(flowLine,flowPseudo).animationPlayState==='paused' && getComputedStyle(flowLine,flowPseudo).backgroundPosition===${JSON.stringify(paused)}`),'Keyboard pauses the gradient '+JSON.stringify(await evaluate(`({checked:flowRoot.querySelector('input').checked,play:getComputedStyle(flowLine,flowPseudo).animationPlayState,position:getComputedStyle(flowLine,flowPseudo).backgroundPosition,variable:getComputedStyle(flowRoot).getPropertyValue('--ui-agent-flow-play')})`)));
+      assert(await evaluate(`getComputedStyle(flowLine,flowPseudo).animationPlayState==='paused' && getComputedStyle(flowLine,flowPseudo).backgroundPosition===${JSON.stringify(paused)}`),'Keyboard pauses the chase '+JSON.stringify(await evaluate(`({checked:flowRoot.querySelector('input').checked,play:getComputedStyle(flowLine,flowPseudo).animationPlayState,position:getComputedStyle(flowLine,flowPseudo).backgroundPosition,variable:getComputedStyle(flowRoot).getPropertyValue('--ui-agent-flow-play')})`)));
       await key(' ');
-      assert(await evaluate(`getComputedStyle(flowLine,flowPseudo).animationPlayState==='running'`),'Keyboard resumes the gradient');
+      assert(await evaluate(`getComputedStyle(flowLine,flowPseudo).animationPlayState==='running'`),'Keyboard resumes the chase');
     }
     const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
     writeFileSync(join(artifacts,'flow-'+width+'-'+mode+'.png'),Buffer.from(shot.data,'base64'));
   }
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
-  assert(await evaluate(`getComputedStyle(flowLine,flowPseudo).animationName==='none' && getComputedStyle(flowLine,flowPseudo).backgroundImage.includes('gradient')`),'Reduced motion keeps static gradient and connections');
+  assert(await evaluate(`getComputedStyle(flowLine,flowPseudo).animationName==='none' && getComputedStyle(flowLine,flowPseudo).backgroundImage.includes('gradient')`),'Reduced motion keeps static connections');
   await send('Emulation.setEmulatedMedia',{features:[{name:'forced-colors',value:'active'}]});
   assert(await evaluate(`getComputedStyle(flowLine,flowPseudo).animationName==='none' && getComputedStyle(flowLine,flowPseudo).maskImage==='none' && getComputedStyle(flowLine,flowPseudo).borderLeftStyle==='solid'`),'Forced colors keeps solid visible connections');
   await send('Emulation.setEmulatedMedia',{features:[]});
@@ -103,13 +103,13 @@ try {
   await evaluate(`KavUI.destroy(flowRoot)`);
   assert(await evaluate(`!flowRoot.hasAttribute('data-ui-agent-visible')`),'Destroy restores authored attributes');
   await evaluate(`KavUI.init(flowRoot)`);await until(`flowRoot.hasAttribute('data-ui-agent-visible')`);
-  // No runtime: diagrams and gradients remain visible and static.
+  // No runtime: diagrams and connector patterns remain visible and static.
   await send('Network.enable');await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js']});
   await send('Page.navigate',{url:pathToFileURL(documentPath('components/agent-workflow.html')).href});
   await until(`document.readyState==='complete'&&typeof KavUI==='undefined'`);
-  assert(await evaluate(`(()=>{const root=document.querySelector('[data-ui-agent-flow]'),line=root.querySelector('.ui-agent-flow > li');return !root.hasAttribute('data-ui-agent-visible')&&getComputedStyle(line,'::after').animationPlayState==='paused'&&getComputedStyle(line,'::after').backgroundImage.includes('gradient');})()`),'CSS-only fallback is a static gradient');
+  assert(await evaluate(`(()=>{const root=document.querySelector('[data-ui-agent-flow]'),line=root.querySelector('.ui-agent-flow > li');return !root.hasAttribute('data-ui-agent-visible')&&getComputedStyle(line,'::after').animationPlayState==='paused'&&getComputedStyle(line,'::after').backgroundImage.includes('gradient');})()`),'CSS-only fallback keeps static connections');
   if(errors.length)throw new Error(errors.join('\n'));
-  console.log('PASS: gradient frames, pause/resume, 3 diagrams × 3 widths × light/dark; reduced motion, forced colors, offscreen/visibility, destroy/reinit and no-runtime fallback');
+  console.log('PASS: chase frames, pause/resume, 3 diagrams × 3 widths × light/dark; reduced motion, forced colors, offscreen/visibility, destroy/reinit and no-runtime fallback');
   console.log('Screenshots:',artifacts);
 } finally {
   clearTimeout(timeout);try{await send('Browser.close',{},null);}catch{}child.kill();await delay(100);
