@@ -50,3 +50,53 @@
   .ui-agent-tasks { padding:var(--space-3); }
   .ui-agent-tasks ul { padding-inline-start:var(--space-3); }
 }
+
+/* Flow stays on the existing connector geometry; nodes and task outlines stay still. */
+.ui-agent-flowing { --ui-agent-flow-play:paused; --ui-agent-flow-duration:2.8s; }
+.ui-agent-flowing[data-ui-agent-visible] { --ui-agent-flow-play:running; }
+.ui-agent-flowing:has(> .ui-agent-motion input:not(:checked)) { --ui-agent-flow-play:paused; }
+.ui-agent-motion { display:flex; align-items:center; gap:var(--space-2); width:fit-content; margin-bottom:var(--space-3); font-size:.8125rem; cursor:pointer; }
+.ui-agent-motion input { accent-color:var(--bs-primary); }
+.ui-agent-flowing .ui-agent-flow > li:not(:last-child)::after,
+.ui-agent-flowing .ui-agent-tree ul::before,
+.ui-agent-flowing .ui-agent-tree ul > li::before,
+.ui-agent-flowing .ui-agent-tree ul > li::after,
+.ui-agent-flowing .ui-agent-merge::before,
+.ui-agent-flowing .ui-agent-merge::after {
+  --ui-agent-stream-angle:90deg;
+  border-color:transparent;
+  border-width:2px;
+  background-image:linear-gradient(var(--ui-agent-stream-angle),var(--ui-agent-line),var(--bs-primary),var(--bs-info-text-emphasis),var(--ui-agent-line));
+  background-size:96px 100%;
+  background-repeat:repeat;
+  background-origin:border-box;
+  mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0) border-box;
+  mask-composite:exclude;
+  animation:ui-agent-stream-x var(--ui-agent-flow-duration) linear infinite;
+  animation-play-state:var(--ui-agent-flow-play);
+  pointer-events:none;
+}
+.ui-agent-flowing .ui-agent-tree ul::before,
+.ui-agent-flowing .ui-agent-tree ul > li::after,
+.ui-agent-flowing .ui-agent-merge::after {
+  --ui-agent-stream-angle:180deg;
+  background-size:100% 96px;
+  animation-name:ui-agent-stream-y;
+}
+.ui-agent-flowing .ui-agent-tree ul > li:first-child:not(:only-child)::before { animation-direction:reverse; }
+@keyframes ui-agent-stream-x { from { background-position:0 0; } to { background-position:96px 0; } }
+@keyframes ui-agent-stream-y { from { background-position:0 0; } to { background-position:0 96px; } }
+@media (max-width:767px) {
+  .ui-agent-flowing .ui-agent-flow > li:not(:last-child)::after {
+    --ui-agent-stream-angle:180deg;
+    background-size:100% 96px;
+    animation-name:ui-agent-stream-y;
+  }
+}
+@media (pointer:coarse) { .ui-agent-motion { min-height:var(--ui-touch-target); } }
+@media (prefers-reduced-motion:reduce) {
+  .ui-agent-flowing ::before, .ui-agent-flowing ::after { animation:none !important; }
+}
+@media (forced-colors:active) {
+  .ui-agent-flowing ::before, .ui-agent-flowing ::after { animation:none !important; background:none !important; mask:none !important; border-color:CanvasText !important; }
+}
