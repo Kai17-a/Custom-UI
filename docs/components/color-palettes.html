@@ -53,7 +53,6 @@
         <a class="overview-link" href="../index.html">カタログ一覧</a>
         <a class="overview-link" href="../installation.html">ダウンロード・導入</a>
 <a class="overview-link" href="../getting-started.html">使い方・属性一覧</a>
-        <a class="overview-link" href="../starter.html">アプリ用サンプル ↗</a>
         <a class="overview-link" href="../templates.html">サービステンプレート ↗</a>
 <a class="overview-link" href="../ai-agents.html">AIエージェント向け</a>
         <p class="eyebrow">COMPONENTS</p>
@@ -324,7 +323,7 @@ KavUI.setPalette('custom'); // 最後に作ったカスタム配色へ戻しま�
 &lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;
 
 &lt;body data-ui-theme-persist&gt;...&lt;/body&gt;</code></pre>
-          <p>theme-init.jsは任意です。保存した配色をCSSの描画前に復元し、カラーパレット・質感・明暗を引き継ぎます。カタログ・starter・テンプレートでは読み込み済みで、配布ZIPにも含めています。色生成処理はui.jsに同梱しているため、外部通信・npm・ブラウザでのimportは不要です。</p>
+          <p>theme-init.jsは任意です。保存した配色をCSSの描画前に復元し、カラーパレット・質感・明暗を引き継ぎます。カタログ・サービステンプレートでは読み込み済みで、配布ZIPにも含めています。色生成処理はui.jsに同梱しているため、外部通信・npm・ブラウザでのimportは不要です。</p>
         </section>
 
         <section class="specimen" id="palette-select">
@@ -432,7 +431,7 @@ document.body.addEventListener('ui:palettechange', event =&gt; {
   console.log(event.detail.palette);
 });</code></pre>
           <p>setPalette()は有効な値でtrue、不明な値では変更せずfalseを返します。APIはpersist省略時に保存しません。選択欄・ボタンからの操作はbodyにdata-ui-theme-persistがある場合だけ、kav-ui-paletteへ保存します。明暗のkav-ui-theme、質感のkav-ui-design-themeとは独立しています。保存を利用できない場合も、ページ内の切り替えは動きます。</p>
-          <p>初回描画の前に保存値を復元するtheme-init.jsは、カタログ・starter・サービステンプレートで読み込んでいます。アプリへの取り込み時にも引き継いでください。</p>
+          <p>初回描画の前に保存値を復元するtheme-init.jsは、カタログ・サービステンプレートで読み込んでいます。アプリへの取り込み時にも引き継いでください。</p>
           <p><a href="theme-switcher.html">明暗・質感の切り替え →</a> / <a href="../templates/dashboard.html">ダッシュボードで配色を試す →</a></p>
         </section>
         <details class="source">

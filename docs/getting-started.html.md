@@ -21,7 +21,7 @@ ui.css は同じフォルダ内のCSSを相対参照します。assetsフォル�
 
 scriptにはdeferを付けます。ライト／ダーク切替は `data-ui-toggle="theme"` のボタンで利用できます。
 
-[実際に2ファイルだけで動くstarter.htmlを開く →](starter.html.md)
+[ボタンの使用例を見る →](components/buttons.html.md)
 
 <a id="recommended-conventions"></a>
 
