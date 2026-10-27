@@ -36,7 +36,10 @@
       <li><a href="components/color-palettes.html">Color palettes</a></li>
       <li><a href="components/typography.html">Typography</a></li>
       <li><a href="components/spacing.html">Spacing</a></li>
-      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="components/mdi-icons.html">MDIアイコン</a></li><li><a href="components/icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul>
+        <li><a href="components/mdi-icons.html">MDIアイコン</a></li>
+        <li><a href="components/icons.html">サイズ・色・組み合わせ</a></li>
+      </ul></details></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -47,62 +50,55 @@
       <li><a href="components/flex.html">Flexbox</a></li>
       <li><a href="components/flex-grid.html">Flex grid</a></li>
       <li><a href="components/cards.html">Cards</a></li>
-      <li><a href="components/sidebar.html">Sidebar</a></li>
-
-      <li><a href="components/drawer.html">Drawer</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
     <h2>入力・操作</h2>
     <ul>
       <li><a href="components/buttons.html">Buttons</a></li>
-      <li><a href="components/forms.html">Forms</a></li>
-      <li><a href="components/rating.html">Rating</a></li>
-      <li><a href="components/datepicker.html">Date picker</a></li>
-      <li><a href="components/dialog.html">Dialog</a></li>
-      <li><a href="components/clipboard.html">Clipboard</a></li>
-
-      <li><a href="components/input-group.html">Input group</a></li>
       <li><a href="components/button-group.html">Button group</a></li>
+      <li><a href="components/forms.html">Forms</a></li>
+      <li><a href="components/input-group.html">Input group</a></li>
+      <li><a href="components/datepicker.html">Date picker</a></li>
+      <li><a href="components/rating.html">Rating</a></li>
+      <li><a href="components/clipboard.html">Clipboard</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
     <h2>ナビゲーション</h2>
     <ul>
       <li><a href="components/navigation.html">Navigation</a></li>
+      <li><a href="components/sidebar.html">Sidebar</a></li>
       <li><a href="components/command.html">Command menu</a></li>
-      <li><a href="components/disclosure.html">Accordion</a></li>
-
       <li><a href="components/dropdown.html">Dropdown</a></li>
+      <li><a href="components/disclosure.html">Accordion</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
     <h2>データ表示</h2>
     <ul>
-      <li><a href="components/badges.html">Badges</a></li>
       <li><a href="components/table.html">Table</a></li>
       <li><a href="components/data-table.html">Data table</a></li>
       <li><a href="components/board.html">Kanban board</a></li>
-      <li><a href="components/agent-workflow.html">Agent workflow</a></li>
-      <li><a href="components/ai-visuals.html">AI visuals</a></li>
       <li><a href="components/calendar.html">Calendar</a></li>
-
       <li><a href="components/list-group.html">List group</a></li>
       <li><a href="components/avatar.html">Avatar</a></li>
+      <li><a href="components/badges.html">Badges</a></li>
       <li><a href="components/chart.html">Chart</a></li>
       <li><a href="components/carousel.html">Carousel</a></li>
       <li><a href="components/timeline.html">Timeline</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
-    <h2>通知・補足</h2>
+    <h2>通知・補助表示</h2>
     <ul>
       <li><a href="components/alerts.html">Alerts</a></li>
       <li><a href="components/banner.html">Banner</a></li>
       <li><a href="components/toasts.html">Toasts & alerts</a></li>
       <li><a href="components/tips.html">Tips & tooltips</a></li>
-
       <li><a href="components/popover.html">Popover</a></li>
+      <li><a href="components/dialog.html">Dialog</a></li>
+      <li><a href="components/drawer.html">Drawer</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -120,7 +116,14 @@
       </ul></details></li>
     </ul>
   </div>
-</nav></details><a class="overview-link" href="components/preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+  <div class="catalog-nav-group">
+    <h2>AI・ワークフロー</h2>
+    <ul>
+      <li><a href="components/agent-workflow.html">Agent workflow</a></li>
+      <li><a href="components/ai-visuals.html">AI visuals</a></li>
+    </ul>
+  </div>
+</nav></details><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
 <main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / UI TOOLKIT</p><h1>Getting started</h1></header><p class="lede">Kav-UIはclassで見た目を、data-ui-*属性で動作を指定する共通UIです。専用の初期化コードは通常不要です。JavaScriptから操作する場合は<code>KavUI</code>を使用します。</p><p><a class="btn btn-primary" href="installation.html">CSS・JavaScriptのダウンロードと導入手順</a></p><section class="usage"><h2>1. assetsフォルダをコピーする</h2><p>ui.css は同じフォルダ内のCSSを相対参照します。assetsフォルダの構造を保ってコピーしてください。npm・ビルド・CDN・サーバーは不要です。</p><h2>2. 共通2ファイルを読み込む</h2><pre class="setup-code"><code>&lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/ui.css&quot;&gt;
 &lt;script defer src=&quot;assets/js/ui.js&quot;&gt;&lt;/script&gt;</code></pre><p>scriptにはdeferを付けます。ライト／ダーク切替は <code>data-ui-toggle="theme"</code> のボタンで利用できます。</p><p><a href="components/buttons.html">ボタンの使用例を見る →</a></p></section><section class="specimen" id="recommended-conventions"><h2>まず覚えるルールとアプリ処理の接続</h2><p>新しい画面では、配置は<code>fx-*</code>、余白は<code>sp-*</code>、文字は<code>type-*</code>、ページ構成は<code>ui-*</code>を入口にしてください。互換性のため既存のstack・cluster・gap-*も使えますが、同じ数値が同じ大きさとは限りません。例えばsp-gap-3とfx-gap-3は12px相当、互換gap-3は16px相当です。</p><p><code>mobile:</code>は768px未満だけ、<code>tablet:</code>は768〜1023pxだけ、<code>md:</code>は768px以上です。同じプロパティではこれらを混在させません。全幅の入力ラッパーは<code>field ui-w-full</code>で指定できます。</p><p>入力検証後の保存は<code>ui:valid</code>で接続します。<a href="#application-events">アプリ処理の接続例</a>、<a href="components/forms.html">フォーム</a>、<a href="components/loading.html">処理中・失敗・再試行</a>を組み合わせます。項目間チェックは標準のsetCustomValidity、条件付き入力はrequired・disabledで指定でき、専用ルールエンジンは不要です。</p><p>モバイルの上部リンクには<a href="components/navigation.html#nav-navbar">Navbar</a>、管理画面のページ一覧には<a href="components/sidebar.html#sidebar-responsive">Sidebar</a>が使えます。必要な方だけ選んでください。</p></section><section class="specimen" id="data-table-guide"><h2>検索・ソート付きのデータテーブル</h2><p><a href="components/data-table.html">Data table</a>は、HTMLの行に検索・文字/数値/日付ソート・ページ送り・行選択を追加する部品です。親に<code>data-ui-data-table</code>、列名のbuttonに<code>data-ui-table-sort</code>を指定します。</p></section><section class="specimen" id="color-palettes"><h2>カラーパレット</h2><p>ユーザーが基準色と彩度を選べる<a href="components/color-palettes.html#palette-custom">カスタム配色フォーム</a>も利用できます。formにdata-ui-palette-editor、色入力にdata-ui-palette-seed、彩度入力にdata-ui-palette-chromaを指定します。APIはKavUI.setCustomPalette()です。初回描画前の復元には、CSSより前に任意のassets/js/theme-init.jsを読み込みます。</p><p><a href="components/color-palettes.html">Material 3に基づく6種類の低彩度パレット</a>を追加しています。htmlにdata-ui-palette="sage"を付けると、CSSだけで全体に反映します。切り替え部品はdata-ui-palette-select、ボタンはdata-ui-palette-value="sage"、APIはKavUI.setPalette()です。質感のdata-ui-theme、明暗のdata-bs-themeとは独立します。</p></section><section class="specimen" id="splitter"><h2>領域のサイズ変更</h2><p><a href="components/splitter.html">Splitter</a>は、横・縦のパネルをドラッグやキーボードで調整する部品です。親にdata-ui-splitter、直下のパネルにdata-ui-splitter-panelを指定します。最小／最大サイズ・折り畳み・入れ子・任意保存に対応し、APIはKavUI.splitter()です。</p></section><section class="specimen" id="glass-background"><h2>ガラスの背景画像</h2><p>glass・glassmorphismには任意の背景画像を指定できます。CSSクラスで--ui-theme-background-imageと--ui-theme-background-opacityを設定するだけで、画像を薄く重ねます。指定しなければ従来の背景を維持します。<a href="components/themes.html#theme-background">設定方法とプレビュー →</a></p></section><section class="specimen" id="service-templates"><h2>サービス画面・チャート</h2><p><a href="templates.html">サービステンプレート</a>は、ドキュメント・ダッシュボード・changelog・エラー画面の独立したHTMLです。画面固有のtemplates.css / templates.jsと共通のui.css / ui.jsで動きます。</p><p><a href="components/chart.html">Chart</a>は共通UIに含まれ、data-ui-chart属性とJSONで折れ線・面・棒・ドーナツを描画できます。データ表も自動で付きます。更新はKavUI.chart(element, config)を使います。</p></section><section class="specimen" id="smooth-scroll"><h2>スムーズスクロール</h2><p>ページ全体またはスクロール領域に<code>ui-scroll-smooth</code>を付けます。<code>data-ui-scroll-active</code>を付けた領域は、<code>aria-current</code>の項目が見える位置まで移動します。<a href="components/navigation.html#nav-smooth-scroll">使用例・固定ヘッダーの余白・動きを減らす設定</a>を参照してください。</p></section><section class="specimen" id="search-history-components"><h2>検索・スライド・履歴・評価</h2><p><a href="components/command.html">Command menu</a>で操作を検索し、<a href="components/carousel.html">Carousel</a>で内容をスライド表示できます。<a href="components/timeline.html">Timeline</a>は履歴、<a href="components/rating.html">Rating</a>は星による評価入力です。共通のui.css / ui.jsで使え、TimelineとRatingの基本表示にはJavaScriptも不要です。</p></section><section class="specimen" id="more-components"><h2>メニュー・パネル・連結コンポーネント</h2><p>追加の汎用コンポーネントも共通のui.cssとui.jsだけで使えます。Dropdown・PopoverはPopover API、Drawerはdialogを使用します。Input group・Button group・List group・Avatarの見た目にはJavaScriptは不要です。</p><ul><li><a href="components/dropdown.html">Dropdown</a>：操作メニュー・上下配置・キーボード・選択イベント</li><li><a href="components/popover.html">Popover</a>：操作を含む補足パネル・フォーム・画面端補正</li><li><a href="components/drawer.html">Drawer</a>：左右上下のサイドパネル・背景スクロール停止・フォーカス復帰</li><li><a href="components/input-group.html">Input group</a>：入力欄と接頭辞・接尾辞・ボタン・selectの連結</li><li><a href="components/button-group.html">Button group</a>：ボタンの連結・縦並び・radio／checkboxの選択</li><li><a href="components/list-group.html">List group</a>：一覧・操作・現在地・件数・チェック付きリスト</li><li><a href="components/avatar.html">Avatar</a>：イニシャル・画像・サイズ・ステータス・グループ</li></ul><p>追加対象の参考：<a href="https://getbootstrap.com/docs/5.3/components/dropdowns/">BootstrapのDropdown</a>・<a href="https://getbootstrap.com/docs/5.3/components/offcanvas/">Offcanvas</a>・<a href="https://getbootstrap.com/docs/5.3/forms/input-group/">Input group</a>、<a href="https://bulma.io/documentation/components/dropdown/">BulmaのDropdown</a>、<a href="https://daisyui.com/components/avatar/">daisyUIのAvatar</a>。コードと見た目はKav-UIの構成に合わせて実装しています。</p></section><section class="specimen" id="responsive-devices"><h2>PC・タブレット・スマートフォン</h2><p>PC（1024px以上）の指定を基本に、タブレット（768px以上1024px未満）は<code>tablet:</code>、スマートフォン（768px未満）は<code>mobile:</code>を付けて調整できます。共通のui.cssだけで使え、npmやビルドは不要です。</p><pre class="setup-code"><code>&lt;div class="fx-grid fx-grid-3 tablet:fx-grid-2 mobile:fx-grid-1 fx-gap-4"&gt;
   &lt;div class="ui-card"&gt;…&lt;/div&gt;

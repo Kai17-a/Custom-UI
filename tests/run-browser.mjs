@@ -195,7 +195,7 @@ try {
   }
   console.log('Catalog search: Japanese aliases, full-width normalization and multiple words agree across index/sidebar');
   // Audit file:// loading and responsive overflow across every catalog page.
-  const componentDestinations=readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')&&name!=='preview.html').sort();
+  const componentDestinations=readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')).sort();
   const pages=['index.html','ai-agents.html','installation.html','getting-started.html','templates.html',...readdirSync(join(site,'templates')).filter(name=>name.endsWith('.html')).map(name=>'templates/'+name),...readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')).map(name=>'components/'+name)];
   let checks=0; let sourceChecks=0;
   for(const width of [320,767,768,1023,1024,1440]) {
@@ -220,7 +220,7 @@ try {
         const tocLayout=await evaluate(`(()=>{const toc=document.querySelector('.catalog-page-toc');if(!toc)return null;const rail=toc.closest('.catalog-toc-rail').getBoundingClientRect(),article=document.querySelector('.catalog-main').getBoundingClientRect();return {outside:!toc.closest('.catalog-sidebar'),expanded:toc.open && !!toc.querySelector("a")?.getClientRects().length,unlined:[toc,toc.closest(".catalog-toc-rail"),toc.querySelector("ol")].every(el=>getComputedStyle(el).borderInlineStartWidth==="0px" && getComputedStyle(el).borderBottomWidth==="0px"),right:rail.left>=article.right-1,above:rail.bottom<=article.top+1};})()`);
         if(tocLayout && (!tocLayout.outside || tocLayout.expanded!==(width>=1280) || !tocLayout.unlined || !(width>=1280?tocLayout.right:tocLayout.above)))throw new Error('Catalog TOC rail placement '+path+' '+width+': '+JSON.stringify(tocLayout));
         const filename=path.split('/').pop();
-        if(path.startsWith('components/') && filename!=='preview.html' && (navigation.active.length!==1 || navigation.active[0]!==filename))throw new Error('Current page destination: '+path);
+        if(path.startsWith('components/') && (navigation.active.length!==1 || navigation.active[0]!==filename))throw new Error('Current page destination: '+path);
         if(filename.startsWith('animations') && !navigation.branch)throw new Error('Current animation branch must open');
       }
       if(width===1440) {

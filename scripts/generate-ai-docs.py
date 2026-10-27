@@ -188,7 +188,7 @@ def discovery(page, source, markdown=True):
 
 
 def outputs():
-    pages = sorted(path.resolve() for path in DOCS.rglob('*.html') if path.name != 'preview.html')
+    pages = sorted(path.resolve() for path in DOCS.rglob('*.html'))
     page_set = set(pages)
     documents, generated = {}, {}
     for page in pages:

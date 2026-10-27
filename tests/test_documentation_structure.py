@@ -23,6 +23,33 @@ class References(HTMLParser):
 
 
 class DocumentationStructureTests(unittest.TestCase):
+    def test_preview_page_is_removed(self):
+        self.assertFalse((DOCS / 'components/preview.html').exists())
+        for page in DOCS.rglob('*.html'):
+            self.assertNotIn('preview.html', page.read_text(), str(page.relative_to(ROOT)))
+
+    def test_catalog_categories_are_consistent_and_group_related_components(self):
+        expected = {
+            'ナビゲーション': {'navigation.html', 'sidebar.html', 'command.html', 'dropdown.html', 'disclosure.html'},
+            '通知・補助表示': {'alerts.html', 'banner.html', 'toasts.html', 'tips.html', 'popover.html', 'dialog.html', 'drawer.html'},
+            'AI・ワークフロー': {'agent-workflow.html', 'ai-visuals.html'},
+        }
+        reference = None
+        for page in DOCS.rglob('*.html'):
+            nav = re.search(r'<nav aria-label="コンポーネント">(.*?)</nav>', page.read_text(), re.S)
+            if not nav:
+                continue
+            groups = re.findall(r'<div class="catalog-nav-group">\s*<h2>(.*?)</h2>(.*?)</div>', nav.group(1), re.S)
+            categories = {name: tuple(Path(href).name for href in re.findall(r'<a href="([^"]+)"', content))
+                          for name, content in groups}
+            self.assertEqual(len(groups), len(categories), str(page))
+            for name, components in expected.items():
+                self.assertEqual(set(categories.get(name, ())), components, (page, name))
+            if reference is None:
+                reference = categories
+            self.assertEqual(list(categories.items()), list(reference.items()), str(page))
+        self.assertIsNotNone(reference)
+
     def test_retired_app_sample_is_not_published(self):
         self.assertFalse((DOCS / 'starter.html').exists())
         self.assertFalse((DOCS / 'starter.html.md').exists())
@@ -72,7 +99,7 @@ class DocumentationStructureTests(unittest.TestCase):
         self.assertFalse((ROOT / 'components').exists())
 
     def test_catalog_navigation_lists_every_component(self):
-        destinations = {p.name for p in (DOCS / 'components').glob('*.html') if p.name != 'preview.html'}
+        destinations = {p.name for p in (DOCS / 'components').glob('*.html')}
         for page in DOCS.rglob('*.html'):
             match = re.search(r'<nav aria-label="コンポーネント">(.*?)</nav>', page.read_text(), re.S)
             if not match:
@@ -80,7 +107,7 @@ class DocumentationStructureTests(unittest.TestCase):
             links = re.findall(r'<a href="([^"]+)"([^>]*)>', match.group(1))
             self.assertEqual({Path(href).name for href, _ in links}, destinations, str(page))
             self.assertEqual(len(links), len(destinations), str(page))
-            if page.parent == DOCS / 'components' and page.name != 'preview.html':
+            if page.parent == DOCS / 'components':
                 self.assertEqual([Path(href).name for href, attrs in links if 'aria-current="page"' in attrs], [page.name])
 
     def test_documentation_local_references_resolve(self):
