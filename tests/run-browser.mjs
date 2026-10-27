@@ -130,7 +130,7 @@ try {
   for(const mode of ['light','dark']) {
     const {identifier}=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-theme',${JSON.stringify(mode)});localStorage.setItem('kav-ui-design-theme','glass');`});
     await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:mode==='dark'?'light':'dark'}]});
-    for(const path of ['index.html','getting-started.html','components/toasts.html','components/theme-switcher.html','starter.html']) {
+    for(const path of ['index.html','getting-started.html','components/toasts.html','components/theme-switcher.html','components/dialog.html']) {
       await firstPaintPage(path);
       const state=await evaluate('({mode:document.documentElement.dataset.bsTheme,design:document.body.dataset.uiTheme,background:getComputedStyle(document.documentElement).backgroundColor,ui:typeof KavUI})');
       if(state.mode!==mode || state.design!=='glass' || state.background!==(mode==='dark'?'rgb(27, 28, 30)':'rgb(244, 243, 240)') || state.ui!=='undefined')throw new Error('Theme before UI: '+path+' '+JSON.stringify(state));
@@ -159,7 +159,7 @@ try {
   }
   await send('Network.setBlockedURLs',{urls:[]});
   await send('Emulation.setEmulatedMedia',{features:[]});
-  await navigate('starter.html');
+  await navigate('components/dialog.html');
   await evaluate("localStorage.removeItem('kav-ui-theme');localStorage.removeItem('kav-ui-design-theme')");
   console.log('First paint with UI blocked: saved light/dark before rendering across 5 pages, glass restoration, OS fallback with absent/invalid/blocked storage');
   await checkControlAppearance({navigate,evaluate,send,key});
@@ -196,7 +196,7 @@ try {
   console.log('Catalog search: Japanese aliases, full-width normalization and multiple words agree across index/sidebar');
   // Audit file:// loading and responsive overflow across every catalog page.
   const componentDestinations=readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')&&name!=='preview.html').sort();
-  const pages=['index.html','ai-agents.html','installation.html','getting-started.html','templates.html','starter.html',...readdirSync(join(site,'templates')).filter(name=>name.endsWith('.html')).map(name=>'templates/'+name),...readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')).map(name=>'components/'+name)];
+  const pages=['index.html','ai-agents.html','installation.html','getting-started.html','templates.html',...readdirSync(join(site,'templates')).filter(name=>name.endsWith('.html')).map(name=>'templates/'+name),...readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')).map(name=>'components/'+name)];
   let checks=0; let sourceChecks=0;
   for(const width of [320,767,768,1023,1024,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
@@ -214,7 +214,7 @@ try {
         const expected=width>=1024?'32px':width>=768?'24px':'8px';
         if(padding!==expected)throw new Error('Responsive spacing @'+width+': '+padding);
       }
-      if(path!=='starter.html' && !path.startsWith('templates/')) {
+      if(!path.startsWith('templates/')) {
         const navigation=await evaluate(`(()=>{const nav=document.querySelector('.catalog-sidebar nav[aria-label="コンポーネント"]');const links=[...nav.querySelectorAll('a')];const toc=[...document.querySelectorAll('.catalog-toc-link')];return {paths:links.map(a=>a.href.split('/').pop()),active:links.filter(a=>a.getAttribute('aria-current')==='page').map(a=>a.href.split('/').pop()),tocValid:toc.every(a=>!!document.getElementById(decodeURIComponent(a.hash.slice(1)))),menuOpen:document.querySelector('.catalog-navigation').open,branch:document.querySelector('[data-catalog-family="animations"]').open};})()`);
         if(JSON.stringify([...navigation.paths].sort())!==JSON.stringify(componentDestinations) || new Set(navigation.paths).size!==componentDestinations.length || !navigation.tocValid || navigation.menuOpen!==(width>=768))throw new Error('Catalog navigation '+path+' '+width+': '+JSON.stringify(navigation));
         const tocLayout=await evaluate(`(()=>{const toc=document.querySelector('.catalog-page-toc');if(!toc)return null;const rail=toc.closest('.catalog-toc-rail').getBoundingClientRect(),article=document.querySelector('.catalog-main').getBoundingClientRect();return {outside:!toc.closest('.catalog-sidebar'),expanded:toc.open && !!toc.querySelector("a")?.getClientRects().length,unlined:[toc,toc.closest(".catalog-toc-rail"),toc.querySelector("ol")].every(el=>getComputedStyle(el).borderInlineStartWidth==="0px" && getComputedStyle(el).borderBottomWidth==="0px"),right:rail.left>=article.right-1,above:rail.bottom<=article.top+1};})()`);
@@ -380,18 +380,19 @@ try {
   await evaluate('document.querySelector("main").style.minHeight="1500px"');
   if(!await evaluate('document.querySelector(".ui-footer").getBoundingClientRect().top>=1500'))throw new Error('Long page footer');
   console.log('Standalone layouts: 4 widths × light/dark × 5 designs; responsive column geometry, embedded width, sidebar pointer/keyboard, short/long footer');
-  await navigate('starter.html');
-  await click('[data-ui-target="#starter-project"]');
-  if(!await evaluate('document.querySelector("#starter-project").open'))throw new Error('Pointer did not open dialog');
+  await navigate('components/dialog.html');
+  await click('[data-ui-target="#project-dialog"]');
+  if(!await evaluate('document.querySelector("#project-dialog").open'))throw new Error('Pointer did not open dialog');
   await key('Tab'); await key('Tab');
-  if(!await evaluate('document.querySelector("#starter-project").contains(document.activeElement)'))throw new Error('Native dialog Tab focus escaped');
+  if(!await evaluate('document.querySelector("#project-dialog").contains(document.activeElement)'))throw new Error('Native dialog Tab focus escaped');
   await key('Escape'); await delay(30);
-  if(!await evaluate('!document.querySelector("#starter-project").open && document.activeElement.dataset.uiTarget === "#starter-project"'))throw new Error('Native Escape/focus restoration failed: '+JSON.stringify(await evaluate('({open:document.querySelector("#starter-project").open,focus:document.activeElement.outerHTML})')));
-  await click('[data-ui-target="#starter-project"]');
-  await click('#starter-project [data-ui-dismiss]');await delay(30);
-  if(!await evaluate('!document.querySelector("#starter-project").open'))throw new Error('Pointer dismissal failed');
-  await evaluate('document.querySelector("[data-ui-toggle=tab]").focus()');await key('ArrowRight');
-  if(!await evaluate('document.activeElement.getAttribute("aria-selected") === "true" && document.activeElement.dataset.uiTarget === "settings"'))throw new Error('Native keyboard tab navigation failed');
+  if(!await evaluate('!document.querySelector("#project-dialog").open && document.activeElement.dataset.uiTarget === "#project-dialog"'))throw new Error('Native Escape/focus restoration failed: '+JSON.stringify(await evaluate('({open:document.querySelector("#project-dialog").open,focus:document.activeElement.outerHTML})')));
+  await click('[data-ui-target="#project-dialog"]');
+  await click('#project-dialog [data-ui-dismiss]');await delay(30);
+  if(!await evaluate('!document.querySelector("#project-dialog").open'))throw new Error('Pointer dismissal failed');
+  await navigate('components/navigation.html');
+  await evaluate('document.querySelector("[data-ui-tabs] [data-ui-toggle=tab]").focus()');await key('ArrowRight');
+  if(!await evaluate('document.activeElement.getAttribute("aria-selected") === "true" && document.activeElement.dataset.uiTarget === "activity"'))throw new Error('Native keyboard tab navigation failed');
   console.log('Native pointer/keyboard checks: dialog open/dismiss/Escape/focus return; tab ArrowRight');
   for(const width of [320,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
@@ -580,8 +581,8 @@ try {
   if(!await evaluate('document.body.dataset.uiTheme==="glass" && [...document.querySelectorAll("[data-ui-theme-select]")].every(select=>select.value==="glass")'))throw new Error('Custom design theme select did not synchronize');
   await navigate('components/themes.html');
   if(!await evaluate('document.body.dataset.uiTheme==="glass"'))throw new Error('Design theme did not survive reload');
-  await navigate('starter.html');
-  if(!await evaluate('document.body.dataset.uiTheme==="glass"'))throw new Error('Design theme did not carry to the starter');
+  await navigate('components/dialog.html');
+  if(!await evaluate('document.body.dataset.uiTheme==="glass"'))throw new Error('Design theme did not carry to another component page');
   // Exercise every design and light/dark combination at phone and desktop widths.
   for(const width of [320,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
@@ -791,7 +792,7 @@ try {
     }
   }
   await send('Network.setBlockedURLs',{urls:[]});
-  await navigate('starter.html');
+  await navigate('components/dialog.html');
   await evaluate(`(()=>{const wrapper=document.createElement('div');wrapper.id='wide-table-test';wrapper.className='ui-table-scroll';wrapper.tabIndex=0;wrapper.setAttribute('role','region');wrapper.setAttribute('aria-label','横長の一覧');wrapper.innerHTML='<table class="table" style="min-width:1200px"><tr><th>プロジェクト</th><th>担当者</th><th>更新日時</th></tr><tr><td>Design catalog</td><td>チーム</td><td>2026-10-22</td></tr></table>';document.querySelector('main').prepend(wrapper);wrapper.focus();})()`);
   await send('Emulation.setDeviceMetricsOverride',{width:375,height:1000,deviceScaleFactor:1,mobile:false});
   await key('ArrowRight');await delay(200);
@@ -829,6 +830,8 @@ try {
   for(const width of [320,768,1440])for(const mode of ['light','dark'])for(const design of ['default','glass','glassmorphism']) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     await evaluate('KavUI.setColorTheme('+JSON.stringify(mode)+');KavUI.setDesignTheme('+JSON.stringify(design)+');scrollTo({top:1200,left:0,behavior:"instant"})');await delay(35);
+    // Font/layout completion can extend this page after the first scroll is clamped.
+    await evaluate('scrollTo({top:1200,left:0,behavior:"instant"})');
     const point=await evaluate(`(()=>{const button=document.querySelector('.catalog-header [data-ui-theme-icon]'),box=button.getBoundingClientRect();return {x:box.x+box.width/2,y:box.y+box.height/2};})()`);
     await send('Input.dispatchMouseEvent',{type:'mousePressed',...point,button:'left',clickCount:1});
     await send('Input.dispatchMouseEvent',{type:'mouseReleased',...point,button:'left',clickCount:1});
@@ -1005,8 +1008,8 @@ try {
   await send('Emulation.setEmulatedMedia',{features:[]});
   // A static application can configure an image without loading ui.js.
   await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js']});
-  const wallpaperSeed=await send('Page.addScriptToEvaluateOnNewDocument',{source:`const observer=new MutationObserver(()=>{if(document.body){document.body.dataset.uiTheme='glass';document.body.style.setProperty('--ui-theme-background-image','url("'+new URL('assets/images/theme-background.svg',location.href).href+'")');observer.disconnect();}});observer.observe(document,{childList:true,subtree:true});`});
-  await firstPaintPage('starter.html');
+  const wallpaperSeed=await send('Page.addScriptToEvaluateOnNewDocument',{source:`const observer=new MutationObserver(()=>{if(document.body){document.body.dataset.uiTheme='glass';document.body.style.setProperty('--ui-theme-background-image','url("'+new URL('../assets/images/theme-background.svg',location.href).href+'")');observer.disconnect();}});observer.observe(document,{childList:true,subtree:true});`});
+  await firstPaintPage('components/dialog.html');
   if(!await evaluate('typeof KavUI==="undefined" && getComputedStyle(document.body).backgroundImage.includes("theme-background.svg")'))throw new Error('Wallpaper CSS-only application');
   await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:wallpaperSeed.identifier});await send('Network.setBlockedURLs',{urls:[]});
   await navigate('components/themes.html');await evaluate('KavUI.setDesignTheme("default",{persist:true});KavUI.setColorTheme("light",{persist:true})');
@@ -1141,7 +1144,7 @@ try {
   await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js','*assets/js/templates.js']});
   for(const mode of ['light','dark']) {
     const {identifier}=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-theme',${JSON.stringify(mode)});`});
-    for(const path of ['index.html','starter.html','components/color-palettes.html','templates/dashboard.html']) {
+    for(const path of ['index.html','components/dialog.html','components/color-palettes.html','templates/dashboard.html']) {
       await firstPaintPage(path);
       if(!await evaluate(`document.documentElement.dataset.uiPalette==='custom' && getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim()===${JSON.stringify(customSaved[mode]['--bs-primary'])} && typeof KavUI==='undefined' && document.querySelectorAll('style[data-ui-custom-palette-style]').length===1`))throw new Error('Custom palette pre-paint '+[mode,path]);
     }
@@ -1150,13 +1153,13 @@ try {
   // Invalid cached CSS cannot reach a style element; runtime regenerates trusted roles from the seed.
   const invalidCache={...customSaved,light:{...customSaved.light,'--bs-primary':'red; } body{display:none}'}};
   const corrupt=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-custom-palette',${JSON.stringify(JSON.stringify(invalidCache))});`});
-  await firstPaintPage('starter.html');
+  await firstPaintPage('components/dialog.html');
   if(!await evaluate('!document.querySelector("style[data-ui-custom-palette-style]") && document.documentElement.dataset.uiPalette!=="custom"'))throw new Error('Invalid cached CSS was accepted');
-  await send('Network.setBlockedURLs',{urls:[]});await navigate('starter.html');
+  await send('Network.setBlockedURLs',{urls:[]});await navigate('components/dialog.html');
   if(!await evaluate('document.documentElement.dataset.uiPalette==="custom" && KavUI.getCustomPalette().seed==="#7d6b91" && !document.querySelector("style[data-ui-custom-palette-style]").textContent.includes("display:none")'))throw new Error('Custom palette must regenerate cached tokens');
   await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:corrupt.identifier});
   const explicitCustom=await send('Page.addScriptToEvaluateOnNewDocument',{source:`const observer=new MutationObserver(()=>{if(document.documentElement){Object.assign(document.documentElement.dataset,{uiPalette:'custom',uiPaletteSeed:'#52796f',uiPaletteChroma:'20'});observer.disconnect();}});observer.observe(document,{childList:true});`});
-  await navigate('starter.html');
+  await navigate('components/dialog.html');
   if(!await evaluate('KavUI.getCustomPalette().seed==="#52796f" && KavUI.getCustomPalette().chroma===20 && document.documentElement.dataset.uiPalette==="custom"'))throw new Error('Explicit custom seed priority');
   await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:explicitCustom.identifier});
   const noStorage=await send('Page.addScriptToEvaluateOnNewDocument',{source:"Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Storage unavailable','SecurityError');}});"});
@@ -1203,7 +1206,7 @@ try {
   await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js','*assets/js/templates.js']});
   for(const mode of ['light','dark']) {
     const {identifier}=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-theme',${JSON.stringify(mode)});localStorage.setItem('kav-ui-palette','sage');localStorage.removeItem('kav-ui-design-theme');`});
-    for(const path of ['index.html','getting-started.html','starter.html','components/color-palettes.html','templates.html','templates/docs.html','templates/dashboard.html','templates/changelog.html']) {
+    for(const path of ['index.html','getting-started.html','components/dialog.html','components/color-palettes.html','templates.html','templates/docs.html','templates/dashboard.html','templates/changelog.html']) {
       await firstPaintPage(path);
       if(!await evaluate(`document.documentElement.dataset.uiPalette==='sage' && getComputedStyle(document.documentElement).getPropertyValue('--md-sys-color-primary').trim()===${JSON.stringify(paletteData.find(p=>p.name==='sage').modes[mode].roles.primary)} && typeof KavUI==='undefined'`))throw new Error('Palette CSS-only first paint '+[mode,path]);
     }
@@ -1215,7 +1218,7 @@ try {
   if(!await evaluate('document.documentElement.dataset.uiPalette==="clay" && document.querySelector("[data-ui-palette-select]").value==="clay"'))throw new Error('Explicit HTML palette wins over stored palette');
   await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:explicit.identifier});
   const optOut=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-palette','sage');const observer=new MutationObserver(()=>{if(document.body){document.body.removeAttribute('data-ui-theme-persist');observer.disconnect();}});observer.observe(document,{childList:true,subtree:true});`});
-  await navigate('starter.html');
+  await navigate('components/dialog.html');
   if(!await evaluate('document.documentElement.dataset.uiPalette==="default"'))throw new Error('Stored palette requires persist opt-in');
   await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:optOut.identifier});
   const invalid=await send('Page.addScriptToEvaluateOnNewDocument',{source:"localStorage.setItem('kav-ui-palette','unknown');"});await navigate('components/color-palettes.html');
@@ -1312,7 +1315,7 @@ try {
   }
   console.log('Service templates and chart: 4 pages × 3 widths × 10 themes/modes; docs search/empty/anchors, changelog combined filters, dashboard native select/metrics/chart/CSV, keyboard data table and sticky header');
 
-  for(const [path,width,theme] of [['starter.html',1440,'light'],['starter.html',320,'dark'],['components/flex-grid.html',1440,'light'],['components/flex-grid.html',320,'dark'],['components/toasts.html',1440,'light'],['components/toasts.html',320,'dark'],['components/cards.html',1440,'light'],['components/calendar.html',1440,'light'],['components/calendar.html',320,'dark'],['components/datepicker.html',1440,'light'],['components/datepicker.html',320,'dark'],['components/loading.html',1440,'light'],['components/loading.html',320,'dark'],['components/clipboard.html',1440,'light'],['components/clipboard.html',320,'dark'],['components/buttons.html',1440,'light'],['components/buttons.html',320,'dark'],['components/animations.html',1440,'light'],['components/animations.html',320,'dark'],['components/theme-switcher.html',1440,'light'],['components/theme-switcher.html',320,'dark'],['components/forms.html',1440,'light'],['components/spacing.html',1440,'light'],['components/spacing.html',320,'dark']]) {
+  for(const [path,width,theme] of [['components/dialog.html',1440,'light'],['components/dialog.html',320,'dark'],['components/flex-grid.html',1440,'light'],['components/flex-grid.html',320,'dark'],['components/toasts.html',1440,'light'],['components/toasts.html',320,'dark'],['components/cards.html',1440,'light'],['components/calendar.html',1440,'light'],['components/calendar.html',320,'dark'],['components/datepicker.html',1440,'light'],['components/datepicker.html',320,'dark'],['components/loading.html',1440,'light'],['components/loading.html',320,'dark'],['components/clipboard.html',1440,'light'],['components/clipboard.html',320,'dark'],['components/buttons.html',1440,'light'],['components/buttons.html',320,'dark'],['components/animations.html',1440,'light'],['components/animations.html',320,'dark'],['components/theme-switcher.html',1440,'light'],['components/theme-switcher.html',320,'dark'],['components/forms.html',1440,'light'],['components/spacing.html',1440,'light'],['components/spacing.html',320,'dark']]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     await navigate(path);await evaluate('if (document.documentElement.dataset.bsTheme !== '+JSON.stringify(theme)+') document.querySelector("[data-ui-toggle=theme]").click()');
     if (path==='components/datepicker.html') await click('[data-ui-datepicker-button=icon] .ui-datepicker-toggle');
@@ -1426,7 +1429,7 @@ try {
   await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...tap,radiusX:2,radiusY:2}]});await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await delay(40);
   if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog')`))throw new Error('Sidebar native touch close');
   await send('Emulation.setTouchEmulationEnabled',{enabled:false});await send('Emulation.setEmulatedMedia',{features:[]});
-  for(const width of [320,768,1440])for(const path of ['components/layouts.html','starter.html','templates/dashboard.html']){
+  for(const width of [320,768,1440])for(const path of ['components/layouts.html','components/dialog.html','templates/dashboard.html']){
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});await navigate(path);
     if(!await evaluate(`document.documentElement.scrollWidth<=innerWidth+1`))throw new Error('Existing sidebar consumer overflow '+path+' '+width);
   }

@@ -94,7 +94,7 @@ KavUI.setPalette('custom'); // 最後に作ったカスタム配色へ戻しま�
 <body data-ui-theme-persist>...</body>
 ```
 
-theme-init.jsは任意です。保存した配色をCSSの描画前に復元し、カラーパレット・質感・明暗を引き継ぎます。カタログ・starter・テンプレートでは読み込み済みで、配布ZIPにも含めています。色生成処理はui.jsに同梱しているため、外部通信・npm・ブラウザでのimportは不要です。
+theme-init.jsは任意です。保存した配色をCSSの描画前に復元し、カラーパレット・質感・明暗を引き継ぎます。カタログ・サービステンプレートでは読み込み済みで、配布ZIPにも含めています。色生成処理はui.jsに同梱しているため、外部通信・npm・ブラウザでのimportは不要です。
 
 <a id="palette-select"></a>
 
@@ -223,7 +223,7 @@ document.body.addEventListener('ui:palettechange', event => {
 
 setPalette()は有効な値でtrue、不明な値では変更せずfalseを返します。APIはpersist省略時に保存しません。選択欄・ボタンからの操作はbodyにdata-ui-theme-persistがある場合だけ、kav-ui-paletteへ保存します。明暗のkav-ui-theme、質感のkav-ui-design-themeとは独立しています。保存を利用できない場合も、ページ内の切り替えは動きます。
 
-初回描画の前に保存値を復元するtheme-init.jsは、カタログ・starter・サービステンプレートで読み込んでいます。アプリへの取り込み時にも引き継いでください。
+初回描画の前に保存値を復元するtheme-init.jsは、カタログ・サービステンプレートで読み込んでいます。アプリへの取り込み時にも引き継いでください。
 
 [明暗・質感の切り替え →](theme-switcher.html.md) / [ダッシュボードで配色を試す →](../templates/dashboard.html.md)
 

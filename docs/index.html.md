@@ -116,6 +116,6 @@
 3. 各ページの「HTMLを表示」からサンプルをコピーします。
 4. 見た目はclass、動作はdata-ui-*属性で指定します。
 
-[導入手順・属性一覧 →](getting-started.html.md) / [共通2ファイルだけで動くサンプル →](starter.html.md)
+[導入手順・属性一覧 →](getting-started.html.md)
 
 npm・ビルド・サーバーは不要です。保存・送信・通信などアプリ固有の処理は共通UIに含めません。

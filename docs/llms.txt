@@ -93,7 +93,6 @@
 - [Vue](packages/vue/README.md): props、slots、v-modelとKavWidget。
 - [Astro](packages/astro/README.md): Provider、静的HTMLとクライアント遷移。
 - [テンプレート](templates.html.md): ドキュメント・ダッシュボード・changelog・エラー画面。
-- [動く最小HTML](starter.html): ブラウザで開く実例。
 - [共通CSS](assets/ui/css/ui.css): CSSの入口。フォルダ内の参照先も必要。
 - [共通JavaScript](assets/ui/js/ui.js): 自動初期化する通常HTML用ランタイム。
 - [初期テーマ復元](assets/ui/js/theme-init.js): 任意の同期headスクリプト。

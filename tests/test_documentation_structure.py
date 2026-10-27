@@ -23,6 +23,13 @@ class References(HTMLParser):
 
 
 class DocumentationStructureTests(unittest.TestCase):
+    def test_retired_app_sample_is_not_published(self):
+        self.assertFalse((DOCS / 'starter.html').exists())
+        self.assertFalse((DOCS / 'starter.html.md').exists())
+        for path in DOCS.rglob('*'):
+            if path.is_file() and path.suffix in ('.html', '.md', '.txt'):
+                self.assertNotIn('starter.html', path.read_text(), str(path.relative_to(ROOT)))
+
     def test_docs_copy_resolves_without_repository_files(self):
         with tempfile.TemporaryDirectory() as directory:
             copied = Path(directory) / 'site'
@@ -57,7 +64,7 @@ class DocumentationStructureTests(unittest.TestCase):
                     self.assertEqual(path.read_bytes(), target.read_bytes(), str(path.relative_to(ROOT)))
 
     def test_documentation_has_its_own_entry_and_assets(self):
-        for name in ('index.html', 'installation.html', 'getting-started.html', 'starter.html',
+        for name in ('index.html', 'installation.html', 'getting-started.html',
                      'components/buttons.html', 'templates/dashboard.html',
                      'assets/css/catalog.css', 'assets/css/icons.css', 'assets/js/catalog-demo.js'):
             self.assertTrue((DOCS / name).is_file(), name)
