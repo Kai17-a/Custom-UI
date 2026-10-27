@@ -32,49 +32,47 @@
 - [Flexbox](components/flex.html.md): 基本プロパティから実用パターンまで。
 - [Flex grid](components/flex-grid.html.md): Flexboxで作る均等グリッド、12カラム、入れ子、固定幅と可変幅。
 - [Cards](components/cards.html.md): 情報をひとまとまりにするカード。
-- [Sidebar](components/sidebar.html.md): アプリ用サイドバー。
-- [Drawer](components/drawer.html.md): 左右上下のサイドパネル・背景スクロール停止・フォーカス復帰。
 
 ## 入力・操作
 
 - [Buttons](components/buttons.html.md): 塗りつぶし・アウトライン・淡い背景・枠なしのボタン。
-- [Forms](components/forms.html.md): 入力・選択・バリデーション。
-- [Rating](components/rating.html.md): 星で評価を入力・表示するコンポーネント。
-- [Date picker](components/datepicker.html.md): フォームに日付を設定する入力部品。
-- [Dialog](components/dialog.html.md): 確認・入力ダイアログ。
-- [Clipboard](components/clipboard.html.md): テキスト・入力欄・コードをクリップボードへコピーします。
-- [Input group](components/input-group.html.md): 入力欄と接頭辞・接尾辞・ボタン・selectの連結。
 - [Button group](components/button-group.html.md): ボタンの連結・縦並び・radio／checkboxの選択。
+- [Forms](components/forms.html.md): 入力・選択・バリデーション。
+- [Input group](components/input-group.html.md): 入力欄と接頭辞・接尾辞・ボタン・selectの連結。
+- [Date picker](components/datepicker.html.md): フォームに日付を設定する入力部品。
+- [Rating](components/rating.html.md): 星で評価を入力・表示するコンポーネント。
+- [Clipboard](components/clipboard.html.md): テキスト・入力欄・コードをクリップボードへコピーします。
 
 ## ナビゲーション
 
 - [Navigation](components/navigation.html.md): ページ間の移動、表示内容の切り替え、階層・進捗・現在地を伝える部品です。
+- [Sidebar](components/sidebar.html.md): アプリ用サイドバー。
 - [Command menu](components/command.html.md): 検索からページや操作を選ぶメニュー。
-- [Accordion](components/disclosure.html.md): 補足情報を段階的に表示します。
 - [Dropdown](components/dropdown.html.md): 操作メニュー・上下配置・キーボード・選択イベント。
+- [Accordion](components/disclosure.html.md): 補足情報を段階的に表示します。
 
 ## データ表示
 
-- [Badges](components/badges.html.md): ステータスとラベル。
 - [Table](components/table.html.md): 静的な一覧表示です。
 - [Data table](components/data-table.html.md): 検索・並べ替え・ページ送り・行選択を組み合わせたデータテーブルです。
 - [Kanban board](components/board.html.md): タスクと進捗管理。
-- [Agent workflow](components/agent-workflow.html.md): AIエージェントの処理手順、役割の階層、並列実行、タスクの内訳を可視化します。
-- [AI visuals](components/ai-visuals.html.md): AIの回答、参照資料、ツール実行、コンテキスト、音声の状態を見せるUI。
 - [Calendar](components/calendar.html.md): 月の切り替え・日付選択・予定表示に対応したカレンダー。
 - [List group](components/list-group.html.md): 一覧・操作・現在地・件数・チェック付きリスト。
 - [Avatar](components/avatar.html.md): イニシャル・画像・サイズ・ステータス・グループ。
+- [Badges](components/badges.html.md): ステータスとラベル。
 - [Chart](components/chart.html.md): SVGで描く折れ線・面・棒・ドーナツチャート。
 - [Carousel](components/carousel.html.md): カードや機能紹介をスライドで表示。
 - [Timeline](components/timeline.html.md): 履歴や作業の進行状況を、日付・状態・説明とともに縦に並べます。
 
-## 通知・補足
+## 通知・補助表示
 
 - [Alerts](components/alerts.html.md): 画面内に残す案内とエラー表示。
 - [Banner](components/banner.html.md): ページ全体の告知・メンテナンス・更新案内。
 - [Toasts & alerts](components/toasts.html.md): 標準幅は360px。
 - [Tips & tooltips](components/tips.html.md): 短いヒント、入力の補足、操作に紐づくツールチップ。
 - [Popover](components/popover.html.md): 操作を含む補足パネル・フォーム・画面端補正。
+- [Dialog](components/dialog.html.md): 確認・入力ダイアログ。
+- [Drawer](components/drawer.html.md): 左右上下のサイドパネル・背景スクロール停止・フォーカス復帰。
 
 ## 状態・動き
 
@@ -86,6 +84,11 @@
 - [強調・揺れ](components/animations-attention.html.md): Bounce・Shake・Wobble・Swing・Pulse・Heartbeat。
 - [操作時の動き](components/animations-interactions.html.md): モーダル・通知・開閉・タブなど、操作に自動で付く動きを確認できます。
 - [処理中の表示](components/animations-processing.html.md): 処理中のバナーと、カードの枠を光が巡るアニメーションです。
+
+## AI・ワークフロー
+
+- [Agent workflow](components/agent-workflow.html.md): AIエージェントの処理手順、役割の階層、並列実行、タスクの内訳を可視化します。
+- [AI visuals](components/ai-visuals.html.md): AIの回答、参照資料、ツール実行、コンテキスト、音声の状態を見せるUI。
 
 ## Optional
 

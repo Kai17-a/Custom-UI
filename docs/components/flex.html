@@ -38,7 +38,10 @@
       <li><a href="color-palettes.html">Color palettes</a></li>
       <li><a href="typography.html">Typography</a></li>
       <li><a href="spacing.html">Spacing</a></li>
-      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul><li><a href="mdi-icons.html">MDIアイコン</a></li><li><a href="icons.html">サイズ・色・組み合わせ</a></li></ul></details></li>
+      <li><details class="catalog-nav-branch" data-catalog-family="icons"><summary>Icons</summary><ul>
+        <li><a href="mdi-icons.html">MDIアイコン</a></li>
+        <li><a href="icons.html">サイズ・色・組み合わせ</a></li>
+      </ul></details></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -49,62 +52,55 @@
       <li><a href="flex.html" aria-current="page">Flexbox</a></li>
       <li><a href="flex-grid.html">Flex grid</a></li>
       <li><a href="cards.html">Cards</a></li>
-      <li><a href="sidebar.html">Sidebar</a></li>
-
-      <li><a href="drawer.html">Drawer</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
     <h2>入力・操作</h2>
     <ul>
       <li><a href="buttons.html">Buttons</a></li>
-      <li><a href="forms.html">Forms</a></li>
-              <li><a href="rating.html">Rating</a></li>
-      <li><a href="datepicker.html">Date picker</a></li>
-      <li><a href="dialog.html">Dialog</a></li>
-      <li><a href="clipboard.html">Clipboard</a></li>
-
-      <li><a href="input-group.html">Input group</a></li>
       <li><a href="button-group.html">Button group</a></li>
+      <li><a href="forms.html">Forms</a></li>
+      <li><a href="input-group.html">Input group</a></li>
+      <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="rating.html">Rating</a></li>
+      <li><a href="clipboard.html">Clipboard</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
     <h2>ナビゲーション</h2>
     <ul>
       <li><a href="navigation.html">Navigation</a></li>
-              <li><a href="command.html">Command menu</a></li>
-      <li><a href="disclosure.html">Accordion</a></li>
-
+      <li><a href="sidebar.html">Sidebar</a></li>
+      <li><a href="command.html">Command menu</a></li>
       <li><a href="dropdown.html">Dropdown</a></li>
+      <li><a href="disclosure.html">Accordion</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
     <h2>データ表示</h2>
     <ul>
-      <li><a href="badges.html">Badges</a></li>
       <li><a href="table.html">Table</a></li>
       <li><a href="data-table.html">Data table</a></li>
       <li><a href="board.html">Kanban board</a></li>
-      <li><a href="agent-workflow.html">Agent workflow</a></li>
-      <li><a href="ai-visuals.html">AI visuals</a></li>
       <li><a href="calendar.html">Calendar</a></li>
-
       <li><a href="list-group.html">List group</a></li>
       <li><a href="avatar.html">Avatar</a></li>
+      <li><a href="badges.html">Badges</a></li>
       <li><a href="chart.html">Chart</a></li>
-              <li><a href="carousel.html">Carousel</a></li>
-              <li><a href="timeline.html">Timeline</a></li>
+      <li><a href="carousel.html">Carousel</a></li>
+      <li><a href="timeline.html">Timeline</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
-    <h2>通知・補足</h2>
+    <h2>通知・補助表示</h2>
     <ul>
       <li><a href="alerts.html">Alerts</a></li>
       <li><a href="banner.html">Banner</a></li>
       <li><a href="toasts.html">Toasts & alerts</a></li>
       <li><a href="tips.html">Tips & tooltips</a></li>
-
       <li><a href="popover.html">Popover</a></li>
+      <li><a href="dialog.html">Dialog</a></li>
+      <li><a href="drawer.html">Drawer</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -122,7 +118,14 @@
       </ul></details></li>
     </ul>
   </div>
-</nav></details><a class="overview-link" href="preview.html">コンポーネントプレビュー ↗</a><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
+  <div class="catalog-nav-group">
+    <h2>AI・ワークフロー</h2>
+    <ul>
+      <li><a href="agent-workflow.html">Agent workflow</a></li>
+      <li><a href="ai-visuals.html">AI visuals</a></li>
+    </ul>
+  </div>
+</nav></details><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
 <main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Flexbox</h1></header><p class="lede">基本プロパティから実用パターンまで。fx- 接頭辞のクラスで組み合わせでき、既存の row や d-flex と名前が重なりません。</p>
 <p><a href="flex-grid.html">Flexグリッド・12カラム・レスポンシブの例 →</a></p><section class="specimen" id="playground"><h2>Flexbox playground</h2><form id="flex-controls"><fieldset class="flex-controls"><legend>親要素と子要素のプロパティ</legend><label class="flex-control" for="flex-direction">flex-direction<select id="flex-direction" name="direction" class="form-select form-select-sm"><option selected>row</option><option>row-reverse</option><option>column</option><option>column-reverse</option></select></label><label class="flex-control" for="flex-wrap">flex-wrap<select id="flex-wrap" name="wrap" class="form-select form-select-sm"><option selected>nowrap</option><option>wrap</option><option>wrap-reverse</option></select></label><label class="flex-control" for="flex-justify">justify-content<select id="flex-justify" name="justify" class="form-select form-select-sm"><option selected>flex-start</option><option>center</option><option>flex-end</option><option>space-between</option><option>space-around</option><option>space-evenly</option></select></label><label class="flex-control" for="flex-items">align-items<select id="flex-items" name="items" class="form-select form-select-sm"><option selected>stretch</option><option>flex-start</option><option>center</option><option>flex-end</option><option>baseline</option></select></label><label class="flex-control" for="flex-content">align-content<select id="flex-content" name="content" class="form-select form-select-sm"><option selected>normal</option><option>flex-start</option><option>center</option><option>flex-end</option><option>space-between</option><option>space-around</option><option>space-evenly</option><option>stretch</option></select></label><label class="flex-control" for="flex-sizing">子要素のflex<select id="flex-sizing" name="sizing" class="form-select form-select-sm"><option selected>0 1 84px</option><option>1 1 0%</option><option>1 1 auto</option><option>0 0 84px</option></select></label><label class="flex-control" for="flex-self">2番目のalign-self<select id="flex-self" name="self" class="form-select form-select-sm"><option selected>auto</option><option>flex-start</option><option>center</option><option>flex-end</option><option>stretch</option><option>baseline</option></select></label><label class="flex-control" for="flex-gap">gap（px）<input id="flex-gap" name="gap" type="range" min="0" max="48" step="4" value="12"></label><label class="flex-control" for="flex-width">コンテナ幅（px）<input id="flex-width" name="width" type="range" min="240" max="900" step="20" value="640"></label></fieldset><button type="button" class="btn btn-sm btn-outline-secondary" id="flex-reset">初期値に戻す</button></form><p class="dim small" id="flex-width-value">640px（表示幅は親要素の幅まで）</p><div class="flex-demo-viewport" id="flex-viewport"><div class="flex-playground" id="flex-preview" role="group" aria-label="レイアウトのプレビュー"><div>1<br>Item</div><div>2<br>Item</div><div>3<br>Item</div><div>4<br>Item</div><div>5<br>Item</div><div>6<br>Item</div></div></div><details class="source" open><summary>現在のCSS</summary><pre><code id="flex-output">.container { display: flex; gap: 12px; }</code></pre></details><p class="dim small">wrap と狭いコンテナ幅で折り返しを比較できます。align-content は複数行に折り返し、交差軸に余剰スペースがある場合に違いが出ます。column では主軸が縦になります。</p><noscript>プロパティの変更にはJavaScriptが必要です。以下の固定サンプルはそのまま確認できます。</noscript></section><section class="specimen">
 <h2>display: flex / inline-flex</h2>

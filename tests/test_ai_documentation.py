@@ -64,7 +64,7 @@ class AiDocumentationTests(unittest.TestCase):
         actual = {(index.parent / unquote(urlsplit(value).path)).resolve()
                   for value in links(index) if value.startswith('components/')}
         expected = {Path(str(page) + '.md').resolve()
-                    for page in (ROOT / 'docs/components').glob('*.html') if page.name != 'preview.html'}
+                    for page in (ROOT / 'docs/components').glob('*.html')}
         self.assertEqual(actual, expected)
 
     def test_local_markdown_references_resolve(self):
