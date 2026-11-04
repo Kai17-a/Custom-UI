@@ -1472,6 +1472,22 @@ window.uiTestsDone = (async () => {
     find('a').setAttribute('aria-current','page');KavUI.init(root);await wait(60);assert(root.scrollTop===0,'同じDOMの再初期化でも引き戻さない');
     KavUI.destroy(root);KavUI.init(root);await wait(60);assert(root.scrollTop>0,'破棄後は新しい初期表示として扱う');KavUI.destroy(root);
   });
+  await test('Developer warnings: 未知のアイコン名と見つからない操作対象を一度だけ知らせる', async () => {
+    const warnings=[],original=console.warn;console.warn=(...args)=>warnings.push(args.join(' '));
+    try {
+      mount('<span icon="mdi-not-bundled-warning" aria-hidden="true">代替</span><span icon="mdi-not-bundled-warning"></span><span icon="mdi-home"></span><button type="button" data-ui-toggle="collapse" data-ui-target="#missing-warning-panel">開く</button><button type="button" data-ui-toggle="dialog" data-ui-target="#missing-warning-dialog">開く</button>');
+      await wait(0);
+      const icons=warnings.filter(text=>text.includes('mdi-not-bundled-warning'));
+      assert(icons.length===1&&/Kav-UI/.test(icons[0]),'未知のアイコン名は一度だけ警告する');
+      assert(!warnings.some(text=>text.includes('mdi-home')),'同梱のアイコンは警告しない');
+      assert(find('[icon="mdi-not-bundled-warning"]').textContent==='代替','代替の文字は残す');
+      const [collapse,dialog]=many('button');collapse.click();collapse.click();dialog.click();
+      const targets=warnings.filter(text=>text.includes('#missing-warning-'));
+      assert(targets.length===2&&targets.some(text=>text.includes('#missing-warning-panel'))&&targets.some(text=>text.includes('#missing-warning-dialog')),'見つからない操作対象は対象ごとに一度だけ警告する');
+      const before=warnings.length;mount('<div id="present-warning-panel" hidden>内容</div><button type="button" data-ui-toggle="collapse" data-ui-target="#present-warning-panel">開く</button>');find('button').click();
+      assert(warnings.length===before,'対象があるときは警告しない');
+    } finally { console.warn=original; }
+  });
   document.title = failures.length ? 'FAIL — UI tests' : 'PASS — UI tests';
   return {passed, failures};
 })();
