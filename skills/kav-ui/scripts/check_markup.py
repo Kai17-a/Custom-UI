@@ -21,6 +21,7 @@ import os
 import re
 import sys
 from dataclasses import dataclass
+from html import unescape
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -164,8 +165,30 @@ def read_stylesheet(path, seen=None):
 
 
 def build_inventory(stylesheet):
-    classes, containers = css_inventory(read_stylesheet(Path(stylesheet)))
-    return {'classes': sorted(classes), 'containers': sorted(containers)}
+    stylesheet = Path(stylesheet)
+    css = read_stylesheet(stylesheet)
+    classes, containers = css_inventory(css)
+    # HTML distribution: css/../js/ui.js; @kav-ui/core: dist/css/../runtime.js.
+    javascript = next((path for path in (stylesheet.parent.parent / 'js/ui.js',
+                                        stylesheet.parent.parent / 'runtime.js') if path.is_file()), None)
+    attributes = set(re.findall(r'\bdata-ui-[a-z0-9]+(?:-[a-z0-9]+)*', css))
+    if javascript:
+        js = javascript.read_text(encoding='utf-8', errors='replace')
+        attributes.update(re.findall(r'\bdata-ui-[a-z0-9]+(?:-[a-z0-9]+)*', js))
+        # The runtime also uses dataset.uiFoo and dataset[key] with 'uiFoo' keys.
+        for key in re.findall(r"\bui[A-Z][a-zA-Z0-9]*", js):
+            attributes.add('data-' + re.sub(r'([A-Z])', r'-\1', key).lower())
+        # sidebarMode reads data-ui-sidebar- + sidebarDevice().
+        if "'data-ui-sidebar-'+device" in js:
+            attributes.update('data-ui-sidebar-' + device for device in ('desktop', 'tablet', 'mobile'))
+        match = re.search(r'const mdiPaths\s*=\s*Object\.freeze\(\s*(\{.*?\})\s*\)', js, re.S)
+        icons = json.loads(match[1]) if match else {}
+    else:
+        bundled = json.loads(BUNDLED.read_text(encoding='utf-8'))
+        attributes.update(bundled['data_attributes'])
+        icons = bundled['icons']
+    return {'classes': sorted(classes), 'containers': sorted(containers),
+            'data_attributes': sorted(attributes), 'icons': sorted(icons)}
 
 
 def find_kav_css(paths):
@@ -206,6 +229,65 @@ class Element:
     column: int
     parent: 'Element | None'
     children: list
+    attributes: tuple = ()
+
+
+def literal_attributes(tag):
+    """Read literal names without mistaking Vue strings or Astro expressions for attributes."""
+    position = re.match(r'<[^\s/>]+', tag).end()
+    while position < len(tag):
+        match = re.match(r'\s+([^\s=/>]+)', tag[position:])
+        if not match:
+            break
+        name = match[1].lower()
+        position += match.end()
+        name_end = position
+        while position < len(tag) and tag[position].isspace():
+            position += 1
+        value = ''
+        if position < len(tag) and tag[position] == '=':
+            position += 1
+            while position < len(tag) and tag[position].isspace():
+                position += 1
+            if position < len(tag) and tag[position] in ('"', "'"):
+                quote = tag[position]
+                end = tag.find(quote, position + 1)
+                if end == -1:
+                    break
+                value = tag[position + 1:end]
+                position = end + 1
+            elif position < len(tag) and tag[position] == '{':
+                # Balanced expressions may contain quoted attribute-like strings.
+                depth, quote = 0, None
+                while position < len(tag):
+                    char = tag[position]
+                    position += 1
+                    if quote:
+                        if char == "\\":
+                            position += 1
+                        elif char == quote:
+                            quote = None
+                    elif char in ('"', "'", '`'):
+                        quote = char
+                    elif char == '{':
+                        depth += 1
+                    elif char == '}':
+                        depth -= 1
+                        if depth == 0:
+                            break
+                value = None
+            else:
+                match = re.match(r'[^\s>]+', tag[position:])
+                if match:
+                    value = match[0]
+                    position += match.end()
+        else:
+            position = name_end
+        yield name, unescape(value) if value is not None else None
+
+
+def literal_value(value):
+    return value is not None and not any(token in value for token in ('{', '}', '<%', '%>', '${'))
 
 
 class MarkupParser(HTMLParser):
@@ -232,6 +314,7 @@ class MarkupParser(HTMLParser):
                 style = value
         line, offset = self.getpos()
         element = Element(tag, raw, classes, dynamic, style, line, offset + 1, self.stack[-1], [])
+        element.attributes = tuple(literal_attributes(self.get_starttag_text() or ''))
         self.stack[-1].children.append(element)
         if not closed and tag not in self.VOID:
             self.stack.append(element)
@@ -293,6 +376,8 @@ class Checker:
     def __init__(self, inventory, app_classes=(), app_containers=()):
         self.kav = set(inventory['classes'])
         self.kav_containers = set(inventory['containers'])
+        self.icons = set(inventory.get('icons', ()))
+        self.data_attributes = set(inventory.get('data_attributes', ()))
         self.app = set(app_classes)
         self.app_containers = set(app_containers)
 
@@ -309,6 +394,8 @@ class Checker:
         local, local_containers = css_inventory(extra_css + '\n'.join(parser.styles))
         app, app_containers = self.app | local, self.app_containers | local_containers
         findings = []
+        ids = {value for element in walk(parser.root) for name, value in element.attributes
+               if name == 'id' and value and literal_value(value)}
 
         def report(element, level, rule, message):
             findings.append(Finding(display, element.line, element.column, level, rule, message))
@@ -327,6 +414,32 @@ class Checker:
                        or name in self.kav_containers or name in app_containers for name in element.classes)
 
         for element in walk(parser.root):
+            for name, value in element.attributes:
+                if name.startswith('data-ui-') and name not in self.data_attributes:
+                    close = difflib.get_close_matches(name, sorted(self.data_attributes), n=1, cutoff=.75)
+                    report(element, 'error', 'unknown-data-attribute',
+                           f'"{name}" is not a Kav-UI attribute.'
+                           + (f' Did you mean "{close[0]}"?' if close else ''))
+                if not literal_value(value):
+                    continue
+                if name == 'icon' and value not in self.icons:
+                    close = difflib.get_close_matches(value, sorted(self.icons), n=1, cutoff=.75)
+                    report(element, 'error', 'unknown-icon',
+                           f'"{value}" is not a bundled Kav-UI icon.'
+                           + (f' Did you mean "{close[0]}"?' if close else ''))
+                references = []
+                if name in ('aria-controls', 'aria-labelledby', 'aria-describedby'):
+                    references = value.split()
+                elif name == 'for' and element.tag == 'label':
+                    references = [value] if value else []
+                elif name == 'data-ui-target' and re.fullmatch(r'#[^\s#.,>+~\[\]:]+', value):
+                    references = [value[1:]]
+                for reference in references:
+                    if reference not in ids:
+                        close = difflib.get_close_matches(reference, sorted(ids), n=1, cutoff=.75)
+                        report(element, 'warning', 'missing-id-reference',
+                               f'"{name}" references ID "{reference}" not found in this file.'
+                               + (f' Did you mean "{close[0]}"?' if close else ''))
             names = element.classes
             for name in names + element.dynamic:
                 if known(name):

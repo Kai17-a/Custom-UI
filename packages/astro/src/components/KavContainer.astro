@@ -1,5 +1,5 @@
 ---
 interface Props {size?:'sm'|'lg'|'fluid';class?:string;id?:string;}
-const {size,...rest}=Astro.props;
+const {size,class:className,...rest}=Astro.props;
 ---
-<div {...rest} class:list={['ui-container',size&&'ui-container-'+size,rest.class]}><slot/></div>
+<div {...rest} class:list={['ui-container',size&&'ui-container-'+size,className]}><slot/></div>
