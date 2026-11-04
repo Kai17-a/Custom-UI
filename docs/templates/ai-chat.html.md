@@ -33,8 +33,44 @@
 ## コピー用HTML（共通ui.css / ui.jsを使用）
 
 ```
-<div class="ui-page"><div class="ui-page-body">
-<header class="ui-page-header"><div class="ui-page-heading"><p class="ui-page-eyebrow">木の葉制作室</p><h1 class="ui-page-title">制作アシスタント</h1><p class="ui-page-description">回答は例示です。モデルへの接続と送信処理はアプリ側で接続します。</p></div></header>
-<section class="ui-ai ui-stack" aria-label="会話履歴"><article class="ui-ai-message"><h2>あなた</h2><p>展示会の案内状に必要な情報を整理して。</p></article><article class="ui-ai-message"><h2>アシスタント</h2><p>開催日時、会場、展示のテーマ、問い合わせ先を揃えましょう。</p><ul><li>開催日：11月20日</li><li>テーマ：日々の発見</li><li>会場：チームで確認してください</li></ul><details class="ui-ai-disclosure"><summary>回答の根拠と確認事項</summary><p>この会話に記載された内容だけを参照しています。開催場所は未確認です。</p></details></article></section><form class="ui-stack" action="/assistant/messages" method="post"><div class="field"><label for="chat-message">メッセージ</label><textarea class="form-control" id="chat-message" name="message" rows="3" required placeholder="次に整理したいことを入力"></textarea></div><p class="type-caption">個人情報や秘密情報は入力しないでください。</p><div class="ui-cluster"><button class="btn btn-primary" type="submit" >送信</button></div></form>
-</div></div>
+<div class="ui-page">
+  <div class="ui-page-body">
+    <header class="ui-page-header">
+      <div class="ui-page-heading">
+        <p class="ui-page-eyebrow">木の葉制作室</p>
+        <h1 class="ui-page-title">制作アシスタント</h1>
+        <p class="ui-page-description">回答は例示です。モデルへの接続と送信処理はアプリ側で接続します。</p>
+      </div>
+    </header>
+    <section class="ui-ai ui-stack" aria-label="会話履歴">
+      <article class="ui-ai-message">
+        <h2>あなた</h2>
+        <p>展示会の案内状に必要な情報を整理して。</p>
+      </article>
+      <article class="ui-ai-message">
+        <h2>アシスタント</h2>
+        <p>開催日時、会場、展示のテーマ、問い合わせ先を揃えましょう。</p>
+        <ul>
+          <li>開催日：11月20日</li>
+          <li>テーマ：日々の発見</li>
+          <li>会場：チームで確認してください</li>
+        </ul>
+        <details class="ui-ai-disclosure">
+          <summary>回答の根拠と確認事項</summary>
+          <p>この会話に記載された内容だけを参照しています。開催場所は未確認です。</p>
+        </details>
+      </article>
+    </section>
+    <form class="ui-stack" action="/assistant/messages" method="post">
+      <div class="field">
+        <label for="chat-message">メッセージ</label>
+        <textarea class="form-control" id="chat-message" name="message" rows="3" required placeholder="次に整理したいことを入力"></textarea>
+      </div>
+      <p class="type-caption">個人情報や秘密情報は入力しないでください。</p>
+      <div class="ui-cluster">
+        <button class="btn btn-primary" type="submit" >送信</button>
+      </div>
+    </form>
+  </div>
+</div>
 ```

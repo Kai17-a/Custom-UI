@@ -33,8 +33,36 @@
 ## コピー用HTML（共通ui.css / ui.jsを使用）
 
 ```
-<div class="ui-page"><div class="ui-page-body">
-<header class="ui-page-header"><div class="ui-page-heading"><p class="ui-page-eyebrow">木の葉制作室</p><h1 class="ui-page-title">制作を始めましょう</h1><p class="ui-page-description">最初のプロジェクトを作るまでの準備を案内します。チェックの保存はアプリ側で接続します。</p></div></header>
-<section class="ui-section ui-stack"><h2 class="ui-section-title">準備チェックリスト</h2><p>チェックを付けながら、チームの準備を進めてください。</p><label class="form-check"><input class="form-check-input" type="checkbox" name="setup-0" checked>ワークスペース名を決める</label><label class="form-check"><input class="form-check-input" type="checkbox" name="setup-1">メンバーと役割を相談する</label><label class="form-check"><input class="form-check-input" type="checkbox" name="setup-2">最初のプロジェクトを作る</label></section><section class="ui-card"><div class="ui-card-body ui-stack"><h2 class="ui-card-title">プロジェクトはまだありません</h2><p>目的と期限を決めて、制作を始めましょう。</p><a class="btn btn-primary" href="wizard.html">最初のプロジェクトを作成</a></div></section><section class="ui-card"><div class="ui-card-body ui-stack"><h2 class="ui-card-title">通知はまだありません</h2><p>プロジェクトの更新や確認依頼が届くと、ここに表示されます。</p><a href="settings.html">通知設定を確認する</a></div></section>
-</div></div>
+<div class="ui-page">
+  <div class="ui-page-body">
+    <header class="ui-page-header">
+      <div class="ui-page-heading">
+        <p class="ui-page-eyebrow">木の葉制作室</p>
+        <h1 class="ui-page-title">制作を始めましょう</h1>
+        <p class="ui-page-description">最初のプロジェクトを作るまでの準備を案内します。チェックの保存はアプリ側で接続します。</p>
+      </div>
+    </header>
+    <section class="ui-section ui-stack">
+      <h2 class="ui-section-title">準備チェックリスト</h2>
+      <p>チェックを付けながら、チームの準備を進めてください。</p>
+      <label class="form-check"><input class="form-check-input" type="checkbox" name="setup-0" checked>ワークスペース名を決める</label>
+      <label class="form-check"><input class="form-check-input" type="checkbox" name="setup-1">メンバーと役割を相談する</label>
+      <label class="form-check"><input class="form-check-input" type="checkbox" name="setup-2">最初のプロジェクトを作る</label>
+    </section>
+    <section class="ui-card">
+      <div class="ui-card-body ui-stack">
+        <h2 class="ui-card-title">プロジェクトはまだありません</h2>
+        <p>目的と期限を決めて、制作を始めましょう。</p>
+        <a class="btn btn-primary" href="wizard.html">最初のプロジェクトを作成</a>
+      </div>
+    </section>
+    <section class="ui-card">
+      <div class="ui-card-body ui-stack">
+        <h2 class="ui-card-title">通知はまだありません</h2>
+        <p>プロジェクトの更新や確認依頼が届くと、ここに表示されます。</p>
+        <a href="settings.html">通知設定を確認する</a>
+      </div>
+    </section>
+  </div>
+</div>
 ```

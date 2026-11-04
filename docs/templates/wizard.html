@@ -55,27 +55,81 @@
     </header>
     <main id="main" class="ui-container ui-layout ui-app-main">
 <!-- kav-sample:start -->
-<div class="ui-page"><div class="ui-page-body">
-<header class="ui-page-header"><div class="ui-page-heading"><p class="ui-page-eyebrow">木の葉制作室</p><h1 class="ui-page-title">制作依頼を作成</h1><p class="ui-page-description">入力・予定・確認の順に進めます。タブは矢印キーでも移動できます。</p></div></header>
-<!-- 手順の移動はTabs、最終検証と送信は通常のフォームです。 -->
-<form id="request-form" class="ui-stack" action="/requests" method="post"><div data-ui-tabs><div class="tabs" role="tablist" aria-label="依頼の手順"><button type="button" data-ui-toggle="tab" data-ui-target="request-input" aria-selected="true">1. 基本情報</button><button type="button" data-ui-toggle="tab" data-ui-target="request-schedule">2. 予定</button><button type="button" data-ui-toggle="tab" data-ui-target="request-confirm">3. 確認</button></div><section class="tab-panel ui-stack" data-ui-panel="request-input"><h2>基本情報</h2><div class="field"><label for="request-title">依頼名</label><input class="form-control" id="request-title" name="request-title" type="text" value="展示会の案内状" required maxlength="80"></div></section><section class="tab-panel ui-stack" data-ui-panel="request-schedule" hidden><h2>予定</h2><div class="field"><label for="request-date">希望日</label><input class="form-control" id="request-date" name="request-date" type="date" value="2026-11-20" required></div></section><section class="tab-panel ui-stack" data-ui-panel="request-confirm" hidden><h2>入力内容の確認</h2><dl><dt>依頼名</dt><dd><output id="confirm-title" for="request-title">展示会の案内状</output></dd><dt>希望日</dt><dd><output id="confirm-date" for="request-date">2026-11-20</output></dd></dl><p>修正する場合は前のタブへ戻ってください。送信処理はアプリ側で接続します。</p><button class="btn btn-primary" type="submit" >この内容で依頼する</button></section></div></form>
-<script>
-(() => {
-  const form = document.getElementById('request-form');
-  const sync = () => {
-    document.getElementById('confirm-title').textContent = form.elements['request-title'].value;
-    document.getElementById('confirm-date').textContent = form.elements['request-date'].value;
-  };
-  form.addEventListener('input', sync);
-  // 非表示タブ内の必須入力にもブラウザの検証結果を表示します。
-  form.addEventListener('invalid', event => {
-    const panel = event.target.closest('[data-ui-panel]');
-    form.querySelector('[data-ui-target="' + panel.dataset.uiPanel + '"]').click();
-  }, true);
-  sync();
-})();
-</script>
-</div></div>
+<div class="ui-page">
+  <div class="ui-page-body">
+    <header class="ui-page-header">
+      <div class="ui-page-heading">
+        <p class="ui-page-eyebrow">木の葉制作室</p>
+        <h1 class="ui-page-title">制作依頼を作成</h1>
+        <p class="ui-page-description">入力・予定・確認の順に進めます。タブは矢印キーでも移動できます。</p>
+      </div>
+    </header>
+    <!-- 手順の移動はTabs、最終検証と送信は通常のフォームです。 -->
+    <form id="request-form" class="ui-stack" action="/requests" method="post">
+      <div data-ui-tabs>
+        <div class="tabs" role="tablist" aria-label="依頼の手順">
+          <button type="button" data-ui-toggle="tab" data-ui-target="request-input" aria-selected="true">1. 基本情報</button>
+          <button type="button" data-ui-toggle="tab" data-ui-target="request-schedule">2. 予定</button>
+          <button type="button" data-ui-toggle="tab" data-ui-target="request-confirm">3. 確認</button>
+        </div>
+        <section class="tab-panel ui-stack" data-ui-panel="request-input">
+          <h2 tabindex="-1">基本情報</h2>
+          <div class="field">
+            <label for="request-title">依頼名</label>
+            <input class="form-control" id="request-title" name="request-title" type="text" value="展示会の案内状" required maxlength="80">
+          </div>
+          <button class="btn btn-primary" type="button" data-request-step="request-schedule">次へ</button>
+        </section>
+        <section class="tab-panel ui-stack" data-ui-panel="request-schedule" hidden>
+          <h2 tabindex="-1">予定</h2>
+          <div class="field">
+            <label for="request-date">希望日</label>
+            <input class="form-control" id="request-date" name="request-date" type="date" value="2026-11-20" required>
+          </div>
+          <div class="ui-cluster">
+            <button class="btn btn-outline-secondary" type="button" data-request-step="request-input">戻る</button>
+            <button class="btn btn-primary" type="button" data-request-step="request-confirm">次へ</button>
+          </div>
+        </section>
+        <section class="tab-panel ui-stack" data-ui-panel="request-confirm" hidden>
+          <h2 tabindex="-1">入力内容の確認</h2>
+          <dl>
+            <dt>依頼名</dt>
+            <dd><output id="confirm-title" for="request-title">展示会の案内状</output></dd>
+            <dt>希望日</dt>
+            <dd><output id="confirm-date" for="request-date">2026-11-20</output></dd>
+          </dl>
+          <p>修正する場合は前のタブへ戻ってください。送信処理はアプリ側で接続します。</p>
+          <button class="btn btn-outline-secondary" type="button" data-request-step="request-schedule">戻る</button>
+          <button class="btn btn-primary" type="submit" >この内容で依頼する</button>
+        </section>
+      </div>
+    </form>
+    <script>
+      (() => {
+        const form = document.getElementById('request-form');
+        const sync = () => {
+          document.getElementById('confirm-title').textContent = form.elements['request-title'].value;
+          document.getElementById('confirm-date').textContent = form.elements['request-date'].value;
+        };
+        form.addEventListener('input', sync);
+        form.querySelectorAll('[data-request-step]').forEach(button => {
+          button.addEventListener('click', () => {
+            const step = button.dataset.requestStep;
+            form.querySelector('[data-ui-toggle="tab"][data-ui-target="' + step + '"]').click();
+            form.querySelector('[data-ui-panel="' + step + '"] h2').focus();
+          });
+        });
+        // 非表示タブ内の必須入力にもブラウザの検証結果を表示します。
+        form.addEventListener('invalid', event => {
+          const panel = event.target.closest('[data-ui-panel]');
+          form.querySelector('[data-ui-target="' + panel.dataset.uiPanel + '"]').click();
+        }, true);
+        sync();
+      })();
+    </script>
+  </div>
+</div>
 <!-- kav-sample:end -->
     </main>
     <footer class="ui-footer">
