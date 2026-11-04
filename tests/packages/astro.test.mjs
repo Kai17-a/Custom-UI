@@ -61,10 +61,26 @@ test('Astro: layout structure and classes match Vue for identical props and slot
 });
 
 async function compileComponent(name){
- const sourceURL=new URL('../../packages/astro/src/components/'+name+'.astro',import.meta.url);
- const {code}=transform(await readFile(sourceURL,'utf8'),{filename:sourceURL.pathname,internalURL:import.meta.resolve('astro/compiler-runtime'),resolvePath:specifier=>specifier});
- const resolvedCode=code.replace(/(\bfrom\s*)(['"])([^'"]+)\2/g,(_,prefix,quote,specifier)=>prefix+quote+import.meta.resolve(specifier)+quote);
- return (await import('data:text/javascript;base64,'+Buffer.from(resolvedCode).toString('base64'))).default;
+ const cache=compileComponent.cache??=new Map();
+ async function compile(sourceURL){
+  if(cache.has(sourceURL.href))return cache.get(sourceURL.href);
+  const pending=(async()=>{
+   const {code}=transform(await readFile(sourceURL,'utf8'),{filename:sourceURL.pathname,internalURL:import.meta.resolve('astro/compiler-runtime'),resolvePath:specifier=>specifier});
+   const imports=[...code.matchAll(/(\bfrom\s*)(['"])([^'"]+)\2/g)];
+   const resolved=await Promise.all(imports.map(async([,prefix,quote,specifier])=>{
+    const url=specifier.startsWith('.')&&specifier.endsWith('.astro')
+     ?await compile(new URL(specifier,sourceURL))
+     :import.meta.resolve(specifier);
+    return prefix+quote+url+quote;
+   }));
+   let index=0;
+   const resolvedCode=code.replace(/(\bfrom\s*)(['"])([^'"]+)\2/g,()=>resolved[index++]);
+   return 'data:text/javascript;base64,'+Buffer.from(resolvedCode).toString('base64');
+  })();
+  cache.set(sourceURL.href,pending);
+  return pending;
+ }
+ return (await import(await compile(new URL('../../packages/astro/src/components/'+name+'.astro',import.meta.url)))).default;
 }
 
 test('Astro: Tabs renders named slots, stable ARIA links, selection and outer attributes',async()=>{
@@ -97,7 +113,7 @@ test('Astro: Drawer matches HTML drawer regions and forwards attributes with one
   assert.equal((dialog.match(/\bclass=/g)||[]).length,1);
   assert.match(dialog,new RegExp('class="ui-dialog ui-drawer ui-drawer-'+(placement??'end')+' custom"'));
   assert.match(dialog,/id="drawer"/);assert.match(dialog,/data-ui-dialog/);assert.match(dialog,/data-test="drawer"/);assert.match(dialog,/aria-describedby="help"/);assert.match(dialog,/aria-labelledby="drawer-title"/);assert.doesNotMatch(dialog,/\bopen\b/);
-  assert.match(html,/data-kav-ui-widget/);assert.match(html,/<header class="ui-drawer-header"><h2 id="drawer-title">設定<\/h2><button[^>]*type="button"[^>]*data-ui-dismiss="dialog"[^>]*aria-label="閉じる"[^>]*><span[^>]*icon="mdi-close"[^>]*aria-hidden="true"[^>]*><\/span><\/button><\/header>/);
+  assert.match(html,/data-kav-ui-widget/);assert.match(html,/<header class="ui-drawer-header"><h2 id="drawer-title">設定<\/h2><button[^>]*type="button"[^>]*data-ui-dismiss="dialog"[^>]*aria-label="閉じる"[^>]*><svg[^>]*class="ui-icon"[^>]*aria-hidden="true"[^>]*><path[^>]*><\/path><\/svg><\/button><\/header>/);
   assert.match(html,/<div class="ui-drawer-body"><p>本文<\/p><\/div>/);assert.match(html,/<footer class="ui-drawer-footer"><button data-ui-dismiss="dialog">閉じる<\/button><\/footer>/);
  }
  const plain=await container.renderToString(KavDrawer,{props:{id:'plain','aria-label':'属性の名前'}});
