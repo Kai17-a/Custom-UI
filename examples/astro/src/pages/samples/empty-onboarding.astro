@@ -1,0 +1,29 @@
+---
+import {KavButton, KavCard, KavCheckbox, KavPage, KavPageHeader, KavProvider, KavSection, KavStack} from '@kav-ui/astro';
+---
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>制作を始めましょう / Astro</title></head>
+<body><KavProvider /><main class="ui-container" data-screen-sample data-kav-ui-widget>
+<KavPage>
+<KavPageHeader eyebrow="木の葉制作室" title="制作を始めましょう" description="最初のプロジェクトを作るまでの準備を案内します。チェックの保存はアプリ側で接続します。" />
+<KavSection class="ui-stack" title="準備チェックリスト"><p>チェックを付けながら、チームの準備を進めてください。</p>
+<KavCheckbox name="setup-0" label="ワークスペース名を決める" checked /><KavCheckbox name="setup-1" label="メンバーと役割を相談する" /><KavCheckbox name="setup-2" label="最初のプロジェクトを作る" /></KavSection>
+<KavCard><KavStack><h2 class="ui-card-title">プロジェクトはまだありません</h2>
+<p>目的と期限を決めて、制作を始めましょう。</p>
+<KavButton href="../wizard/" color="primary">最初のプロジェクトを作成</KavButton>
+</KavStack>
+</KavCard>
+<KavCard><KavStack><h2 class="ui-card-title">通知はまだありません</h2>
+<p>プロジェクトの更新や確認依頼が届くと、ここに表示されます。</p>
+<a href="../settings/">通知設定を確認する</a>
+</KavStack>
+</KavCard>
+
+</KavPage>
+
+</main></body></html>
+<script>
+document.querySelectorAll<HTMLFormElement>('[data-screen-sample] form').forEach(form => {
+  form.addEventListener('submit', event => event.preventDefault());
+});
+</script>

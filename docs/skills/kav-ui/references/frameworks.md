@@ -132,3 +132,7 @@ import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kav-ui/astro';
   </KavGrid>
 </KavPage>
 ```
+
+## 画面全体の組み合わせ例
+
+[用途別の12画面](screens.md)から、同じ内容のHTML・Vue SFC・Astroページを選べます。配布フォルダ内の相対リンクだけで読めます。

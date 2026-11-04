@@ -11,7 +11,8 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / 'docs'
-SAMPLES = ROOT / 'skills/kav-ui/samples/html'
+SAMPLE_ROOT = ROOT / 'skills/kav-ui/samples'
+SAMPLES = SAMPLE_ROOT / 'html'
 MANAGED = (DOCS / 'assets/ui', DOCS / 'skills/kav-ui', DOCS / 'packages')
 
 
@@ -88,6 +89,17 @@ def screen_samples():
     return files
 
 
+def framework_samples():
+    """Copy the compiled example sources verbatim, including public imports."""
+    files = {}
+    for framework, directory in (
+            ('vue', 'examples/astro/src/components/samples'),
+            ('astro', 'examples/astro/src/pages/samples')):
+        for source in sorted((ROOT / directory).glob('*.' + framework)):
+            files[SAMPLE_ROOT / framework / source.name] = source.read_bytes()
+    return files
+
+
 def public_files():
     files = {}
     for source, destination in ((ROOT / 'assets', MANAGED[0]),
@@ -95,7 +107,7 @@ def public_files():
         for path in source.rglob('*'):
             # Importing the skill's checker leaves bytecode caches that are not part of the skill.
             if (path.is_file() and '__pycache__' not in path.relative_to(source).parts
-                    and not (source == ROOT / 'skills/kav-ui' and path.is_relative_to(SAMPLES))):
+                    and not (source == ROOT / 'skills/kav-ui' and path.is_relative_to(SAMPLE_ROOT))):
                 files[destination / path.relative_to(source)] = path.read_bytes()
     for name in ('README.md', 'vue/README.md', 'astro/README.md'):
         source = ROOT / 'packages' / name
@@ -107,7 +119,7 @@ def public_files():
     files[ROOT / 'skills/kav-ui/scripts/kav-ui-classes.json'] = inventory
     files[MANAGED[1] / 'scripts/kav-ui-classes.json'] = inventory
     # Override old copies in both trees in one pass, including --check mode.
-    for path, data in screen_samples().items():
+    for path, data in (screen_samples() | framework_samples()).items():
         files[path] = data
         files[MANAGED[1] / path.relative_to(ROOT / 'skills/kav-ui')] = data
     return files
@@ -119,7 +131,7 @@ def main():
     args = parser.parse_args()
     files = public_files()
     # These directories contain generated copies only; preserve every other docs file.
-    stale = [path for directory in (*MANAGED, SAMPLES) for path in directory.rglob('*')
+    stale = [path for directory in (*MANAGED, SAMPLE_ROOT) for path in directory.rglob('*')
              if path.is_file() and path not in files]
     changed = [path for path, data in files.items()
                if not path.is_file() or path.read_bytes() != data]

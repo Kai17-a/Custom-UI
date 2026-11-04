@@ -1,0 +1,67 @@
+---
+import {KavButton, KavInput, KavPage, KavPageHeader, KavProvider, KavSelect, KavStack, KavToolbar} from '@kav-ui/astro';
+---
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>プロジェクト一覧 / Astro</title></head>
+<body><KavProvider /><main class="ui-container" data-screen-sample data-kav-ui-widget>
+<KavPage>
+<KavPageHeader eyebrow="木の葉制作室" title="プロジェクト一覧" description="名前や状態（進行中・完了・準備中）を入力して絞り込めます。" />
+<KavStack class="ui-data-table" data-ui-data-table data-ui-page-size="3">
+<KavToolbar label="プロジェクトの絞り込み"><Fragment><label for="project-search">名前・状態で絞り込み</label>
+<KavInput id="project-search" name="query" type="search" data-ui-table-search placeholder="例：進行中" /></Fragment>
+<Fragment slot="end"><label for="project-size">表示件数</label>
+<KavSelect id="project-size" data-ui-table-page-size options={[{"value": "3", "label": "3件"}, {"value": "10", "label": "10件"}]} value="3" /></Fragment>
+</KavToolbar>
+
+<div class="ui-table-scroll" tabindex="0" role="region" aria-label="プロジェクト一覧"><table class="table"><caption>制作プロジェクト</caption>
+<thead><tr><th scope="col"><button class="ui-data-table-sort" type="button" data-ui-table-sort="text">名前</button>
+</th>
+<th scope="col">状態</th>
+<th scope="col">操作</th>
+</tr>
+</thead>
+<tbody><tr data-ui-row-id="project-0"><td>秋の展示会</td>
+<td>進行中</td>
+<td><a href="../detail/">詳細を見る</a>
+</td>
+</tr>
+<tr data-ui-row-id="project-1"><td>資料アーカイブ</td>
+<td>完了</td>
+<td><a href="../detail/">詳細を見る</a>
+</td>
+</tr>
+<tr data-ui-row-id="project-2"><td>冬の案内状</td>
+<td>準備中</td>
+<td><a href="../detail/">詳細を見る</a>
+</td>
+</tr>
+<tr data-ui-row-id="project-3"><td>作品撮影</td>
+<td>進行中</td>
+<td><a href="../detail/">詳細を見る</a>
+</td>
+</tr>
+<tr data-ui-row-id="project-4"><td>会場レイアウト</td>
+<td>準備中</td>
+<td><a href="../detail/">詳細を見る</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+<p data-ui-table-status role="status"></p>
+<nav class="ui-data-table-pagination" aria-label="プロジェクトのページ送り"><KavButton type="button" data-ui-table-prev color="secondary" variant="outline">前へ</KavButton>
+<span data-ui-table-page-status></span>
+<KavButton type="button" data-ui-table-next color="secondary" variant="outline">次へ</KavButton>
+</nav>
+</KavStack>
+
+</KavPage>
+
+</main></body></html>
+<script>
+document.querySelectorAll<HTMLFormElement>('[data-screen-sample] form').forEach(form => {
+  form.addEventListener('submit', event => event.preventDefault());
+});
+</script>

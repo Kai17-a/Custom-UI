@@ -1,0 +1,29 @@
+---
+import {KavButton, KavCheckbox, KavCluster, KavField, KavInput, KavPage, KavPageHeader, KavProvider, KavSection, KavSwitch} from '@kav-ui/astro';
+---
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>ワークスペース設定 / Astro</title></head>
+<body><KavProvider /><main class="ui-container" data-screen-sample data-kav-ui-widget>
+<KavPage>
+<KavPageHeader eyebrow="木の葉制作室" title="ワークスペース設定" description="チームの基本情報と通知の受け取り方を変更します。" />
+<form class="ui-stack">
+
+<KavSection title="基本情報"><KavField label="ワークスペース名" for="workspace-name"><KavInput id="workspace-name" name="workspace-name" type="text" value="木の葉制作室" required maxlength="80" /></KavField>
+<KavField label="連絡先メール" for="contact-email"><KavInput id="contact-email" name="contact-email" type="email" value="team@example.com" required autocomplete="email" /></KavField>
+</KavSection>
+
+<KavSection class="ui-stack" title="通知"><KavCheckbox name="weekly-report" label="週次レポートをメールで受け取る" checked /><KavSwitch role="switch" name="mentions" label="メンションを通知する" checked /></KavSection>
+
+<KavCluster><KavButton type="submit" color="primary">変更を保存</KavButton>
+<KavButton type="reset" color="secondary" variant="outline">変更を取り消す</KavButton>
+</KavCluster>
+</form>
+
+</KavPage>
+
+</main></body></html>
+<script>
+document.querySelectorAll<HTMLFormElement>('[data-screen-sample] form').forEach(form => {
+  form.addEventListener('submit', event => event.preventDefault());
+});
+</script>
