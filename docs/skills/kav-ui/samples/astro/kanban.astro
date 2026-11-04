@@ -1,55 +1,164 @@
 ---
-import {KavPage, KavPageHeader, KavProvider, KavSelect} from '@kav-ui/astro';
+import { KavPage, KavPageHeader, KavProvider, KavSelect } from "@kav-ui/astro";
 ---
+
 <!doctype html>
-<html lang="ja"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>制作タスク / Astro</title></head>
-<body><KavProvider /><main class="ui-container" data-screen-sample data-kav-ui-widget>
-<KavPage>
-<KavPageHeader eyebrow="木の葉制作室" title="制作タスク" description="カードをドラッグ、または移動先の選択で整理できます。変更の保存はアプリ側で接続します。" />
-<div class="ui-board-wrap" tabindex="0" role="region" aria-label="制作タスクのボード"><div class="ui-board" data-ui-board aria-label="制作タスク"><section class="column" data-ui-column="todo"><h2 class="ui-section-title">未着手 <span class="count" data-ui-count>1</span>
-</h2>
-<div data-ui-cards><article class="task-card" data-ui-card="task-0" draggable="true"><h3 class="title">作品紹介文を書く</h3>
-<p>制作チーム · 11月10日まで</p>
-<label>移動先<KavSelect data-ui-move options={[{"value": "todo", "label": "未着手"}, {"value": "in_progress", "label": "進行中"}, {"value": "review", "label": "確認中"}, {"value": "done", "label": "完了"}]} value="todo" /></label>
-</article>
-</div>
-<p class="none" data-ui-empty hidden>タスクはありません</p>
-</section>
-<section class="column" data-ui-column="in_progress"><h2 class="ui-section-title">進行中 <span class="count" data-ui-count>1</span>
-</h2>
-<div data-ui-cards><article class="task-card" data-ui-card="task-1" draggable="true"><h3 class="title">会場の配置を決める</h3>
-<p>制作チーム · 11月10日まで</p>
-<label>移動先<KavSelect data-ui-move options={[{"value": "todo", "label": "未着手"}, {"value": "in_progress", "label": "進行中"}, {"value": "review", "label": "確認中"}, {"value": "done", "label": "完了"}]} value="in_progress" /></label>
-</article>
-</div>
-<p class="none" data-ui-empty hidden>タスクはありません</p>
-</section>
-<section class="column" data-ui-column="review"><h2 class="ui-section-title">確認中 <span class="count" data-ui-count>1</span>
-</h2>
-<div data-ui-cards><article class="task-card" data-ui-card="task-2" draggable="true"><h3 class="title">案内状の内容を確認する</h3>
-<p>制作チーム · 11月10日まで</p>
-<label>移動先<KavSelect data-ui-move options={[{"value": "todo", "label": "未着手"}, {"value": "in_progress", "label": "進行中"}, {"value": "review", "label": "確認中"}, {"value": "done", "label": "完了"}]} value="review" /></label>
-</article>
-</div>
-<p class="none" data-ui-empty hidden>タスクはありません</p>
-</section>
-<section class="column" data-ui-column="done"><h2 class="ui-section-title">完了 <span class="count" data-ui-count>1</span>
-</h2>
-<div data-ui-cards><article class="task-card" data-ui-card="task-3" draggable="true"><h3 class="title">開催日を決める</h3>
-<p>制作チーム · 11月10日まで</p>
-<label>移動先<KavSelect data-ui-move options={[{"value": "todo", "label": "未着手"}, {"value": "in_progress", "label": "進行中"}, {"value": "review", "label": "確認中"}, {"value": "done", "label": "完了"}]} value="done" /></label>
-</article>
-</div>
-<p class="none" data-ui-empty hidden>タスクはありません</p>
-</section>
-</div>
-</div>
-
-</KavPage>
-
-</main></body></html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>制作タスク / Astro</title>
+  </head>
+  <body>
+    <KavProvider />
+    <main class="ui-container">
+      <KavPage>
+        <KavPageHeader
+          eyebrow="木の葉制作室"
+          title="制作タスク"
+          description="カードをドラッグ、または移動先の選択で整理できます。変更の保存はアプリ側で接続します。"
+        />
+        <div
+          class="ui-board-wrap"
+          tabindex="0"
+          role="region"
+          aria-label="制作タスクのボード"
+        >
+          <!-- 通常HTMLのカンバンをProviderのランタイムで初期化します。 -->
+          <div
+            data-kav-ui-widget
+            class="ui-board"
+            data-ui-board
+            aria-label="制作タスク"
+          >
+            <section class="column" data-ui-column="todo">
+              <h2 class="ui-section-title">
+                未着手
+                <span class="count" data-ui-count>1</span>
+              </h2>
+              <div data-ui-cards>
+                <article
+                  class="task-card"
+                  data-ui-card="task-0"
+                  draggable="true"
+                >
+                  <h3 class="title">作品紹介文を書く</h3>
+                  <p>制作チーム · 11月10日まで</p>
+                  <label>
+                    移動先
+                    <KavSelect
+                      data-ui-move
+                      options={[
+                        { value: "todo", label: "未着手" },
+                        { value: "in_progress", label: "進行中" },
+                        { value: "review", label: "確認中" },
+                        { value: "done", label: "完了" },
+                      ]}
+                      value="todo"
+                    />
+                  </label>
+                </article>
+              </div>
+              <p class="none" data-ui-empty hidden>タスクはありません</p>
+            </section>
+            <section class="column" data-ui-column="in_progress">
+              <h2 class="ui-section-title">
+                進行中
+                <span class="count" data-ui-count>1</span>
+              </h2>
+              <div data-ui-cards>
+                <article
+                  class="task-card"
+                  data-ui-card="task-1"
+                  draggable="true"
+                >
+                  <h3 class="title">会場の配置を決める</h3>
+                  <p>制作チーム · 11月10日まで</p>
+                  <label>
+                    移動先
+                    <KavSelect
+                      data-ui-move
+                      options={[
+                        { value: "todo", label: "未着手" },
+                        { value: "in_progress", label: "進行中" },
+                        { value: "review", label: "確認中" },
+                        { value: "done", label: "完了" },
+                      ]}
+                      value="in_progress"
+                    />
+                  </label>
+                </article>
+              </div>
+              <p class="none" data-ui-empty hidden>タスクはありません</p>
+            </section>
+            <section class="column" data-ui-column="review">
+              <h2 class="ui-section-title">
+                確認中
+                <span class="count" data-ui-count>1</span>
+              </h2>
+              <div data-ui-cards>
+                <article
+                  class="task-card"
+                  data-ui-card="task-2"
+                  draggable="true"
+                >
+                  <h3 class="title">案内状の内容を確認する</h3>
+                  <p>制作チーム · 11月10日まで</p>
+                  <label>
+                    移動先
+                    <KavSelect
+                      data-ui-move
+                      options={[
+                        { value: "todo", label: "未着手" },
+                        { value: "in_progress", label: "進行中" },
+                        { value: "review", label: "確認中" },
+                        { value: "done", label: "完了" },
+                      ]}
+                      value="review"
+                    />
+                  </label>
+                </article>
+              </div>
+              <p class="none" data-ui-empty hidden>タスクはありません</p>
+            </section>
+            <section class="column" data-ui-column="done">
+              <h2 class="ui-section-title">
+                完了
+                <span class="count" data-ui-count>1</span>
+              </h2>
+              <div data-ui-cards>
+                <article
+                  class="task-card"
+                  data-ui-card="task-3"
+                  draggable="true"
+                >
+                  <h3 class="title">開催日を決める</h3>
+                  <p>制作チーム · 11月10日まで</p>
+                  <label>
+                    移動先
+                    <KavSelect
+                      data-ui-move
+                      options={[
+                        { value: "todo", label: "未着手" },
+                        { value: "in_progress", label: "進行中" },
+                        { value: "review", label: "確認中" },
+                        { value: "done", label: "完了" },
+                      ]}
+                      value="done"
+                    />
+                  </label>
+                </article>
+              </div>
+              <p class="none" data-ui-empty hidden>タスクはありません</p>
+            </section>
+          </div>
+        </div>
+      </KavPage>
+    </main>
+  </body>
+</html>
 <script>
-document.querySelectorAll<HTMLFormElement>('[data-screen-sample] form').forEach(form => {
-  form.addEventListener('submit', event => event.preventDefault());
-});
+  document.querySelectorAll<HTMLFormElement>("main form").forEach((form) => {
+    form.addEventListener("submit", (event) => event.preventDefault());
+  });
 </script>

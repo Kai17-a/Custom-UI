@@ -38,7 +38,8 @@ class FrameworkSampleTests(unittest.TestCase):
                     imports = re.findall(r'(?:from\s+|import\s*)[\'\"]([^\'\"]+)', source.read_text())
                     self.assertTrue(imports)
                     self.assertTrue(all(i in ('vue', '@kav-ui/vue', '@kav-ui/astro', '@kav-ui/core/style.css') for i in imports), imports)
-                    self.assertNotRegex(source.read_text(), r'catalog-|data-demo-|<style')
+                    self.assertNotRegex(source.read_text(), r'catalog-|data-demo-|<style|data-screen-sample|data-kav-ui-vue')
+                    self.assertNotRegex(source.read_text(), r'<main[^>]*data-kav-ui-widget')
                     if framework == 'vue':
                         route = ROOT / f'examples/astro/src/pages/samples/vue/{name}.astro'
                         self.assertIn(f'components/samples/{name}.vue', route.read_text())

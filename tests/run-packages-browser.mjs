@@ -184,6 +184,11 @@ try {
      await evaluate(`document.querySelectorAll('[role=tab]')[2].focus()`);await key('Enter');
      await until(`document.querySelector('#confirm-title').textContent.includes('確認用')`,label+' reactive confirmation');
      assert(await evaluate(`document.querySelector('#confirm-title').getClientRects().length>0`),label+' confirmation panel');
+     for(const [text,heading] of [['戻る','予定'],['戻る','基本情報'],['次へ','予定'],['次へ','入力内容の確認']]){
+      await evaluate(`(()=>{const panel=[...document.querySelectorAll('[role=tabpanel]')].find(el=>!el.hidden);[...panel.querySelectorAll('button')].find(button=>button.textContent.trim()==='${text}').click();})()`);
+      await until(`document.activeElement?.matches('h2[tabindex="-1"]')&&document.activeElement.textContent.trim()==='${heading}'`,label+' step button focuses '+heading);
+     }
+
     }
     if(screen==='detail'){
      await click('.ui-page-actions button');await until(`document.querySelector('dialog').open`,label+' dialog opens');

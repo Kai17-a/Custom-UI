@@ -21,7 +21,7 @@ HTML版のコピー元はリポジトリのdocs/templates内にある同名HTML�
 
 Vue版はVue 3.5以降のSFC、Astro版はページとしてコピーします。公開パッケージを導入し、[組み込み方](frameworks.md)を参照してください。リンクは例のルート構成に合わせてあるため、コピー先のルートへ調整してください。ローカルの操作だけを実装し、フォームは送信を抑止しています。
 
-Vueのタブ（認証・詳細・手順・通知）はKavTabsとv-model、手順の確認内容は入力モデル、チャット送信はメッセージ配列で管理します。設定と準備チェックにもv-modelを使います。Data table・カンバン・ファイルドロップはVue版では信頼済み固定HTMLをKavWidgetへ渡します。Astro版では同じ部品を通常HTMLとProviderの共通ランタイムで動かします。mainのdata-kav-ui-widgetにより、未専用化のHTML部分も初期化・破棄の対象にします。アバター・タイムライン・通知リスト・AIメッセージは専用部品がないため既存クラスのHTMLです。
+Vueのタブ（認証・詳細・手順・通知）はKavTabsとv-model、手順の確認内容は入力モデル、チャット送信はメッセージ配列で管理します。設定と準備チェックにもv-modelを使います。Data table・カンバン・ファイルドロップはVue版では信頼済み固定HTMLをKavWidgetへ渡します。Astro版では同じ部品を通常HTMLとProviderの共通ランタイムで動かします。通常HTMLのタブ・表・カンバン・ファイルドロップのルートにdata-kav-ui-widgetを付け、初期化・破棄の対象にします。アバター・タイムライン・通知リスト・AIメッセージは専用部品がないため既存クラスのHTMLです。
 
 Vue/Astro版のコピー元はexamples/astro/src/components/samples/*.vueとexamples/astro/src/pages/samples/*.astroです。Vue版を表示するpages/samples/vue/*.astroも設け、build:examplesが24画面を実際にコンパイルします。SFCはclient:loadでハイドレーションします。Astro側のstrict tsconfigはsrc以下を含み、astro checkで両形式を確認できます。追加のCSSや専用コンポーネントは不要です。
 
