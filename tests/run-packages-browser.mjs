@@ -3,7 +3,7 @@
 import {spawn} from 'node:child_process';
 import {build} from 'vite';
 import {createServer} from 'node:http';
-import {existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync, rmSync} from 'node:fs';
+import {existsSync, statSync, mkdtempSync, readdirSync, readFileSync, writeFileSync, rmSync} from 'node:fs';
 import {homedir, tmpdir} from 'node:os';
 import {join, resolve, dirname} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
@@ -76,7 +76,8 @@ const timeout=setTimeout(()=>{console.error('Browser checks timed out');child.ki
 const mime={'.js':'text/javascript','.css':'text/css','.html':'text/html','.svg':'image/svg+xml','.json':'application/json'};
 const servers=[];
 async function serve(directory,transformHTML){
- const server=createServer((req,res)=>{try{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);let file=resolve(directory,'.'+pathname);if(!file.startsWith(directory+'/')&&file!==directory){res.writeHead(403);res.end();return;}if(!existsSync(file)||!file.includes('.'))file=join(file,'index.html');const extension=file.slice(file.lastIndexOf('.'));res.setHeader('Content-Type',mime[extension]||'application/octet-stream');const content=readFileSync(file);res.end(extension==='.html'&&transformHTML?transformHTML(content.toString()):content);}catch{res.writeHead(404);res.end('Not found');}});
+ const server=createServer((req,res)=>{try{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);let file=resolve(directory,'.'+pathname);if(!file.startsWith(directory+'/')&&file!==directory){res.writeHead(403);res.end();return;}// Check the file itself: checkout paths such as ~/.t3/worktrees contain dots.
+ if(!existsSync(file)||statSync(file).isDirectory())file=join(file,'index.html');const extension=file.slice(file.lastIndexOf('.'));res.setHeader('Content-Type',mime[extension]||'application/octet-stream');const content=readFileSync(file);res.end(extension==='.html'&&transformHTML?transformHTML(content.toString()):content);}catch{res.writeHead(404);res.end('Not found');}});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));servers.push(server);return 'http://127.0.0.1:'+server.address().port;
 }
 async function visit(url,ready){await send('Page.navigate',{url});for(let i=0;i<200;i++){await delay(25);if(await evaluate('document.readyState==="complete" && ('+ready+')'))return;}throw new Error('Page readiness: '+url);}
