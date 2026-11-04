@@ -12,6 +12,7 @@ Kav-UIのスキルとllms.txtを使って、導入方法やコンポーネント
 
 - [Kav-UIスキル](skills/kav-ui/SKILL.md)：部品選択、通常HTML/Vue/Astro、テーマ、動的なDOMの扱い。
 - [組み込みリファレンス](skills/kav-ui/references/integration.md)：スキルと一緒にコピーできる基本例。
+- [横並びのレイアウト例](skills/kav-ui/references/layout-recipes.md)：見出しと操作、ツールバー、カードの並びなどの正しい書き方と、崩れる書き方。
 - [llms.txt](llms.txt)：導入・用途別コンポーネント・パッケージの資料一覧。
 - [このページのMarkdown版](ai-agents.html.md)：サイドバーを除いた本文。
 
@@ -28,9 +29,13 @@ skills/
   kav-ui/
     SKILL.md
     agents/openai.yaml
+    scripts/
+      check_markup.py
+      kav-ui-classes.json
     references/
       integration.md
       styling.md
+      layout-recipes.md
       forms-navigation.md
       feedback-data.md
       widgets.md
@@ -38,6 +43,12 @@ skills/
 ```
 
 導入、レイアウト、フォーム、ナビゲーション、通知、表・チャートなどの部品、Vue/Astroの例を同梱しています。必要なファイルだけを読み、ネットワーク接続がない環境でも参照できます。登録先や呼び出し方は利用するエージェントの設定に合わせてください。個人の設定への自動インストールは行いません。
+
+`scripts/check_markup.py`は、書いたHTML・Vue・Astroに、Kav-UIにないクラスや、`fx`のない横並びの指定などがないかを確かめる検査スクリプトです。Python 3の標準ライブラリだけで動き、アプリに置いたui.cssからクラスの一覧を作ります。ui.cssが見つからない場合は、同梱の`kav-ui-classes.json`を使います。スキルは、画面を書いたあとにこのスクリプトを実行するようエージェントに案内します。
+
+```
+python3 skills/kav-ui/scripts/check_markup.py src/ --css public/assets/css/ui.css
+```
 
 スキルは実装方法を案内する資料です。アプリ用のCSS/JSやパッケージは含まれないため、利用先へ別途導入します。スキルの配置先と、アプリで公開する資材の配置先は別です。
 
@@ -75,6 +86,7 @@ HTMLの各ページにはMarkdown版とllms.txtへのメタデータも付けて
 - 通常HTMLでは共通CSS・JSを読み込み、classとdata属性で部品を指定します。
 - CSSフォルダの階層、動的DOMの初期化と後始末、カタログ専用の処理をアプリへ持ち込まないことを確認します。
 - 明暗・質感・配色を分け、既存のトークンとレスポンシブ指定を使います。
+- 横並びは例集の構造を使い、書いたあとに検査スクリプトでクラスと並べ方の誤りを直します。
 - Vue/Astroでは導入済みのパッケージや汎用Widgetを選び、そのライフサイクルに合わせます。
 
 [通常HTMLの導入方法](installation.html.md) / [Vue/Astroの導入方法](packages/README.md)
@@ -90,4 +102,4 @@ python3 scripts/build-docs.py
 python3 scripts/build-docs.py --check
 ```
 
-`--check`は書き換えずに同期を確認し、更新が必要なファイルがあれば終了コード1を返します。スキルの説明や参照資料は`skills/kav-ui`内を編集してください。
+`--check`は書き換えずに同期を確認し、更新が必要なファイルがあれば終了コード1を返します。スキルの説明や参照資料は`skills/kav-ui`内を編集してください。検査スクリプトが使う`kav-ui-classes.json`は`assets/css`から作られるため、CSSを変えたときも同じコマンドで更新します。
