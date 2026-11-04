@@ -10,6 +10,17 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class StandaloneDocsBuildTests(unittest.TestCase):
+    def test_screen_samples_are_extracted_from_sources(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('screen_build', ROOT / 'scripts/build-docs.py')
+        build = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(build)
+        samples = build.screen_samples()
+        self.assertEqual(len(samples), 12)
+        for path, expected in samples.items():
+            self.assertEqual(path.read_bytes(), expected)
+            self.assertEqual((ROOT / 'docs/skills/kav-ui/samples/html' / path.name).read_bytes(), expected)
+
     def test_check_is_non_mutating_and_build_refreshes_only_managed_copies(self):
         with tempfile.TemporaryDirectory() as directory:
             copied = Path(directory)
@@ -27,6 +38,20 @@ class StandaloneDocsBuildTests(unittest.TestCase):
                 return subprocess.run([sys.executable, str(copied / 'scripts/build-docs.py'), *args],
                                       cwd=copied, text=True, capture_output=True)
 
+            self.assertEqual(run('--check').returncode, 0)
+            # Both copied fragments and their source region participate in --check.
+            sample = copied / 'skills/kav-ui/samples/html/settings.html'
+            original_sample = sample.read_bytes()
+            sample.write_bytes(original_sample + b'<!-- drift -->')
+            self.assertEqual(run('--check').returncode, 1)
+            self.assertTrue(sample.read_bytes().endswith(b'<!-- drift -->'))
+            self.assertEqual(run().returncode, 0)
+            self.assertEqual(sample.read_bytes(), original_sample)
+            template = copied / 'docs/templates/settings.html'
+            template.write_text(template.read_text().replace('ワークスペース名', '制作室の名前'))
+            self.assertEqual(run('--check').returncode, 1)
+            self.assertEqual(run().returncode, 0)
+            self.assertIn('制作室の名前', sample.read_text())
             self.assertEqual(run('--check').returncode, 0)
             source = copied / 'assets/js/ui.js'
             target = copied / 'docs/assets/ui/js/ui.js'

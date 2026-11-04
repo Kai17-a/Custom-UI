@@ -87,7 +87,7 @@ try {
   const touch = await evaluate(`(()=>{document.querySelector('.catalog-mobile-menu').open=true;document.querySelector('.catalog-navigation').open=true;document.querySelectorAll('.catalog-nav-category,.catalog-nav-branch').forEach(item=>item.open=true);const controls=[...document.querySelectorAll('.catalog-sidebar nav a,.catalog-sidebar nav summary')].filter(item=>item.getClientRects().length);return {count:controls.length,short:controls.filter(item=>item.getBoundingClientRect().height<44).slice(0,5).map(item=>[item.textContent.trim(),item.getBoundingClientRect().height])};})()`);
   assert(touch.count >= 46 && !touch.short.length, `Touch menu targets below 44px: ${JSON.stringify(touch)}`);
 
-  for (const path of ['dashboard.html', 'docs.html', 'changelog.html', 'error-403.html', 'error-404.html', 'error-500.html', 'error-503.html']) {
+  for (const path of readdirSync(join(root, 'docs/templates')).filter(name => name.endsWith('.html'))) {
     await navigate('templates/' + path);
     const labels = await evaluate(`[...document.querySelectorAll('.template-palette-label > span:first-child,.template-design-label > span:first-child')].map(item=>({text:item.textContent.trim(),visible:!!item.getClientRects().length}))`);
     assert(labels.length === 2 && labels.every(item => item.visible) && labels[0].text !== labels[1].text, `Theme controls need distinct visible labels in ${path}: ${JSON.stringify(labels)}`);

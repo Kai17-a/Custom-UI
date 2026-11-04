@@ -1261,6 +1261,27 @@ try {
   if(!await evaluate('document.querySelectorAll("#template-errors .catalog-card").length===4'))throw new Error('Error template catalog destinations');
   console.log('Error templates: 4 pages × 3 widths × 10 themes/modes, recovery links, native skip focus/Enter reload, no-JS fallback and catalog entry points');
 
+  // Screen samples join the all-template overflow audit above at all six widths.
+  await send('Emulation.setDeviceMetricsOverride',{width:1024,height:1000,deviceScaleFactor:1,mobile:false});
+  await navigate('templates/detail.html');
+  await evaluate(`document.querySelector('[data-ui-target="overview"]').focus()`);await key('ArrowRight');
+  if(!await evaluate(`!document.querySelector('[data-ui-panel="history"]').hidden && document.querySelector('[data-ui-panel="overview"]').hidden`))throw new Error('Detail sample keyboard tabs');
+  await click('[data-ui-target="#share-dialog"]');await key('Escape');
+  if(!await evaluate(`!document.querySelector('#share-dialog').open && document.activeElement.matches('[data-ui-target="#share-dialog"]')`))throw new Error('Detail dialog focus return');
+  await navigate('templates/wizard.html');
+  await evaluate(`(()=>{const input=document.getElementById('request-title');input.value='冬の展示資料';input.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-ui-target="request-input"]').focus();})()`);
+  await key('ArrowRight');await key('ArrowRight');
+  if(!await evaluate(`!document.querySelector('[data-ui-panel="request-confirm"]').hidden && document.getElementById('confirm-title').textContent==='冬の展示資料'`))throw new Error('Wizard navigation and live confirmation');
+  await key('Home');
+  if(!await evaluate(`!document.querySelector('[data-ui-panel="request-input"]').hidden && document.getElementById('request-title').value==='冬の展示資料'`))throw new Error('Wizard retains input on return');
+  await navigate('templates/list.html');
+  await evaluate(`(()=>{const search=document.getElementById('project-search');search.value='存在しない案件';search.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  if(!await evaluate(`!document.querySelector('[data-ui-table-empty]').hidden && document.querySelector('[data-ui-table-status]').textContent.includes('0')`))throw new Error('List sample empty search');
+  await evaluate(`(()=>{const search=document.getElementById('project-search');search.value='';search.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  await click('[data-ui-table-next]');
+  if(!await evaluate(`document.querySelector('[data-ui-table-prev]').disabled===false && document.querySelector('[data-ui-table-next]').disabled===true`))throw new Error('List sample pagination');
+  console.log('Screen samples: keyboard tabs, dialog Escape/focus, wizard input/confirmation, table empty result and pagination');
+
   // Service templates: file://, every visual theme, native controls and sample data.
   for(const width of [320,768,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});

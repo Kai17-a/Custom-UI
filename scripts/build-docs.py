@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse
 import json
+import re
 from html.parser import HTMLParser
 import importlib.util
 from pathlib import Path
@@ -10,6 +11,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / 'docs'
+SAMPLES = ROOT / 'skills/kav-ui/samples/html'
 MANAGED = (DOCS / 'assets/ui', DOCS / 'skills/kav-ui', DOCS / 'packages')
 
 
@@ -69,13 +71,31 @@ def class_inventory():
     return (json.dumps(checker.build_inventory(ROOT / 'assets/css/ui.css'), indent=1) + '\n').encode()
 
 
+def screen_samples():
+    """Extract app-only fragments from marked template sources; no catalog assets."""
+    files = {}
+    for page in sorted((DOCS / 'templates').glob('*.html')):
+        source = page.read_text()
+        start, end = '<!-- kav-sample:start -->', '<!-- kav-sample:end -->'
+        if start not in source and end not in source:
+            continue
+        if source.count(start) != 1 or source.count(end) != 1:
+            raise ValueError('Expected exactly one sample region: ' + str(page))
+        match = re.search(re.escape(start) + r'(.*?)' + re.escape(end), source, re.S)
+        if match is None or not match[1].strip():
+            raise ValueError('Invalid sample region: ' + str(page))
+        files[SAMPLES / page.name] = (match[1].strip() + '\n').encode()
+    return files
+
+
 def public_files():
     files = {}
     for source, destination in ((ROOT / 'assets', MANAGED[0]),
                                 (ROOT / 'skills/kav-ui', MANAGED[1])):
         for path in source.rglob('*'):
             # Importing the skill's checker leaves bytecode caches that are not part of the skill.
-            if path.is_file() and '__pycache__' not in path.relative_to(source).parts:
+            if (path.is_file() and '__pycache__' not in path.relative_to(source).parts
+                    and not (source == ROOT / 'skills/kav-ui' and path.is_relative_to(SAMPLES))):
                 files[destination / path.relative_to(source)] = path.read_bytes()
     for name in ('README.md', 'vue/README.md', 'astro/README.md'):
         source = ROOT / 'packages' / name
@@ -86,6 +106,10 @@ def public_files():
     inventory = class_inventory()
     files[ROOT / 'skills/kav-ui/scripts/kav-ui-classes.json'] = inventory
     files[MANAGED[1] / 'scripts/kav-ui-classes.json'] = inventory
+    # Override old copies in both trees in one pass, including --check mode.
+    for path, data in screen_samples().items():
+        files[path] = data
+        files[MANAGED[1] / path.relative_to(ROOT / 'skills/kav-ui')] = data
     return files
 
 
@@ -95,7 +119,7 @@ def main():
     args = parser.parse_args()
     files = public_files()
     # These directories contain generated copies only; preserve every other docs file.
-    stale = [path for directory in MANAGED for path in directory.rglob('*')
+    stale = [path for directory in (*MANAGED, SAMPLES) for path in directory.rglob('*')
              if path.is_file() and path not in files]
     changed = [path for path, data in files.items()
                if not path.is_file() or path.read_bytes() != data]

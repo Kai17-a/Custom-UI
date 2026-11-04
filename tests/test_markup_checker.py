@@ -52,6 +52,19 @@ class InventoryTests(unittest.TestCase):
         self.assertEqual(files[ROOT / 'docs/skills/kav-ui/scripts/kav-ui-classes.json'], expected)
 
 
+class ScreenMarkupTests(unittest.TestCase):
+    def test_portable_screen_markup(self):
+        samples = sorted((SKILL / 'samples/html').glob('*.html'))
+        self.assertEqual(len(samples), 12)
+        for page in samples:
+            with self.subTest(page=page.name):
+                source = page.read_text()
+                findings = CHECK.Checker(INVENTORY).check_text(source, page, str(page))
+                self.assertEqual([(f.level, f.rule) for f in findings], [])
+                self.assertNotRegex(source, r'catalog-|data-demo-|templates\.(?:css|js)|layout\.css')
+                self.assertNotRegex(source, r'<(?:link|script)\b[^>]*(?:href|src)=')
+
+
 class RuleTests(unittest.TestCase):
     def test_flex_alignment_needs_a_flex_container(self):
         self.assertIn('missing-flex-container', rule_names('<div class="fx-row fx-justify-between"></div>'))
