@@ -32,6 +32,11 @@ test('Vue: native aria-label reaches inputs and selects when label prop is omitt
  assert.match(select,/<select[^>]*aria-label="選択の名前"/);
  const override=await renderToString(createSSRApp({render:()=>h(KavInput,{label:'優先する名前','aria-label':'属性の名前'})}));
  assert.match(override,/<input[^>]*aria-label="優先する名前"/);
+ // An empty label is not an accessible name; keep the attribute like the Astro components do.
+ for(const component of [KavInput,KavSelect]){
+  const empty=await renderToString(createSSRApp({render:()=>h(component,{label:'','aria-label':'属性の名前',...(component===KavSelect?{options:['one']}:{})})}));
+  assert.match(empty,/aria-label="属性の名前"/);
+ }
 });
 
 test('Vue: Field descriptions can be referenced from caller-owned input ARIA on the server',async()=>{
@@ -57,7 +62,7 @@ test('Vue: layout props, semantic structure, optional slots and outer attributes
 
 test('Vue: Textarea label overrides aria-label while preserving native attributes and value',async()=>{
  const {KavInput,KavTextarea}=await import('../../packages/vue/src/index.js');
- for(const [label,expected] of [[undefined,'属性の名前'],['優先する名前','優先する名前'],['','']]){
+ for(const [label,expected] of [[undefined,'属性の名前'],['優先する名前','優先する名前'],['','属性の名前']]){
   const html=await renderToString(createSSRApp({render:()=>h(KavTextarea,{label,'aria-label':'属性の名前',modelValue:'<本文>',name:'message',id:'message',rows:4,placeholder:'入力',required:true,disabled:true,maxlength:200,class:'custom','data-test':'textarea'})}));
   // Vue SSR serializes an empty string attribute as bare `aria-label`.
   const accessibleName=markup=>{const attribute=markup.match(/\saria-label(?:="([^"]*)")?(?=[\s>])/);assert.ok(attribute,'aria-label is present');return attribute[1]??'';};

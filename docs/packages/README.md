@@ -73,7 +73,7 @@ const open=ref(false);
 - `KavInput` の日付・時刻・月・週・色、`KavSelect` は既存のカスタム選択UIを使用します。入力・選択欄・テキストエリアはフォームのreset時にもモデルを同期します。`KavSelect` の `form` 属性でフォーム外からも送信できます。
 - `KavDialog` は初期SSR時は閉じたHTMLを出力し、ブラウザでマウント後に `v-model` を反映します。`KavDrawer` は `placement="start|end|top|bottom"` で配置を指定します。
 
-`KavTextarea` の `label` は `aria-label` より優先されます。`name`・`id`・`rows`・`placeholder`・`required`・`disabled`・`maxlength` も型付きで指定できます。
+`KavTextarea` の `label` は `aria-label` より優先されます。空文字の `label` は無視され、`aria-label` を使います（`KavInput`・`KavSelect` とAstro版も同じ）。`name`・`id`・`rows`・`placeholder`・`required`・`disabled`・`maxlength` も型付きで指定できます。
 
 ### Vueのサイドバー
 
