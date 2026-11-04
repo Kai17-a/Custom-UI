@@ -97,7 +97,7 @@ test('Astro: Drawer matches HTML drawer regions and forwards attributes with one
   assert.equal((dialog.match(/\bclass=/g)||[]).length,1);
   assert.match(dialog,new RegExp('class="ui-dialog ui-drawer ui-drawer-'+(placement??'end')+' custom"'));
   assert.match(dialog,/id="drawer"/);assert.match(dialog,/data-ui-dialog/);assert.match(dialog,/data-test="drawer"/);assert.match(dialog,/aria-describedby="help"/);assert.match(dialog,/aria-labelledby="drawer-title"/);assert.doesNotMatch(dialog,/\bopen\b/);
-  assert.match(html,/data-kav-ui-widget/);assert.match(html,/<header class="ui-drawer-header"><h2 id="drawer-title">設定<\/h2><\/header>/);
+  assert.match(html,/data-kav-ui-widget/);assert.match(html,/<header class="ui-drawer-header"><h2 id="drawer-title">設定<\/h2><button[^>]*type="button"[^>]*data-ui-dismiss="dialog"[^>]*aria-label="閉じる"[^>]*><span[^>]*icon="mdi-close"[^>]*aria-hidden="true"[^>]*><\/span><\/button><\/header>/);
   assert.match(html,/<div class="ui-drawer-body"><p>本文<\/p><\/div>/);assert.match(html,/<footer class="ui-drawer-footer"><button data-ui-dismiss="dialog">閉じる<\/button><\/footer>/);
  }
  const plain=await container.renderToString(KavDrawer,{props:{id:'plain','aria-label':'属性の名前'}});

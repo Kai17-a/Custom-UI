@@ -135,7 +135,9 @@ try {
   await until(`document.querySelector('#astro-tabs-tab-1').getAttribute('aria-selected')==='true'&&!document.querySelector('#astro-tabs-panel-1').hidden&&document.querySelector('#astro-tabs-panel-0').hidden`,'Astro tab switches');
   await key('ArrowLeft');await until(`document.activeElement.id==='astro-tabs-tab-0'&&!document.querySelector('#astro-tabs-panel-0').hidden`,'Astro tabs keyboard');
   await click('[data-testid=astro-drawer-open]');await until(`document.getElementById('astro-drawer').open`,'Astro drawer opens');
-  await click('#astro-drawer [data-ui-dismiss="dialog"]');await until(`!document.getElementById('astro-drawer').open`,'Astro drawer dismiss');
+  // The drawer slides in for 200ms; wait for its final position before a pointer click.
+  await evaluate(`Promise.all(document.getElementById('astro-drawer').getAnimations().map(animation=>animation.finished))`);
+  await click('#astro-drawer .ui-drawer-header [data-ui-dismiss="dialog"]');await until(`!document.getElementById('astro-drawer').open`,'Astro drawer dismiss');
   await click('[data-testid=astro-drawer-open]');await until(`document.getElementById('astro-drawer').open`,'Astro drawer reopens');
   await key('Escape');await until(`!document.getElementById('astro-drawer').open&&document.activeElement.matches('[data-testid=astro-drawer-open]')`,'Astro drawer Escape and focus return');
   await click('[data-testid=astro-vue] input');await send('Input.insertText',{text:' / Vue'});await until(`document.querySelector('[data-testid=astro-vue] output').textContent.includes('/ Vue')`,'Astro Vue island hydration');
