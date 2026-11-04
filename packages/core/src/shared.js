@@ -13,3 +13,27 @@ export function attributes(values){return Object.entries(values).filter(([k,v])=
 export function semanticColor(value){return colors.includes(value)?value:'neutral';}
 
 export function badgeClass(color='primary'){return ['danger','success','warning'].includes(color)?'badge text-bg-'+color:'badge badge-neutral';}
+
+// Only known values become selectors; objects are read in breakpoint order.
+const layoutValues={gap:[0,1,2,3,4,6,8,12],direction:['row','column'],justify:['start','center','end','between','around','evenly'],align:['start','center','end','stretch','baseline'],wrap:[true,false],cols:[1,2,3,4,6,12],span:[1,2,3,4,5,6,7,8,9,10,11,12]};
+function layoutValueClass(prop,value){
+ if(!layoutValues[prop]?.includes(value))return '';
+ return prop==='gap'?'sp-gap-'+value:prop==='direction'?'fx-'+value:prop==='justify'?'fx-justify-'+value:prop==='align'?'fx-items-'+value:prop==='wrap'?'fx-'+(value?'wrap':'nowrap'):prop==='cols'?'fx-grid-'+value:'fx-col-'+value;
+}
+export function layoutClasses(props={}){
+ return Object.keys(layoutValues).flatMap(prop=>{
+  const value=props?.[prop];
+  return value&&typeof value==='object'&&!Array.isArray(value)?['base','tablet','mobile'].map(key=>{const cls=layoutValueClass(prop,value[key]);return cls?(key==='base'?'':key+':')+cls:'';}):[layoutValueClass(prop,value)];
+ }).filter(Boolean).join(' ');
+}
+export function stackClass({gap,align}={}){return ['ui-stack',layoutClasses({gap,align})].filter(Boolean).join(' ');}
+export function clusterClass({gap,justify,align}={}){
+ const base=align&&typeof align==='object'?align.base:align;
+ // page-layout.css follows flex.css: compose primitives when its center default would win.
+ const baseClass=layoutValues.align.includes(base)&&base!=='center'?'fx fx-wrap fx-min-0'+(layoutValues.gap.includes(gap&&typeof gap==='object'?gap.base:gap)?'':' sp-gap-3'):'ui-cluster';
+ return [baseClass,layoutClasses({gap,justify,align})].filter(Boolean).join(' ');
+}
+export function flexClass({gap,direction,justify,align,wrap}={}){return ['fx',layoutClasses({gap,direction,justify,align,wrap})].filter(Boolean).join(' ');}
+export function gridClass({cols,gap}={}){return [cols==='auto'?'ui-page-grid':'fx-grid',layoutClasses({cols,gap})].filter(Boolean).join(' ');}
+export function gridItemClass({span}={}){return layoutClasses({span});}
+export function headingTag(level,fallback=1){return 'h'+([1,2,3,4,5,6].includes(level)?level:fallback);}

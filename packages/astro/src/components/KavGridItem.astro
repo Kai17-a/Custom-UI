@@ -1,0 +1,8 @@
+---
+import {gridItemClass} from '@kav-ui/core';
+import type {GridItemProps} from '@kav-ui/core';
+import type {HTMLAttributes} from 'astro/types';
+interface Props extends GridItemProps, Omit<HTMLAttributes<'div'>,keyof GridItemProps> {[key:`data-${string}`]:unknown;}
+const {span,as:Tag='div',class:className,...rest}=Astro.props;
+---
+<Tag {...rest} class:list={[gridItemClass({span}),className]}><slot/></Tag>

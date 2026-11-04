@@ -1,0 +1,8 @@
+---
+import {stackClass} from '@kav-ui/core';
+import type {StackProps} from '@kav-ui/core';
+import type {HTMLAttributes} from 'astro/types';
+interface Props extends StackProps, Omit<HTMLAttributes<'div'>,keyof StackProps> {[key:`data-${string}`]:unknown;}
+const {gap,align,as:Tag='div',class:className,...rest}=Astro.props;
+---
+<Tag {...rest} class:list={[stackClass({gap,align}),className]}><slot/></Tag>

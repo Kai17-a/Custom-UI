@@ -1,5 +1,5 @@
 import {defineComponent as vueDefineComponent,cloneVNode,isVNode,h,ref,watch,onMounted,onUpdated,onBeforeUpdate,onBeforeUnmount,mergeProps,useId,Teleport,computed,nextTick} from 'vue';
-import {buttonClass,badgeClass,semanticColor,escapeHTML,attributes,mdiPaths,mount,loadRuntime} from '@kav-ui/core';
+import {stackClass,clusterClass,flexClass,gridClass,gridItemClass,headingTag,buttonClass,badgeClass,semanticColor,escapeHTML,attributes,mdiPaths,mount,loadRuntime} from '@kav-ui/core';
 export {toast,setColorTheme,setDesignTheme,setPalette,setCustomPalette} from '@kav-ui/core';
 // Ancestor Astro/HTML adapters must not enhance DOM which Vue owns.
 function defineComponent(options){
@@ -107,3 +107,18 @@ export const KavSidebar=defineComponent({name:'KavSidebar',inheritAttrs:false,pr
   h('div',{class:'app-content'},[slots.toggle?slots.toggle({open:state.value.value,toggle}):h(KavButton,{variant:'outline',color:'secondary',icon:'mdi-menu','aria-label':'メニューを切り替える','aria-expanded':String(state.value.value),'aria-controls':uid,onClick:toggle},()=> 'メニュー'),slots.default?.({open:state.value.value,toggle})])]),
   h('dialog',{ref:dialog,class:['ui-dialog','ui-drawer','ui-sidebar-dialog',mode.value==='top'?'ui-drawer-top':mode.value==='bottom'?'ui-drawer-bottom':p.side==='start'?'ui-drawer-start':null],'aria-label':p.label,onCancel:e=>{e.preventDefault();state.set(false);},onClose:()=>{if(overlay.value)state.set(false);},onClick:e=>{if(e.target!==dialog.value)return;const r=dialog.value.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)state.set(false);}},[h(KavButton,{class:'ui-sidebar-dialog-close',variant:'outline',color:'secondary',icon:'mdi-close','aria-label':'メニューを閉じる',onClick:()=>state.set(false)})])];
 }});
+
+export const KavStack=defineComponent({name:'KavStack',props:{gap:[String,Number,Object],align:[String,Number,Object],as:{type:String,default:'div'}},setup:(p,{slots})=>()=>h(p.as,{class:stackClass(p)},slots.default?.())});
+
+export const KavCluster=defineComponent({name:'KavCluster',props:{gap:[String,Number,Object],justify:[String,Number,Object],align:[String,Number,Object],as:{type:String,default:'div'}},setup:(p,{slots})=>()=>h(p.as,{class:clusterClass(p)},slots.default?.())});
+
+export const KavFlex=defineComponent({name:'KavFlex',props:{direction:[String,Number,Object],justify:[String,Number,Object],align:[String,Number,Object],wrap:{type:[Boolean,Object],default:undefined},gap:[String,Number,Object],as:{type:String,default:'div'}},setup:(p,{slots})=>()=>h(p.as,{class:flexClass(p)},slots.default?.())});
+
+export const KavGrid=defineComponent({name:'KavGrid',props:{cols:[String,Number,Object],gap:[String,Number,Object],as:{type:String,default:'div'}},setup:(p,{slots})=>()=>h(p.as,{class:gridClass(p)},slots.default?.())});
+
+export const KavGridItem=defineComponent({name:'KavGridItem',props:{span:[String,Number,Object],as:{type:String,default:'div'}},setup:(p,{slots})=>()=>h(p.as,{class:gridItemClass(p)},slots.default?.())});
+
+export const KavPageHeader=defineComponent({name:'KavPageHeader',props:{title:String,description:String,eyebrow:String,level:{type:Number,default:1}},setup:(p,{slots})=>()=>h('header',{class:'ui-page-header'},[h('div',{class:'ui-page-heading'},[p.eyebrow?h('p',{class:'ui-page-eyebrow'},p.eyebrow):null,p.title?h(headingTag(p.level),{class:'ui-page-title'},p.title):null,p.description?h('p',{class:'ui-page-description'},p.description):null,slots.default?.()]),slots.actions?h('div',{class:'ui-page-actions'},slots.actions()):null])});
+export const KavToolbar=defineComponent({name:'KavToolbar',props:{label:String},setup:(p,{slots})=>()=>h('div',{class:'ui-toolbar',role:p.label?'group':undefined,'aria-label':p.label},[h('div',{class:'ui-toolbar-group'},slots.default?.()),slots.end?h('div',{class:'ui-toolbar-group ui-toolbar-end'},slots.end()):null])});
+export const KavSection=defineComponent({name:'KavSection',props:{title:String,description:String,level:{type:Number,default:2}},setup:(p,{slots})=>()=>h('section',{class:'ui-section'},[p.title||p.description||slots.actions?h('header',{class:'ui-section-header'},[h('div',[p.title?h(headingTag(p.level,2),{class:'ui-section-title'},p.title):null,p.description?h('p',{class:'ui-section-description'},p.description):null]),slots.actions?.()]):null,slots.default?.()])});
+export const KavPage=defineComponent({name:'KavPage',props:{asideLabel:String,railLabel:String,stickyAside:Boolean},setup:(p,{slots})=>()=>h('div',{class:'ui-layout'},[h('div',{class:['ui-page',slots.aside&&'ui-page-with-aside',slots.rail&&'ui-page-with-rail']},[slots.aside?h('aside',{class:['ui-page-aside',p.stickyAside&&'ui-page-aside-sticky'],'aria-label':p.asideLabel},slots.aside()):null,h('div',{class:'ui-page-body'},slots.default?.()),slots.rail?h('aside',{class:'ui-page-rail','aria-label':p.railLabel},slots.rail()):null])])});

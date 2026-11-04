@@ -18,3 +18,31 @@ if(typeof document!=='undefined'){void mount(document.body);void setColorTheme('
 
 async function runtimeAPIs(){const api=await loadRuntime();const button=document.createElement("button");const active:boolean=api.loading(button,true);const result:Promise<void>=api.copy("コピー");void active;await result;}
 void runtimeAPIs;
+
+import {KavStack,KavCluster,KavFlex,KavGrid,KavGridItem,KavPageHeader,KavToolbar,KavSection,KavPage} from '@kav-ui/vue';
+import type {Space,Responsive,FlexProps,GridProps,GridItemProps} from '@kav-ui/core';
+import {KavGrid as AstroGrid,KavStack as AstroStack} from '@kav-ui/astro';
+h(KavStack,{gap:{base:4,tablet:3,mobile:0},align:'stretch',as:'section'});
+h(KavCluster,{gap:2,justify:'between',align:'baseline'});
+h(KavFlex,{direction:{base:'row',mobile:'column'},wrap:{base:false,tablet:true},align:{mobile:'stretch'}});
+h(KavGrid,{cols:{base:3,tablet:2,mobile:1},gap:4});h(KavGrid,{cols:'auto'});
+h(KavGridItem,{span:{base:6,mobile:12}});
+h(KavPageHeader,{title:'Title',level:6});h(KavSection,{level:2});h(KavToolbar,{label:'Tools'});h(KavPage,{stickyAside:true,asideLabel:'Menu',railLabel:'Details'});
+const space:Responsive<Space>={base:12,mobile:0};void space;void AstroGrid;void AstroStack;
+// @ts-expect-error gap is a closed spacing scale
+h(KavStack,{gap:5});
+// @ts-expect-error grid columns are constrained
+h(KavGrid,{cols:5});
+// @ts-expect-error span is at most twelve
+h(KavGridItem,{span:13});
+// @ts-expect-error use between rather than CSS syntax
+h(KavFlex,{justify:'space-between'});
+// @ts-expect-error responsive values are also constrained
+const invalidFlex:FlexProps={gap:{tablet:5}};
+// @ts-expect-error auto columns cannot be responsive
+const invalidGrid:GridProps={cols:{mobile:'auto'}};
+// @ts-expect-error responsive spans cannot exceed twelve
+const invalidItem:GridItemProps={span:{base:13}};
+// @ts-expect-error heading levels are constrained
+h(KavPageHeader,{level:7});
+void invalidFlex;void invalidGrid;void invalidItem;

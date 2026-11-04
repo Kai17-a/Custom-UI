@@ -30,3 +30,21 @@ export declare const KavChart:Component<{config:ChartConfig}>;
 export type SidebarMobile='drawer'|'collapse'|'top'|'bottom';
 export type SidebarDesktop='expanded'|'rail'|'hidden'|'top'|'bottom';
 export declare const KavSidebar:Component<Model<boolean>&{title?:string;label?:string;items?:Array<{label:string;href:string;icon?:string;active?:boolean}>;mobile?:SidebarMobile;tablet?:SidebarDesktop;desktop?:SidebarDesktop;side?:'start'|'end'}>;
+
+export declare const KavStack:Component<import('@kav-ui/core').StackProps&HTMLAttributes>;
+
+export declare const KavCluster:Component<import('@kav-ui/core').ClusterProps&HTMLAttributes>;
+
+export declare const KavFlex:Component<import('@kav-ui/core').FlexProps&HTMLAttributes>;
+
+export declare const KavGrid:Component<import('@kav-ui/core').GridProps&HTMLAttributes>;
+
+export declare const KavGridItem:Component<import('@kav-ui/core').GridItemProps&HTMLAttributes>;
+
+export declare const KavPageHeader:Component<import('@kav-ui/core').PageHeaderProps&HTMLAttributes>;
+
+export declare const KavToolbar:Component<import('@kav-ui/core').ToolbarProps&HTMLAttributes>;
+
+export declare const KavSection:Component<import('@kav-ui/core').SectionProps&HTMLAttributes>;
+
+export declare const KavPage:Component<import('@kav-ui/core').PageProps&HTMLAttributes>;

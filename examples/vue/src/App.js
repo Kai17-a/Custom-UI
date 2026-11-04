@@ -1,11 +1,17 @@
 import {defineComponent,h,ref} from 'vue';
-import {KavButton,KavBanner,KavInput,KavSelect,KavCheckbox,KavField,KavCard,KavDialog,KavTabs,KavSidebar,KavWidget,KavCalendar,KavChart,toast,setColorTheme} from '@kav-ui/vue';
+import {KavStack,KavCluster,KavFlex,KavGrid,KavGridItem,KavPageHeader,KavToolbar,KavSection,KavPage,KavButton,KavBanner,KavInput,KavSelect,KavCheckbox,KavField,KavCard,KavDialog,KavTabs,KavSidebar,KavWidget,KavCalendar,KavChart,toast,setColorTheme} from '@kav-ui/vue';
 export default defineComponent({name:'KavExample',setup(){
  const name=ref('Kav-UI'),selection=ref(1),checked=ref(false),date=ref('2026-10-23'),open=ref(false),notice=ref(true),tab=ref('overview'),widget=ref(true);
  const bind=state=>({'modelValue':state.value,'onUpdate:modelValue':value=>state.value=value});
  return ()=>h('div',[
  h('header',{class:'ui-header'},[h('div',{class:'ui-container ui-header-inner'},[h('a',{href:'/',class:'ui-brand'},'Kav-UI / Vue'),h(KavButton,{color:'secondary',variant:'ghost',icon:'mdi-weather-night',onClick:()=>setColorTheme(document.documentElement.dataset.bsTheme==='dark'?'light':'dark')},()=> 'テーマ切替')])]),
  h(KavSidebar,{title:'Workspace',items:[{label:'概要',href:'#vue-main',icon:'mdi-home',active:true},{label:'ドキュメント',href:'#vue-docs',icon:'mdi-information-outline'}],tablet:'rail',desktop:'rail'}, {default:()=>h('main',{id:'vue-main',class:'sp-p-4'},[
+ h(KavSection,{'data-testid':'layout-section',title:'Layout components'},()=>h(KavPage,{asideLabel:'Layout navigation',railLabel:'Layout details'},{aside:()=>h('p','Projects'),rail:()=>h('p','Updated today'),default:()=>h(KavStack,{gap:4},()=>[
+ h(KavPageHeader,{title:'Projects',description:'Typed props compose the page.',eyebrow:'Workspace',level:2},{default:()=>h('p','Recent projects'),actions:()=>h(KavButton,()=> 'New project')}),
+ h(KavToolbar,{label:'Project tools'},{default:()=>h('span','All projects'),end:()=>h(KavCluster,{gap:0,align:'start','data-testid':'layout-cluster'},()=>h(KavButton,{variant:'outline'},()=> 'Filter'))}),
+ h(KavGrid,{cols:{base:3,tablet:2,mobile:1},gap:3,'data-testid':'layout-grid'},()=>['Design','Development','Review'].map(title=>h(KavGridItem,()=>h(KavCard,{title},()=>h('p','Shared layout primitives'))))),
+ h(KavFlex,{direction:'row',gap:2,align:'center','data-testid':'layout-flex'},()=>[h('span',{class:'fx-flex-1 fx-min-0 type-truncate'},'A growing item with a very long project name that should truncate rather than overflow the available width'),h(KavButton,{class:'fx-shrink-0'},()=> 'Open')])
+ ])})),
  h('h1','Vueコンポーネント'),h('p','既存のデザインを属性・スロット・v-modelで利用できます。'),
  h(KavBanner,{...bind(notice),title:'パッケージ版',closable:true,'data-testid':'vue-banner'},()=> '共通スタイルを使ったVue用コンポーネントです。'),
  h(KavCard,{title:'設定',class:'sp-mt-4'},{default:()=>h('div',{class:'ui-stack sp-gap-4'},[

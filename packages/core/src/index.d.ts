@@ -38,3 +38,28 @@ export declare function setPalette(palette:string,options?:PersistOptions):Promi
 export declare function setCustomPalette(seed:string,options?:PersistOptions&{chroma?:number}):Promise<unknown>;
 
 export declare function badgeClass(color?:string):string;
+
+export type Space=0|1|2|3|4|6|8|12;
+export type Justify='start'|'center'|'end'|'between'|'around'|'evenly';
+export type Align='start'|'center'|'end'|'stretch'|'baseline';
+export type Direction='row'|'column';
+export type Columns=1|2|3|4|6|12;
+export type Span=1|2|3|4|5|6|7|8|9|10|11|12;
+export type HeadingLevel=1|2|3|4|5|6;
+export type Responsive<T> = T|{base?:T;tablet?:T;mobile?:T};
+export interface StackProps {gap?:Responsive<Space>;align?:Responsive<Align>;as?:string;}
+export interface ClusterProps extends StackProps {justify?:Responsive<Justify>;}
+export interface FlexProps extends ClusterProps {direction?:Responsive<Direction>;wrap?:Responsive<boolean>;}
+export interface GridProps {cols?:Responsive<Columns>|'auto';gap?:Responsive<Space>;as?:string;}
+export interface GridItemProps {span?:Responsive<Span>;as?:string;}
+export interface PageHeaderProps {title?:string;description?:string;eyebrow?:string;level?:HeadingLevel;}
+export interface SectionProps {title?:string;description?:string;level?:HeadingLevel;}
+export interface ToolbarProps {label?:string;}
+export interface PageProps {asideLabel?:string;railLabel?:string;stickyAside?:boolean;}
+export declare function layoutClasses(props?:Omit<FlexProps,'as'>&Pick<GridProps,'cols'>&Pick<GridItemProps,'span'>):string;
+export declare function stackClass(props?:StackProps):string;
+export declare function clusterClass(props?:ClusterProps):string;
+export declare function flexClass(props?:FlexProps):string;
+export declare function gridClass(props?:GridProps):string;
+export declare function gridItemClass(props?:GridItemProps):string;
+export declare function headingTag(level?:HeadingLevel,fallback?:HeadingLevel):'h1'|'h2'|'h3'|'h4'|'h5'|'h6';

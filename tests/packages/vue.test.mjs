@@ -19,7 +19,7 @@ test('Vue: every public component renders on a server without browser globals',a
   const result=await renderToString(createSSRApp({render:()=>h(component,props)}));
   assert.equal(typeof result,'string',name);count++;
  }
- assert.ok(count>=24);
+ assert.ok(count>=33);
 });
 
 test('Vue: native aria-label reaches inputs and selects when label prop is omitted',async()=>{
@@ -43,4 +43,14 @@ test('Vue: Field descriptions can be referenced from caller-owned input ARIA on 
  assert.match(html,/<input[^>]*aria-describedby="existing email-hint email-error"[^>]*aria-invalid="true"/);
  const custom=await renderToString(createSSRApp({render:()=>h(KavField,{for:'name',hint:'説明',hintId:'custom-hint',error:'エラー',errorId:'custom-error'})}));
  assert.match(custom,/id="custom-hint"/);assert.match(custom,/id="custom-error"/);
+});
+
+test('Vue: layout props, semantic structure, optional slots and outer attributes',async()=>{
+ const components=await import('../../packages/vue/src/index.js');
+ const {layoutCases,assertLayout}=await import('./layout-cases.mjs');
+ for(const [name,props,slotNames] of layoutCases){
+  const slots=Object.fromEntries(slotNames.map(slot=>[slot,()=>h('span',slot)]));
+  const html=await renderToString(createSSRApp({render:()=>h(components[name],{...props,id:'layout-test',class:'custom','data-layout':'yes','aria-describedby':'help'},slots)}));
+  assertLayout(assert,html,name,props,slotNames);
+ }
 });
