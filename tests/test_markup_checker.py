@@ -42,6 +42,50 @@ class InventoryTests(unittest.TestCase):
         self.assertFalse({'fx-row', 'fx-items-center', 'ui-card-body'} & containers)
         self.assertNotIn('svg', classes)
 
+    def test_attribute_and_icon_inventory_sources(self):
+        self.assertEqual(len(INVENTORY['icons']), 128)
+        self.assertTrue({'mdi-close', 'mdi-check'} <= set(INVENTORY['icons']))
+        self.assertTrue({'data-ui-tooltip', 'data-ui-sidebar-desktop', 'data-ui-min',
+                         'data-ui-size', 'data-ui-max-files'} <= set(INVENTORY['data_attributes']))
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            css = root / 'css/ui.css'
+            css.parent.mkdir()
+            css.write_text('[data-ui-css-only] { display: block }')
+            fallback = CHECK.build_inventory(css)
+            self.assertEqual(fallback['icons'], INVENTORY['icons'])
+            self.assertTrue(set(INVENTORY['data_attributes']) <= set(fallback['data_attributes']))
+            for js in (root / 'js/ui.js', root / 'runtime.js'):
+                js.parent.mkdir(exist_ok=True)
+                js.write_text('const mdiPaths = Object.freeze({"mdi-custom": "M0"}); '
+                              'node.getAttribute("data-ui-custom");')
+                current = CHECK.build_inventory(css)
+                self.assertEqual(current['icons'], ['mdi-custom'])
+                self.assertEqual(current['data_attributes'], ['data-ui-css-only', 'data-ui-custom'])
+                js.unlink()
+
+    def test_finds_package_and_html_distribution_inventories(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            package = root / 'node_modules/@kav-ui/core/dist'
+            (package / 'css').mkdir(parents=True)
+            sheet = package / 'css/ui.css'
+            sheet.write_text('.ui-custom {}')
+            (package / 'runtime.js').write_text(
+                'const mdiPaths = Object.freeze({"mdi-package": "M0"}); "data-ui-package";')
+            self.assertEqual(CHECK.find_kav_css([root]), sheet)
+            self.assertEqual(CHECK.build_inventory(sheet)['icons'], ['mdi-package'])
+            shutil.rmtree(root / 'node_modules')
+            sheet = root / 'assets/css/ui.css'
+            (sheet.parent / 'components').mkdir(parents=True)
+            (sheet.parent / 'components/flex.css').write_text('.fx {}')
+            sheet.write_text('@import "components/flex.css";')
+            (root / 'assets/js').mkdir()
+            (root / 'assets/js/ui.js').write_text(
+                'const mdiPaths = Object.freeze({"mdi-html": "M0"}); "data-ui-html";')
+            self.assertEqual(CHECK.find_kav_css([root]), sheet)
+            self.assertEqual(CHECK.build_inventory(sheet)['icons'], ['mdi-html'])
+
     def test_build_docs_publishes_and_checks_the_bundled_list(self):
         spec = importlib.util.spec_from_file_location('kav_build_docs', ROOT / 'scripts/build-docs.py')
         build = importlib.util.module_from_spec(spec)
@@ -53,6 +97,47 @@ class InventoryTests(unittest.TestCase):
 
 
 class RuleTests(unittest.TestCase):
+    def test_unknown_icons_and_attributes_have_suggestions(self):
+        markup = '<span icon="mdi-clsoe" data-ui-tooltp="Help"></span>'
+        findings = CHECK.Checker(INVENTORY).check_text(markup)
+        self.assertEqual([(f.rule, f.level) for f in findings],
+                         [('unknown-icon', 'error'), ('unknown-data-attribute', 'error')])
+        self.assertIn('mdi-close', findings[0].message)
+        self.assertIn('data-ui-tooltip', findings[1].message)
+        self.assertEqual(rules('<span icon="mdi-close" data-ui-tooltip="Help" data-app-x></span>'), [])
+        self.assertEqual(rules('<div data-ui-tooltip="anything" data-ui-placement="anything"></div>'), [])
+
+    def test_id_references_are_same_file_and_allow_forward_references(self):
+        markup = ('<button data-ui-target="#panel" aria-controls="panel" aria-labelledby="title help" '
+                  'aria-describedby="help"></button><label for="field"></label>'
+                  '<div id="panel"></div><h2 id="title"></h2><p id="help"></p><input id="field">')
+        self.assertEqual(rules(markup), [])
+        for attr in ('data-ui-target="#pnael"', 'aria-controls="pnael"',
+                     'aria-labelledby="title pnael"', 'aria-describedby="pnael"', 'for="pnael"'):
+            tag = 'label' if attr.startswith('for=') else 'button'
+            findings = CHECK.Checker(INVENTORY).check_text(
+                f'<{tag} {attr}></{tag}><div id="panel"></div><h2 id="title"></h2>')
+            self.assertEqual([(f.rule, f.level) for f in findings], [('missing-id-reference', 'warning')])
+            self.assertIn('panel', findings[0].message)
+        self.assertEqual(rules('<div for="missing" data-ui-target=".panel"></div>'), [])
+        self.assertEqual(rules('<label for="a&amp;b"></label><input id="a&#38;b">'), [])
+        checker = CHECK.Checker(INVENTORY)
+        checker.check_text('<div id="other-file"></div>')
+        self.assertEqual([f.rule for f in checker.check_text('<label for="other-file"></label>')],
+                         ['missing-id-reference'])
+
+    def test_bound_attributes_and_template_values_are_skipped(self):
+        vue = ("""<template><div :class="{'data-ui-fake': open}" :data-ui-fake="value" """
+               'v-bind:data-ui-fake="value" :aria-controls="panel" v-bind:aria-labelledby="title" '
+               ':icon="name" icon="{{ name }}" aria-describedby="help-{{ key }}"></div></template>')
+        self.assertEqual(rules(vue, 'Panel.vue'), [])
+        astro = ('<div aria-controls={panel} aria-labelledby={prefix + " title"} '
+                 'data-ui-target={`#${panel}`} icon={name} '
+                 'class:list={["data-ui-fake", { "data-ui-another": open }]} '
+                 'aria-describedby="<%= help %>"></div>')
+        self.assertEqual(rules(astro, 'Panel.astro'), [])
+        self.assertEqual(rules('<span icon="${name}" aria-controls="{% panel %}"></span>'), [])
+
     def test_flex_alignment_needs_a_flex_container(self):
         self.assertIn('missing-flex-container', rule_names('<div class="fx-row fx-justify-between"></div>'))
         self.assertIn('missing-flex-container', rule_names('<div class="mobile:fx-column sp-gap-2"></div>'))
@@ -154,6 +239,24 @@ class CommandTests(unittest.TestCase):
             (app / 'index.html').unlink()
             clean = subprocess.run([sys.executable, str(work / 'kav-ui/scripts/check_markup.py'), str(app),
                                     '--strict'], cwd=work, text=True, capture_output=True)
+            self.assertEqual(clean.returncode, 0, clean.stdout + clean.stderr)
+
+    def test_copied_skill_uses_bundled_attribute_and_icon_lists(self):
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            shutil.copytree(SKILL, work / 'kav-ui')
+            page = work / 'page.html'
+            page.write_text('<span icon="mdi-clsoe" data-ui-tooltp aria-controls="absent"></span>')
+            command = [sys.executable, str(work / 'kav-ui/scripts/check_markup.py'), str(page)]
+            result = subprocess.run(command, cwd=work, text=True, capture_output=True)
+            self.assertEqual(result.returncode, 1, result.stderr)
+            for rule in ('unknown-icon', 'unknown-data-attribute', 'missing-id-reference'):
+                self.assertIn(f'[{rule}]', result.stdout)
+            self.assertIn('bundled list', result.stderr)
+            self.assertIn(f'{page}:1:1: error [unknown-icon]', result.stdout)
+            page.write_text('<span icon="mdi-close" data-ui-tooltip aria-controls="panel"></span>'
+                            '<div id="panel"></div>')
+            clean = subprocess.run(command + ['--strict'], cwd=work, text=True, capture_output=True)
             self.assertEqual(clean.returncode, 0, clean.stdout + clean.stderr)
 
     def test_app_stylesheet_option_and_explicit_kav_css(self):
