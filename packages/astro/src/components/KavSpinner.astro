@@ -1,5 +1,5 @@
 ---
 interface Props {size?:'xs'|'sm'|'lg'|'xl';label?:string;class?:string;}
-const {size,label='読み込み中',...rest}=Astro.props;
+const {size,label='読み込み中',class:className,...rest}=Astro.props;
 ---
-<span {...rest} class:list={['ui-spinner',size&&'ui-spinner-'+size,rest.class]} role="status" aria-label={label}/>
+<span {...rest} class:list={['ui-spinner',size&&'ui-spinner-'+size,className]} role="status" aria-label={label}/>

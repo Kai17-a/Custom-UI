@@ -132,3 +132,13 @@ import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kav-ui/astro';
   </KavGrid>
 </KavPage>
 ```
+
+## Tabs・Drawer・Textarea
+
+- Vue/Astroの `KavTabs` は `items: {value,label,disabled?}[]` とvalue名のスロットを使用。Vueは `v-model`、Astroは `value` で初期選択（既定は最初の有効項目）。`label` は読み上げ名。Astroの `id` は生成IDの接頭辞で、同じ内容のタブを複数置く場合は異なるidを指定する。
+- `KavDrawer` は `title`・`placement='end'`（start/end/top/bottom）、通常・footerスロット。Vueは真偽値の `v-model`、Astroは必須の `id` とDialogと同じ `data-ui-toggle="dialog"` / `data-ui-target` / `data-ui-dismiss="dialog"` で開閉する。
+- Vueの `KavTextarea` は `label` をaria-label属性より優先。name/id/rows/placeholder/required/disabled/maxlengthを型付きで指定でき、v-modelとフォームresetの同期を維持する。
+
+## 画面全体の組み合わせ例
+
+[用途別の12画面](screens.md)から、同じ内容のHTML・Vue SFC・Astroページを選べます。配布フォルダ内の相対リンクだけで読めます。

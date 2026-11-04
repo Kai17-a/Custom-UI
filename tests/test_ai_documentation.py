@@ -67,6 +67,16 @@ class AiDocumentationTests(unittest.TestCase):
                     for page in (ROOT / 'docs/components').glob('*.html')}
         self.assertEqual(actual, expected)
 
+    def test_llms_routes_to_every_template(self):
+        index = ROOT / 'docs/llms.txt'
+        actual = {value for value in links(index) if value.startswith('templates/')}
+        expected = {'templates/' + page.name + '.md'
+                    for page in (ROOT / 'docs/templates').glob('*.html')}
+        self.assertEqual(actual, expected)
+        for page in (ROOT / 'skills/kav-ui/samples/html').glob('*.html'):
+            companion = ROOT / ('docs/templates/' + page.name + '.md')
+            self.assertIn(page.read_text().strip(), companion.read_text())
+
     def test_local_markdown_references_resolve(self):
         for page in [ROOT / 'docs/llms.txt', *(ROOT / 'docs').rglob('*.html.md'), *(ROOT / 'skills/kav-ui').rglob('*.md')]:
             for value in links(page):
@@ -89,6 +99,25 @@ class AiDocumentationTests(unittest.TestCase):
         self.assertIn('`ui.css` & JS.', result)
         self.assertTrue(GENERATOR.fence('```').startswith('````\n'))
 
+    def test_every_html_sample_is_reachable_from_skill(self):
+        skill = ROOT / 'skills/kav-ui'
+        pending, reached = [skill / 'SKILL.md'], set()
+        while pending:
+            page = pending.pop().resolve()
+            if page in reached:
+                continue
+            reached.add(page)
+            if page.suffix != '.md':
+                continue
+            for value in links(page):
+                url = urlsplit(value)
+                if not url.scheme and not url.netloc and url.path:
+                    target = (page.parent / unquote(url.path)).resolve()
+                    self.assertTrue(target.is_relative_to(skill.resolve()))
+                    self.assertTrue(target.is_file())
+                    pending.append(target)
+        self.assertTrue({p.resolve() for p in (skill / 'samples/html').glob('*.html')} <= reached)
+
     def test_copied_skill_keeps_its_reference_files(self):
         with tempfile.TemporaryDirectory() as directory:
             copied = Path(directory) / 'kav-ui'
@@ -103,6 +132,7 @@ class AiDocumentationTests(unittest.TestCase):
                         self.assertTrue(target.is_file(), (path.name, value))
                         local.append(target)
             self.assertIn(copied / 'references/integration.md', local)
+            self.assertEqual(len(list((copied / 'samples/html').glob('*.html'))), 12)
             # A copied skill must lead to every bundled reference without the source tree.
             reachable = set()
             pending = [copied / 'SKILL.md']

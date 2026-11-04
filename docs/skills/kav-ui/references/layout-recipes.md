@@ -289,6 +289,9 @@ python3 <スキルの場所>/scripts/check_markup.py src/ --app-css src/styles/a
 | 規則 | 内容 |
 | --- | --- |
 | `foreign-class` | Bootstrap・Tailwind風のクラス。代わりのKav-UIクラスを表示する |
+| `unknown-icon` | 同梱にない`icon`名（error）。近い名前があれば候補を表示する |
+| `unknown-data-attribute` | 存在しない`data-ui-*`属性名（error）。近い名前があれば候補を表示する |
+| `missing-id-reference` | 同じファイルにないIDへの参照（warning）。近いIDがあれば候補を表示する |
 | `unknown-class` | `ui-`・`fx-`・`sp-`・`type-`などで始まるが、Kav-UIにないクラス |
 | `missing-flex-container` | `fx`などの並べる指定がない要素に、並べ方・間隔だけを指定している |
 | `column-outside-grid` | `fx-col-*`の親が`fx-grid`ではない |
@@ -297,5 +300,7 @@ python3 <スキルの場所>/scripts/check_markup.py src/ --app-css src/styles/a
 | `flex-item-overflow` | 伸びる要素に`fx-min-0`がなく、省略表示・表・コードを含む |
 | `mixed-breakpoints` | `tablet:`・`mobile:`と`md:`・`lg:`を同じ要素に混ぜている |
 | `legacy-utility` | 余白の単位が違う互換用クラス。`sp-*`・`fx-*`への置き換え先を表示する |
+
+アイコン・属性一覧はCSSと同じ配布物のJSから作り、JSがなければ同梱一覧を使う。ID参照は`data-ui-target="#…"`・`aria-controls`・`aria-labelledby`・`aria-describedby`・`label[for]`を同じファイル内だけで確認し、Vue/Astroのバインドやテンプレート式は除外する。
 
 検査は書き方の誤りを見つけるもので、表示の確認の代わりにはならない。最後に、PC・タブレット・スマートフォンの幅で表示を確認する。

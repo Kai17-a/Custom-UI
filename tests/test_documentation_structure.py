@@ -98,6 +98,11 @@ class DocumentationStructureTests(unittest.TestCase):
         self.assertFalse((ROOT / 'index.html').exists())
         self.assertFalse((ROOT / 'components').exists())
 
+    def test_every_template_is_listed(self):
+        index = (DOCS / 'templates.html').read_text()
+        for page in (DOCS / 'templates').glob('*.html'):
+            self.assertIn('href="templates/' + page.name + '"', index)
+
     def test_catalog_navigation_lists_every_component(self):
         destinations = {p.name for p in (DOCS / 'components').glob('*.html')}
         for page in DOCS.rglob('*.html'):
