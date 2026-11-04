@@ -6,8 +6,9 @@ Usage:
   python3 check_markup.py page.html --css public/assets/css/ui.css
   python3 check_markup.py src/ --app-css src/styles/app.css
 
-Kav-UI classes come from --css, the app's installed @kav-ui/core, a ui.css found
-under the scanned paths, or the class list bundled with this skill, in that order.
+Kav-UI classes come from --css, the @kav-ui/core installed for the scanned paths, a
+ui.css found under the scanned paths, the @kav-ui/core of the current directory, or
+the class list bundled with this skill, in that order.
 Classes defined by --app-css or <style> blocks are treated as the app's own.
 Exit status: 0 = no errors, 1 = errors found, 2 = usage error.
 Python standard library only.
@@ -192,17 +193,24 @@ def build_inventory(stylesheet):
 
 
 def find_kav_css(paths):
-    for start in [Path.cwd(), *paths]:
+    """Prefer the Kav-UI installed for the scanned files; the current directory is a fallback."""
+    def installed(start):
         start = start.resolve()
         for folder in [start, *start.parents]:
             candidate = folder / 'node_modules/@kav-ui/core/dist/css/ui.css'
             if candidate.is_file():
                 return candidate
+        return None
+
+    for start in paths:
+        candidate = installed(start)
+        if candidate:
+            return candidate
     for start in paths:
         for candidate in walk_files(start):
             if candidate.name == 'ui.css' and (candidate.parent / 'components/flex.css').is_file():
                 return candidate
-    return None
+    return installed(Path.cwd())
 
 
 def walk_files(path):
