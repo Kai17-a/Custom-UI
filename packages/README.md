@@ -144,7 +144,7 @@ AstroでVue版を使う場合は公式 `@astrojs/vue` を設定し、Vueコン�
 
 共通の専用部品は Icon / Button / Card / Container / Badge / Field / Input / Textarea / Select / Checkbox / Radio / Switch / Alert / Banner / Spinner / Progress / Dialog / Accordion / Calendar / Chart / Widget / Sidebar です。
 
-Vue版には Drawer / Tabs、Astro版には Provider も用意しています。Astroのドロワーは `KavDialog` の `placement` で指定できます。未専用化のFlex grid・Splitter・日付詳細・クリップボード等も、共通CSSとWidgetの既存HTMLで利用できます。
+Vue版には Drawer / Tabs、Astro版には Provider も用意しています。Astroのドロワーは `KavDialog` の `placement` で指定できます。未専用化のSplitter・日付詳細・クリップボード等も、共通CSSとWidgetの既存HTMLで利用できます。
 
 `loadRuntime()`・`toast()`・配色の関数はブラウザで呼ぶ非同期APIです。サーバー上で呼ぶとエラーになります。既存のグローバル `KavUI` と混在させる場合は、同じバージョンのCSS/JSを使用してください。
 
@@ -214,3 +214,62 @@ node scripts/library-release.mjs verify libraries-v0.1.0
 上記の生成・検証コマンドは、タグ作成・Actions起動・GitHubへの公開を行いません。
 
 参考：[GitHubの手動実行手順](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow) / [GitHub CLIのRelease作成](https://cli.github.com/manual/gh_release_create)
+
+## Layout components
+
+Vue/Astroでページを並べるときは、クラスを手で組み合わせる代わりに次のコンポーネントを使います。両パッケージの名前・props・スロットは共通です。
+
+| Component | Props | Slots |
+| --- | --- | --- |
+| `KavStack` | `gap`, `align`, `as='div'` | default |
+| `KavCluster` | `gap`, `justify`, `align`, `as='div'` | default |
+| `KavFlex` | `direction`, `justify`, `align`, `wrap`, `gap`, `as='div'` | default |
+| `KavGrid` | `cols`, `gap`, `as='div'` | default |
+| `KavGridItem` | `span`, `as='div'` | default |
+| `KavPageHeader` | `title`, `description`, `eyebrow`, `level=1` | default (heading内の追加内容), actions |
+| `KavToolbar` | `label` (role=group + aria-label) | default, end |
+| `KavSection` | `title`, `description`, `level=2` | default, actions |
+| `KavPage` | `asideLabel`, `railLabel`, `stickyAside` | default (body), aside, rail |
+
+型は `@kav-ui/core` からimportできます。
+
+- `Space = 0|1|2|3|4|6|8|12`、`Justify = 'start'|'center'|'end'|'between'|'around'|'evenly'`、`Align = 'start'|'center'|'end'|'stretch'|'baseline'`。
+- `Direction = 'row'|'column'`、wrapはboolean、`Columns = 1|2|3|4|6|12`、`Span = 1..12`、`HeadingLevel = 1..6`。
+- gap / direction / justify / align / wrap / cols / span は `Responsive<T> = T|{base?:T;tablet?:T;mobile?:T}`。baseは全幅、tabletは768–1023px、mobileは768px未満です。`cols='auto'` は単独の値としてのみ指定でき、`ui-page-grid` による自動列数になります。
+- 無効な値は実行時に無視します。未指定では既存クラスの既定値を使います。数値gridは未指定で1列、GridItemのspanは未指定で親の列幅に従います。
+- `sp-gap-*` は既存のgapを上書きし、gridの幅計算にも反映します。`KavGridItem` のspanは12分割で、数値colsの `KavGrid` 内で使います。
+- `KavCluster` は通常 `ui-cluster`。中央以外のbase alignを指定した場合は、CSSの読み込み順による中央揃えの優先を避けるため `fx fx-wrap fx-min-0` と既定gap=3を合成します。CSS自体は変更しません。
+- `KavPage` はaside/railスロットがあるときだけ対応するasideとレイアウトクラスを出力します。属性は一番外側の `ui-layout` に渡します。
+- `class`・`id`・ARIA・data属性などは外側へ渡せます。レイアウト部品はSSRだけでも利用できます。
+
+```vue
+<script setup lang="ts">
+import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kav-ui/vue';
+</script>
+<template>
+  <KavPage aside-label="ページ内ナビ">
+    <template #aside>プロジェクト</template>
+    <KavPageHeader title="プロジェクト">
+      <template #actions><KavButton>新規作成</KavButton></template>
+    </KavPageHeader>
+    <KavGrid :cols="{base:3,tablet:2,mobile:1}" :gap="4">
+      <KavCard v-for="name in ['設計','開発','確認']" :key="name" :title="name" />
+    </KavGrid>
+  </KavPage>
+</template>
+```
+
+```astro
+---
+import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kav-ui/astro';
+---
+<KavPage asideLabel="ページ内ナビ">
+  <nav slot="aside">プロジェクト</nav>
+  <KavPageHeader title="プロジェクト">
+    <KavButton slot="actions">新規作成</KavButton>
+  </KavPageHeader>
+  <KavGrid cols={{base:3,tablet:2,mobile:1}} gap={4}>
+    {['設計','開発','確認'].map(name=><KavCard title={name} />)}
+  </KavGrid>
+</KavPage>
+```

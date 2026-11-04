@@ -1,0 +1,8 @@
+---
+import {clusterClass} from '@kav-ui/core';
+import type {ClusterProps} from '@kav-ui/core';
+import type {HTMLAttributes} from 'astro/types';
+interface Props extends ClusterProps, Omit<HTMLAttributes<'div'>,keyof ClusterProps> {[key:`data-${string}`]:unknown;}
+const {gap,justify,align,as:Tag='div',class:className,...rest}=Astro.props;
+---
+<Tag {...rest} class:list={[clusterClass({gap,justify,align}),className]}><slot/></Tag>

@@ -39,3 +39,23 @@ test('Astro: Field exposes stable and overridable description IDs in static HTML
   const custom=await container.renderToString(KavField,{props:{for:'email',hint:'説明',hintId:'custom-hint',error:'入力を確認',errorId:'custom-error'}});
   assert.match(custom,/id="custom-hint"/);assert.match(custom,/id="custom-error"/);
 });
+
+test('Astro: layout structure and classes match Vue for identical props and slots',async()=>{
+ const {createSSRApp,h}=await import('vue');const {renderToString}=await import('vue/server-renderer');
+ const vue=await import('../../packages/vue/src/index.js');
+ const {layoutCases,assertLayout,classStructure}=await import('./layout-cases.mjs');
+ const container=await AstroContainer.create(),compiled=new Map();
+ for(const [name,props,slotNames] of layoutCases){
+  if(!compiled.has(name)){
+   const sourceURL=new URL('../../packages/astro/src/components/'+name+'.astro',import.meta.url);
+   const {code}=transform(await readFile(sourceURL,'utf8'),{filename:sourceURL.pathname,internalURL:import.meta.resolve('astro/compiler-runtime'),resolvePath:specifier=>specifier});
+   const resolvedCode=code.replace(/(\bfrom\s*)(['"])([^'"]+)\2/g,(_,prefix,quote,specifier)=>prefix+quote+import.meta.resolve(specifier)+quote);
+   compiled.set(name,(await import('data:text/javascript;base64,'+Buffer.from(resolvedCode).toString('base64'))).default);
+  }
+  const attributes={...props,id:'layout-test',class:'custom','data-layout':'yes','aria-describedby':'help'};
+  const html=await container.renderToString(compiled.get(name),{props:attributes,slots:Object.fromEntries(slotNames.map(slot=>[slot,'<span>'+slot+'</span>']))});
+  assertLayout(assert,html,name,props,slotNames);
+  const vueHTML=await renderToString(createSSRApp({render:()=>h(vue[name],attributes,Object.fromEntries(slotNames.map(slot=>[slot,()=>h('span',slot)])))}));
+  assert.deepEqual(classStructure(html),classStructure(vueHTML),name+' class structure');
+ }
+});

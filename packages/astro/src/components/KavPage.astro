@@ -1,0 +1,7 @@
+---
+import type {PageProps} from '@kav-ui/core';
+import type {HTMLAttributes} from 'astro/types';
+interface Props extends PageProps, Omit<HTMLAttributes<'div'>,keyof PageProps> {[key:`data-${string}`]:unknown;}
+const {asideLabel,railLabel,stickyAside,class:className,...rest}=Astro.props;
+---
+<div {...rest} class:list={['ui-layout',className]}><div class:list={['ui-page',Astro.slots.has('aside')&&'ui-page-with-aside',Astro.slots.has('rail')&&'ui-page-with-rail']}>{Astro.slots.has('aside')&&<aside class:list={['ui-page-aside',stickyAside&&'ui-page-aside-sticky']} aria-label={asideLabel}><slot name="aside"/></aside>}<div class="ui-page-body"><slot/></div>{Astro.slots.has('rail')&&<aside class="ui-page-rail" aria-label={railLabel}><slot name="rail"/></aside>}</div></div>

@@ -1,0 +1,7 @@
+---
+import type {ToolbarProps} from '@kav-ui/core';
+import type {HTMLAttributes} from 'astro/types';
+interface Props extends ToolbarProps, Omit<HTMLAttributes<'div'>,keyof ToolbarProps> {[key:`data-${string}`]:unknown;}
+const {label,class:className,...rest}=Astro.props;
+---
+<div {...rest} class:list={['ui-toolbar',className]} role={label?'group':undefined} aria-label={label}><div class="ui-toolbar-group"><slot/></div>{Astro.slots.has('end')&&<div class="ui-toolbar-group ui-toolbar-end"><slot name="end"/></div>}</div>

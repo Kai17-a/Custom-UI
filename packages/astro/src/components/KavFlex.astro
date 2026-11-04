@@ -1,0 +1,8 @@
+---
+import {flexClass} from '@kav-ui/core';
+import type {FlexProps} from '@kav-ui/core';
+import type {HTMLAttributes} from 'astro/types';
+interface Props extends FlexProps, Omit<HTMLAttributes<'div'>,keyof FlexProps> {[key:`data-${string}`]:unknown;}
+const {direction,justify,align,wrap,gap,as:Tag='div',class:className,...rest}=Astro.props;
+---
+<Tag {...rest} class:list={[flexClass({direction,justify,align,wrap,gap}),className]}><slot/></Tag>
