@@ -153,6 +153,19 @@
     if (selector) return query(selector);
     return doc.getElementById(trigger.getAttribute('aria-controls'));
   }
+  // Mistyped names and selectors otherwise fail silently. Warn once per value.
+  const warned = new Set();
+  function warnOnce(key, message) {
+    if (warned.has(key)) return;
+    warned.add(key);
+    globalThis.console?.warn?.('Kav-UI: ' + message);
+  }
+  function activatedTarget(button) {
+    const panel = target(button);
+    const selector = button.getAttribute('data-ui-target');
+    if (!panel && selector) warnOnce('target:' + selector, 'data-ui-target "' + selector + '" matched no element.');
+    return panel;
+  }
   function describedBy(element, reference, add) {
     const tokens = new Set((element.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean));
     if (add) tokens.add(reference); else tokens.delete(reference);
@@ -1866,7 +1879,10 @@
     if (path && previous?.name === name && previous.svg.parentNode === host) return;
     previous?.svg.remove();
     iconStates.delete(host);
-    if (!path) return; // Unknown names preserve the author's text/fallback.
+    if (!path) { // Unknown names preserve the author's text/fallback.
+      if (name) warnOnce('icon:' + name, 'icon "' + name + '" is not bundled; the element keeps its own content.');
+      return;
+    }
     const svg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
     const shape = doc.createElementNS('http://www.w3.org/2000/svg', 'path');
     for (const [key,value] of Object.entries({viewBox:'0 0 24 24',width:'24',height:'24',fill:'currentColor','aria-hidden':'true',focusable:'false',class:'ui-icon'})) svg.setAttribute(key,value);
@@ -3956,14 +3972,14 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
       event.preventDefault();
       setColorTheme(doc.documentElement.dataset.bsTheme === 'dark' ? 'light' : 'dark', {persist:true});
     } else if (['dropdown','popover'].includes(action)) {
-      const panel=target(button);if(!isPopup(panel))return;
+      const panel=activatedTarget(button);if(!isPopup(panel))return;
       event.preventDefault();if(popupOpen(panel))closePopup(panel,true);else openPopup(panel,button);
     } else if (action === 'sidebar-responsive') {
-      event.preventDefault();responsiveSidebar(target(button),{trigger:button});
+      event.preventDefault();responsiveSidebar(activatedTarget(button),{trigger:button});
     } else if (action === 'tab') {
       event.preventDefault(); activateTab(button);
     } else if (['collapse','sidebar','dialog','show','hide'].includes(action)) {
-      const panel = target(button);
+      const panel = activatedTarget(button);
       if (panel) {
         event.preventDefault();
         if (action === 'hide' || (['collapse','sidebar'].includes(action) && !panel.hidden)) hide(panel, button);

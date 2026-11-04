@@ -149,6 +149,8 @@ ui.cssだけで、役割クラスと文字のユーティリティを組み合�
 </button>
 ```
 
+同梱していない名前を指定すると、アイコンは表示されず、要素の中の文字がそのまま残ります。このとき、ブラウザの開発者ツールのコンソールに `Kav-UI: icon "…" is not bundled` と1回だけ表示されます。`data-ui-target` の指す要素が見つからないボタンを押したときも、`Kav-UI: data-ui-target "…" matched no element.` と表示されます。
+
 [サイズ・アクセシビリティ・使い方 →](components/mdi-icons.html.md#mdi-attributes)
 
 ## 閉じられるアラート
