@@ -281,7 +281,7 @@ python3 <スキルの場所>/scripts/check_markup.py public/index.html --css pub
 python3 <スキルの場所>/scripts/check_markup.py src/ --app-css src/styles/app.css
 ```
 
-- Kav-UIのクラス一覧は、`--css`で渡したui.css、`node_modules/@kav-ui/core`、検査するフォルダ内のui.css、スキル同梱の一覧の順に探す。アプリに入っている版に合わせるため、通常HTMLでは`--css`を渡す。
+- Kav-UIのクラス一覧は、`--css`で渡したui.css、検査するフォルダから親へたどった`node_modules/@kav-ui/core`、検査するフォルダ内のui.css、実行したフォルダの`node_modules/@kav-ui/core`、スキル同梱の一覧の順に探す。アプリに入っている版に合わせるため、通常HTMLでは`--css`を渡す。
 - アプリ独自のクラスはエラーにしない。ただし`text-`・`w-`などBootstrap・Tailwindに似た名前は、定義を渡さないと`foreign-class`になる。独自CSSは`--app-css`で渡すと、クラスの有無と`display:flex`の判定に使われる。`<style>`内の定義は自動で使う。
 - 出力は`ファイル:行:列: error|warning [規則] 内容`。errorがあると終了コード1になる。`--strict`でwarningも失敗にできる。
 - Vueの`:class`やAstroの`class:list`は、文字列で書かれたクラスだけを確認する。変数から作るクラスは確認できない。

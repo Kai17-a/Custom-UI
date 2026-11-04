@@ -1,6 +1,7 @@
 """The Kav-UI skill's markup checker finds layout mistakes agents make (stdlib only)."""
 import importlib.util
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -63,6 +64,26 @@ class InventoryTests(unittest.TestCase):
                 self.assertEqual(current['icons'], ['mdi-custom'])
                 self.assertEqual(current['data_attributes'], ['data-ui-css-only', 'data-ui-custom'])
                 js.unlink()
+
+    def test_scanned_folder_wins_over_the_current_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            sheets = {}
+            for name in ('cwd', 'app'):
+                sheet = work / name / 'node_modules/@kav-ui/core/dist/css/ui.css'
+                sheet.parent.mkdir(parents=True)
+                sheet.write_text('.ui-' + name + ' {}')
+                sheets[name] = sheet
+            (work / 'app/src').mkdir()
+            previous = Path.cwd()
+            os.chdir(work / 'cwd')
+            try:
+                self.assertEqual(CHECK.find_kav_css([work / 'app/src']).resolve(), sheets['app'].resolve())
+                # Without a package next to the scanned files, the current directory is the fallback.
+                (work / 'other').mkdir()
+                self.assertEqual(CHECK.find_kav_css([work / 'other']).resolve(), sheets['cwd'].resolve())
+            finally:
+                os.chdir(previous)
 
     def test_finds_package_and_html_distribution_inventories(self):
         with tempfile.TemporaryDirectory() as directory:
