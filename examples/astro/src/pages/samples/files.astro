@@ -1,0 +1,78 @@
+---
+import {
+  KavButton,
+  KavInput,
+  KavPage,
+  KavPageHeader,
+  KavProvider,
+} from "@kav-ui/astro";
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>共有ファイル / Astro</title>
+  </head>
+  <body>
+    <KavProvider />
+    <main class="ui-container">
+      <KavPage>
+        <KavPageHeader
+          eyebrow="木の葉制作室"
+          title="共有ファイル"
+          description="資料を選択して内容を確認できます。選択したファイルはまだアップロードされません。"
+        />
+        <form class="ui-stack" enctype="multipart/form-data">
+          <!-- 通常HTMLのファイルドロップをProviderのランタイムで初期化します。 -->
+          <div
+            data-kav-ui-widget
+            class="ui-file-drop"
+            data-ui-file-drop
+            data-ui-max-size="5242880"
+            data-ui-max-files="5"
+          >
+            <KavInput
+              type="file"
+              id="attachments"
+              name="attachments"
+              accept="image/*,.pdf"
+              multiple
+            />
+            <label class="ui-file-dropzone" data-ui-file-zone for="attachments">
+              <strong>ファイルをドロップ、または選択</strong>
+              <span class="ui-file-hint">画像・PDF / 1件5MB、最大5件</span>
+            </label>
+          </div>
+          <p>通信とサーバー側の検証はアプリ側で接続します。</p>
+          <KavButton type="submit" color="primary">選択したファイルを送信</KavButton>
+        </form>
+
+        <KavPage railLabel="選択したファイルのプレビュー">
+          <h2>ファイル一覧</h2>
+          <ul class="list-group">
+            <li class="list-group-item">
+              <a href="#file-preview">会場メモ.txt</a>
+              <p class="type-caption">2KB · 11月3日更新</p>
+            </li>
+            <li class="list-group-item">
+              <p>案内状.pdf</p>
+              <p class="type-caption">420KB · プレビュー未生成</p>
+            </li>
+          </ul>
+          <div id="file-preview" slot="rail">
+            <h2 class="ui-aside-title">会場メモ.txt</h2>
+            <p>入口付近に案内を配置。作品の間隔は現地で確認します。</p>
+            <p class="type-caption">テキストプレビューの例</p>
+          </div>
+        </KavPage>
+      </KavPage>
+    </main>
+  </body>
+</html>
+<script>
+  document.querySelectorAll<HTMLFormElement>("main form").forEach((form) => {
+    form.addEventListener("submit", (event) => event.preventDefault());
+  });
+</script>

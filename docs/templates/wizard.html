@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>制作依頼を作成 — 木の葉制作室</title>
+    <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+    <script src="../assets/ui/js/theme-init.js"></script>
+    <link rel="stylesheet" href="../assets/ui/css/ui.css">
+    <link rel="stylesheet" href="../assets/css/templates.css">
+    <script defer src="../assets/ui/js/ui.js"></script>
+    <script defer src="../assets/js/templates.js"></script>
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../llms.txt">
+<link rel="alternate" type="text/markdown" href="wizard.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+  <body class="ui-app service-template" data-template="wizard" data-ui-theme-persist>
+    <a class="template-skip" href="#main">コンテンツへ移動</a>
+    <header class="ui-header ui-header-sticky">
+      <div class="ui-container ui-header-inner">
+        <a class="ui-brand" href="dashboard.html"><span class="template-brand-mark" icon="mdi-view-dashboard" aria-hidden="true"></span> Workspace</a>
+        <nav class="ui-header-nav" aria-label="サービス">
+          <a href="docs.html">ドキュメント</a>
+          <a href="dashboard.html">ダッシュボード</a>
+          <a href="changelog.html">更新履歴</a>
+        </nav>
+        <div class="ui-header-actions">
+          <label class="template-palette-label">
+            <span>配色</span>
+            <select class="form-select form-select-sm" data-ui-palette-select>
+              <option value="default">標準</option>
+              <option value="slate">スレート</option>
+              <option value="sage">セージ</option>
+              <option value="teal">ティール</option>
+              <option value="mauve">モーブ</option>
+              <option value="sand">サンド</option>
+              <option value="clay">クレイ</option>
+            </select>
+          </label>
+          <label class="template-design-label">
+            <span>デザイン</span>
+            <select class="form-select form-select-sm" data-ui-theme-select>
+              <option value="default">標準</option>
+              <option value="glass">ガラス</option>
+              <option value="glassmorphism">グラスモーフィズム</option>
+              <option value="flat">フラット</option>
+              <option value="soft">ソフト</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button>
+        </div>
+      </div>
+    </header>
+    <main id="main" class="ui-container ui-layout ui-app-main">
+<!-- kav-sample:start -->
+<div class="ui-page">
+  <div class="ui-page-body">
+    <header class="ui-page-header">
+      <div class="ui-page-heading">
+        <p class="ui-page-eyebrow">木の葉制作室</p>
+        <h1 class="ui-page-title">制作依頼を作成</h1>
+        <p class="ui-page-description">入力・予定・確認の順に進めます。タブは矢印キーでも移動できます。</p>
+      </div>
+    </header>
+    <!-- 手順の移動はTabs、最終検証と送信は通常のフォームです。 -->
+    <form id="request-form" class="ui-stack" action="/requests" method="post">
+      <div data-ui-tabs>
+        <div class="tabs" role="tablist" aria-label="依頼の手順">
+          <button type="button" data-ui-toggle="tab" data-ui-target="request-input" aria-selected="true">1. 基本情報</button>
+          <button type="button" data-ui-toggle="tab" data-ui-target="request-schedule">2. 予定</button>
+          <button type="button" data-ui-toggle="tab" data-ui-target="request-confirm">3. 確認</button>
+        </div>
+        <section class="tab-panel ui-stack" data-ui-panel="request-input">
+          <h2 tabindex="-1">基本情報</h2>
+          <div class="field">
+            <label for="request-title">依頼名</label>
+            <input class="form-control" id="request-title" name="request-title" type="text" value="展示会の案内状" required maxlength="80">
+          </div>
+          <button class="btn btn-primary" type="button" data-request-step="request-schedule">次へ</button>
+        </section>
+        <section class="tab-panel ui-stack" data-ui-panel="request-schedule" hidden>
+          <h2 tabindex="-1">予定</h2>
+          <div class="field">
+            <label for="request-date">希望日</label>
+            <input class="form-control" id="request-date" name="request-date" type="date" value="2026-11-20" required>
+          </div>
+          <div class="ui-cluster">
+            <button class="btn btn-outline-secondary" type="button" data-request-step="request-input">戻る</button>
+            <button class="btn btn-primary" type="button" data-request-step="request-confirm">次へ</button>
+          </div>
+        </section>
+        <section class="tab-panel ui-stack" data-ui-panel="request-confirm" hidden>
+          <h2 tabindex="-1">入力内容の確認</h2>
+          <dl>
+            <dt>依頼名</dt>
+            <dd><output id="confirm-title" for="request-title">展示会の案内状</output></dd>
+            <dt>希望日</dt>
+            <dd><output id="confirm-date" for="request-date">2026-11-20</output></dd>
+          </dl>
+          <p>修正する場合は前のタブへ戻ってください。送信処理はアプリ側で接続します。</p>
+          <button class="btn btn-outline-secondary" type="button" data-request-step="request-schedule">戻る</button>
+          <button class="btn btn-primary" type="submit" >この内容で依頼する</button>
+        </section>
+      </div>
+    </form>
+    <script>
+      (() => {
+        const form = document.getElementById('request-form');
+        const sync = () => {
+          document.getElementById('confirm-title').textContent = form.elements['request-title'].value;
+          document.getElementById('confirm-date').textContent = form.elements['request-date'].value;
+        };
+        form.addEventListener('input', sync);
+        form.querySelectorAll('[data-request-step]').forEach(button => {
+          button.addEventListener('click', () => {
+            const step = button.dataset.requestStep;
+            form.querySelector('[data-ui-toggle="tab"][data-ui-target="' + step + '"]').click();
+            form.querySelector('[data-ui-panel="' + step + '"] h2').focus();
+          });
+        });
+        // 非表示タブ内の必須入力にもブラウザの検証結果を表示します。
+        form.addEventListener('invalid', event => {
+          const panel = event.target.closest('[data-ui-panel]');
+          form.querySelector('[data-ui-target="' + panel.dataset.uiPanel + '"]').click();
+        }, true);
+        sync();
+      })();
+    </script>
+  </div>
+</div>
+<!-- kav-sample:end -->
+    </main>
+    <footer class="ui-footer">
+      <div class="ui-container ui-footer-inner">
+        <p>Workspace · Kav-UI サービステンプレート</p>
+        <div class="ui-cluster">
+          <a href="../templates.html">テンプレート一覧</a>
+          <a href="../index.html">UIカタログ</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -91,6 +91,28 @@
 - [Agent workflow](components/agent-workflow.html.md): AIエージェントの処理手順、役割の階層、並列実行、タスクの内訳を可視化します。
 - [AI visuals](components/ai-visuals.html.md): AIの回答、参照資料、ツール実行、コンテキスト、音声の状態を見せるUI。
 
+## 画面サンプル
+
+- [制作アシスタント](templates/ai-chat.html.md)
+- [チームへようこそ](templates/auth.html.md)
+- [更新履歴](templates/changelog.html.md)
+- [ダッシュボード](templates/dashboard.html.md)
+- [秋の展示会](templates/detail.html.md)
+- [Workspaceを使い始める](templates/docs.html.md)
+- [制作を始めましょう](templates/empty-onboarding.html.md)
+- [エラー403： このページにはアクセスできません](templates/error-403.html.md)
+- [エラー404： ページが見つかりません](templates/error-404.html.md)
+- [エラー500： ページを表示できませんでした](templates/error-500.html.md)
+- [エラー503： ただいまサービスを利用できません](templates/error-503.html.md)
+- [共有ファイル](templates/files.html.md)
+- [制作タスク](templates/kanban.html.md)
+- [プロジェクト一覧](templates/list.html.md)
+- [通知](templates/notifications.html.md)
+- [チームに合うプラン](templates/pricing.html.md)
+- [こもれび](templates/profile.html.md)
+- [ワークスペース設定](templates/settings.html.md)
+- [制作依頼を作成](templates/wizard.html.md)
+
 ## Optional
 
 - [Vue/Astroパッケージ](packages/README.md): ローカルtarball・GitHub Releases向けの導入と対応範囲。

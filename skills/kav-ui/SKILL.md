@@ -17,6 +17,7 @@ description: "Kav-UIを使う他プロジェクトの画面・コンポーネン
 
 | 作るもの・確認したいこと | 同梱資料 |
 | --- | --- |
+| 設定・認証・一覧・詳細など、部品を組み合わせた12画面 | [用途別の画面サンプル](references/screens.md) |
 | 通常HTMLへの導入、配置先、動的DOM、版の違い | [組み込み](references/integration.md) |
 | ページ構成、カード、Flex、余白、文字、ボタン、テーマ | [レイアウトとスタイル](references/styling.md) |
 | 見出しと操作ボタン、ツールバー、カードの並び、ラベルと入力欄などの横並び | [横並びのレイアウト例](references/layout-recipes.md) |

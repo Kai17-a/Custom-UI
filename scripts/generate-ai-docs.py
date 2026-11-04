@@ -188,7 +188,9 @@ def discovery(page, source, markdown=True):
 
 
 def outputs():
-    pages = sorted(path.resolve() for path in DOCS.rglob('*.html'))
+    # Bundled skill samples are fragments, not standalone catalog pages.
+    pages = sorted(path.resolve() for path in DOCS.rglob('*.html')
+                   if not path.is_relative_to(DOCS / 'skills'))
     page_set = set(pages)
     documents, generated = {}, {}
     for page in pages:
@@ -200,6 +202,9 @@ def outputs():
         documents[page] = (document, main)
         generated[page] = discovery(page, source)
         body = Markdown(page, document, page_set).blocks(main)
+        sample = re.search(r'<!-- kav-sample:start -->(.*?)<!-- kav-sample:end -->', source, re.S)
+        if sample:
+            body += '\n\n## コピー用HTML（共通ui.css / ui.jsを使用）\n\n' + fence(sample[1].strip())
         relative = page.relative_to(ROOT).as_posix()
         llms = Path(os.path.relpath(LLMS, page.parent)).as_posix()
         generated[Path(str(page) + '.md')] = '<!-- Generated from ' + relative + '; run python3 scripts/generate-ai-docs.py. -->\n\n[HTML版](' + page.name + ') · [llms.txt](' + llms + ')\n\n' + body.strip() + '\n'
@@ -226,6 +231,11 @@ def outputs():
             summary = re.split(r'。|\.\s', summary, maxsplit=1)[0].rstrip('.')
             summary = summary if len(summary) <= 100 else summary[:97] + '…'
             lines.append('- [' + compact(anchor.text()) + '](' + target.relative_to(DOCS).as_posix() + '.md)' + (': ' + summary + '。' if summary else ''))
+    lines.extend(['', '## 画面サンプル', ''])
+    for page in sorted(path for path in pages if path.parent == DOCS / 'templates'):
+        document, _ = documents[page]
+        title = next((node.text() for node in document.root.walk() if node.tag == 'h1'), page.stem)
+        lines.append('- [' + compact(title) + '](templates/' + page.name + '.md)')
     lines.extend(['', '## Optional', '',
                   '- [Vue/Astroパッケージ](packages/README.md): ローカルtarball・GitHub Releases向けの導入と対応範囲。',
                   '- [Vue](packages/vue/README.md): props、slots、v-modelとKavWidget。',
