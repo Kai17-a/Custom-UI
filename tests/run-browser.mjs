@@ -65,7 +65,9 @@ async function navigate(path) {
 async function key(key,code=key) { const vk={Escape:27,ArrowRight:39,ArrowLeft:37,Tab:9,Enter:13,ArrowDown:40,ArrowUp:38,' ':32}[key] || 0; await send('Input.dispatchKeyEvent',{type:key==='Enter'?'keyDown':'rawKeyDown',key,code,windowsVirtualKeyCode:vk,...(key==='Enter'?{text:'\r',unmodifiedText:'\r'}:{})}); await send('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode:vk}); }
 async function click(selector) {
   // Deliver programmatic scroll events before opening a scroll-sensitive popup.
-  const box=await evaluate(`(async()=>{const el=document.querySelector(${JSON.stringify(selector)});el.scrollIntoView({behavior:"instant",block:'center'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));const r=el.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
+  // Right after a viewport or theme change the layout can still move under load,
+  // so wait until the measured point actually hits the element.
+  const box=await evaluate(`(async()=>{const el=document.querySelector(${JSON.stringify(selector)});let point;for(let i=0;i<10;i++){el.scrollIntoView({behavior:"instant",block:'center'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));const r=el.getBoundingClientRect();point={x:r.x+r.width/2,y:r.y+r.height/2};const hit=document.elementFromPoint(point.x,point.y);if(hit&&el.contains(hit))break;}return point;})()`);
   await send('Input.dispatchMouseEvent',{type:'mousePressed',...box,button:'left',clickCount:1});
   await send('Input.dispatchMouseEvent',{type:'mouseReleased',...box,button:'left',clickCount:1});
 }
