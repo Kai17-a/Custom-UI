@@ -5,14 +5,7 @@ import {transform} from '@astrojs/compiler-rs';
 import {experimental_AstroContainer as AstroContainer} from 'astro/container';
 
 test('Astro: chart SSR keeps external labels inside its JSON script and preserves their values',async()=>{
-  const sourceURL=new URL('../../packages/astro/src/components/KavChart.astro',import.meta.url);
-  const source=await readFile(sourceURL,'utf8');
-  const {code}=transform(source,{
-    filename:sourceURL.pathname,
-    internalURL:import.meta.resolve('astro/compiler-runtime'),
-    resolvePath:specifier=>specifier
-  });
-  const {default:KavChart}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+  const KavChart=await compileComponent('KavChart');
   const container=await AstroContainer.create();
   const config={
     type:'bar',
@@ -28,9 +21,7 @@ test('Astro: chart SSR keeps external labels inside its JSON script and preserve
 });
 
 test('Astro: Field exposes stable and overridable description IDs in static HTML',async()=>{
-  const sourceURL=new URL('../../packages/astro/src/components/KavField.astro',import.meta.url);
-  const {code}=transform(await readFile(sourceURL,'utf8'),{filename:sourceURL.pathname,internalURL:import.meta.resolve('astro/compiler-runtime'),resolvePath:specifier=>specifier});
-  const {default:KavField}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+  const KavField=await compileComponent('KavField');
   const container=await AstroContainer.create();
   const html=await container.renderToString(KavField,{props:{for:'email',label:'メール',hint:'説明',error:'入力を確認'}});
   assert.match(html,/<label for="email">メール<\/label>/);
@@ -47,10 +38,7 @@ test('Astro: layout structure and classes match Vue for identical props and slot
  const container=await AstroContainer.create(),compiled=new Map();
  for(const [name,props,slotNames] of layoutCases){
   if(!compiled.has(name)){
-   const sourceURL=new URL('../../packages/astro/src/components/'+name+'.astro',import.meta.url);
-   const {code}=transform(await readFile(sourceURL,'utf8'),{filename:sourceURL.pathname,internalURL:import.meta.resolve('astro/compiler-runtime'),resolvePath:specifier=>specifier});
-   const resolvedCode=code.replace(/(\bfrom\s*)(['"])([^'"]+)\2/g,(_,prefix,quote,specifier)=>prefix+quote+import.meta.resolve(specifier)+quote);
-   compiled.set(name,(await import('data:text/javascript;base64,'+Buffer.from(resolvedCode).toString('base64'))).default);
+   compiled.set(name,await compileComponent(name));
   }
   const attributes={...props,id:'layout-test',class:'custom','data-layout':'yes','aria-describedby':'help'};
   const html=await container.renderToString(compiled.get(name),{props:attributes,slots:Object.fromEntries(slotNames.map(slot=>[slot,'<span>'+slot+'</span>']))});
@@ -65,7 +53,9 @@ async function compileComponent(name){
  async function compile(sourceURL){
   if(cache.has(sourceURL.href))return cache.get(sourceURL.href);
   const pending=(async()=>{
-   const {code}=transform(await readFile(sourceURL,'utf8'),{filename:sourceURL.pathname,internalURL:import.meta.resolve('astro/compiler-runtime'),resolvePath:specifier=>specifier});
+   // CSS side effects belong to Astro's bundler and have no role in container SSR.
+   const source=(await readFile(sourceURL,'utf8')).replace(/^import\s*(['"])[^'"]+\.css\1\s*;?/gm,'');
+   const {code}=transform(source,{filename:sourceURL.pathname,internalURL:import.meta.resolve('astro/compiler-runtime'),resolvePath:specifier=>specifier});
    const imports=[...code.matchAll(/(\bfrom\s*)(['"])([^'"]+)\2/g)];
    const resolved=await Promise.all(imports.map(async([,prefix,quote,specifier])=>{
     const url=specifier.startsWith('.')&&specifier.endsWith('.astro')
@@ -120,4 +110,36 @@ test('Astro: Drawer matches HTML drawer regions and forwards attributes with one
  assert.match(plain,/aria-label="属性の名前"/);assert.doesNotMatch(plain,/<header|<footer|aria-labelledby=/);
  const labelled=await container.renderToString(KavDrawer,{props:{id:'labelled',label:'優先する名前','aria-label':'属性の名前'}});
  assert.match(labelled,/aria-label="優先する名前"/);
+});
+
+test('Astro: every public component renders caller class once and preserves native attributes',async t=>{
+ const indexURL=new URL('../../packages/astro/src/index.js',import.meta.url);
+ const exports=[...(await readFile(indexURL,'utf8')).matchAll(/export\s*\{default as (\w+)\}\s*from\s*['"]([^'"]+)['"]/g)];
+ assert.ok(exports.length>0,'the public Astro entry point exports components');
+ const container=await AstroContainer.create();
+ for(const [,name] of exports){
+  await t.test(name,async()=>{
+   const component=await compileComponent(name);
+   const required=name==='KavTabs'?{items:[{value:'overview',label:'概要'}]}:name==='KavDrawer'?{id:'drawer'}:name==='KavWidget'?{html:'<p>既存HTML</p>'}:name==='KavChart'?{config:{labels:['月'],series:[{name:'数',values:[1]}]}}:name==='KavIcon'?{name:'mdi-home'}:{};
+   // Exercise both input targets, including the datepicker's nested input.
+   for(const variant of name==='KavInput'?[{},{type:'date'}]:[{}]){
+    const html=await container.renderToString(component,{props:{...required,...variant,class:'kav-test-class',id:'kav-test-id','data-kav-test':'yes','aria-describedby':'kav-test-help'},slots:{default:'<span data-provider-slot>内容</span>'}});
+    const classes=[...html.matchAll(/\bclass="([^"]*)"/g)].flatMap(match=>match[1].split(/\s+/));
+    if(name==='KavProvider'){
+     // Provider only renders its slot; it has no element to receive attributes.
+     assert.equal(classes.filter(value=>value==='kav-test-class').length,0);
+     assert.doesNotMatch(html,/id="kav-test-id"|data-kav-test="yes"/);
+     assert.match(html,/data-provider-slot/);
+     continue;
+    }
+    assert.equal(classes.filter(value=>value==='kav-test-class').length,1,name+' caller class occurs once');
+    const target=[...html.matchAll(/<[a-z][^>]*>/gi)].map(match=>match[0]).find(tag=>/\bclass="[^"]*\bkav-test-class\b/.test(tag));
+    assert.ok(target,name+' has a class target');
+    assert.match(target,/\bclass="(?:[^" ]+\s+)*kav-test-class"/,name+' caller class follows component classes');
+    assert.match(target,/\bid="kav-test-id"/,name+' preserves id on the class target');
+    assert.match(target,/\bdata-kav-test="yes"/,name+' preserves data attributes on the class target');
+    assert.match(target,/\baria-describedby="kav-test-help"/,name+' preserves ARIA on the class target');
+   }
+  });
+ }
 });
