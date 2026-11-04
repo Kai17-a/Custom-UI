@@ -13,7 +13,7 @@ export declare const KavBadge:Component<{color?:Color}>;
 export declare const KavField:Component<{label?:string;for?:string;hint?:string;error?:string;hintId?:string;errorId?:string}>;
 export declare const KavWidget:Component<{html:string;as?:string;onReady?:(api:import('@kav-ui/core').KavUIRuntime)=>void;onError?:(error:Error)=>void}>;
 export declare const KavInput:Component<Model<string|number>&{type?:string;label?:string;id?:string;name?:string;disabled?:boolean;required?:boolean;placeholder?:string;min?:string|number;max?:string|number;step?:string|number}>;
-export declare const KavTextarea:Component<Model<string>>;
+export declare const KavTextarea:Component<Model<string>&{name?:string;id?:string;rows?:number;placeholder?:string;required?:boolean;disabled?:boolean;maxlength?:number;label?:string}>;
 export declare const KavCheckbox:Component<Model<boolean>&{label?:string;name?:string;id?:string;disabled?:boolean;required?:boolean;value?:string|number}>;
 export declare const KavRadio:Component<Model<string|number>&{value:string|number;label?:string;name?:string;id?:string;disabled?:boolean;required?:boolean}>;
 export declare const KavSwitch:typeof KavCheckbox;
