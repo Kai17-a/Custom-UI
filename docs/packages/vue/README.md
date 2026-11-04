@@ -26,7 +26,7 @@ const value=ref(''),open=ref(false);
 
 KavInput・KavSelect・KavTextareaの`label`は読み上げ名を指定します。画面に項目名を表示する場合は、`KavField`の`label`・`for`と入力の`id`を組み合わせてください。
 
-`KavTextarea` は `name`・`id`・`rows`・`placeholder`・`required`・`disabled`・`maxlength` を受け取ります。`label` は `aria-label` 属性より優先され、未指定なら属性を使います。`v-model` とフォームreset時の同期も利用できます。
+`KavTextarea` は `name`・`id`・`rows`・`placeholder`・`required`・`disabled`・`maxlength` を受け取ります。`label` は `aria-label` 属性より優先され、未指定または空文字なら属性を使います（`KavInput`・`KavSelect` も同じ）。`v-model` とフォームreset時の同期も利用できます。
 
 ## 説明・エラーと入力の関連付け
 
