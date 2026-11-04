@@ -24,6 +24,25 @@ Vue版も使う場合は公式の `@astrojs/vue` を導入し、Vueコンポー�
 
 KavInput・KavSelectの`label`は読み上げ名を指定します。画面に項目名を表示する場合は、`KavField`の`label`・`for`と入力の`id`を組み合わせてください。
 
+## Tabs・Drawer
+
+`KavTabs` は `items: {value,label,disabled?}[]` と各 `value` と同名のスロットを受け取ります。`value` は初期選択で、省略時や無効な値の場合は最初の有効な項目を選びます。`label` はタブ一覧の読み上げ名です。`id` を指定するとタブとパネルのIDの接頭辞になります。省略時は項目とlabelから決定的に生成します。同じ内容のタブを複数置くときは、それぞれ異なる `id` を指定してください。
+
+`KavDrawer` は必須の `id`、`title`、`label`、`placement="start|end|top|bottom"`（既定は `end`）を受け取ります。本文は通常スロット、下部の操作は `footer` スロットです。`KavDialog` と同じ `data-ui-toggle="dialog"`・`data-ui-target`・`data-ui-dismiss="dialog"` で開閉し、Escapeでも閉じられます。
+
+```astro
+<KavTabs id="project-tabs" label="プロジェクト"
+  items={[{value:'overview',label:'概要'},{value:'activity',label:'履歴'}]}>
+  <p slot="overview">プロジェクトの概要</p>
+  <p slot="activity">操作履歴</p>
+</KavTabs>
+<KavButton data-ui-toggle="dialog" data-ui-target="#settings-drawer">設定</KavButton>
+<KavDrawer id="settings-drawer" title="設定">
+  <p>設定の内容</p>
+  <KavButton slot="footer" data-ui-dismiss="dialog">閉じる</KavButton>
+</KavDrawer>
+```
+
 ## 説明・エラーと入力の関連付け
 
 `KavField`の`for="email"`を指定すると、説明には`email-hint`、エラーには`email-error`のIDが付きます。任意のIDには`hintId`・`errorId`を使えます。入力側の`aria-describedby`と`aria-invalid`はアプリで明示します。子要素や既存ARIA属性の自動書き換えは行いません。説明・エラーが表示されているときだけ対応するIDを参照し、既存の説明IDも残してください。

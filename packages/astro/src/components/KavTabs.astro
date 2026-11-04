@@ -1,0 +1,19 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+interface Props extends HTMLAttributes<'div'> {items:{value:string;label:string;disabled?:boolean}[];value?:string;label?:string;}
+const {items,value,label='タブ',id,class:className,...rest}=Astro.props;
+const selected=items.find(item=>item.value===value&&!item.disabled)?.value??items.find(item=>!item.disabled)?.value;
+// Content-derived IDs are stable across renders. Use an explicit id for repeated identical groups.
+let hash=2166136261;
+for(const char of JSON.stringify([label,items]))hash=Math.imul(hash^char.charCodeAt(0),16777619);
+const prefix=id??'kav-tabs-'+(hash>>>0).toString(36);
+// Render named slots explicitly: dynamic <slot name> is compiler-dependent.
+const panels=await Promise.all(items.map(item=>Astro.slots.render(item.value)));
+---
+<div {...rest} id={prefix} class:list={[className]} data-kav-ui-widget data-ui-tabs>
+ <div class="tabs" role="tablist" aria-label={label}>
+  {items.map((item,index)=><button type="button" id={prefix+'-tab-'+index} role="tab" data-ui-toggle="tab" data-ui-target={item.value} disabled={item.disabled} aria-selected={selected===item.value?'true':'false'} aria-controls={prefix+'-panel-'+index} tabindex={selected===item.value?0:-1}>{item.label}</button>)}
+ </div>
+ {items.map((item,index)=><div class="tab-panel" data-ui-panel={item.value} role="tabpanel" id={prefix+'-panel-'+index} aria-labelledby={prefix+'-tab-'+index} hidden={selected!==item.value} tabindex="0" set:html={panels[index]}/>)}
+</div>
+<script>import {installAstro} from "../client.js";installAstro();</script>

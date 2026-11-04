@@ -73,6 +73,8 @@ const open=ref(false);
 - `KavInput` の日付・時刻・月・週・色、`KavSelect` は既存のカスタム選択UIを使用します。入力・選択欄・テキストエリアはフォームのreset時にもモデルを同期します。`KavSelect` の `form` 属性でフォーム外からも送信できます。
 - `KavDialog` は初期SSR時は閉じたHTMLを出力し、ブラウザでマウント後に `v-model` を反映します。`KavDrawer` は `placement="start|end|top|bottom"` で配置を指定します。
 
+`KavTextarea` の `label` は `aria-label` より優先されます。`name`・`id`・`rows`・`placeholder`・`required`・`disabled`・`maxlength` も型付きで指定できます。
+
 ### Vueのサイドバー
 
 `KavSidebar` の `mobile`・`tablet`・`desktop` はHTML版と同じ表示モードです。`items` または `menu` スロットを指定し、通常スロットに本文を置きます。`footer` スロットも使えます。
@@ -125,6 +127,8 @@ import {KavProvider,KavButton,KavCard,KavField,KavSelect,KavDialog} from '@kav-u
   </body>
 </html>
 ```
+
+Astroでも `KavTabs`・`KavDrawer` を使えます。Tabsの `items` と値ごとの名前付きスロットはVueと共通で、初期選択は `value` です。最初の有効項目が既定値になります。`label` はタブ一覧の読み上げ名、`id` は生成IDの接頭辞です。同じ内容のタブを複数置く場合は異なる `id` を指定してください。Drawerは必須の `id`、`title`、`placement`（既定 `end`）、通常・`footer` スロットを受け取り、Dialogと同じdata属性で開閉します。[使用例](astro/README.md#tabsdrawer)も参照してください。
 
 `KavProvider` をレイアウトに1回置くとCSSと共通JSを読み込みます。対話的なコンポーネント自身も必要な初期化スクリプトを含むため、Providerの代わりに共通CSSを直接importしても利用できます。
 

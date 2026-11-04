@@ -30,3 +30,5 @@ export {default as KavPageHeader} from "./components/KavPageHeader.astro";
 export {default as KavToolbar} from "./components/KavToolbar.astro";
 export {default as KavSection} from "./components/KavSection.astro";
 export {default as KavPage} from "./components/KavPage.astro";
+export {default as KavTabs} from "./components/KavTabs.astro";
+export {default as KavDrawer} from "./components/KavDrawer.astro";
