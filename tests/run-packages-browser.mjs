@@ -153,6 +153,88 @@ try {
   assert(await evaluate(`window.KavUI.getCustomPalette().seed==='#667788'&&window.KavUI.getCustomPalette().chroma===20`),'Explicit destination custom palette seed and chroma are applied');
   assert(await evaluate(`(()=>{const button=document.createElement('button');button.dataset.uiColorMode='light';document.body.append(button);window.KavUI.init(button);const selected=button.getAttribute('aria-pressed')==='true';window.KavUI.destroy(button);button.remove();return selected;})()`),'Theme controls reflect the explicit destination preference');
  }
+ // The example build compiles these 12 Astro pages and 12 hydrated Vue SFCs.
+ const screens=['settings','auth','list','detail','wizard','kanban','profile','pricing','notifications','ai-chat','files','empty-onboarding'];
+ for(const framework of ['astro','vue'])for(const width of [390,820,1440])for(const screen of screens){
+  const label=`${framework}/${screen} @${width}`;
+  await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+  const url=astro+'/samples/'+(framework==='vue'?'vue/':'')+screen+'/';
+  await visit(url,framework==='vue'?`document.querySelector('astro-island')&&!document.querySelector('astro-island').hasAttribute('ssr')`:`window.KavUI&&document.querySelector('h1')`);
+  if(screen==='list')await until(`document.querySelector('[data-ui-table-status]').textContent.includes('全5件')`,label+' table initializes');
+  if(screen==='files')await until(`document.querySelector('.ui-file-list')`,label+' upload initializes');
+  assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),label+' page overflow');
+  // Scrollable tables/boards may overflow internally, but their host must fit the page.
+  assert(await evaluate(`[...document.querySelectorAll('.ui-table-scroll,.ui-board-wrap')].every(el=>{const r=el.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1;})`),label+' scroll region bounds');
+  assert(await evaluate(`[...document.querySelectorAll('input:not([type=hidden]),textarea,select')].filter(el=>!el.classList.contains('ui-select-search')).every(el=>el.labels?.length||el.getAttribute('aria-label')||el.getAttribute('aria-labelledby'))`),label+' input labels');
+  switch(screen){
+   case 'settings':
+    await click('#workspace-name');await send('Input.insertText',{text:'更新'});
+    await click('button[type=reset]');
+    await until(`document.querySelector('#workspace-name').value==='木の葉制作室'`,label+' reset');
+    break;
+   case 'auth':case 'notifications':case 'wizard':case 'detail': {
+    await until(`document.querySelector('[role=tab]')`,label+' tabs initialize');
+    await evaluate(`document.querySelector('[role=tab]').focus()`);await key('ArrowRight');
+    await until(`document.querySelectorAll('[role=tab]')[1].getAttribute('aria-selected')==='true'`,label+' arrow key changes tab');
+    if(screen==='auth')assert(await evaluate(`document.querySelector('#signup-name').getClientRects().length>0`),label+' registration form');
+    if(screen==='notifications')assert(await evaluate(`[...document.querySelectorAll('[role=tabpanel]')].find(el=>!el.hidden).textContent.includes('未読の通知')`),label+' unread filter');
+    if(screen==='wizard'){
+     await key('ArrowLeft');await click('#request-title');
+     await send('Input.insertText',{text:'確認用'});
+     await evaluate(`document.querySelectorAll('[role=tab]')[2].focus()`);await key('Enter');
+     await until(`document.querySelector('#confirm-title').textContent.includes('確認用')`,label+' reactive confirmation');
+     assert(await evaluate(`document.querySelector('#confirm-title').getClientRects().length>0`),label+' confirmation panel');
+     for(const [text,heading] of [['戻る','予定'],['戻る','基本情報'],['次へ','予定'],['次へ','入力内容の確認']]){
+      await evaluate(`(()=>{const panel=[...document.querySelectorAll('[role=tabpanel]')].find(el=>!el.hidden);[...panel.querySelectorAll('button')].find(button=>button.textContent.trim()==='${text}').click();})()`);
+      await until(`document.activeElement?.matches('h2[tabindex="-1"]')&&document.activeElement.textContent.trim()==='${heading}'`,label+' step button focuses '+heading);
+     }
+
+    }
+    if(screen==='detail'){
+     await click('.ui-page-actions button');await until(`document.querySelector('dialog').open`,label+' dialog opens');
+     await key('Escape');await until(`!document.querySelector('dialog').open`,label+' dialog Escape');
+     assert(await evaluate(`document.activeElement===document.querySelector('.ui-page-actions button')`),label+' dialog restores focus');
+    }
+    break;
+   }
+   case 'list':
+    await click('[data-ui-table-next]');await until(`document.querySelector('[data-ui-table-page-status]').textContent.includes('2 /')`,label+' pagination');
+    await click('#project-search');await send('Input.insertText',{text:'存在しない制作案件'});
+    await until(`document.querySelector('[data-ui-table-status]').textContent.includes('検索結果0件')`,label+' empty search');
+    break;
+   case 'kanban':
+    await until(`document.querySelector('[data-ui-card="task-0"] .ui-select-trigger')`,label+' move select initializes');
+    await click('[data-ui-card="task-0"] .ui-select-trigger');await key('End');await key('Enter');
+    await until(`document.querySelector('[data-ui-column=done] [data-ui-card="task-0"]')`,label+' keyboard move');
+    break;
+   case 'ai-chat':
+    await evaluate(`document.querySelector('summary').focus()`);await key('Enter');
+    assert(await evaluate(`document.querySelector('details').open`),label+' disclosure keyboard');
+    if(framework==='vue'){
+     await click('#chat-message');await send('Input.insertText',{text:'会場の確認事項をまとめて'});await click('button[type=submit]');
+     await until(`document.querySelectorAll('.ui-ai-message').length===3&&document.querySelector('#chat-message').value===''`,label+' send adds a message');
+     assert(await evaluate(`document.querySelector('.ui-ai-message:last-child').textContent.includes('会場の確認事項をまとめて')`),label+' sent content');
+    }
+    break;
+   case 'files':
+    await evaluate(`(()=>{const transfer=new DataTransfer();transfer.items.add(new File(['example'],'会場資料.pdf',{type:'application/pdf'}));const input=document.querySelector('#attachments');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}));})()`);
+    await until(`document.querySelector('.ui-file-list').textContent.includes('会場資料.pdf')`,label+' local file selection');
+    await click('a[href="#file-preview"]');await until(`location.hash==='#file-preview'`,label+' preview link');
+    break;
+   case 'empty-onboarding':
+    await evaluate(`document.querySelector('input[name="setup-1"]').focus()`);await key(' ','Space');
+    assert(await evaluate(`document.querySelector('input[name="setup-1"]').checked`),label+' keyboard checklist');
+    break;
+   case 'pricing':
+    await click('a[href="../auth/"]');await until(`location.pathname.endsWith('/auth/')`,label+' registration link');
+    break;
+   case 'profile':
+    assert(await evaluate(`document.querySelectorAll('.ui-timeline-item').length===2&&document.querySelectorAll('.ui-card-stat').length===2`),label+' profile statistics and timeline');
+    break;
+  }
+  assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),label+' overflow after interaction');
+ }
+ console.log('PASS: 24 screen samples × 390/820/1440; keyboard tabs/dialog/checklist, form reset, table search/pagination, kanban move, file selection and Vue chat');
  await visit(pathToFileURL(join(root,'tests/ui.html')).href,'window.uiTestsDone');const unit=await evaluate('window.uiTestsDone');console.log('Canonical UI regression:',JSON.stringify(unit));assert(!unit.failures.length,'Legacy UI regressions');
  if(errors.length)throw new Error(errors.join('\n'));
  console.log('PASS: Vue/Astro @390/820/1440; model updates, SSR hydration, dialogs, Teleport sidebar, disposal and Astro ClientRouter. Screenshots:',artifacts);
