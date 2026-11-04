@@ -19,9 +19,9 @@
 [data-ui-panel]:not([hidden]),
 .accordion details[open] > :not(summary),
 .tip-disclosure[open] > :not(summary) {
-  animation:ui-appear 160ms ease-out;
+  animation:ui-appear var(--motion-duration-base) var(--motion-ease-out);
 }
-.ui-dialog[open]::backdrop { animation:ui-backdrop-appear 160ms ease-out; }
+.ui-dialog[open]::backdrop { animation:ui-backdrop-appear var(--motion-duration-base) var(--motion-ease-out); }
 @keyframes ui-appear { from { opacity:0; } to { opacity:1; } }
 @keyframes ui-backdrop-appear { from { opacity:0; } to { opacity:1; } }
 @media (prefers-reduced-motion:reduce) {

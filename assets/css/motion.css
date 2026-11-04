@@ -1,25 +1,25 @@
 /* Automatic interaction feedback. No animation options are required. */
-.btn { transition:color 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease, scale 120ms ease; }
+.btn { transition:color var(--motion-duration-base) var(--motion-ease-out), background-color var(--motion-duration-base) var(--motion-ease-out), border-color var(--motion-duration-base) var(--motion-ease-out), box-shadow var(--motion-duration-base) var(--motion-ease-out), scale var(--motion-duration-fast) var(--motion-ease-out); }
 .btn:active:not(:disabled):not([aria-disabled="true"]) { scale:.97; }
-.ui-copy-icon, .btn-close { transition:color 150ms ease, background-color 150ms ease, opacity 150ms ease, scale 120ms ease; }
+.ui-copy-icon, .btn-close { transition:color var(--motion-duration-base) var(--motion-ease-out), background-color var(--motion-duration-base) var(--motion-ease-out), opacity var(--motion-duration-base) var(--motion-ease-out), scale var(--motion-duration-fast) var(--motion-ease-out); }
 .ui-copy-icon:active:not(:disabled):not([aria-disabled="true"]), .btn-close:active { scale:.94; }
-:is(.tabs [role="tab"], .nav-pills .nav-link, .pagination button, .app-sidebar a, .ui-calendar-day, .ui-calendar-nav) { transition:color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease; }
-.alert { transition:color 160ms ease, background-color 160ms ease, border-color 160ms ease; }
-.form-check-input, .switch input { transition:background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
-.switch input::after { transition:left 180ms ease, background-color 180ms ease; }
-.ui-loading-label { transition:opacity 140ms ease; }
-.ui-loading-button[aria-busy="true"] > .ui-loading-indicator { animation:ui-spinner-turn .8s linear infinite; }
-.ui-copy-icon[data-ui-copy-state="success"] svg { animation:ui-check-pop 180ms ease-out; }
+:is(.tabs [role="tab"], .nav-pills .nav-link, .pagination button, .app-sidebar a, .ui-calendar-day, .ui-calendar-nav) { transition:color var(--motion-duration-base) var(--motion-ease-out), background-color var(--motion-duration-base) var(--motion-ease-out), border-color var(--motion-duration-base) var(--motion-ease-out), box-shadow var(--motion-duration-base) var(--motion-ease-out); }
+.alert { transition:color var(--motion-duration-base) var(--motion-ease-out), background-color var(--motion-duration-base) var(--motion-ease-out), border-color var(--motion-duration-base) var(--motion-ease-out); }
+.form-check-input, .switch input { transition:background-color var(--motion-duration-base) var(--motion-ease-out), border-color var(--motion-duration-base) var(--motion-ease-out), box-shadow var(--motion-duration-base) var(--motion-ease-out); }
+.switch input::after { transition:translate var(--motion-duration-base) var(--motion-ease-out), background-color var(--motion-duration-base) var(--motion-ease-out); }
+.ui-loading-label { transition:opacity var(--motion-duration-fast) var(--motion-ease-out); }
+.ui-loading-button[aria-busy="true"] > .ui-loading-indicator { animation:ui-spinner-turn var(--motion-duration-spin) var(--motion-ease-linear) infinite; }
+.ui-copy-icon[data-ui-copy-state="success"] svg { animation:ui-check-pop var(--motion-duration-base) var(--motion-ease-out); }
 .ui-copy-status[data-ui-copy-state="success"], .ui-copy-status[data-ui-copy-state="error"],
-[data-ui-error]:not([hidden]), [data-ui-empty]:not([hidden]) { animation:ui-appear 160ms ease-out; }
-.ui-toast:not([hidden]) { animation:ui-appear 160ms ease-out; }
-.ui-tooltip { animation:ui-appear 160ms ease-out, ui-content-enter 160ms ease-out; }
-.ui-datepicker-popup:not([hidden]) { animation:ui-appear 160ms ease-out; }
-[data-ui-panel]:not([hidden]), .accordion details[open] > :not(summary), .tip-disclosure[open] > :not(summary) { animation:ui-appear 160ms ease-out, ui-content-enter 180ms ease-out; }
-progress[value]::-webkit-progress-value { transition:width 200ms ease-out, background-color 160ms ease; }
-progress[value]::-moz-progress-bar { transition:width 200ms ease-out, background-color 160ms ease; }
-[data-ui-card] { transition:opacity 160ms ease, box-shadow 160ms ease, border-color 160ms ease; }
-[data-ui-column] { transition:background-color 160ms ease, outline-color 160ms ease; }
+[data-ui-error]:not([hidden]), [data-ui-empty]:not([hidden]) { animation:ui-appear var(--motion-duration-base) var(--motion-ease-out); }
+.ui-toast:not([hidden]) { animation:ui-appear var(--motion-duration-base) var(--motion-ease-out), ui-content-enter var(--motion-duration-base) var(--motion-ease-out); }
+.ui-tooltip { animation:ui-appear var(--motion-duration-base) var(--motion-ease-out), ui-content-enter var(--motion-duration-base) var(--motion-ease-out); }
+.ui-datepicker-popup:not([hidden]) { animation:ui-appear var(--motion-duration-base) var(--motion-ease-out); }
+[data-ui-panel]:not([hidden]), .accordion details[open] > :not(summary), .tip-disclosure[open] > :not(summary) { animation:ui-appear var(--motion-duration-base) var(--motion-ease-out), ui-content-enter var(--motion-duration-base) var(--motion-ease-out); }
+progress[value]::-webkit-progress-value { transition:width var(--motion-duration-base) var(--motion-ease-out), background-color var(--motion-duration-base) var(--motion-ease-out); }
+progress[value]::-moz-progress-bar { transition:width var(--motion-duration-base) var(--motion-ease-out), background-color var(--motion-duration-base) var(--motion-ease-out); }
+[data-ui-card] { transition:opacity var(--motion-duration-base) var(--motion-ease-out), box-shadow var(--motion-duration-base) var(--motion-ease-out), border-color var(--motion-duration-base) var(--motion-ease-out), background-color var(--motion-duration-base) var(--motion-ease-out), translate var(--motion-duration-fast) var(--motion-ease-out); }
+[data-ui-column] { transition:background-color var(--motion-duration-base) var(--motion-ease-out), outline-color var(--motion-duration-base) var(--motion-ease-out); }
 /* Calendar redraws are immediate, including calendars embedded in date pickers. */
 .ui-calendar :is(.btn, .ui-calendar-day, .ui-calendar-nav) { transition:none; }
 .ui-calendar .btn:active:not(:disabled):not([aria-disabled="true"]) { scale:none; }
@@ -39,4 +39,94 @@ progress[value]::-moz-progress-bar { transition:width 200ms ease-out, background
   .ui-loading-button[aria-busy="true"] > .ui-loading-indicator { animation:none; }
   progress[value]::-webkit-progress-value { transition:none; }
   progress[value]::-moz-progress-bar { transition:none; }
+}
+
+/* Painting follows native state: no timers delay close, focus, or ui:hidden.
+   Unsupported browsers keep the original instantaneous close. */
+@supports (transition-behavior:allow-discrete) {
+  :is(.ui-dialog, .ui-popup, .ui-select-menu, .ui-input-popup, .ui-datepicker-popup, .ui-command, [data-ui-panel], .ui-reveal) {
+    opacity:0;
+    pointer-events:none;
+    translate:0 4px;
+    transition:opacity var(--motion-duration-fast) var(--motion-ease-in),
+      translate var(--motion-duration-fast) var(--motion-ease-in),
+      display var(--motion-duration-fast) allow-discrete,
+      overlay var(--motion-duration-fast) allow-discrete;
+  }
+  :is(.ui-dialog[open], .ui-popup:popover-open, .ui-select-menu:popover-open, .ui-input-popup:popover-open, .ui-datepicker-popup:popover-open, .ui-command[open], .ui-command:not(dialog):not([hidden]), [data-ui-panel]:not([hidden]), .ui-reveal:not([hidden])) {
+    opacity:1; pointer-events:auto; translate:0 0; animation:none;
+    transition-duration:var(--motion-duration-base);
+    transition-timing-function:var(--motion-ease-out);
+  }
+  /* Match the drawer's original specificity, including the open animation. */
+  .ui-dialog.ui-drawer { translate:var(--ui-drawer-x) var(--ui-drawer-y); }
+  .ui-dialog.ui-drawer[open] { translate:0 0; animation:none; }
+  .ui-dialog::backdrop {
+    opacity:0;
+    transition:opacity var(--motion-duration-fast) var(--motion-ease-in),
+      display var(--motion-duration-fast) allow-discrete,
+      overlay var(--motion-duration-fast) allow-discrete;
+  }
+  .ui-dialog[open]::backdrop {
+    opacity:1; animation:none;
+    transition-duration:var(--motion-duration-base);
+    transition-timing-function:var(--motion-ease-out);
+  }
+  @starting-style {
+    :is(.ui-dialog[open], .ui-popup:popover-open, .ui-select-menu:popover-open, .ui-input-popup:popover-open, .ui-datepicker-popup:popover-open, .ui-command[open], .ui-command:not(dialog):not([hidden]), [data-ui-panel]:not([hidden]), .ui-reveal:not([hidden])) { opacity:0; translate:0 4px; }
+    .ui-dialog.ui-drawer[open] { translate:var(--ui-drawer-x) var(--ui-drawer-y); }
+    .ui-dialog[open]::backdrop { opacity:0; }
+  }
+}
+
+/* A selected underline moves from the previous tab using a transform in ui.js. */
+.tabs:not(.tabs-pills) [role="tab"] { position:relative; }
+.tabs:not(.tabs-pills) [aria-selected="true"] { border-bottom-color:transparent; }
+.tabs:not(.tabs-pills) [aria-selected="true"]::after {
+  content:""; position:absolute; inset-inline:0; bottom:-2px; height:2px;
+  background:var(--bs-primary); transform-origin:top left; pointer-events:none;
+}
+.tabs[aria-orientation="vertical"]:not(.tabs-pills) [aria-selected="true"] { border-inline-end-color:transparent; }
+.tabs[aria-orientation="vertical"]:not(.tabs-pills) [aria-selected="true"]::after {
+  inset-inline-start:auto; inset-inline-end:-2px; top:0; bottom:0; width:2px; height:auto;
+}
+
+/* Only the disclosure height is allowed to affect layout. */
+@supports (interpolate-size:allow-keywords) and selector(details::details-content) {
+  :where(details) { interpolate-size:allow-keywords; }
+  :where(details)::details-content {
+    block-size:0; overflow:clip;
+    transition:block-size var(--motion-duration-base) var(--motion-ease-in),
+      content-visibility var(--motion-duration-base) allow-discrete;
+  }
+  :where(details[open])::details-content { block-size:auto; transition-timing-function:var(--motion-ease-out); }
+  .accordion details[open] > :not(summary), .tip-disclosure[open] > :not(summary) { animation:none; }
+}
+
+/* Feedback uses existing theme colors and shadows, never geometry. */
+:where(.ui-card-link, .ui-card:has(input), [data-ui-card], .list-group-item, .table-hover > tbody > tr,
+  .app-sidebar a, .nav-link, .ui-dropdown-item, .ui-select-option, .ui-rating-choice,
+  .ui-carousel-indicators > button, .form-control, .form-select) {
+  transition:color var(--motion-duration-fast) var(--motion-ease-out),
+    background-color var(--motion-duration-base) var(--motion-ease-out),
+    border-color var(--motion-duration-base) var(--motion-ease-out),
+    box-shadow var(--motion-duration-base) var(--motion-ease-out),
+    translate var(--motion-duration-fast) var(--motion-ease-out);
+}
+:where(.ui-card-link, [data-ui-card]):is(:hover,:focus-visible) { translate:0 -1px; }
+:where(.list-group-item:is(a,button)):is(:hover,:focus-visible) { background-color:var(--bs-tertiary-bg); }
+:where(.ui-rating-star) { transition:fill var(--motion-duration-fast) var(--motion-ease-out), scale var(--motion-duration-fast) var(--motion-ease-out); }
+:where(.ui-rating-choice:has(input:checked)) .ui-rating-star { scale:1.08; }
+.ui-carousel-indicators > button::before { transition:scale var(--motion-duration-base) var(--motion-ease-out); }
+.ui-carousel-indicators > button[aria-pressed="true"]::before { width:8px; scale:2 1; }
+
+@media (prefers-reduced-motion:reduce) {
+  /* Shared CSS and dynamically created controls, including pseudo-elements.
+     Presets keep their own reduced-motion rules in animation-presets.css. */
+  *, *::before, *::after, details::details-content, .ui-dialog::backdrop {
+    transition:none !important;
+    animation:none !important;
+    scroll-behavior:auto !important;
+  }
+  :where(.ui-card-link, [data-ui-card]):is(:hover,:focus-visible) { translate:none; }
 }

@@ -10,7 +10,7 @@
   border-right-color:transparent;
   border-radius:50%;
   vertical-align:middle;
-  animation:ui-spinner-turn .8s linear infinite;
+  animation:ui-spinner-turn var(--motion-duration-spin) var(--motion-ease-linear) infinite;
 }
 .ui-spinner-xs { --ui-spinner-size:.75rem; }
 .ui-spinner-sm { --ui-spinner-size:1rem; }
@@ -40,7 +40,7 @@
   -webkit-mask-composite:xor;
   mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   mask-composite:exclude;
-  animation:ui-loading-border-turn 1.8s linear infinite;
+  animation:ui-loading-border-turn var(--motion-duration-shimmer) var(--motion-ease-linear) infinite;
 }
 
 /* Native progress keeps its value and accessibility semantics. */
@@ -62,7 +62,7 @@
 .ui-progress-warning { --ui-progress-color:var(--bs-warning); }
 .ui-progress:not([value]) {
   background:linear-gradient(90deg, var(--ui-progress-track) 0% 35%, var(--ui-progress-color) 45% 55%, var(--ui-progress-track) 65% 100%);
-  background-size:250% 100%; animation:ui-progress-travel 1.6s ease-in-out infinite alternate;
+  background-size:250% 100%; animation:ui-progress-travel var(--motion-duration-loading) var(--motion-ease-in-out) infinite alternate;
 }
 .ui-progress:not([value])::-webkit-progress-bar { background:transparent; }
 .ui-progress:not([value])::-webkit-progress-value { background:transparent; }

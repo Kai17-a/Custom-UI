@@ -57,7 +57,7 @@
 }
 
 /* Flow stays on the existing connector geometry; nodes and task outlines stay still. */
-.ui-agent-flowing { --ui-agent-flow-play:paused; --ui-agent-flow-duration:2.4s; }
+.ui-agent-flowing { --ui-agent-flow-play:paused; --ui-agent-flow-duration:var(--motion-duration-pulse); }
 .ui-agent-flowing[data-ui-agent-visible] { --ui-agent-flow-play:running; }
 .ui-agent-flowing:has(> .ui-agent-motion input:not(:checked)) { --ui-agent-flow-play:paused; }
 .ui-agent-motion { display:flex; align-items:center; gap:var(--space-2); width:fit-content; margin-bottom:var(--space-3); font-size:.8125rem; cursor:pointer; }
@@ -80,7 +80,7 @@
   background-origin:border-box;
   mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0) border-box;
   mask-composite:exclude;
-  animation:ui-agent-stream-x var(--ui-agent-flow-duration) linear infinite;
+  animation:ui-agent-stream-x var(--ui-agent-flow-duration) var(--motion-ease-linear) infinite;
   animation-play-state:var(--ui-agent-flow-play);
   pointer-events:none;
 }

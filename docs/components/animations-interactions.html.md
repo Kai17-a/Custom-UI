@@ -36,6 +36,32 @@ Animations
 </div>
 ```
 
+## 動きの共通トークン
+
+時間とイージングは `tokens.css` にまとめています。`:root` または部品の親要素で上書きすると、CSS と JavaScript の動きに反映されます。
+
+| トークン | 初期値・用途 |
+| --- | --- |
+| `--motion-duration-fast` | 120ms：退場、押下、ホバー |
+| `--motion-duration-base` | 180ms：入場、選択、折り畳み |
+| `--motion-duration-slow` | 240ms：カードの移動 |
+| `--motion-ease-out` | cubic-bezier(.16,1,.3,1)：入場・選択 |
+| `--motion-ease-in` | cubic-bezier(.4,0,1,1)：退場 |
+| `--motion-ease-in-out` / `--motion-ease-linear` | cubic-bezier(.4,0,.2,1) / linear：処理中の繰り返し |
+| `--motion-duration-spin` / `--motion-duration-loading` | 800ms / 1600ms：スピナー・進捗 |
+| `--motion-duration-shimmer` / `--motion-duration-pulse` | 1800ms / 2400ms：スケルトン・処理中の表示 |
+
+```
+:root {
+  --motion-duration-base: 200ms;
+  --motion-duration-fast: 120ms;
+}
+```
+
+Dialog・Drawer・Dropdown・Popover・Select・Command・Date picker は `@starting-style` と `display` / `overlay` の離散トランジションで開閉します。閉じる操作はすぐに hidden・open・フォーカス・イベントへ反映され、見た目だけが短く残ります。DOM から削除する Tooltip・Toast は操作できない退場用の表示を使います。再オープンは進行中の遷移を引き継ぎます。
+
+折り畳みは `interpolate-size:allow-keywords` と `::details-content` で高さを補間します。未対応のブラウザは即座に切り替わります。OS の「動きを減らす」設定では補間も退場用表示もなくなり、待ち時間は発生しません。任意指定のアニメーションプリセットは従来どおりです。
+
 ## 自動アニメーションの対象
 
 | 操作 | 動きとサンプル |

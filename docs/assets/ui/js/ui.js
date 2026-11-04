@@ -53,10 +53,14 @@
   const motionAnimations = new Set();
   const elementMotions = new WeakMap();
   const exitVisuals = new WeakMap();
-  function motion(element, frames, duration = 180) {
+  function motion(element, frames, duration = 'base', easing = 'out', options = {}) {
     if (!element?.isConnected || !element.animate || reducedMotion.matches) return null;
     elementMotions.get(element)?.cancel();
-    const animation = element.animate(frames, {duration, easing:'cubic-bezier(.2,.7,.3,1)'});
+    const style = getComputedStyle(element);
+    const timing = style.getPropertyValue('--motion-duration-' + duration).trim();
+    const milliseconds = parseFloat(timing) * (timing.endsWith('ms') ? 1 : 1000);
+    if (!milliseconds) return null;
+    const animation = element.animate(frames, {duration:milliseconds, easing:style.getPropertyValue('--motion-ease-' + easing).trim(), ...options});
     elementMotions.set(element, animation);
     motionAnimations.add(animation);
     const cleanup = () => {
@@ -74,10 +78,13 @@
     if (visual) { visual.animation.cancel(); visual.host.remove(); exitVisuals.delete(element); }
   }
   function prepareExit(element) {
-    if (reducedMotion.matches || !element?.isConnected || !element.animate) return () => {};
+    // Native CSS keeps display/top-layer content painted after the semantic close.
+    // Only removed nodes require a frozen visual; never delay focus or events.
+    if (!element?.matches('.ui-tooltip, .ui-toast') || reducedMotion.matches || !element.isConnected || !element.animate) return () => {};
     const bounds = element.getBoundingClientRect();
     const opacity = Number(getComputedStyle(element).opacity);
-    const destination = element.matches('.app-sidebar') ? '-12px 0' : '0 5px';
+    const destination = '0 5px';
+    const parent = element.closest('dialog[open]') || doc.body;
     if (!bounds.width || !bounds.height || opacity < .01) return () => {};
     // A closed shadow contains a frozen, inert visual copy. No duplicate IDs,
     // controls, live regions or UI selectors enter the application document.
@@ -109,26 +116,19 @@
     surface.removeAttribute('hidden');
     Object.assign(surface.style, {position:'relative',inset:'auto',margin:'0',width:'100%',height:'100%',minWidth:'0',minHeight:'0',maxWidth:'none',maxHeight:'none',boxSizing:'border-box',opacity:'1',transform:'none',translate:'none',scale:'none'});
     shadow.append(surface);
-    const backdrop = element.tagName === 'DIALOG' ? getComputedStyle(element, '::backdrop') : null;
-    const backdropColor = backdrop?.backgroundColor;
-    const backdropFilter = backdrop?.backdropFilter;
+    // Keep component-level timing overrides when the visual leaves its subtree.
+    const timing = getComputedStyle(element);
+    for (const token of ['--motion-duration-fast','--motion-ease-in']) host.style.setProperty(token,timing.getPropertyValue(token));
     return () => {
       if (reducedMotion.matches) return;
       cancelExit(element);
-      doc.body.append(host);
-      const animation = motion(host, [{opacity,translate:'0 0'},{opacity:0,translate:destination}], 140);
+      parent.append(host);
+      const animation = motion(host, [{opacity,translate:'0 0'},{opacity:0,translate:destination}], 'fast', 'in');
       if (!animation) { host.remove(); return; }
       exitVisuals.set(element, {host, animation});
       const cleanup = () => { host.remove(); if (exitVisuals.get(element)?.host === host) exitVisuals.delete(element); };
       animation.finished.then(cleanup, cleanup);
-      if (backdropColor && backdropColor !== 'rgba(0, 0, 0, 0)') {
-        const shade = doc.createElement('div');
-        shade.setAttribute('aria-hidden','true');shade.inert=true;
-        Object.assign(shade.style,{position:'fixed',inset:'0',background:backdropColor,backdropFilter,pointerEvents:'none',zIndex:'2147482999'});
-        doc.body.append(shade);
-        const fade = motion(shade,[{opacity:1},{opacity:0}],140);
-        if (fade) fade.finished.then(()=>shade.remove(),()=>shade.remove()); else shade.remove();
-      }
+
     };
   }
   function exitMotion(element) { prepareExit(element)(); }
@@ -817,6 +817,8 @@
     const {tabs, panels} = tabData(group);
     const selected = tabPanel(tab, panels);
     if (!selected) return;
+    const previous = tabs.find(item => item.getAttribute('aria-selected') === 'true');
+    const before = previous?.getBoundingClientRect();
     for (const item of tabs) {
       const panel = tabPanel(item, panels);
       if (!panel) continue;
@@ -828,6 +830,15 @@
       panel.setAttribute('aria-labelledby', id(item));
       panel.tabIndex = 0;
       panel.hidden = panel !== selected;
+    }
+    const bar = tab.closest('.tabs');
+    if (notify && before && previous !== tab && bar && !bar.matches('.tabs-pills')) {
+      const after = tab.getBoundingClientRect();
+      const vertical = bar.getAttribute('aria-orientation') === 'vertical';
+      if (after.width && after.height) motion(tab, [
+        {translate:vertical ? '0 '+(before.top-after.top)+'px' : (before.left-after.left)+'px 0', scale:vertical ? '1 '+before.height/after.height : before.width/after.width+' 1'},
+        {translate:'0 0',scale:'1 1'}
+      ], 'base', 'out', {pseudoElement:'::after'});
     }
     if (notify) emit(group, 'tabchange', {tab, panel:selected});
   }
@@ -863,7 +874,7 @@
     if(!state)validationStates.set(form,state={fields:new Map(),errors:new Map(),generated:new Set()});
     if(!state.fields.has(field))state.fields.set(field,rememberAttributes(field,['aria-invalid','aria-describedby']));
     const valid = field.checkValidity();
-    if (!valid && field.getAttribute('aria-invalid') !== 'true') motion(field,[{translate:'-3px 0'},{translate:'3px 0'},{translate:'0 0'}],160);
+    if (!valid && field.getAttribute('aria-invalid') !== 'true') motion(field,[{translate:'-3px 0'},{translate:'3px 0'},{translate:'0 0'}], 'base');
     field.setAttribute('aria-invalid', String(!valid));
     const wrapper = field.closest('[data-ui-field]');
     let error = wrapper?.querySelector('[data-ui-error]') || (field.getAttribute('aria-describedby') || '').split(/\s+/).map(key => doc.getElementById(key)).find(node => node?.hasAttribute('data-ui-error'));
@@ -911,7 +922,7 @@
     (column.querySelector('[data-ui-cards]') || column).append(card);
     updateBoard(board);
     const after = card.getBoundingClientRect();
-    motion(card,[{translate:(before.left-after.left)+'px '+(before.top-after.top)+'px',opacity:.6},{translate:'0 0',opacity:1}],220);
+    motion(card,[{translate:(before.left-after.left)+'px '+(before.top-after.top)+'px',opacity:.6},{translate:'0 0',opacity:1}], 'slow');
     emit(board, 'move', {card, from:from?.dataset.uiColumn, to:column.dataset.uiColumn});
   }
   function endDrag() {
@@ -4007,12 +4018,6 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
   });
   window.addEventListener('resize', hideTooltip);
   doc.addEventListener('scroll', hideTooltip, true);
-  doc.addEventListener('cancel', event => {
-    const dialog = event.target;
-    if (!dialog.matches?.('dialog[data-ui-dialog]')) return;
-    const play = prepareExit(dialog);
-    setTimeout(() => { if (!event.defaultPrevented && !dialog.open) play(); }, 0);
-  }, true);
   doc.addEventListener('reset', event => {
     const form=event.target,state=validationStates.get(form);
     if(!state)return;
@@ -4024,30 +4029,9 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
       validationStates.delete(form);
     },0);
   });
-  doc.addEventListener('submit', event => {
-    const form = event.target;
-    const dialog = form.closest('dialog[data-ui-dialog][open]');
-    const method = event.submitter?.getAttribute('formmethod') || form.method;
-    if (!dialog || method !== 'dialog' || event.defaultPrevented || !form.checkValidity()) return;
-    const play = prepareExit(dialog);
-    setTimeout(() => { if (!event.defaultPrevented && !dialog.open) play(); }, 0);
-  });
-  const detailExits = new WeakMap();
-  doc.addEventListener('click', event => {
-    const summary = closest(event.target, 'summary');
-    const details = summary?.parentElement;
-    if (details?.matches('details[open]')) detailExits.set(details, [...details.children].filter(child=>child!==summary).map(prepareExit));
-  }, true);
-  doc.addEventListener('toggle', event => {
-    const details = event.target;
-    if (!details.matches?.('details')) return;
-    if (!details.open) detailExits.get(details)?.forEach(play=>play());
-    else [...details.children].forEach(cancelExit);
-    detailExits.delete(details);
-  }, true);
   doc.addEventListener('change', event => {
     const input = event.target;
-    if (input.matches('input[type="checkbox"], input[type="radio"]') && !disabled(input)) motion(input,[{scale:.9},{scale:1}],140);
+    if (input.matches('input[type="checkbox"], input[type="radio"]') && !disabled(input)) motion(input,[{scale:.9},{scale:1}], 'fast');
   });
   doc.addEventListener('close', event => {
     if (!event.target.matches('dialog[data-ui-dialog]')) return;

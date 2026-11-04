@@ -1,6 +1,6 @@
 /* Native file input remains available without JS; enhanced mode uses its label. */
 .ui-file-drop { display:grid; gap:var(--space-3); min-width:0; }
-.ui-file-dropzone { display:grid; justify-items:center; gap:var(--space-2); padding:var(--space-6); text-align:center; border:1px dashed var(--bs-border-color); border-radius:var(--bs-border-radius-lg); background:var(--ui-theme-surface,var(--bs-tertiary-bg)); color:var(--bs-body-color); cursor:pointer; overflow-wrap:anywhere; transition:background-color 150ms ease,border-color 150ms ease; }
+.ui-file-dropzone { display:grid; justify-items:center; gap:var(--space-2); padding:var(--space-6); text-align:center; border:1px dashed var(--bs-border-color); border-radius:var(--bs-border-radius-lg); background:var(--ui-theme-surface,var(--bs-tertiary-bg)); color:var(--bs-body-color); cursor:pointer; overflow-wrap:anywhere; transition:background-color var(--motion-duration-base) var(--motion-ease-out),border-color var(--motion-duration-base) var(--motion-ease-out); }
 .ui-file-dropzone > [icon] { font-size:2rem; color:var(--bs-primary); }
 .ui-file-hint, .ui-file-status { color:var(--bs-secondary-color); font-size:var(--text-sm); }
 .ui-file-status, .ui-file-error { margin:0; overflow-wrap:anywhere; }

@@ -62,7 +62,7 @@
 .ui-ai-voice-toggle { display:flex; align-items:center; gap:var(--space-2); width:fit-content; font-size:var(--text-sm); cursor:pointer; }
 .ui-ai-voice-toggle input { flex-shrink:0; accent-color:var(--bs-primary); }
 .ui-ai-wave { display:flex; align-items:center; justify-content:center; gap:clamp(2px,1vw,6px); width:min(100%,24rem); height:7rem; margin-inline:auto; color:var(--bs-secondary-color); }
-.ui-ai-wave > span { flex:1; min-width:0; max-width:.5rem; height:4rem; border-radius:var(--bs-border-radius-lg); background:currentColor; transform:scaleY(.12); transition:transform 180ms ease-out,background-color 180ms ease-out; }
+.ui-ai-wave > span { flex:1; min-width:0; max-width:.5rem; height:4rem; border-radius:var(--bs-border-radius-lg); background:currentColor; transform:scaleY(.12); transition:transform var(--motion-duration-base) var(--motion-ease-out),background-color var(--motion-duration-base) var(--motion-ease-out); }
 .ui-ai-voice:has(input:checked) .ui-ai-wave > span { color:var(--bs-primary); transform:scaleY(var(--ui-ai-wave-size)); }
 .ui-ai-voice-state { display:block; margin-bottom:var(--space-2); text-align:center; font-weight:600; }
 .ui-ai-voice-caption { margin:0; text-align:center; color:var(--bs-secondary-color); }
