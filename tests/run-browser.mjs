@@ -222,6 +222,8 @@ try {
         const filename=path.split('/').pop();
         if(path.startsWith('components/') && (navigation.active.length!==1 || navigation.active[0]!==filename))throw new Error('Current page destination: '+path);
         if(filename.startsWith('animations') && !navigation.branch)throw new Error('Current animation branch must open');
+        const closedCurrentBranches=await evaluate(`[...document.querySelectorAll('.catalog-sidebar .catalog-nav-category, .catalog-sidebar .catalog-nav-branch')].filter(details=>details.querySelector('[aria-current="page"]') && !details.open).length`);
+        if(closedCurrentBranches)throw new Error('Current page ancestors must open: '+path+' @'+width);
       }
       if(width===1440) {
         const sources=await evaluate(`(()=>{

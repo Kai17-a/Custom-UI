@@ -155,6 +155,10 @@
     heading.remove(); details.append(summary, ...group.childNodes); group.append(details);
     return details;
   });
+  // Reveal the current destination inside nested families as well as its category.
+  for (const branch of navigation.querySelectorAll('.catalog-nav-branch')) {
+    if (branch.querySelector('[aria-current="page"]')) branch.open = true;
+  }
   const empty = document.createElement('p');
   empty.className = 'catalog-search-empty'; empty.hidden = true;
   empty.setAttribute('role', 'status'); empty.textContent = '一致するコンポーネントがありません。';
