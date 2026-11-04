@@ -78,9 +78,9 @@
     if (visual) { visual.animation.cancel(); visual.host.remove(); exitVisuals.delete(element); }
   }
   function prepareExit(element) {
-    // Native CSS keeps display/top-layer content painted after the semantic close.
-    // Only removed nodes require a frozen visual; never delay focus or events.
-    if (!element?.matches('.ui-tooltip, .ui-toast') || reducedMotion.matches || !element.isConnected || !element.animate) return () => {};
+    // Popovers use native CSS exits. Removed nodes and immediately hidden
+    // panels retain an inert visual without delaying focus or events.
+    if (!element || element.matches('[popover]') || reducedMotion.matches || !element.isConnected || !element.animate) return () => {};
     const bounds = element.getBoundingClientRect();
     const opacity = Number(getComputedStyle(element).opacity);
     const destination = '0 5px';

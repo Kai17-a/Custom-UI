@@ -74,7 +74,7 @@ try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
-  await navigate('tests/ui.html');await evaluate('window.uiTestsDone');
+  await navigate('tests/ui.html');const canonical=await evaluate('window.uiTestsDone');console.log('Canonical UI regression:',JSON.stringify(canonical));if(canonical.failures.length)throw new Error('Legacy UI regressions');
   await checkMotion({evaluate,send});
   // Agent diagrams retain native list, disclosure and form behavior without UI JavaScript.
   await navigate('components/agent-workflow.html');

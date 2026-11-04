@@ -25,7 +25,10 @@ export async function checkMotion({evaluate, send}) {
         // Flush styles while the CSS display/overlay exit is still running.
         getComputedStyle(el).opacity;
         assert(popover?!el.matches(':popover-open'):!el.open,classes+' semantic close');
-        if(supported&&!reduced)assert(el.getAnimations().length>0,classes+' exit');
+        const exitSurface=popover?el:document.querySelector('[data-ui-motion-ghost]');
+        if(!reduced&&(!popover||supported))assert(exitSurface?.getAnimations().length>0,classes+' exit');
+        if(!popover&&exitSurface)assert(exitSurface.inert&&exitSurface.getAttribute('aria-hidden')==='true'&&!exitSurface.shadowRoot,classes+' inert exit');
+        if(!popover){assert(getComputedStyle(el).display==='none',classes+' immediate display');if(exitSurface)await settle(exitSurface);}
         await settle(el);await frame();
         assert(getComputedStyle(el).display==='none',classes+' final display');
         if(!popover){assert(document.activeElement===trigger,classes+' focus');assert(events.join(',')==='shown,hidden',classes+' event order');}
@@ -36,23 +39,44 @@ export async function checkMotion({evaluate, send}) {
         if(popover)el.showPopover();else KavUI.show(el,trigger);
         await frame();await settle(el);
         assert(popover?el.matches(':popover-open'):el.open,classes+' reopen');
+        if(!popover)assert(!document.querySelector('[data-ui-motion-ghost]'),classes+' canceled exit');
         if(popover)el.hidePopover();else KavUI.hide(el);
-        await settle(el);el.remove();
+        await settle(el);
+        const finalExit=document.querySelector('[data-ui-motion-ghost]');if(finalExit)await settle(finalExit);
+        el.remove();
       }
       const panel=document.createElement('div');panel.dataset.uiPanel='motion';panel.hidden=true;panel.textContent='Panel';fixture.append(panel);
       await frame();KavUI.show(panel);await frame();await settle(panel);KavUI.hide(panel);
       getComputedStyle(panel).display;
       assert(panel.hidden,'panel final hidden');
-      if(supported&&!reduced)assert(panel.getAnimations().length>0,'panel exit');
+      const panelExit=document.querySelector('[data-ui-motion-ghost]');
+      if(!reduced)assert(panelExit?.getAnimations().length>0,'panel exit');
+      if(panelExit)await settle(panelExit);
       await settle(panel);assert(getComputedStyle(panel).display==='none','panel final display');
-      const details=document.createElement('details');details.innerHTML='<summary>Disclosure</summary><p>One</p><p>Two</p>';fixture.append(details);
+      const details=document.createElement('details');details.innerHTML='<summary>Disclosure</summary><a href="#motion-return">Focus</a><p>One</p><p>Two</p>';fixture.append(details);
       if(CSS.supports('interpolate-size','allow-keywords')&&CSS.supports('selector(details::details-content)')) {
-        await frame();details.open=true;await frame();
+        const height=()=>details.getBoundingClientRect().height;
+        const settleHeight=async()=>{
+          // Chromium does not expose ::details-content transitions via getAnimations().
+          const duration=parseFloat(getComputedStyle(details,'::details-content').transitionDuration)*1000;
+          await new Promise(resolve=>setTimeout(resolve,duration+40));await frame();
+        };
+        await frame();const closedHeight=height();details.open=true;
+        details.querySelector('a').focus();
+        assert(document.activeElement===details.querySelector('a'),'disclosure immediate focus');
+        await frame();
+        const openingHeight=height();
         const style=getComputedStyle(details,'::details-content');
         assert(reduced?style.transitionDuration==='0s':style.transitionProperty.includes('block-size'),'disclosure timing');
-        await settle(details);details.open=false;await frame();
-        if(!reduced)assert(details.getAnimations({subtree:true}).length>0,'disclosure height exit');
-        await settle(details);assert(!details.open,'disclosure final closed');
+        await settleHeight();const openHeight=height();
+        assert(openHeight>closedHeight,'disclosure expanded height');
+        if(!reduced)assert(openingHeight>closedHeight&&openingHeight<openHeight,'disclosure height enter');
+        details.open=false;await frame();
+        const closingHeight=height();
+        if(!reduced)assert(closingHeight>closedHeight&&closingHeight<openHeight,'disclosure height exit');
+        await settleHeight();assert(!details.open&&Math.abs(height()-closedHeight)<1,'disclosure final closed');
+        details.querySelector('a').focus();
+        assert(document.activeElement!==details.querySelector('a'),'closed disclosure cannot receive focus');
       }
       for(const type of ['tooltip','toast']) {
         let el;

@@ -12,7 +12,7 @@
 .ui-copy-icon[data-ui-copy-state="success"] svg { animation:ui-check-pop var(--motion-duration-base) var(--motion-ease-out); }
 .ui-copy-status[data-ui-copy-state="success"], .ui-copy-status[data-ui-copy-state="error"],
 [data-ui-error]:not([hidden]), [data-ui-empty]:not([hidden]) { animation:ui-appear var(--motion-duration-base) var(--motion-ease-out); }
-.ui-toast:not([hidden]) { animation:ui-appear var(--motion-duration-base) var(--motion-ease-out), ui-content-enter var(--motion-duration-base) var(--motion-ease-out); }
+.ui-toast:not([hidden]) { animation:ui-appear var(--motion-duration-base) var(--motion-ease-out); }
 .ui-tooltip { animation:ui-appear var(--motion-duration-base) var(--motion-ease-out), ui-content-enter var(--motion-duration-base) var(--motion-ease-out); }
 .ui-datepicker-popup:not([hidden]) { animation:ui-appear var(--motion-duration-base) var(--motion-ease-out); }
 [data-ui-panel]:not([hidden]), .accordion details[open] > :not(summary), .tip-disclosure[open] > :not(summary) { animation:ui-appear var(--motion-duration-base) var(--motion-ease-out), ui-content-enter var(--motion-duration-base) var(--motion-ease-out); }
@@ -41,10 +41,10 @@ progress[value]::-moz-progress-bar { transition:width var(--motion-duration-base
   progress[value]::-moz-progress-bar { transition:none; }
 }
 
-/* Painting follows native state: no timers delay close, focus, or ui:hidden.
-   Unsupported browsers keep the original instantaneous close. */
+/* Popovers can leave the top layer visually after their semantic close.
+   Dialogs and hidden panels keep immediate display:none and use inert JS visuals. */
 @supports (transition-behavior:allow-discrete) {
-  :is(.ui-dialog, .ui-popup, .ui-select-menu, .ui-input-popup, .ui-datepicker-popup, .ui-command, [data-ui-panel], .ui-reveal) {
+  :is(.ui-popup, .ui-select-menu, .ui-input-popup, .ui-datepicker-popup) {
     opacity:0;
     pointer-events:none;
     translate:0 4px;
@@ -53,30 +53,17 @@ progress[value]::-moz-progress-bar { transition:width var(--motion-duration-base
       display var(--motion-duration-fast) allow-discrete,
       overlay var(--motion-duration-fast) allow-discrete;
   }
-  :is(.ui-dialog[open], .ui-popup:popover-open, .ui-select-menu:popover-open, .ui-input-popup:popover-open, .ui-datepicker-popup:popover-open, .ui-command[open], .ui-command:not(dialog):not([hidden]), [data-ui-panel]:not([hidden]), .ui-reveal:not([hidden])) {
+  :is(.ui-popup:popover-open, .ui-select-menu:popover-open, .ui-input-popup:popover-open, .ui-datepicker-popup:popover-open) {
     opacity:1; pointer-events:auto; translate:0 0; animation:none;
     transition-duration:var(--motion-duration-base);
     transition-timing-function:var(--motion-ease-out);
   }
-  /* Match the drawer's original specificity, including the open animation. */
-  .ui-dialog.ui-drawer { translate:var(--ui-drawer-x) var(--ui-drawer-y); }
-  .ui-dialog.ui-drawer[open] { translate:0 0; animation:none; }
-  .ui-dialog::backdrop {
-    opacity:0;
-    transition:opacity var(--motion-duration-fast) var(--motion-ease-in),
-      display var(--motion-duration-fast) allow-discrete,
-      overlay var(--motion-duration-fast) allow-discrete;
-  }
-  .ui-dialog[open]::backdrop {
-    opacity:1; animation:none;
-    transition-duration:var(--motion-duration-base);
-    transition-timing-function:var(--motion-ease-out);
-  }
   @starting-style {
-    :is(.ui-dialog[open], .ui-popup:popover-open, .ui-select-menu:popover-open, .ui-input-popup:popover-open, .ui-datepicker-popup:popover-open, .ui-command[open], .ui-command:not(dialog):not([hidden]), [data-ui-panel]:not([hidden]), .ui-reveal:not([hidden])) { opacity:0; translate:0 4px; }
-    .ui-dialog.ui-drawer[open] { translate:var(--ui-drawer-x) var(--ui-drawer-y); }
-    .ui-dialog[open]::backdrop { opacity:0; }
+    :is(.ui-popup:popover-open, .ui-select-menu:popover-open, .ui-input-popup:popover-open, .ui-datepicker-popup:popover-open) { opacity:0; translate:0 4px; }
   }
+  /* Position clamping measures this surface while its entrance is running. */
+  .ui-datepicker-popup, .ui-datepicker-popup:popover-open { translate:none; }
+  @starting-style { .ui-datepicker-popup:popover-open { translate:none; } }
 }
 
 /* A selected underline moves from the previous tab using a transform in ui.js. */
@@ -95,11 +82,12 @@ progress[value]::-moz-progress-bar { transition:width var(--motion-duration-base
 @supports (interpolate-size:allow-keywords) and selector(details::details-content) {
   :where(details) { interpolate-size:allow-keywords; }
   :where(details)::details-content {
-    block-size:0; overflow:clip;
+    block-size:0; overflow:clip; content-visibility:hidden;
     transition:block-size var(--motion-duration-base) var(--motion-ease-in),
       content-visibility var(--motion-duration-base) allow-discrete;
   }
-  :where(details[open])::details-content { block-size:auto; transition-timing-function:var(--motion-ease-out); }
+  /* Make open content focusable synchronously; only closing defers hiding. */
+  :where(details[open])::details-content { block-size:auto; content-visibility:visible; transition-duration:var(--motion-duration-base), 0s; transition-timing-function:var(--motion-ease-out); }
   .accordion details[open] > :not(summary), .tip-disclosure[open] > :not(summary) { animation:none; }
 }
 
