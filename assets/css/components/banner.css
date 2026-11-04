@@ -67,6 +67,12 @@
   --ui-banner-border:var(--bs-danger-border-subtle);
   --ui-banner-solid-bg:var(--bs-danger-text-emphasis); --ui-banner-solid-color:var(--bs-danger-bg-subtle);
 }
+/* Explicit form of the default colour, for markup that names every variant. */
+.ui-banner-neutral {
+  --ui-banner-bg:var(--ui-theme-surface,var(--bs-tertiary-bg)); --ui-banner-color:var(--bs-body-color);
+  --ui-banner-border:var(--bs-border-color);
+  --ui-banner-solid-bg:var(--bs-body-color); --ui-banner-solid-color:var(--bs-body-bg);
+}
 .ui-banner-solid { background:var(--ui-banner-solid-bg); color:var(--ui-banner-solid-color); border-color:var(--ui-banner-solid-bg); }
 .ui-banner-outline { background:var(--bs-body-bg); }
 @container ui-banner (width < 768px) {

@@ -247,6 +247,16 @@ class RecipeTests(unittest.TestCase):
             expected = re.match(r'<!-- NG: ([a-z-]+) -->', block)[1]
             self.assertIn(expected, rule_names(block), block)
 
+    def test_catalog_uses_only_defined_kav_ui_classes(self):
+        # Catalog-only demo classes live in the site CSS; ui-* names must come from Kav-UI.
+        defined = set(INVENTORY['classes'])
+        undefined = set()
+        for page in (ROOT / 'docs').rglob('*.html'):
+            for value in re.findall(r'\bclass="([^"]*)"', page.read_text()):
+                undefined.update((page.relative_to(ROOT).as_posix(), name) for name in value.split()
+                                 if name.startswith('ui-') and name not in defined)
+        self.assertEqual(sorted(undefined), [])
+
     def test_skill_reference_examples_have_no_errors(self):
         for page in (SKILL / 'references').glob('*.md'):
             for block in re.findall(r'```html\n(.*?)```', page.read_text(), re.S):
