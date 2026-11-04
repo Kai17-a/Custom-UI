@@ -193,6 +193,9 @@ html:not(.ui-scroll-smooth) .catalog-navigation:not([open]) > nav { display:none
 .catalog-page-toc { margin:0; }
 .catalog-toc-heading { margin:0 0 8px; padding:8px 0; font-size:12px; font-weight:600; }
 .catalog-toc-title { margin:4px 0 12px; color:var(--bs-secondary-color); font-size:11px; overflow-wrap:anywhere; }
+/* Finish expanding before a focused link triggers native fragment scrolling.
+   Otherwise the growing TOC shifts the destination after its scroll is computed. */
+.catalog-page-toc[open]:has(.catalog-toc-link:focus)::details-content { transition:none; }
 .catalog-page-toc nav { display:block; }
 .catalog-page-toc ol { list-style:none; margin:0; padding:0; max-height:40dvh; overflow-y:auto; scrollbar-width:thin; }
 .catalog-page-toc a { display:block; padding:6px 8px; border-radius:var(--bs-border-radius); color:var(--bs-secondary-color); font-size:12px; line-height:1.5; text-decoration:none; overflow-wrap:anywhere; }
