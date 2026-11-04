@@ -55,12 +55,27 @@ def catalog_search_script():
 ''').encode()
 
 
+def class_inventory():
+    """The skill's markup checker ships a class list built from assets/css for copies without the CSS."""
+    spec = importlib.util.spec_from_file_location('kav_check_markup', ROOT / 'skills/kav-ui/scripts/check_markup.py')
+    checker = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = checker
+    # Keep the published skill free of bytecode caches.
+    previous, sys.dont_write_bytecode = sys.dont_write_bytecode, True
+    try:
+        spec.loader.exec_module(checker)
+    finally:
+        sys.dont_write_bytecode = previous
+    return (json.dumps(checker.build_inventory(ROOT / 'assets/css/ui.css'), indent=1) + '\n').encode()
+
+
 def public_files():
     files = {}
     for source, destination in ((ROOT / 'assets', MANAGED[0]),
                                 (ROOT / 'skills/kav-ui', MANAGED[1])):
         for path in source.rglob('*'):
-            if path.is_file():
+            # Importing the skill's checker leaves bytecode caches that are not part of the skill.
+            if path.is_file() and '__pycache__' not in path.relative_to(source).parts:
                 files[destination / path.relative_to(source)] = path.read_bytes()
     for name in ('README.md', 'vue/README.md', 'astro/README.md'):
         source = ROOT / 'packages' / name
@@ -68,6 +83,9 @@ def public_files():
         text = source.read_text().replace('](../docs/index.html)', '](../index.html)')
         files[MANAGED[2] / name] = text.encode()
     files[DOCS / 'assets/js/catalog-search.js'] = catalog_search_script()
+    inventory = class_inventory()
+    files[ROOT / 'skills/kav-ui/scripts/kav-ui-classes.json'] = inventory
+    files[MANAGED[1] / 'scripts/kav-ui-classes.json'] = inventory
     return files
 
 

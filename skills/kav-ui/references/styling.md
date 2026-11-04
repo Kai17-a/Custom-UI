@@ -20,12 +20,15 @@ CSSを読み込むとクラスなしの見出し・本文・標準入力にも�
 | --- | --- |
 | ページ全体 | bodyの`ui-app`、mainの`ui-app-main`、幅の制限に`ui-container` |
 | カード | `ui-card`内に必要に応じて`ui-card-header`、`ui-card-body`、`ui-card-footer` |
-| Flex | `fx`、`fx-row` / `fx-column`、`fx-wrap` / `fx-nowrap` |
+| Flex | `fx`で`display:flex`。`fx-row` / `fx-column`、`fx-wrap` / `fx-nowrap`は`fx`と同じ要素に付ける |
 | 主軸・交差軸 | `fx-justify-start` / `center` / `end` / `between`、`fx-items-start` / `center` / `end` / `stretch` |
 | 均等グリッド | `fx-grid fx-grid-2` / `fx-grid-3` / `fx-grid-4` |
-| 12カラム | `fx-grid`内の子へ`fx-col-4`・`fx-col-8`など |
+| 12カラム | `fx-grid`の直下の子へ`fx-col-4`・`fx-col-8`など |
+| 並べる部品 | 横並び`ui-cluster`、縦積み`ui-stack`、見出しと操作`ui-page-header`、操作の帯`ui-toolbar`、列数自動`ui-page-grid` |
 | 表示・幅 | `ui-hidden`、`ui-block`、`ui-flex`、`ui-w-full`、`ui-w-auto` |
 | 横長の表 | `ui-table-scroll`で囲み、`tabindex="0" role="region" aria-label="…"`を指定 |
+
+具体的な組み合わせとよくある崩れ方は[横並びのレイアウト例](layout-recipes.md)を参照する。`fx-flex-1`の中で省略表示や表を使う場合は`fx-min-0`も付ける。
 
 `tablet:`は768〜1023px、`mobile:`は767px以下でのみ上書きし、PCは通常のクラスを使う。例：`mobile:fx-column`、`tablet:fx-grid-2`、`mobile:ui-w-full`。端末別指定と「その幅以上」の旧md/lg指定を同じプロパティへ混在させない。
 
@@ -41,7 +44,7 @@ CSSを読み込むとクラスなしの見出し・本文・標準入力にも�
 - 色：`type-color-muted`、`type-color-primary`、`type-color-success`、`type-color-danger`、`type-color-warning`、`type-color-info`。
 - 長文：`type-wrap`、1行省略は`type-truncate`。アプリ側で省略領域の幅も確認する。
 
-`mobile:sp-p-3`、`tablet:type-size-xl`のように切り替えられる。余白を調整するときは、まず既存クラスで表現し、任意の値が必要な場合にトークンやアプリのCSSを使う。
+`mobile:sp-p-3`、`tablet:type-size-xl`のように切り替えられる。互換用の`gap-3`（1rem）や`px-3`は`sp-*`と単位が異なるため、新しいマークアップでは`sp-*`・`fx-gap-*`だけを使う。余白を調整するときは、まず既存クラスで表現し、任意の値が必要な場合にトークンやアプリのCSSを使う。
 
 ## ボタン・アイコン
 

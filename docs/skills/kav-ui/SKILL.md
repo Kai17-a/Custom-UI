@@ -19,6 +19,7 @@ description: "Kav-UIを使う他プロジェクトの画面・コンポーネン
 | --- | --- |
 | 通常HTMLへの導入、配置先、動的DOM、版の違い | [組み込み](references/integration.md) |
 | ページ構成、カード、Flex、余白、文字、ボタン、テーマ | [レイアウトとスタイル](references/styling.md) |
+| 見出しと操作ボタン、ツールバー、カードの並び、ラベルと入力欄などの横並び | [横並びのレイアウト例](references/layout-recipes.md) |
 | 入力・日付・ファイル、タブ、メニュー、レスポンシブサイドバー | [フォームとナビゲーション](references/forms-navigation.md) |
 | ダイアログ、通知、コピー、検索・ソート付きの表、ローディング | [通知とデータ表示](references/feedback-data.md) |
 | カレンダー、チャート、Splitter、Command、Carousel | [対話的な部品](references/widgets.md) |
@@ -29,6 +30,7 @@ description: "Kav-UIを使う他プロジェクトの画面・コンポーネン
 ## 既存のデザインと動作を使う
 
 - 見た目はKav-UIのclass、動作は必要な`data-ui-*`属性で指定する。Bootstrap/Tailwindのクラスや、専用Vue/Astroコンポーネント名を推測で補わない。
+- 横に並べる部分は、まず[横並びのレイアウト例](references/layout-recipes.md)の構造を使う。`fx-row`・`fx-justify-*`・`fx-items-*`・`sp-gap-*`には同じ要素の`fx`が必要。`d-flex`などの互換用クラスがあっても、Bootstrapの他のクラス（`justify-content-between`・`col-md-6`・`mb-3`など）は定義されていない。
 - 通常HTMLの`ui.js`は初期HTMLを自動初期化する。Vue/Astroのパッケージは自身のライフサイクルへ任せ、通常HTML用のJSを重ねて読み込まない。
 - HTML例のCSS/JSのURLは**アプリの公開先**へ合わせる。スキルのフォルダをWebアプリへ公開する必要はない。HTML例のID・フォーム名・リンク先もアプリ用に変更する。
 - 明暗、ガラスなどの質感、カラーパレットは独立した設定。既存のデザイントークン、`fx-*`・`sp-*`・`type-*`、PC/タブレット/スマートフォンの指定を使う。
@@ -36,5 +38,13 @@ description: "Kav-UIを使う他プロジェクトの画面・コンポーネン
 - 標準の出現・退出モーション、キーボード操作、フォーカス復帰を利用する。動きを減らす設定を打ち消さない。
 
 ## 確認する
+
+マークアップを書いたら、このスキルの検査スクリプトを実行し、errorをすべて直す。warningも内容を確認する。通常HTMLでは、アプリに置いたui.cssを`--css`で渡す。
+
+```sh
+python3 <このスキルのフォルダ>/scripts/check_markup.py <変更したファイルまたはフォルダ> --css <アプリのui.css>
+```
+
+アプリのフォルダで実行する。Vue/Astroで`@kav-ui/core`を導入済みなら`--css`は省略できる。オプションと規則は[横並びのレイアウト例](references/layout-recipes.md#書いたあとに検査する)を参照する。検査は表示の確認の代わりにはならないので、続けて次も確認する。
 
 使った部品の操作、長文、PC・タブレット・スマートフォンの幅を確認する。入力・選択状態とキーボード操作、変更したテーマも対象にする。動的DOMでは再初期化と後始末を確認し、実施した検証と未確認の範囲を報告する。
