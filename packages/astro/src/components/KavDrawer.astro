@@ -1,0 +1,11 @@
+---
+import type {HTMLAttributes} from 'astro/types';
+interface Props extends HTMLAttributes<'dialog'> {id:string;title?:string;label?:string;placement?:'start'|'end'|'top'|'bottom';}
+const {id,title,label,placement='end',class:className,...rest}=Astro.props;
+---
+<div data-kav-ui-widget><dialog {...rest} id={id} data-ui-dialog class:list={['ui-dialog','ui-drawer','ui-drawer-'+placement,className]} aria-label={label??rest['aria-label']} aria-labelledby={title?id+'-title':rest['aria-labelledby']}>
+ {title&&<header class="ui-drawer-header"><h2 id={id+'-title'}>{title}</h2></header>}
+ <div class="ui-drawer-body"><slot/></div>
+ {Astro.slots.has('footer')&&<footer class="ui-drawer-footer"><slot name="footer"/></footer>}
+</dialog></div>
+<script>import {installAstro} from "../client.js";installAstro();</script>

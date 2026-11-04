@@ -54,3 +54,12 @@ test('Vue: layout props, semantic structure, optional slots and outer attributes
   assertLayout(assert,html,name,props,slotNames);
  }
 });
+
+test('Vue: Textarea label overrides aria-label while preserving native attributes and value',async()=>{
+ const {KavTextarea}=await import('../../packages/vue/src/index.js');
+ for(const [label,expected] of [[undefined,'属性の名前'],['優先する名前','優先する名前'],['','']]){
+  const html=await renderToString(createSSRApp({render:()=>h(KavTextarea,{label,'aria-label':'属性の名前',modelValue:'<本文>',name:'message',id:'message',rows:4,placeholder:'入力',required:true,disabled:true,maxlength:200,class:'custom','data-test':'textarea'})}));
+  assert.ok(html.includes('aria-label="'+expected+'"'));assert.doesNotMatch(html,/\slabel=/);
+  assert.match(html,/class="form-control custom"/);assert.match(html,/name="message"/);assert.match(html,/id="message"/);assert.match(html,/rows="4"/);assert.match(html,/placeholder="入力"/);assert.match(html,/required/);assert.match(html,/disabled/);assert.match(html,/maxlength="200"/);assert.match(html,/data-test="textarea"/);assert.match(html,/>&lt;本文&gt;<\/textarea>/);
+ }
+});

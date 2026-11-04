@@ -46,3 +46,24 @@ const invalidItem:GridItemProps={span:{base:13}};
 // @ts-expect-error heading levels are constrained
 h(KavPageHeader,{level:7});
 void invalidFlex;void invalidGrid;void invalidItem;
+
+import {KavTextarea} from '@kav-ui/vue';
+import {KavTabs as AstroTabs,KavDrawer as AstroDrawer} from '@kav-ui/astro';
+h(KavTextarea,{modelValue:'本文',name:'message',id:'message',rows:4,placeholder:'入力',required:true,disabled:false,maxlength:200,label:'メッセージ','onUpdate:modelValue':value=>value.toUpperCase()});
+// @ts-expect-error textarea label must be a string
+h(KavTextarea,{label:42});
+// @ts-expect-error textarea rows must be numeric
+h(KavTextarea,{rows:'four'});
+// @ts-expect-error textarea maxlength must be numeric
+h(KavTextarea,{maxlength:'long'});
+// @ts-expect-error textarea required must be boolean
+h(KavTextarea,{required:'yes'});
+// @ts-expect-error textarea disabled must be boolean
+h(KavTextarea,{disabled:'yes'});
+// @ts-expect-error textarea name must be a string
+h(KavTextarea,{name:1});
+// @ts-expect-error textarea id must be a string
+h(KavTextarea,{id:1});
+// @ts-expect-error textarea placeholder must be a string
+h(KavTextarea,{placeholder:1});
+void AstroTabs;void AstroDrawer;
