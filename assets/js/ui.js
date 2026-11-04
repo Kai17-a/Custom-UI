@@ -75,7 +75,7 @@
   });
   function cancelExit(element) {
     const visual = exitVisuals.get(element);
-    if (visual) { visual.animation.cancel(); visual.host.remove(); exitVisuals.delete(element); }
+    if (visual) { visual.animation.cancel(); visual.sourceAnimation?.cancel(); visual.host.remove(); exitVisuals.delete(element); }
   }
   function prepareExit(element) {
     // Popovers use native CSS exits. Removed nodes and immediately hidden
@@ -84,7 +84,7 @@
     const bounds = element.getBoundingClientRect();
     const opacity = Number(getComputedStyle(element).opacity);
     const destination = '0 5px';
-    const parent = element.closest('dialog[open]') || doc.body;
+    const parent = element.parentElement?.closest('dialog[open]') || doc.body;
     if (!bounds.width || !bounds.height || opacity < .01) return () => {};
     // A closed shadow contains a frozen, inert visual copy. No duplicate IDs,
     // controls, live regions or UI selectors enter the application document.
@@ -125,7 +125,11 @@
       parent.append(host);
       const animation = motion(host, [{opacity,translate:'0 0'},{opacity:0,translate:destination}], 'fast', 'in');
       if (!animation) { host.remove(); return; }
-      exitVisuals.set(element, {host, animation});
+      // Keep the source's exit observable even though native close immediately
+      // hides it. Only the inert copy paints; both animations share the timing.
+      const sourceAnimation = element.tagName === 'DIALOG'
+        ? motion(element, [{opacity},{opacity:0}], 'fast', 'in') : null;
+      exitVisuals.set(element, {host, animation, sourceAnimation});
       const cleanup = () => { host.remove(); if (exitVisuals.get(element)?.host === host) exitVisuals.delete(element); };
       animation.finished.then(cleanup, cleanup);
 
@@ -4018,6 +4022,20 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
   });
   window.addEventListener('resize', hideTooltip);
   doc.addEventListener('scroll', hideTooltip, true);
+  doc.addEventListener('cancel', event => {
+    const dialog = event.target;
+    if (!dialog.matches?.('dialog[data-ui-dialog]')) return;
+    const play = prepareExit(dialog);
+    setTimeout(() => { if (!event.defaultPrevented && !dialog.open) play(); }, 0);
+  }, true);
+  doc.addEventListener('submit', event => {
+    const form = event.target;
+    const dialog = form.closest('dialog[data-ui-dialog][open]');
+    const method = event.submitter?.getAttribute('formmethod') || form.method;
+    if (!dialog || method !== 'dialog' || event.defaultPrevented || !form.checkValidity()) return;
+    const play = prepareExit(dialog);
+    setTimeout(() => { if (!event.defaultPrevented && !dialog.open) play(); }, 0);
+  });
   doc.addEventListener('reset', event => {
     const form=event.target,state=validationStates.get(form);
     if(!state)return;
