@@ -4,7 +4,7 @@
   content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
   background:linear-gradient(90deg, transparent, var(--bs-body-bg), transparent);
   opacity:.65; transform:translateX(-100%);
-  animation:skeleton-shimmer-sweep 1.8s ease-in-out infinite;
+  animation:skeleton-shimmer-sweep var(--motion-duration-shimmer) var(--motion-ease-in-out) infinite;
 }
 .skeleton-title { height:1.25rem; }
 .skeleton-circle { width:var(--skeleton-size,3rem); height:var(--skeleton-size,3rem); flex:0 0 auto; margin:0; border-radius:50%; }

@@ -140,6 +140,25 @@
   <div class="accordion"><details><summary>アコーディオンを開閉する</summary><p>内容の表示と非表示にも短いアニメーションが付きます。</p></details></div>
 </div>
 </div></section>
+<section class="specimen"><h2>動きの共通トークン</h2>
+<p>時間とイージングは <code>tokens.css</code> にまとめています。<code>:root</code> または部品の親要素で上書きすると、CSS と JavaScript の動きに反映されます。</p>
+<div class="example"><table class="table"><thead><tr><th scope="col">トークン</th><th scope="col">初期値・用途</th></tr></thead><tbody>
+<tr><td><code>--motion-duration-fast</code></td><td>120ms：退場、押下、ホバー</td></tr>
+<tr><td><code>--motion-duration-base</code></td><td>180ms：入場、選択、折り畳み</td></tr>
+<tr><td><code>--motion-duration-slow</code></td><td>240ms：カードの移動</td></tr>
+<tr><td><code>--motion-ease-out</code></td><td>cubic-bezier(.16,1,.3,1)：入場・選択</td></tr>
+<tr><td><code>--motion-ease-in</code></td><td>cubic-bezier(.4,0,1,1)：退場</td></tr>
+<tr><td><code>--motion-ease-in-out</code> / <code>--motion-ease-linear</code></td><td>cubic-bezier(.4,0,.2,1) / linear：処理中の繰り返し</td></tr>
+<tr><td><code>--motion-duration-spin</code> / <code>--motion-duration-loading</code></td><td>800ms / 1600ms：スピナー・進捗</td></tr>
+<tr><td><code>--motion-duration-shimmer</code> / <code>--motion-duration-pulse</code></td><td>1800ms / 2400ms：スケルトン・処理中の表示</td></tr>
+</tbody></table></div>
+<pre><code>:root {
+  --motion-duration-base: 200ms;
+  --motion-duration-fast: 120ms;
+}</code></pre>
+<p>Dialog・Drawer・Dropdown・Popover・Select・Command・Date picker は <code>@starting-style</code> と <code>display</code> / <code>overlay</code> の離散トランジションで開閉します。閉じる操作はすぐに hidden・open・フォーカス・イベントへ反映され、見た目だけが短く残ります。DOM から削除する Tooltip・Toast は操作できない退場用の表示を使います。再オープンは進行中の遷移を引き継ぎます。</p>
+<p>折り畳みは <code>interpolate-size:allow-keywords</code> と <code>::details-content</code> で高さを補間します。未対応のブラウザは即座に切り替わります。OS の「動きを減らす」設定では補間も退場用表示もなくなり、待ち時間は発生しません。任意指定のアニメーションプリセットは従来どおりです。</p>
+</section>
 <section class="specimen"><h2>自動アニメーションの対象</h2><div class="example"><table class="table"><thead><tr><th scope="col">操作</th><th scope="col">動きとサンプル</th></tr></thead><tbody>
 <tr><th scope="row">開く・閉じる</th><td><a href="dialog.html">モーダル</a>・<a href="toasts.html">トースト</a>・<a href="alerts.html">アラート</a>・<a href="tips.html">ヒント</a>・<a href="datepicker.html">日付ポップアップ</a>のフェード。</td></tr>
 <tr><th scope="row">開閉・切り替え</th><td><a href="sidebar.html">サイドバー</a>の表示、<a href="disclosure.html">アコーディオン</a>、<a href="navigation.html">タブ・ページ送り</a>の切り替え。</td></tr>

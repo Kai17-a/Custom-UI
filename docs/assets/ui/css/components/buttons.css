@@ -19,7 +19,7 @@
   border: var(--bs-btn-border-width) solid var(--bs-btn-border-color);
   border-radius: var(--bs-btn-border-radius);
   background-color: var(--bs-btn-bg);
-  transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  transition: color var(--motion-duration-base) var(--motion-ease-in-out), background-color var(--motion-duration-base) var(--motion-ease-in-out), border-color var(--motion-duration-base) var(--motion-ease-in-out), box-shadow var(--motion-duration-base) var(--motion-ease-in-out);
 }
 .btn:hover { color: var(--bs-btn-hover-color); background-color: var(--bs-btn-hover-bg); border-color: var(--bs-btn-hover-border-color); }
 .btn:focus-visible { outline:2px solid var(--bs-primary); outline-offset:3px; }

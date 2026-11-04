@@ -1,6 +1,7 @@
 /* node tests/run-browser.mjs — uses an installed Chromium, no npm dependencies.
    Set CHROME_BIN if Chromium is not installed in one of the detected locations. */
 import {spawn} from 'node:child_process';
+import {checkMotion} from './motion-browser.mjs';
 import {checkControlAppearance} from './control-appearance.mjs';
 import {existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync, rmSync} from 'node:fs';
 import {homedir, tmpdir} from 'node:os';
@@ -73,6 +74,8 @@ try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  await navigate('tests/ui.html');const canonical=await evaluate('window.uiTestsDone');console.log('Canonical UI regression:',JSON.stringify(canonical));if(canonical.failures.length)throw new Error('Legacy UI regressions');
+  await checkMotion({evaluate,send});
   // Agent diagrams retain native list, disclosure and form behavior without UI JavaScript.
   await navigate('components/agent-workflow.html');
   if(!await evaluate(`document.querySelectorAll('main [data-example]').length===4`))throw new Error('Agent workflow: four examples');
@@ -646,10 +649,10 @@ try {
   await navigate('components/animations-interactions.html');
   await click('[data-ui-target="#motion-dialog"]');await delay(180);
   await key('Escape');await delay(20);
-  if(!await evaluate('!document.querySelector("#motion-dialog").open && !!document.querySelector("[data-ui-motion-ghost]")'))throw new Error('Native dialog exit motion or immediate close failed');
+  if(!await evaluate('!document.querySelector("#motion-dialog").open && document.querySelector("#motion-dialog").getAnimations().length>0'))throw new Error('Native dialog exit motion or immediate close failed');
   // Animation completion depends on browser frames, not the Node timer alone.
-  for(let attempt=0;attempt<40 && await evaluate('!!document.querySelector("[data-ui-motion-ghost]")');attempt++)await delay(25);
-  if(!await evaluate('!document.querySelector("[data-ui-motion-ghost]")'))throw new Error('Exit visual was not cleaned up');
+  await evaluate(`Promise.all(document.querySelector('#motion-dialog').getAnimations().map(a=>a.finished.catch(()=>{})))`);
+  if(!await evaluate('getComputedStyle(document.querySelector("#motion-dialog")).display==="none"'))throw new Error('Closed dialog remained painted');
   await click('[data-ui-target="#motion-panel"]');await delay(180);
   await click('[data-ui-target="#motion-panel"]');
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
