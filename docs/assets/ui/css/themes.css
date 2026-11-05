@@ -21,6 +21,7 @@ body[data-ui-theme="glass"] {
 }
 /* A stronger frosted-glass treatment with luminous edges and layered color. */
 body[data-ui-theme="glassmorphism"] {
+  --bs-secondary-color:#4c5058;
   --bs-border-radius:.8rem;
   --bs-border-radius-sm:.55rem;
   --bs-border-radius-lg:1.1rem;
@@ -50,10 +51,16 @@ body:is([data-ui-theme="glass"], [data-ui-theme="glassmorphism"]) {
   background-attachment:fixed;
   background-repeat:no-repeat;
 }
+[data-bs-theme="dark"] body[data-ui-theme="glass"] {
+  --bs-secondary-color:rgba(200,201,204,.8);
+}
 [data-bs-theme="dark"] body[data-ui-theme="glassmorphism"] {
+  --bs-secondary-color:#b8bac0;
   --ui-glass-highlight:rgba(255,255,255,.16);
   --ui-glass-sheen:rgba(255,255,255,.05);
 }
+/* Selected text uses the existing emphasis ink on translucent tab backgrounds. */
+body[data-ui-theme="glassmorphism"] .tabs:not(.tabs-pills) [aria-selected="true"] { color:var(--bs-primary-text-emphasis); }
 body[data-ui-theme="flat"] {
   --bs-border-radius:.2rem;
   --bs-border-radius-sm:.15rem;

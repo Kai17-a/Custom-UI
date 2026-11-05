@@ -1,6 +1,7 @@
 /* node tests/run-browser.mjs — uses an installed Chromium, no npm dependencies.
    Set CHROME_BIN if Chromium is not installed in one of the detected locations. */
 import {spawn} from 'node:child_process';
+import {checkCatalogAccessibility} from './catalog-accessibility.mjs';
 import {checkMotion} from './motion-browser.mjs';
 import {checkControlAppearance} from './control-appearance.mjs';
 import {existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync, rmSync} from 'node:fs';
@@ -74,11 +75,12 @@ async function click(selector) {
   await send('Input.dispatchMouseEvent',{type:'mousePressed',...box,button:'left',clickCount:1});
   await send('Input.dispatchMouseEvent',{type:'mouseReleased',...box,button:'left',clickCount:1});
 }
-const timeout=setTimeout(()=>{console.error('Browser checks timed out');child.kill();process.exitCode=1;},360000);
+const timeout=setTimeout(()=>{console.error('Browser checks timed out');child.kill();process.exitCode=1;},600000);
 try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  await checkCatalogAccessibility({navigate,evaluate,send,artifacts,pages:['index.html',...readdirSync(site).filter(p=>p.endsWith('.html')&&p!=='index.html'),...['components','templates'].flatMap(dir=>readdirSync(join(site,dir)).filter(p=>p.endsWith('.html')).map(p=>dir+'/'+p))]});
   await navigate('tests/ui.html');const canonical=await evaluate('window.uiTestsDone');console.log('Canonical UI regression:',JSON.stringify(canonical));if(canonical.failures.length)throw new Error('Legacy UI regressions');
   await checkMotion({evaluate,send});
   // Agent diagrams retain native list, disclosure and form behavior without UI JavaScript.

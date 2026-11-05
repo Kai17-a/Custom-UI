@@ -47,6 +47,10 @@ html[data-ui-focus-modality="pointer"] :is(button.form-control, .form-select):fo
 /* Dense desktop controls retain their visual size; touch gets a shared hit area.
    Seven-column calendars grow vertically so narrow months still fit the viewport. */
 @media (pointer:coarse) {
+  .ui-data-table-sort, .table td a[href], .ui-header-nav a, .ui-footer-inner a {
+    display:inline-flex; align-items:center; min-width:var(--ui-touch-target); min-height:var(--ui-touch-target);
+  }
+  details.ui-chart-data > summary { min-width:var(--ui-touch-target); min-height:var(--ui-touch-target); align-content:center; }
   .btn, .ui-calendar-actions .btn { min-width:var(--ui-touch-target); min-height:var(--ui-touch-target); }
   .btn-close { box-sizing:border-box; min-width:var(--ui-touch-target); min-height:var(--ui-touch-target); }
   .form-check, .ui-rating-choice { min-height:var(--ui-touch-target); }
