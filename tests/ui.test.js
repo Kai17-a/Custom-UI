@@ -24,6 +24,13 @@ window.uiTestsDone = (async () => {
       await wait(0);
     }
   }
+  await test('通知より前に常設の読み上げ領域がある', () => {
+    assert(!document.querySelector('.ui-toasts'),'通知の見た目はまだ生成されていない');
+    for (const urgency of ['polite','assertive']) {
+      const regions=document.querySelectorAll('.visually-hidden[aria-live="'+urgency+'"][aria-atomic="true"]');
+      assert(regions.length===1 && regions[0].textContent==='',urgency+'領域が空で初期化されている');
+    }
+  });
   await test('Validation reset: 値・検証表示・説明参照を初期状態へ戻す', async () => {
     mount('<form data-ui-validate novalidate><div data-ui-field><label for="reset-validation">名前</label><input id="reset-validation" class="form-control" required aria-describedby="reset-hint"><small id="reset-hint">補足説明</small><small data-ui-error hidden></small></div><button type="submit">送信</button><button type="reset">戻す</button></form>');
     const form=find('form'),input=find('input'),error=find('[data-ui-error]');
@@ -531,7 +538,7 @@ window.uiTestsDone = (async () => {
       mount('<div class="app-shell" id="edge-unit" data-ui-sidebar data-ui-sidebar-mobile="'+edge+'" data-ui-sidebar-tablet="'+edge+'" data-ui-sidebar-desktop="'+edge+'"><aside class="app-sidebar"><a href="#">ページ</a></aside><div><button type="button" data-ui-toggle="sidebar-responsive" data-ui-target="#edge-unit">開く</button></div></div>');
       const root=find('#edge-unit'),panel=find('.app-sidebar');
       assert(KavUI.sidebar(root).mode===edge&&panel.hidden,'端から開くモードを適用');
-      find('button').click();const dialog=document.querySelector('.ui-sidebar-dialog');
+      find('button').click();const dialog=document.querySelector('.ui-sidebar-dialog[open]');
       assert(dialog.open&&dialog.classList.contains('ui-drawer-'+edge)&&dialog.contains(panel),'上下のドロワーで開く');
       dialog.close();await wait(20);assert(panel.parentNode===root&&panel.hidden,'閉じたら戻す');
     }
@@ -540,10 +547,12 @@ window.uiTestsDone = (async () => {
     if(innerWidth>=768)return;
     mount('<div class="app-shell" id="drawer-unit" data-ui-sidebar><aside class="app-sidebar" aria-label="テストメニュー"><label>検索<input value="保持"></label><a href="#">概要</a></aside><div><button type="button" data-ui-toggle="sidebar-responsive" data-ui-target="#drawer-unit">開く</button></div></div>');
     const root=find('#drawer-unit'),panel=find('.app-sidebar'),input=find('input'),button=find('button');
-    button.focus();button.click();const dialog=document.querySelector('.ui-sidebar-dialog');
+    button.focus();button.click();const dialog=document.querySelector('.ui-sidebar-dialog[open]');
     assert(dialog?.open&&dialog.contains(panel)&&input.value==='保持','元のDOMでモーダル表示');
     input.value='編集中';dialog.close();await wait(30);
-    assert(panel.parentNode===root&&panel.hidden&&input.value==='編集中'&&!dialog.isConnected,'閉じた後に入力状態を維持して戻す');
+    assert(panel.parentNode===root&&panel.hidden&&input.value==='編集中'&&!dialog.open,'閉じた後に入力状態を維持して戻す');
+    await Promise.all(dialog.getAnimations().map(a=>a.finished.catch(()=>{})));await wait(0);
+    assert(!dialog.isConnected,'終了描画後に外枠を削除');
     assert(document.activeElement===button,'トリガーにフォーカス復帰');
     button.click();root.remove();await wait(30);
     assert(!document.querySelector('.ui-sidebar-dialog[open]'),'利用側が削除されてもモーダルを残さない');
@@ -842,7 +851,7 @@ window.uiTestsDone = (async () => {
     const success=KavUI.toast('<strong>text</strong>',{duration:35});
     const error=KavUI.toast('error',{variant:'danger',duration:0});
     assert(success.textContent.includes('<strong>text</strong>') && !success.querySelector('strong'),'テキストとして表示');
-    assert(error.getAttribute('role')==='alert','エラーを通知');
+    assert(!error.hasAttribute('role'),'通知の読み上げは専用ライブ領域を使う');
     await wait(100);assert(!success.isConnected && error.isConnected,'成功だけ自動消去');
     error.querySelector('button').click();assert(!error.isConnected,'共通属性で手動消去');
   });
@@ -851,7 +860,7 @@ window.uiTestsDone = (async () => {
     assert(structured.querySelector('.ui-toast-title').textContent==='<b>保存完了</b>' && !structured.querySelector('b'),'タイトルもHTMLとして実行しない');
     assert(structured.querySelector('.ui-toast-body').textContent==='1行目\n2行目','本文の改行を保持');
     assert(structured.querySelector('.ui-toast-meta').textContent==='たった今','補足を表示');
-    assert(structured.getAttribute('aria-atomic')==='true','通知全体を読み上げる');
+    assert(!structured.hasAttribute('aria-atomic'),'見た目の通知にライブ領域を重複させない');
     const legacy=KavUI.toast('以前の本文',{title:'互換タイトル',duration:0});
     assert(legacy.querySelector('.ui-toast-body').textContent==='以前の本文','文字列形式を維持');
     const titleOnly=KavUI.toast({title:'タイトルだけ',duration:0});
@@ -1038,9 +1047,9 @@ window.uiTestsDone = (async () => {
     assert(panel.getAttribute('aria-busy')==='false' && getComputedStyle(panel,'::after').content==='none','パネルの状態を復元');
     assert(!KavUI.loading('[') && !KavUI.loading('#missing') && !KavUI.loading(null) && !KavUI.loading(button,false),'不正な指定・余分な終了は安全に無視');
   });
-  await test('出現時のフェード・再表示・閉じる操作は即時', () => {
+  await test('出現時のフェード・再表示・閉じる操作は即時', async () => {
     mount('<button data-ui-tooltip="補足">説明</button><dialog class="ui-dialog" data-ui-dialog><button data-ui-dismiss="dialog">閉じる</button></dialog><div id="fade-panel" hidden>開閉パネル</div><div class="alert alert-info" hidden>通知</div>');
-    const entrance=element=>element.getAnimations().find(animation=>animation.animationName==='ui-appear');
+    const entrance=element=>element.getAnimations().find(animation=>animation.animationName==='ui-appear'||animation instanceof CSSTransition&&animation.transitionProperty==='opacity');
     const check=element=>{
       const animation=entrance(element);
       assert(animation,'追加指定なしでフェードが始まる');
@@ -1052,7 +1061,9 @@ window.uiTestsDone = (async () => {
       return animation;
     };
     const dialog=find('dialog');dialog.showModal();check(dialog);dialog.close();
-    assert(!dialog.open && getComputedStyle(dialog).display==='none','閉じる操作を遅延させない');
+    assert(!dialog.open,'閉じる状態を遅延させない');
+    await Promise.all(dialog.getAnimations().map(a=>a.finished.catch(()=>{})));
+    assert(getComputedStyle(dialog).display==='none','終了描画後に非表示');
     dialog.showModal();assert(entrance(dialog)?.playState==='running','ネイティブAPIでの再表示もフェード');dialog.close();
     const panel=find('#fade-panel');KavUI.show(panel);const first=check(panel);
     KavUI.show(panel);assert(!entrance(panel) && getComputedStyle(panel).opacity==='1','表示中のshowで点滅させない');

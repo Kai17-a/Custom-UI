@@ -158,7 +158,7 @@
   --motion-duration-base: 200ms;
   --motion-duration-fast: 120ms;
 }</code></pre>
-<p>Dropdown・Popover・Select・Date picker は CSS の離散トランジションで開閉します。Dialog・Drawer・Command と Tooltip は操作できないコピーで退場し、Toast のコピーは通知領域内で残った通知の下に表示します。通常の流れのパネルは即座に隠れ、スクロールによって閉じるポップアップと Tooltip は退場の動きを省略します。閉じる操作・フォーカス・イベントは即座に反映します。Drawer は入ってきた方向へ戻り、テーマ切り替えではページ全体をフェードしません。</p>
+<p>Dialog・Drawer・Command・Dropdown・Popover・Select・Date picker は、display と overlay の離散トランジションに対応したブラウザで CSS による開閉を行います。未対応では即座に閉じます。Tooltip・Toast は操作できないコピーで退場し、Toast のコピーは通知領域の外で残った通知の下に表示します。子孫が100個を超える場合はコピーを省略します。通常の流れのパネルは即座に隠れ、スクロールによって閉じるポップアップと Tooltip は退場の動きを省略します。閉じる操作・フォーカス・イベントは即座に反映します。Drawer は入ってきた方向へ戻り、テーマ切り替えではページ全体をフェードしません。</p>
 <p>折り畳みは <code>interpolate-size:allow-keywords</code> と <code>::details-content</code> で高さを補間します。未対応のブラウザは即座に切り替わります。OS の「動きを減らす」設定では補間も退場用表示もなくなり、待ち時間は発生しません。任意指定のアニメーションプリセットは従来どおりです。</p>
 </section>
 <section class="specimen"><h2>自動アニメーションの対象</h2><div class="example"><table class="table"><thead><tr><th scope="col">操作</th><th scope="col">動きとサンプル</th></tr></thead><tbody>

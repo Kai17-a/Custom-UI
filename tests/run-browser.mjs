@@ -1543,7 +1543,7 @@ try {
     }
   }
   {
-  async function settleSidebar(){await evaluate(`Promise.all(document.querySelector('.ui-sidebar-dialog').getAnimations().map(a=>a.finished.catch(()=>{})))`);}
+  async function settleSidebar(){await evaluate(`Promise.all(document.querySelector('.ui-sidebar-dialog[open]').getAnimations().map(a=>a.finished.catch(()=>{})))`);}
   // Responsive sidebars: current catalog and existing application shells.
   await navigate('components/sidebar.html');
   for(const width of [320,767,768,820,1023,1024,1440]){
@@ -1574,27 +1574,27 @@ try {
     await click(trigger+' svg');await settleSidebar();
     const check=await evaluate(`(()=>{const dialog=document.querySelector('.ui-sidebar-dialog[open]'),b=dialog?.getBoundingClientRect();return {open:!!dialog,inside:dialog?.contains(document.activeElement),bounds:b&&b.left>=-1&&b.right<=innerWidth+1&&b.top>=-1&&b.bottom<=innerHeight+1,locked:getComputedStyle(document.documentElement).overflow==='hidden',bottom:dialog?.classList.contains('ui-drawer-bottom'),right:b&&b.right};})()`);
     if(!check.open||!check.inside||!check.bounds||!check.locked || (demo==='sidebar-bottom-demo'&&!check.bottom) || (demo==='sidebar-rail-demo'&&Math.abs(check.right-390)>1))throw new Error('Sidebar mobile drawer '+demo+' '+JSON.stringify(check));
-    await key('Tab');if(!await evaluate(`document.querySelector('.ui-sidebar-dialog').contains(document.activeElement)`))throw new Error('Sidebar Tab containment');
+    await key('Tab');if(!await evaluate(`document.querySelector('.ui-sidebar-dialog[open]').contains(document.activeElement)`))throw new Error('Sidebar Tab containment');
     const {data}=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});writeFileSync(join(artifacts,demo+'-390.png'),Buffer.from(data,'base64'));
     await key('Escape');await delay(40);
-    if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog')&&document.activeElement===document.querySelector('${trigger}')&&document.querySelector('#${demo} > .app-sidebar').hidden`))throw new Error('Sidebar Escape restoration '+demo);
+    if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog[open]')&&document.activeElement===document.querySelector('${trigger}')&&document.querySelector('#${demo} > .app-sidebar').hidden`))throw new Error('Sidebar Escape restoration '+demo);
     await click(trigger);await settleSidebar();await click('.ui-sidebar-dialog-close svg');await delay(30);
-    if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog')`))throw new Error('Sidebar close icon');
+    if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog[open]')`))throw new Error('Sidebar close icon');
   }
   await click('#sidebar-responsive-demo [data-ui-toggle="sidebar-responsive"]');await settleSidebar();
-  const b=await evaluate(`(()=>{const r=document.querySelector('.ui-sidebar-dialog').getBoundingClientRect();return {x:Math.min(innerWidth-2,r.right+20),y:innerHeight/2};})()`);
+  const b=await evaluate(`(()=>{const r=document.querySelector('.ui-sidebar-dialog[open]').getBoundingClientRect();return {x:Math.min(innerWidth-2,r.right+20),y:innerHeight/2};})()`);
   await send('Input.dispatchMouseEvent',{type:'mousePressed',...b,button:'left',clickCount:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',...b,button:'left',clickCount:1});await delay(30);
-  if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog')`))throw new Error('Sidebar backdrop');
+  if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog[open]')`))throw new Error('Sidebar backdrop');
   await click('#sidebar-responsive-demo [data-ui-toggle="sidebar-responsive"]');await settleSidebar();
   await evaluate(`document.querySelector('.ui-sidebar-dialog a').href='#sidebar-responsive'`);await click('.ui-sidebar-dialog a');await delay(30);
-  if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog')&&!KavUI.sidebar('#sidebar-responsive-demo').open`))throw new Error('Sidebar navigation closes');
+  if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog[open]')&&!KavUI.sidebar('#sidebar-responsive-demo').open`))throw new Error('Sidebar navigation closes');
   await click('#sidebar-collapse-demo [data-ui-toggle="sidebar-responsive"]');
   if(!await evaluate(`!document.querySelector('#sidebar-collapse-demo > .app-sidebar').hidden&&document.querySelector('#sidebar-collapse-demo').dataset.uiSidebarMode==='collapse'`))throw new Error('Sidebar inline collapse');
   await evaluate(`document.querySelector('#sidebar-collapse-demo .app-sidebar a').focus()`);await key('Escape');
   if(!await evaluate(`document.querySelector('#sidebar-collapse-demo > .app-sidebar').hidden&&document.activeElement.matches('[data-ui-toggle="sidebar-responsive"]')`))throw new Error('Sidebar inline Escape/focus');
   await click('#sidebar-responsive-demo [data-ui-toggle="sidebar-responsive"]');await settleSidebar();
   await send('Emulation.setDeviceMetricsOverride',{width:820,height:1000,deviceScaleFactor:1,mobile:false});await delay(60);
-  if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog')&&document.querySelector('#sidebar-responsive-demo > .app-sidebar')&&!KavUI.sidebar('#sidebar-responsive-demo').open&&KavUI.sidebar('#sidebar-responsive-demo').mode==='rail'&&getComputedStyle(document.documentElement).overflow!=='hidden'`))throw new Error('Sidebar drawer to tablet');
+  if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog[open]')&&document.querySelector('#sidebar-responsive-demo > .app-sidebar')&&!KavUI.sidebar('#sidebar-responsive-demo').open&&KavUI.sidebar('#sidebar-responsive-demo').mode==='rail'&&getComputedStyle(document.documentElement).overflow!=='hidden'`))throw new Error('Sidebar drawer to tablet');
   await click('#sidebar-responsive-demo [data-ui-toggle="sidebar-responsive"] svg');
   if(!await evaluate(`KavUI.sidebar('#sidebar-responsive-demo').open&&getComputedStyle(document.querySelector('#sidebar-responsive-demo .sidebar-label')).position!=='absolute'`))throw new Error('Sidebar rail expansion');
   await click('#sidebar-responsive-demo [data-ui-toggle="sidebar-responsive"]');
@@ -1612,15 +1612,15 @@ try {
     for(const direction of ['top','bottom'])for(const theme of ['default','glass','glassmorphism','flat','soft']) {
       await evaluate(`KavUI.setDesignTheme('${theme}');KavUI.setColorTheme('dark');`);
       const selector='#sidebar-'+direction+'-demo [data-ui-toggle="sidebar-responsive"]';await click(selector+' svg');
-      const animation=await evaluate(`(()=>{const d=document.querySelector('.ui-sidebar-dialog'),a=d.getAnimations()[0];return {classes:d.className,y:getComputedStyle(d).getPropertyValue('--ui-drawer-y').trim(),x:getComputedStyle(d).getPropertyValue('--ui-drawer-x').trim(),frames:a?.effect.getKeyframes().map(f=>f.translate)};})()`);
+      const animation=await evaluate(`(()=>{const d=document.querySelector('.ui-sidebar-dialog[open]'),a=d.getAnimations()[0];return {classes:d.className,y:getComputedStyle(d).getPropertyValue('--ui-drawer-y').trim(),x:getComputedStyle(d).getPropertyValue('--ui-drawer-x').trim(),frames:a?.effect.getKeyframes().map(f=>f.translate)};})()`);
       if(!animation.classes.includes('ui-drawer-'+direction)||animation.x!=='0'||animation.y!==(direction==='top'?'-100%':'100%'))throw new Error('Sidebar edge direction '+JSON.stringify(animation));
       await settleSidebar();
-      const bounds=await evaluate(`(()=>{const d=document.querySelector('.ui-sidebar-dialog'),r=d.getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height,focus:d.contains(document.activeElement)};})()`);
+      const bounds=await evaluate(`(()=>{const d=document.querySelector('.ui-sidebar-dialog[open]'),r=d.getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,height:r.height,focus:d.contains(document.activeElement)};})()`);
       if(!bounds.focus||bounds.left< -1||bounds.right>width+1||bounds.height<=0||(direction==='top'?Math.abs(bounds.top)>1:Math.abs(bounds.bottom-1000)>1))throw new Error('Sidebar edge bounds '+width+' '+direction+' '+JSON.stringify(bounds));
       if(theme==='glassmorphism') {const {data}=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});writeFileSync(join(artifacts,'sidebar-'+direction+'-'+width+'.png'),Buffer.from(data,'base64'));}
       await key('Escape');
-      for(let attempt=0;attempt<30;attempt++){if(await evaluate(`!document.querySelector('.ui-sidebar-dialog')&&document.activeElement===document.querySelector('${selector}')`))break;await delay(20);}
-      if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog')&&document.activeElement===document.querySelector('${selector}')`))throw new Error('Sidebar edge close/focus '+width+' '+direction+' '+theme+' '+JSON.stringify(await evaluate(`({dialog:!!document.querySelector('.ui-sidebar-dialog'),active:document.activeElement.outerHTML.slice(0,400)})`)));
+      for(let attempt=0;attempt<30;attempt++){if(await evaluate(`!document.querySelector('.ui-sidebar-dialog[open]')&&document.activeElement===document.querySelector('${selector}')`))break;await delay(20);}
+      if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog[open]')&&document.activeElement===document.querySelector('${selector}')`))throw new Error('Sidebar edge close/focus '+width+' '+direction+' '+theme+' '+JSON.stringify(await evaluate(`({dialog:!!document.querySelector('.ui-sidebar-dialog[open]'),active:document.activeElement.outerHTML.slice(0,400)})`)));
     }
   }
   console.log('Sidebar top/bottom: correct vertical animation and viewport edge at 320/768/1440 × 5 themes; native SVG open, Escape and focus return');
@@ -1631,11 +1631,11 @@ try {
   await navigate('components/sidebar.html');await evaluate(`document.getElementById('sidebar-responsive-demo').dir='rtl'`);
   await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
   await evaluate(`document.querySelector('#sidebar-responsive-demo [data-ui-toggle="sidebar-responsive"]').focus()`);await key('Enter');await settleSidebar();
-  const touch=await evaluate(`(()=>{const d=document.querySelector('.ui-sidebar-dialog'),r=d.getBoundingClientRect(),b=d.querySelector('.ui-sidebar-dialog-close').getBoundingClientRect();return {rtl:d.dir==='rtl'&&r.right>=innerWidth-1,reduced:getComputedStyle(d).animationName==='none',touch:b.width>=44&&b.height>=44};})()`);
+  const touch=await evaluate(`(()=>{const d=document.querySelector('.ui-sidebar-dialog[open]'),r=d.getBoundingClientRect(),b=d.querySelector('.ui-sidebar-dialog-close').getBoundingClientRect();return {rtl:d.dir==='rtl'&&r.right>=innerWidth-1,reduced:getComputedStyle(d).animationName==='none',touch:b.width>=44&&b.height>=44};})()`);
   if(!touch.rtl||!touch.reduced||!touch.touch)throw new Error('Sidebar RTL/reduced/touch '+JSON.stringify(touch));
   const tap=await evaluate(`(()=>{const r=document.querySelector('.ui-sidebar-dialog-close').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
   await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...tap,radiusX:2,radiusY:2}]});await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await delay(40);
-  if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog')`))throw new Error('Sidebar native touch close');
+  if(!await evaluate(`!document.querySelector('.ui-sidebar-dialog[open]')`))throw new Error('Sidebar native touch close');
   await send('Emulation.setTouchEmulationEnabled',{enabled:false});await send('Emulation.setEmulatedMedia',{features:[]});
   for(const width of [320,768,1440])for(const path of ['components/layouts.html','components/dialog.html','templates/dashboard.html']){
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});await navigate(path);
