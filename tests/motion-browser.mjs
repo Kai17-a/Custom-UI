@@ -2,6 +2,23 @@
 export async function checkMotion({evaluate, send}) {
   for (const reduced of [false, true]) {
     await send('Emulation.setEmulatedMedia', {features:[{name:'prefers-reduced-motion', value:reduced?'reduce':'no-preference'}]});
+    await evaluate(`(()=>{
+      const spacer=document.createElement('div');spacer.id='motion-scroll-spacer';spacer.style.height='3000px';document.body.append(spacer);
+      const el=document.createElement('dialog');el.id='motion-scroll-modal';el.className='ui-dialog';el.innerHTML='<button>Close</button>';document.body.append(el);
+      scrollTo({top:0,behavior:'instant'});el.showModal();
+    })()`);
+    const wheel=async()=>{await send('Input.dispatchMouseEvent',{type:'mouseWheel',x:5,y:5,deltaX:0,deltaY:120});await evaluate('new Promise(r=>setTimeout(r,180))');};
+    await evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
+    const lockedY=await evaluate('scrollY');
+    await wheel();
+    if(await evaluate('scrollY')!==lockedY)throw new Error('Motion: modal background wheel lock');
+    await evaluate("document.querySelector('#motion-scroll-modal').close()");
+    await wheel();
+    if(await evaluate('scrollY')<=lockedY)throw new Error('Motion: page wheel restored after close');
+    await evaluate("scrollTo({top:0,behavior:'instant'});document.querySelector('#motion-scroll-modal').show()");
+    await wheel();
+    if(await evaluate('scrollY')===0)throw new Error('Motion: nonmodal must allow page wheel');
+    await evaluate("document.querySelector('#motion-scroll-modal').remove();document.querySelector('#motion-scroll-spacer').remove()");
     const result = await evaluate(`(async()=>{
       const reduced=${reduced};
       const assert=(condition,label)=>{if(!condition)throw new Error('Motion: '+label);};
@@ -10,7 +27,7 @@ export async function checkMotion({evaluate, send}) {
       const fixture=document.createElement('section');document.body.append(fixture);
       fixture.innerHTML='<button id="motion-return">Open</button>';
       const trigger=fixture.firstElementChild;
-      const supported=CSS.supports('transition-behavior','allow-discrete');
+      const supported=CSS.supports('transition-behavior','allow-discrete')&&CSS.supports('overlay','auto');
       for(const [classes,popover] of [['ui-dialog',false],['ui-dialog ui-drawer',false],['ui-dialog ui-command',false],['ui-popup',true],['ui-select-menu',true],['ui-input-popup',true],['ui-datepicker-popup',true]]) {
         const el=document.createElement(popover?'div':'dialog');el.className=classes;
         if(popover)el.setAttribute('popover','manual');else el.setAttribute('data-ui-dialog','');
@@ -21,14 +38,14 @@ export async function checkMotion({evaluate, send}) {
         await frame();
         assert(reduced ? el.getAnimations().length===0 : !supported || el.getAnimations().length>0,classes+' enter');
         await settle(el);
+        if(!popover)assert(getComputedStyle(el).translate==='none',classes+' settled fixed-position descendants keep viewport coordinates');
         if(popover)el.hidePopover();else KavUI.hide(el);
         // Flush styles while the CSS display/overlay exit is still running.
         getComputedStyle(el).opacity;
         assert(popover?!el.matches(':popover-open'):!el.open,classes+' semantic close');
-        const exitSurface=popover?el:document.querySelector('[data-ui-motion-ghost]');
-        if(!reduced&&(!popover||supported))assert(exitSurface?.getAnimations().length>0,classes+' exit');
-        if(!popover&&exitSurface)assert(exitSurface.inert&&exitSurface.getAttribute('aria-hidden')==='true'&&!exitSurface.shadowRoot,classes+' inert exit');
-        if(!popover){assert(getComputedStyle(el).display==='none',classes+' immediate display');if(exitSurface)await settle(exitSurface);}
+        assert(!document.querySelector('[data-ui-motion-ghost]'),classes+' no overlay copy');
+        if(!reduced&&supported)assert(el.getAnimations().some(a=>a instanceof CSSTransition),classes+' CSS exit');
+        else assert(getComputedStyle(el).display==='none',classes+' immediate display');
         await settle(el);await frame();
         assert(getComputedStyle(el).display==='none',classes+' final display');
         if(!popover){assert(document.activeElement===trigger,classes+' focus');assert(events.join(',')==='shown,hidden',classes+' event order');}
@@ -45,6 +62,56 @@ export async function checkMotion({evaluate, send}) {
         const finalExit=document.querySelector('[data-ui-motion-ghost]');if(finalExit)await settle(finalExit);
         el.remove();
       }
+      const large=document.createElement('dialog');large.className='ui-dialog';large.dataset.uiDialog='';
+      large.innerHTML='<button>Focus</button>'+'<div>Content</div>'.repeat(2000);fixture.append(large);
+      KavUI.show(large,trigger);await frame();await settle(large);
+      const start=performance.now();KavUI.hide(large);const elapsed=performance.now()-start;
+      assert(elapsed<50,'2000 descendants hide <50ms: '+elapsed);
+      assert(!large.open&&document.activeElement===trigger,'large immediate close/focus');
+      assert(!document.querySelector('[data-ui-motion-ghost]'),'large no copy');await settle(large);large.remove();
+      const scrolling=document.createElement('dialog');scrolling.className='ui-dialog';scrolling.style.cssText='height:240px;width:400px;overflow:auto';
+      scrolling.innerHTML='<div style="height:150px;overflow:auto;width:180px"><div style="width:600px;height:600px">Nested</div></div><div style="height:900px">Long</div>';fixture.append(scrolling);
+      scrolling.showModal();await frame();await settle(scrolling);
+      scrolling.scrollTop=300;scrolling.firstElementChild.scrollTop=80;scrolling.firstElementChild.scrollLeft=60;
+      const offsets=()=>[scrolling.scrollTop,scrolling.firstElementChild.scrollTop,scrolling.firstElementChild.scrollLeft];
+      const beforeClose=offsets();scrolling.close();getComputedStyle(scrolling).opacity;
+      if(!reduced&&supported)assert(JSON.stringify(offsets())===JSON.stringify(beforeClose)&&beforeClose.every(n=>n>0),'native exit retains scroll offsets');
+      await settle(scrolling);scrolling.remove();
+      const sidebar=document.createElement('div');sidebar.className='app-shell';sidebar.dataset.uiSidebar='';
+      for(const device of ['mobile','tablet','desktop'])sidebar.setAttribute('data-ui-sidebar-'+device,'top');
+      sidebar.innerHTML='<aside class="app-sidebar"><button>Menu</button></aside>';fixture.append(sidebar);KavUI.init(sidebar);
+      KavUI.sidebar(sidebar,{open:true,trigger});await frame();
+      const shell=document.querySelector('.ui-sidebar-dialog');await settle(shell);
+      KavUI.sidebar(sidebar,{open:false,trigger});getComputedStyle(shell).opacity;
+      assert(!shell.open&&sidebar.firstElementChild.hidden,'sidebar restores closed state immediately');
+      if(!reduced&&supported)assert(shell.isConnected&&shell.getAnimations().some(a=>a instanceof CSSTransition),'sidebar native shell exit');
+      await settle(shell);await frame();assert(!shell.isConnected,'sidebar shell cleanup');KavUI.destroy(sidebar);sidebar.remove();
+      const live=[...document.querySelectorAll('.visually-hidden[aria-live]')];
+      const polite=live.find(n=>n.getAttribute('aria-live')==='polite'),assertive=live.find(n=>n.getAttribute('aria-live')==='assertive');
+      assert(polite&&assertive,'live regions exist before first toast');
+      const announcements=[];
+      const observer=new MutationObserver(()=>announcements.push(polite.textContent));observer.observe(polite,{childList:true,subtree:true,characterData:true});
+      const note=KavUI.toast('Repeat',{duration:0});await new Promise(r=>setTimeout(r,80));
+      assert(polite.textContent==='Repeat'&&!note.hasAttribute('role'),'polite separate announcement');
+      assert(note.parentElement.getAttribute('role')==='region'&&note.parentElement.getAttribute('aria-label'),'named toast region');
+      const again=KavUI.toast('Repeat',{duration:0});assert(polite.textContent==='','repeat clears region');
+      await new Promise(r=>setTimeout(r,80));assert(polite.textContent==='Repeat'&&announcements.filter(x=>x==='Repeat').length===2,'repeat announced twice');
+      const error=KavUI.toast({title:'Error',body:'Failed',meta:'Now',variant:'danger',duration:0});await new Promise(r=>setTimeout(r,80));
+      assert(assertive.textContent==='Error Failed Now','assertive announcement');observer.disconnect();[note,again,error].forEach(n=>n.remove());
+      for(const method of ['cancel','submit']) {
+        const native=document.createElement('dialog');native.className='ui-dialog';native.dataset.uiDialog='';
+        native.innerHTML='<form method="dialog"><button>Done</button></form>';fixture.append(native);
+        KavUI.show(native,trigger);await frame();await settle(native);
+        if(method==='cancel')native.requestClose();else native.querySelector('button').click();
+        getComputedStyle(native).opacity;
+        assert(!native.open,'native '+method+' semantic close');
+        if(!reduced&&supported)assert(native.getAnimations().some(a=>a instanceof CSSTransition),'native '+method+' CSS exit');
+        await settle(native);assert(document.activeElement===trigger,'native '+method+' focus');native.remove();
+      }
+      const oversized=KavUI.toast('Large',{duration:0});
+      oversized.querySelector('.words').insertAdjacentHTML('beforeend','<span>Extra</span>'.repeat(101));
+      await frame();await settle(oversized);oversized.querySelector('[data-ui-dismiss]').click();
+      assert(!oversized.isConnected&&!document.querySelector('[data-ui-motion-ghost]'),'large toast skips copy');
       const panel=document.createElement('div');panel.dataset.uiPanel='motion';panel.hidden=true;panel.textContent='Panel';fixture.append(panel);
       await frame();KavUI.show(panel);await frame();await settle(panel);KavUI.hide(panel);
       getComputedStyle(panel).display;
@@ -139,9 +206,16 @@ export async function checkMotion({evaluate, send}) {
         KavUI.show(drawer,trigger);await frame();await settle(drawer);
         const style=getComputedStyle(drawer),expected=style.getPropertyValue('--ui-drawer-x').trim()+' '+style.getPropertyValue('--ui-drawer-y').trim();
         KavUI.hide(drawer);
-        const exit=document.querySelector('[data-ui-motion-ghost]');
-        if(!reduced){assert(!!exit,'drawer exit');const end=exit.getAnimations()[0].effect.getKeyframes().at(-1).translate;const normalized=document.createElement('div');normalized.style.translate=expected;assert(end===normalized.style.translate,'drawer direction '+direction+' '+dir+': '+end+' / '+expected);await settle(exit);}
-        else assert(!exit,'drawer reduced motion');drawer.remove();
+        getComputedStyle(drawer).opacity;
+        if(!reduced&&supported){
+          const exit=drawer.getAnimations().find(a=>a instanceof CSSTransition&&a.transitionProperty==='translate');
+          assert(!!exit,'drawer CSS exit');
+          const end=exit.effect.getKeyframes().at(-1).translate;
+          const normalized=document.createElement('div');normalized.style.translate=expected;
+          assert(end===normalized.style.translate,'drawer direction '+direction+' '+dir+': '+end+' / '+expected);
+        }
+        assert(!document.querySelector('[data-ui-motion-ghost]'),'drawer no copy');
+        await settle(drawer);drawer.remove();
       }
       KavUI.setDesignTheme('glass');KavUI.setColorTheme('dark');
       assert(document.body.getAnimations().length===0,'theme has no body animation');
@@ -154,32 +228,10 @@ export async function checkMotion({evaluate, send}) {
       const underline=tabButtons[1].getAnimations({subtree:true}).find(a=>a.effect.getKeyframes().some(k=>k.translate));
       if(!reduced){assert(!!underline,'wrapped underline animation');assert(parseFloat(underline.effect.getKeyframes()[0].translate.split(' ')[1])!==0,'wrapped underline y motion');await settle(tabButtons[1]);}
       else assert(!underline,'wrapped underline reduced motion');
-      fixture.remove();return true;
+      fixture.remove();return {hideMilliseconds:elapsed};
     })()`);
     if(!result)throw new Error('Motion checks did not complete');
-    // Inspect the closed shadow through CDP without exposing it to application JS.
-    if(!reduced) {
-      const expected=await evaluate(`(async()=>{
-        const dialog=document.createElement('dialog');dialog.id='motion-scroll-dialog';dialog.className='ui-dialog';dialog.dataset.uiDialog='';
-        dialog.style.cssText='height:240px;width:400px;min-width:0;overflow:auto';
-        dialog.innerHTML='<div style="height:150px;overflow:auto;width:180px"><div style="width:600px;height:600px">Nested scroll</div></div><div style="height:900px">Long content</div>';
-        document.body.append(dialog);KavUI.show(dialog);await new Promise(r=>setTimeout(r,250));
-        dialog.scrollTop=300;dialog.firstElementChild.scrollTop=80;dialog.firstElementChild.scrollLeft=60;
-        const expected=[dialog.scrollLeft,dialog.scrollTop,dialog.firstElementChild.scrollLeft,dialog.firstElementChild.scrollTop];
-        KavUI.hide(dialog);const host=document.querySelector('[data-ui-motion-ghost]');host.getAnimations().forEach(a=>a.pause());return expected;
-      })()`);
-      const {root}=await send('DOM.getDocument',{depth:-1,pierce:true});
-      const find=node=>{
-        if(node.attributes?.includes('data-ui-motion-ghost'))return node;
-        for(const child of [...(node.children||[]),...(node.shadowRoots||[])]){const found=find(child);if(found)return found;}
-      };
-      const host=find(root),surface=host?.shadowRoots?.[0]?.children?.find(node=>node.nodeType===1);
-      if(!surface)throw new Error('Motion: closed shadow scroll surface missing');
-      const {object}=await send('DOM.resolveNode',{nodeId:surface.nodeId});
-      const {result:scroll}=await send('Runtime.callFunctionOn',{objectId:object.objectId,functionDeclaration:'function(){return [this.scrollLeft,this.scrollTop,this.firstElementChild.scrollLeft,this.firstElementChild.scrollTop]}',returnByValue:true});
-      if(JSON.stringify(scroll.value)!==JSON.stringify(expected)||expected[1]===0||expected[2]===0||expected[3]===0)throw new Error('Motion: dialog clone scroll '+JSON.stringify(scroll.value)+' expected '+JSON.stringify(expected));
-      await evaluate(`(async()=>{const host=document.querySelector('[data-ui-motion-ghost]');host.getAnimations().forEach(a=>a.finish());await Promise.resolve();document.querySelector('#motion-scroll-dialog').remove();})()`);
-    }
+    console.log('Motion: 2000 descendants hide '+result.hideMilliseconds.toFixed(2)+'ms (reduced='+reduced+')');
 
   }
   await send('Emulation.setEmulatedMedia',{features:[]});

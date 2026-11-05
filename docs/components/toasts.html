@@ -126,7 +126,7 @@
     </ul>
   </div>
 </nav></details><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / 通知・補助表示</p><h1>Toasts & alerts</h1></header><p class="lede">標準幅は360px。長いタイトル・本文・URLは折り返し、狭い画面では画面幅に収めます。タイトル・本文・補足を属性またはJavaScriptで指定できます。</p><section class="specimen"><h2>本文だけの通知（従来の書き方）</h2><div class="example" data-example>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / 通知・補助表示</p><h1>Toasts & alerts</h1></header><p class="lede">標準幅は360px。長いタイトル・本文・URLは折り返し、狭い画面では画面幅に収めます。タイトル・本文・補足を属性またはJavaScriptで指定できます。</p><p>読み上げ用の領域は初期化時から用意します。通常の通知は polite、エラー通知は assertive で伝えます。同じ内容が続いた場合も領域を空にしてから更新します。</p><section class="specimen"><h2>本文だけの通知（従来の書き方）</h2><div class="example" data-example>
   <div class="row">
     <button class="btn btn-sm btn-success" data-ui-toast="保存しました。" data-ui-variant="success">成功通知を表示</button>
     <button class="btn btn-sm btn-outline-danger" data-ui-toast="接続が切れたため保存できませんでした。" data-ui-variant="danger">エラー通知を表示</button>
