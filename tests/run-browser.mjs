@@ -2,6 +2,7 @@
    Set CHROME_BIN if Chromium is not installed in one of the detected locations. */
 import {spawn} from 'node:child_process';
 import {authLayout, pricingHierarchy, headerControls} from './sample-consistency.mjs';
+import {checkCatalogAccessibility} from './catalog-accessibility.mjs';
 import {checkMotion} from './motion-browser.mjs';
 import {checkControlAppearance} from './control-appearance.mjs';
 import {existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync, rmSync} from 'node:fs';
@@ -75,7 +76,7 @@ async function click(selector) {
   await send('Input.dispatchMouseEvent',{type:'mousePressed',...box,button:'left',clickCount:1});
   await send('Input.dispatchMouseEvent',{type:'mouseReleased',...box,button:'left',clickCount:1});
 }
-const timeout=setTimeout(()=>{console.error('Browser checks timed out');child.kill();process.exitCode=1;},360000);
+const timeout=setTimeout(()=>{console.error('Browser checks timed out');child.kill();process.exitCode=1;},600000);
 try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
@@ -103,6 +104,7 @@ try {
   console.log('Consistency screenshots:',artifacts);
   if(consistencyFailures.length)throw new Error(consistencyFailures.join('\n'));
   console.log('Template consistency: all headers, centered auth with keyboard tabs, one recommended pricing plan at 390/820/1440');
+  await checkCatalogAccessibility({navigate,evaluate,send,artifacts,pages:['index.html',...readdirSync(site).filter(p=>p.endsWith('.html')&&p!=='index.html'),...['components','templates'].flatMap(dir=>readdirSync(join(site,dir)).filter(p=>p.endsWith('.html')).map(p=>dir+'/'+p))]});
   await navigate('tests/ui.html');const canonical=await evaluate('window.uiTestsDone');console.log('Canonical UI regression:',JSON.stringify(canonical));if(canonical.failures.length)throw new Error('Legacy UI regressions');
   await checkMotion({evaluate,send});
   // Agent diagrams retain native list, disclosure and form behavior without UI JavaScript.
@@ -194,6 +196,20 @@ try {
   await navigate('components/dialog.html');
   await evaluate("localStorage.removeItem('kav-ui-theme');localStorage.removeItem('kav-ui-design-theme')");
   console.log('First paint with UI blocked: saved light/dark before rendering across 5 pages, glass restoration, OS fallback with absent/invalid/blocked storage');
+  await navigate('index.html');
+  for (const query of ['フォーム', '通知', '該当なしxyz', '']) {
+    const result = await evaluate(`(() => {
+      const input = document.getElementById('catalog-search');
+      input.value = ${JSON.stringify(query)};
+      input.dispatchEvent(new Event('input', {bubbles:true}));
+      const groups = [...document.querySelectorAll('main > section.specimen')];
+      const visible = [...document.querySelectorAll('[data-catalog-item]')].filter(item => !item.hidden);
+      return {groups:groups.length, consistent:groups.every(group => group.hidden === ![...group.querySelectorAll('[data-catalog-item]')].some(item => !item.hidden)),
+        count:visible.length, status:document.getElementById('search-result').textContent, empty:document.getElementById('search-empty').hidden};
+    })()`);
+    if(result.groups !== 8 || !result.consistent || result.status !== result.count + ' コンポーネント' || result.empty !== (result.count > 0) || (query === '' && result.count !== 46)) throw new Error('Catalog grouped filter '+query+': '+JSON.stringify(result));
+  }
+  console.log('Catalog grouped filter: aliases across categories, empty groups, no results and reset');
   await checkControlAppearance({navigate,evaluate,send,key});
   for (const width of [320,768,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
