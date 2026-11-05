@@ -1189,12 +1189,13 @@ try {
   const customSaved=await evaluate('JSON.parse(localStorage.getItem("kav-ui-custom-palette"))');
   await send('Network.setBlockedURLs',{urls:['*assets/ui/js/ui.js','*assets/js/catalog-demo.js','*assets/js/templates.js']});
   for(const mode of ['light','dark']) {
-    const {identifier}=await send('Page.addScriptToEvaluateOnNewDocument',{source:`localStorage.setItem('kav-ui-theme',${JSON.stringify(mode)});`});
+    // Seed the committed document: early CDP new-document storage access can
+    // observe an empty file:// storage area instead of the saved palette.
+    await evaluate(`localStorage.setItem('kav-ui-theme',${JSON.stringify(mode)})`);
     for(const path of ['index.html','components/dialog.html','components/color-palettes.html','templates/dashboard.html']) {
       await firstPaintPage(path);
       if(!await evaluate(`document.documentElement.dataset.uiPalette==='custom' && getComputedStyle(document.documentElement).getPropertyValue('--bs-primary').trim()===${JSON.stringify(customSaved[mode]['--bs-primary'])} && typeof KavUI==='undefined' && document.querySelectorAll('style[data-ui-custom-palette-style]').length===1`))throw new Error('Custom palette pre-paint '+[mode,path]);
     }
-    await send('Page.removeScriptToEvaluateOnNewDocument',{identifier});
   }
   // Invalid cached CSS cannot reach a style element; runtime regenerates trusted roles from the seed.
   const invalidCache={...customSaved,light:{...customSaved.light,'--bs-primary':'red; } body{display:none}'}};
