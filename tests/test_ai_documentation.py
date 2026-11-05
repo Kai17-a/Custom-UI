@@ -87,6 +87,14 @@ class AiDocumentationTests(unittest.TestCase):
                 self.assertTrue(target.is_relative_to(ROOT), (page, value))
                 self.assertTrue(target.is_file(), (page.relative_to(ROOT), value))
 
+    def test_catalog_card_export_uses_heading_at_either_level(self):
+        for heading in ('h2', 'h3'):
+            source = f'<main><a class="catalog-card" href="components/forms.html"><{heading}>Forms</{heading}><p>入力と検証</p><span class="card-link">サンプルを見る →</span></a></main>'
+            document = GENERATOR.Document(source)
+            main = next(node for node in document.root.walk() if node.tag == 'main')
+            result = GENERATOR.Markdown(ROOT / 'docs/index.html', document, set()).blocks(main)
+            self.assertEqual(result.strip(), '- [Forms](components/forms.html): 入力と検証')
+
     def test_export_retains_sample_markup_and_code(self):
         sample = '<button type="button" data-ui-toast="A &amp; B">通知</button><input type="text" value="例">'
         source = '<html><head></head><body><aside>SIDEBAR-NOISE</aside><main><h1>Example</h1><p>Read <code>ui.css</code> &amp; JS.</p><div data-example>' + sample + '</div><pre><code>&lt;p&gt;A &amp;amp; B&lt;/p&gt;</code></pre></main></body></html>'

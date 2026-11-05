@@ -8,6 +8,10 @@
       item.hidden = window.KavCatalogSearch ? !KavCatalogSearch.matches(item, query) : !item.textContent.normalize('NFKC').toLowerCase().includes(query);
       if (!item.hidden) count++;
     }
+    for (const group of document.querySelectorAll('main > section.specimen')) {
+      const cards = [...group.querySelectorAll('[data-catalog-item]')];
+      if (cards.length) group.hidden = cards.every(item => item.hidden);
+    }
     document.getElementById('search-result').textContent = count + ' コンポーネント';
     document.getElementById('search-empty').hidden = count > 0;
   });

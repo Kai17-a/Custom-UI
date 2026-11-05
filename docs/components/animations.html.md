@@ -8,15 +8,15 @@
 
 ## 用途から選ぶ
 
-- [01表示・非表示Fade・Zoom・Flip・Rotate。要素が現れる・消えるときの6種類です。サンプルを見る →](animations-entrances.html.md): Fade・Zoom・Flip・Rotate。要素が現れる・消えるときの6種類です。
+- [表示・非表示](animations-entrances.html.md): Fade・Zoom・Flip・Rotate。要素が現れる・消えるときの6種類です。
 
-- [02移動・回転4方向のSlide、Float、Spin。移動する方向や回転の動きを比較できます。サンプルを見る →](animations-movement.html.md): 4方向のSlide、Float、Spin。移動する方向や回転の動きを比較できます。
+- [移動・回転](animations-movement.html.md): 4方向のSlide、Float、Spin。移動する方向や回転の動きを比較できます。
 
-- [03強調・揺れBounce・Shake・Wobble・Swing・Pulse・Heartbeat。注目を促す6種類です。サンプルを見る →](animations-attention.html.md): Bounce・Shake・Wobble・Swing・Pulse・Heartbeat。注目を促す6種類です。
+- [強調・揺れ](animations-attention.html.md): Bounce・Shake・Wobble・Swing・Pulse・Heartbeat。注目を促す6種類です。
 
-- [04操作時の動きモーダル・通知・開閉・タブなど、操作に自動で付く動きを確認できます。サンプルを見る →](animations-interactions.html.md): モーダル・通知・開閉・タブなど、操作に自動で付く動きを確認できます。
+- [操作時の動き](animations-interactions.html.md): モーダル・通知・開閉・タブなど、操作に自動で付く動きを確認できます。
 
-- [05処理中の表示処理中のバナーと、カードの枠を光が巡るアニメーションです。サンプルを見る →](animations-processing.html.md): 処理中のバナーと、カードの枠を光が巡るアニメーションです。
+- [処理中の表示](animations-processing.html.md): 処理中のバナーと、カードの枠を光が巡るアニメーションです。
 
 <a id="animation-presets"></a>
 
