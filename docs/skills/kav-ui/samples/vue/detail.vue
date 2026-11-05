@@ -16,6 +16,12 @@ const shareOpen = ref(false);
 
 <template>
   <KavPage>
+    <nav aria-label="パンくず">
+      <ol class="breadcrumb breadcrumb-chevron">
+        <li><a href="../list/">プロジェクト一覧</a></li>
+        <li aria-current="page">秋の展示会</li>
+      </ol>
+    </nav>
     <KavPageHeader
       eyebrow="木の葉制作室"
       title="秋の展示会"
@@ -28,7 +34,6 @@ const shareOpen = ref(false);
           variant="outline"
           @click="shareOpen = true"
         >共有情報</KavButton>
-        <KavButton href="../list/" color="secondary" variant="outline">一覧へ戻る</KavButton>
       </template>
     </KavPageHeader>
 

@@ -55,7 +55,7 @@ body:is([data-ui-theme="glass"], [data-ui-theme="glassmorphism"]) {
   --bs-secondary-color:rgba(200,201,204,.8);
 }
 [data-bs-theme="dark"] body[data-ui-theme="glassmorphism"] {
-  --bs-secondary-color:#b8bac0;
+  --bs-secondary-color:#c4c6cb;
   --ui-glass-highlight:rgba(255,255,255,.16);
   --ui-glass-sheen:rgba(255,255,255,.05);
 }

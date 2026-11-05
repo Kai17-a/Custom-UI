@@ -2,6 +2,9 @@
 
 [HTML版](detail.html) · [llms.txt](../llms.txt)
 
+1. [プロジェクト一覧](list.html.md)
+2. 秋の展示会
+
 木の葉制作室
 
 # 秋の展示会
@@ -9,8 +12,6 @@
 作品と制作の背景を紹介する、チームの共同プロジェクトです。
 
 共有情報
-
-一覧へ戻る
 
 概要
 
@@ -47,6 +48,12 @@
 ```
 <div class="ui-page">
   <div class="ui-page-body">
+    <nav aria-label="パンくず">
+      <ol class="breadcrumb breadcrumb-chevron">
+        <li><a href="list.html">プロジェクト一覧</a></li>
+        <li aria-current="page">秋の展示会</li>
+      </ol>
+    </nav>
     <header class="ui-page-header">
       <div class="ui-page-heading">
         <p class="ui-page-eyebrow">木の葉制作室</p>
@@ -55,7 +62,6 @@
       </div>
       <div class="ui-page-actions">
         <button class="btn btn-outline-primary" type="button" data-ui-toggle="dialog" data-ui-target="#share-dialog">共有情報</button>
-        <a class="btn btn-outline-secondary" href="list.html">一覧へ戻る</a>
       </div>
     </header>
     <div class="ui-page ui-page-with-rail">
