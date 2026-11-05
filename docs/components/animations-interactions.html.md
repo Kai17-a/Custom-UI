@@ -14,7 +14,7 @@ Animations
 
 ## 開く・閉じる・通知
 
-表示時のフェードと閉じる動きを確認できます。閉じる操作・フォーカス・イベントは即座に反映します。
+表示時のフェードと閉じる動きを確認できます。通常の流れにあるパネルは閉じるとすぐに隠れます。閉じる操作・フォーカス・イベントは即座に反映します。
 
 ```html
 <div class="fx fx-wrap fx-gap-3">
@@ -58,7 +58,7 @@ Animations
 }
 ```
 
-Dialog・Drawer・Dropdown・Popover・Select・Command・Date picker は `@starting-style` と `display` / `overlay` の離散トランジションで開閉します。閉じる操作はすぐに hidden・open・フォーカス・イベントへ反映され、見た目だけが短く残ります。DOM から削除する Tooltip・Toast は操作できない退場用の表示を使います。再オープンは進行中の遷移を引き継ぎます。
+Dropdown・Popover・Select・Date picker は CSS の離散トランジションで開閉します。Dialog・Drawer・Command と Tooltip は操作できないコピーで退場し、Toast のコピーは通知領域内で残った通知の下に表示します。通常の流れのパネルは即座に隠れ、スクロールによって閉じるポップアップと Tooltip は退場の動きを省略します。閉じる操作・フォーカス・イベントは即座に反映します。Drawer は入ってきた方向へ戻り、テーマ切り替えではページ全体をフェードしません。
 
 折り畳みは `interpolate-size:allow-keywords` と `::details-content` で高さを補間します。未対応のブラウザは即座に切り替わります。OS の「動きを減らす」設定では補間も退場用表示もなくなり、待ち時間は発生しません。任意指定のアニメーションプリセットは従来どおりです。
 

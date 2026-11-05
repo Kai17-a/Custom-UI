@@ -77,14 +77,25 @@
     const visual = exitVisuals.get(element);
     if (visual) { visual.animation.cancel(); visual.sourceAnimation?.cancel(); visual.host.remove(); exitVisuals.delete(element); }
   }
+  // Scope scroll-triggered closes to this synchronous operation only.
+  let immediateExit = false;
+  function withoutExitMotion(close) {
+    const previous = immediateExit;
+    immediateExit = true;
+    try { close(); } finally { immediateExit = previous; }
+  }
   function prepareExit(element) {
-    // Popovers use native CSS exits. Removed nodes and immediately hidden
-    // panels retain an inert visual without delaying focus or events.
+    // Only out-of-flow surfaces retain an inert visual. Normal-flow content
+    // disappears immediately so it cannot paint over the reflowed document.
     if (!element || element.matches('[popover]') || reducedMotion.matches || !element.isConnected || !element.animate) return () => {};
+    const timing = getComputedStyle(element);
+    const region = element.matches('.ui-toast') ? element.closest('.ui-toasts') : null;
+    if (!region && !['fixed','absolute'].includes(timing.position)) return () => {};
     const bounds = element.getBoundingClientRect();
-    const opacity = Number(getComputedStyle(element).opacity);
-    const destination = '0 5px';
-    const parent = element.parentElement?.closest('dialog[open]') || doc.body;
+    const opacity = Number(timing.opacity);
+    const destination = element.matches('.ui-drawer')
+      ? timing.getPropertyValue('--ui-drawer-x').trim()+' '+timing.getPropertyValue('--ui-drawer-y').trim() : '0 5px';
+    const parent = (region || element).parentElement?.closest('dialog[open]') || doc.body;
     if (!bounds.width || !bounds.height || opacity < .01) return () => {};
     // A closed shadow contains a frozen, inert visual copy. No duplicate IDs,
     // controls, live regions or UI selectors enter the application document.
@@ -93,6 +104,12 @@
     host.setAttribute('aria-hidden', 'true');
     host.inert = true;
     Object.assign(host.style, {position:'fixed',left:bounds.left+'px',top:bounds.top+'px',width:bounds.width+'px',height:bounds.height+'px',pointerEvents:'none',zIndex:'2147483000',margin:'0'});
+    // The toast region is bottom-anchored and shrinks when a note leaves, so the
+    // copy stays at fixed viewport coordinates one layer below the region.
+    if (region) {
+      const layer = parseInt(getComputedStyle(region).zIndex, 10);
+      host.style.zIndex = String(Number.isFinite(layer) ? layer - 1 : 0);
+    }
     const shadow = host.attachShadow({mode:'closed'});
     const clone = element.cloneNode(true);
     const originals = [element, ...all(element, '*')];
@@ -116,13 +133,15 @@
     surface.removeAttribute('hidden');
     Object.assign(surface.style, {position:'relative',inset:'auto',margin:'0',width:'100%',height:'100%',minWidth:'0',minHeight:'0',maxWidth:'none',maxHeight:'none',boxSizing:'border-box',opacity:'1',transform:'none',translate:'none',scale:'none'});
     shadow.append(surface);
+    const scrollPositions = originals.map(original => [original.scrollLeft, original.scrollTop]);
     // Keep component-level timing overrides when the visual leaves its subtree.
-    const timing = getComputedStyle(element);
     for (const token of ['--motion-duration-fast','--motion-ease-in']) host.style.setProperty(token,timing.getPropertyValue(token));
     return () => {
       if (reducedMotion.matches) return;
       cancelExit(element);
       parent.append(host);
+      copies[0] = surface;
+      copies.forEach((copy,index) => { copy.scrollLeft=scrollPositions[index][0]; copy.scrollTop=scrollPositions[index][1]; });
       const animation = motion(host, [{opacity,translate:'0 0'},{opacity:0,translate:destination}], 'fast', 'in');
       if (!animation) { host.remove(); return; }
       // Keep the source's exit observable even though native close immediately
@@ -135,7 +154,49 @@
 
     };
   }
-  function exitMotion(element) { prepareExit(element)(); }
+  function exitMotion(element) {
+    if (immediateExit) {
+      cancelExit(element);
+      if (element.matches('[popover]')) {
+        element.setAttribute('data-ui-motion-immediate','');
+        // Commit suppression before hidePopover starts its discrete transition.
+        getComputedStyle(element).transitionProperty;
+      }
+      return;
+    }
+    prepareExit(element)();
+  }
+  doc.addEventListener('beforetoggle', event => {
+    if (event.newState === 'open') event.target.removeAttribute('data-ui-motion-immediate');
+  }, true);
+  // A shrinking region would clip survivors that slide in from above its new edge.
+  const toastOverflowHolds = new WeakMap();
+  function holdToastOverflow(region, animations) {
+    if (!animations.length) return;
+    let hold = toastOverflowHolds.get(region);
+    if (!hold) { hold = {count:0, previous:region.style.overflow}; toastOverflowHolds.set(region, hold); region.style.overflow = 'visible'; }
+    hold.count++;
+    Promise.allSettled(animations.map(animation => animation.finished)).then(() => {
+      if (--hold.count) return;
+      region.style.overflow = hold.previous;
+      toastOverflowHolds.delete(region);
+    });
+  }
+  function toastReflow(note, remove) {
+    const region = note.closest('.ui-toasts');
+    const remaining = region ? all(region, ':scope > .ui-toast').filter(item=>item!==note) : [];
+    const before = remaining.map(item=>item.getBoundingClientRect());
+    const fits = region && region.scrollHeight <= region.clientHeight;
+    exitMotion(note);
+    remove();
+    const animations = remaining.map((item,index)=>{
+      elementMotions.get(item)?.cancel();
+      const after = item.getBoundingClientRect();
+      const dx = before[index].left-after.left, dy = before[index].top-after.top;
+      return dx || dy ? motion(item,[{transform:'translate('+dx+'px, '+dy+'px)'},{transform:'translate(0, 0)'}]) : null;
+    }).filter(Boolean);
+    if (fits) holdToastOverflow(region, animations);
+  }
   function enterMotion(element) { motion(element, [{opacity:.25},{opacity:1}]); }
 
   function id(element) {
@@ -229,12 +290,15 @@
     if (panel.tagName === 'DIALOG') {
       if (panel.open) { exitMotion(panel); panel.close(); }
     } else {
-      exitMotion(panel);
-      focusAfterHide(panel, trigger);
-      panel.hidden = true;
-      sync(panel);
-      clearTimeout(timers.get(panel));
-      emit(panel, 'hidden');
+      const close = () => {
+        focusAfterHide(panel, trigger);
+        panel.hidden = true;
+        sync(panel);
+        clearTimeout(timers.get(panel));
+        emit(panel, 'hidden');
+      };
+      if (panel.matches('.ui-toast')) toastReflow(panel,close);
+      else { exitMotion(panel); close(); }
     }
   }
   function hideTooltip() {
@@ -442,16 +506,15 @@
     close.setAttribute('aria-label', '通知を閉じる');
     note.append(words, close);
     region.append(note);
-    while (region.children.length > 5) {
-      const first = region.firstElementChild;
+    while (all(region, ':scope > .ui-toast').length > 5) {
+      const first = region.querySelector(':scope > .ui-toast');
       if (first.contains(doc.activeElement)) break;
       clearTimeout(timers.get(first));
-      exitMotion(first);
-      first.remove();
+      toastReflow(first,()=>first.remove());
     }
     const requested = options.duration === undefined ? (variant === 'danger' ? 0 : 6000) : Number(options.duration);
     const duration = Number.isFinite(requested) ? Math.max(0, requested) : 6000;
-    const remove = () => { exitMotion(note); note.remove(); clearTimeout(timers.get(note)); };
+    const remove = () => { toastReflow(note,()=>note.remove()); clearTimeout(timers.get(note)); };
     const pause = () => clearTimeout(timers.get(note));
     const resume = () => { pause(); if (duration && !note.contains(doc.activeElement) && !note.matches(':hover') && !note.querySelector('[data-ui-copy][aria-busy="true"]')) timers.set(note, setTimeout(remove, duration)); };
     note.addEventListener('pointerenter', pause);
@@ -853,7 +916,7 @@
       const after = tab.getBoundingClientRect();
       const vertical = bar.getAttribute('aria-orientation') === 'vertical';
       if (after.width && after.height) motion(tab, [
-        {translate:vertical ? '0 '+(before.top-after.top)+'px' : (before.left-after.left)+'px 0', scale:vertical ? '1 '+before.height/after.height : before.width/after.width+' 1'},
+        {translate:(before.left-after.left)+'px '+(before.top-after.top)+'px', scale:vertical ? '1 '+before.height/after.height : before.width/after.width+' 1'},
         {translate:'0 0',scale:'1 1'}
       ], 'base', 'out', {pseudoElement:'::after'});
     }
@@ -1540,8 +1603,8 @@
     });
     selectControls.set(select,{sync:syncControl});syncControl();
   }
-  window.addEventListener('resize',()=>openSelect?.close());
-  doc.addEventListener('scroll',event=>{if(openSelect && !openSelect.popup.contains(event.target))openSelect.close();},true);
+  window.addEventListener('resize',()=>withoutExitMotion(()=>openSelect?.close()));
+  doc.addEventListener('scroll',event=>{if(openSelect && !openSelect.popup.contains(event.target))withoutExitMotion(()=>openSelect.close());},true);
 
   const inputPickers = new WeakMap();
   let activeInputPicker = null;
@@ -1731,7 +1794,7 @@
   doc.addEventListener('scroll',event=>{
     if(!activeInputPicker || activeInputPicker.popup.contains(event.target))return;
     const bounds=activeInputPicker.trigger.getBoundingClientRect();
-    if(bounds.bottom<0 || bounds.top>innerHeight)activeInputPicker.close();else activeInputPicker.position();
+    if(bounds.bottom<0 || bounds.top>innerHeight)withoutExitMotion(()=>activeInputPicker.close());else activeInputPicker.position();
   },true);
 
   const mixedCheckboxes = new WeakSet();
@@ -2085,7 +2148,7 @@
   });
   window.addEventListener('resize',()=>{for(const panel of openPopups)placePopup(panel,popupStates.get(panel)?.trigger);});
   doc.addEventListener('scroll',event=>{
-    for (const panel of openPopups) if (!panel.contains(event.target)) closePopup(panel);
+    for (const panel of openPopups) if (!panel.contains(event.target)) withoutExitMotion(()=>closePopup(panel));
   },true);
   // SVG charts keep their source data and a readable table alongside the graphic.
   const chartStates = new WeakMap();
@@ -2581,7 +2644,7 @@
     const before = doc.body.dataset.uiTheme || 'default';
     doc.body.dataset.uiTheme = theme;
     syncDesignThemeControls();
-    if (notify && before !== theme) { enterMotion(doc.body); emit(doc.body, 'designchange', {theme}); }
+    if (notify && before !== theme) { emit(doc.body, 'designchange', {theme}); }
   }
   function setDesignTheme(theme, {persist = false} = {}) {
     if (!designThemes.includes(theme)) return false;
@@ -3929,7 +3992,7 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
   }
   function setColorTheme(mode, {persist = false} = {}) {
     if(!colorModes.includes(mode))return false;
-    chosen=mode;const theme=resolvedColorTheme();applyTheme(theme,doc.documentElement.dataset.bsTheme!==theme);
+    chosen=mode;const theme=resolvedColorTheme();applyTheme(theme);
     if(persist)try {localStorage.setItem('kav-ui-theme',mode);} catch { /* Storage is optional. */ }
     return true;
   }
@@ -3954,16 +4017,15 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
     } else button.textContent = label;
     button.setAttribute('aria-label', label);
   }
-  function applyTheme(theme, animate = false, notify = true) {
+  function applyTheme(theme, notify = true) {
     const before=doc.documentElement.dataset.bsTheme,previousMode=doc.documentElement.dataset.uiColorPreference;
     doc.documentElement.dataset.bsTheme = theme;
     doc.documentElement.dataset.uiColorPreference = chosen;
     syncColorThemeControls();
-    if (animate) enterMotion(doc.body);
     all(doc, '[data-ui-toggle="theme"]').forEach(syncThemeToggle);
     if(notify && (before!==theme || previousMode!==chosen))emit(doc.body,'colorchange',{mode:chosen,theme});
   }
-  preference.addEventListener('change', () => { if (chosen==='system') applyTheme(resolvedColorTheme(), true); });
+  preference.addEventListener('change', () => { if (chosen==='system') applyTheme(resolvedColorTheme()); });
   doc.addEventListener('click', event => {
     const button = closest(event.target, '[data-ui-toggle], [data-ui-dismiss], [data-ui-toast], [data-ui-tooltip], [data-ui-page], [data-ui-page-step]');
     if (!button || disabled(button)) return;
@@ -4051,8 +4113,8 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
   doc.addEventListener('pointerdown', event => {
     if (tooltip && !tooltip.trigger.contains(event.target) && !tooltip.bubble.contains(event.target)) hideTooltip();
   });
-  window.addEventListener('resize', hideTooltip);
-  doc.addEventListener('scroll', hideTooltip, true);
+  window.addEventListener('resize', ()=>withoutExitMotion(hideTooltip));
+  doc.addEventListener('scroll', ()=>withoutExitMotion(hideTooltip), true);
   doc.addEventListener('cancel', event => {
     const dialog = event.target;
     if (!dialog.matches?.('dialog[data-ui-dialog]')) return;
@@ -4142,7 +4204,7 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
   doc.addEventListener('dragend', endDrag);
   window.KavUI = Object.freeze({init, destroy, show, hide, toast, loading, copy, chart, splitter, sidebar:responsiveSidebar, setDesignTheme, setColorTheme, setPalette, setCustomPalette, getCustomPalette});
   function boot() {
-    applyTheme(resolvedColorTheme(), false, false);
+    applyTheme(resolvedColorTheme(), false);
     let savedDesign = null, savedPalette = null, savedCustom = null;
     if (doc.body.hasAttribute('data-ui-theme-persist')) {
       try { savedDesign = localStorage.getItem('kav-ui-design-theme'); savedPalette = localStorage.getItem('kav-ui-palette'); savedCustom=JSON.parse(localStorage.getItem('kav-ui-custom-palette') || 'null'); } catch { /* Storage is optional. */ }
