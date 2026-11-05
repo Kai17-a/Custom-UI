@@ -89,7 +89,7 @@ try {
 
   for (const path of readdirSync(join(root, 'docs/templates')).filter(name => name.endsWith('.html'))) {
     await navigate('templates/' + path);
-    const labels = await evaluate(`[...document.querySelectorAll('.template-palette-label > span:first-child,.template-design-label > span:first-child')].map(item=>({text:item.textContent.trim(),visible:!!item.getClientRects().length}))`);
+    const labels = await evaluate(`[...document.querySelectorAll('.ui-header label > span:first-child')].map(item=>({text:item.textContent.trim(),visible:!!item.getClientRects().length}))`);
     assert(labels.length === 2 && labels.every(item => item.visible) && labels[0].text !== labels[1].text, `Theme controls need distinct visible labels in ${path}: ${JSON.stringify(labels)}`);
     assert(await evaluate(`document.documentElement.scrollWidth<=innerWidth+1`), `Template overflow in ${path}`);
   }

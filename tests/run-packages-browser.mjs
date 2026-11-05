@@ -1,5 +1,6 @@
 /* node tests/run-browser.mjs — uses an installed Chromium, no npm dependencies.
    Set CHROME_BIN if Chromium is not installed in one of the detected locations. */
+import {authLayout, pricingHierarchy} from './sample-consistency.mjs';
 import {spawn} from 'node:child_process';
 import {build} from 'vite';
 import {createServer} from 'node:http';
@@ -191,6 +192,8 @@ try {
   // Scrollable tables/boards may overflow internally, but their host must fit the page.
   assert(await evaluate(`[...document.querySelectorAll('.ui-table-scroll,.ui-board-wrap')].every(el=>{const r=el.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1;})`),label+' scroll region bounds');
   assert(await evaluate(`[...document.querySelectorAll('input:not([type=hidden]),textarea,select')].filter(el=>!el.classList.contains('ui-select-search')).every(el=>el.labels?.length||el.getAttribute('aria-label')||el.getAttribute('aria-labelledby'))`),label+' input labels');
+  if(screen==='auth')assert(await evaluate(authLayout),label+' centered validated auth card');
+  if(screen==='pricing')assert(await evaluate(pricingHierarchy),label+' recommended plan');
   switch(screen){
    case 'settings':
     await click('#workspace-name');await send('Input.insertText',{text:'更新'});

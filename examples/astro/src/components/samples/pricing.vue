@@ -17,6 +17,7 @@ import {
       title="チームに合うプラン"
       description="月額料金は税込の架空の例です。契約と決済はアプリ側で接続します。"
     />
+    <p>全プランにメールサポートが含まれます。</p>
     <KavGrid cols="auto">
       <KavCard>
         <KavStack>
@@ -28,14 +29,13 @@ import {
           <ul>
             <li>メンバー1名</li>
             <li>容量1GB</li>
-            <li>メールサポート</li>
           </ul>
           <KavButton href="../auth/" color="primary" variant="outline">個人で登録へ進む</KavButton>
         </KavStack>
       </KavCard>
-      <KavCard>
+      <KavCard class="ui-card-selected">
         <KavStack>
-          <h2 class="ui-card-title">制作チーム</h2>
+          <div class="ui-cluster"><h2 class="ui-card-title">制作チーム</h2><span class="badge text-bg-success">おすすめ</span></div>
           <p class="ui-card-stat">
             ¥1,800
             <small>/ 月</small>
@@ -43,9 +43,8 @@ import {
           <ul>
             <li>メンバー10名</li>
             <li>容量50GB</li>
-            <li>メールサポート</li>
           </ul>
-          <KavButton href="../auth/" color="primary" variant="outline">制作チームで登録へ進む</KavButton>
+          <KavButton href="../auth/" color="primary">制作チームで登録へ進む</KavButton>
         </KavStack>
       </KavCard>
       <KavCard>
@@ -58,7 +57,6 @@ import {
           <ul>
             <li>メンバー30名</li>
             <li>容量200GB</li>
-            <li>メールサポート</li>
           </ul>
           <KavButton href="../auth/" color="primary" variant="outline">制作室で登録へ進む</KavButton>
         </KavStack>

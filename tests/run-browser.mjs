@@ -1,6 +1,7 @@
 /* node tests/run-browser.mjs — uses an installed Chromium, no npm dependencies.
    Set CHROME_BIN if Chromium is not installed in one of the detected locations. */
 import {spawn} from 'node:child_process';
+import {authLayout, pricingHierarchy, headerControls} from './sample-consistency.mjs';
 import {checkCatalogAccessibility} from './catalog-accessibility.mjs';
 import {checkMotion} from './motion-browser.mjs';
 import {checkControlAppearance} from './control-appearance.mjs';
@@ -80,6 +81,29 @@ try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  const consistencyFailures=[];
+  for(const width of [390,820,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    for(const name of readdirSync(join(site,'templates')).filter(name=>name.endsWith('.html'))) {
+      await navigate('templates/'+name);
+      await evaluate(`document.fonts.ready.then(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))))`);
+      if(!await evaluate(headerControls))consistencyFailures.push(name+' @'+width+' header order/alignment '+JSON.stringify(await evaluate(`[...document.querySelectorAll('.ui-header :is(.ui-select-trigger,.ui-header-nav a)')].map(el=>({text:el.textContent,y:el.getBoundingClientRect().y,h:el.getBoundingClientRect().height}))`)));
+      if(name==='auth.html') {
+        if(!await evaluate(authLayout))consistencyFailures.push(name+' @'+width+' centered validated auth card');
+        await evaluate(`document.querySelector('[role=tab]').focus()`);await key('ArrowRight');
+        if(!await evaluate(`document.querySelector('#signup-name').getClientRects().length>0`))throw new Error('Auth keyboard registration');
+        await key('ArrowLeft');
+      }
+      if(name==='pricing.html'&&!await evaluate(pricingHierarchy))consistencyFailures.push(name+' @'+width+' recommended plan');
+      if(['auth.html','pricing.html','settings.html','dashboard.html'].includes(name)) {
+        const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});
+        writeFileSync(join(artifacts,name.replace('.html','')+'-'+width+'.png'),Buffer.from(shot.data,'base64'));
+      }
+    }
+  }
+  console.log('Consistency screenshots:',artifacts);
+  if(consistencyFailures.length)throw new Error(consistencyFailures.join('\n'));
+  console.log('Template consistency: all headers, centered auth with keyboard tabs, one recommended pricing plan at 390/820/1440');
   // Screen layout regressions: geometry catches stretching and lost padding.
   const layoutFailures=[];
   const checkLayout=async(expression,message)=>{if(!await evaluate(expression))layoutFailures.push(message);};
