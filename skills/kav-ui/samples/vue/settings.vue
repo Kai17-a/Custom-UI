@@ -3,6 +3,7 @@ import { ref } from "vue";
 import "@kav-ui/core/style.css";
 import {
   KavButton,
+  KavWidget,
   KavCheckbox,
   KavCluster,
   KavField,
@@ -25,8 +26,10 @@ const mentions = ref(true);
       title="ワークスペース設定"
       description="チームの基本情報と通知の受け取り方を変更します。"
     />
-    <form class="ui-stack" @submit.prevent>
-      <KavSection title="基本情報">
+    <!-- 共有ランタイムのフォーム検証を読み込みます。 -->
+    <KavWidget html="" class="visually-hidden" />
+    <form data-ui-validate novalidate class="ui-stack" @submit.prevent>
+      <KavSection class="ui-stack" title="基本情報">
         <KavField label="ワークスペース名" for="workspace-name">
           <KavInput
             id="workspace-name"
@@ -51,11 +54,13 @@ const mentions = ref(true);
 
       <KavSection class="ui-stack" title="通知">
         <KavCheckbox
+          class="form-check-input-lg sp-me-2"
           name="weekly-report"
           label="週次レポートをメールで受け取る"
           v-model="weeklyReport"
         />
         <KavSwitch
+          class="sp-m-0"
           role="switch"
           name="mentions"
           label="メンションを通知する"

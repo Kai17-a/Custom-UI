@@ -7,9 +7,9 @@
         <p class="ui-page-description">チームの基本情報と通知の受け取り方を変更します。</p>
       </div>
     </header>
-    <form class="ui-stack" action="/settings" method="post">
+    <form data-ui-validate novalidate class="ui-stack" action="/settings" method="post">
       <!-- 保存先と認証・CSRF対策はアプリ側で接続します。 -->
-      <section class="ui-section">
+      <section class="ui-section ui-stack">
         <h2 class="ui-section-title">基本情報</h2>
         <div class="field">
           <label for="workspace-name">ワークスペース名</label>
@@ -22,8 +22,8 @@
       </section>
       <section class="ui-section ui-stack">
         <h2 class="ui-section-title">通知</h2>
-        <label class="form-check"><input class="form-check-input" type="checkbox" name="weekly-report" checked>週次レポートをメールで受け取る</label>
-        <label class="switch"><input type="checkbox" role="switch" name="mentions" checked>メンションを通知する</label>
+        <label class="form-check"><input class="form-check-input form-check-input-lg sp-me-2" type="checkbox" name="weekly-report" checked><span class="form-check-label">週次レポートをメールで受け取る</span></label>
+        <label class="form-check switch"><input class="sp-m-0" type="checkbox" role="switch" name="mentions" checked><span class="form-check-label">メンションを通知する</span></label>
       </section>
       <div class="ui-cluster">
         <button class="btn btn-primary" type="submit" >変更を保存</button>

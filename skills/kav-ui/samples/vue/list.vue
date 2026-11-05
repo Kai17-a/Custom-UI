@@ -3,10 +3,9 @@ import "@kav-ui/core/style.css";
 import { KavPage, KavPageHeader, KavWidget } from "@kav-ui/vue";
 // 開発者が管理する固定HTML。利用者の入力を連結しない。
 const tableMarkup = `
-  <div class="ui-data-table ui-stack" data-ui-data-table data-ui-page-size="3">
-    <div class="ui-toolbar">
-      <div class="ui-toolbar-group">
-        <label for="project-search">名前・状態で絞り込み</label>
+  <div class="ui-data-table" data-ui-data-table data-ui-page-size="3">
+    <div class="ui-data-table-toolbar">
+      <label class="ui-data-table-search" for="project-search">名前・状態で絞り込み
         <input
           class="form-control"
           id="project-search"
@@ -15,14 +14,13 @@ const tableMarkup = `
           data-ui-table-search
           placeholder="例：進行中"
         />
-      </div>
-      <div class="ui-toolbar-group ui-toolbar-end">
-        <label for="project-size">表示件数</label>
+      </label>
+      <label class="ui-data-table-size fx-self-end" for="project-size">表示件数
         <select class="form-select" id="project-size" data-ui-table-page-size>
           <option value="3">3件</option>
           <option value="10">10件</option>
         </select>
-      </div>
+      </label>
     </div>
     <div
       class="ui-table-scroll"
@@ -85,12 +83,14 @@ const tableMarkup = `
       </table>
     </div>
 
-    <p data-ui-table-status role="status"></p>
-    <nav class="ui-data-table-pagination" aria-label="プロジェクトのページ送り">
-      <button class="btn btn-outline-secondary" type="button" data-ui-table-prev>前へ</button>
-      <span data-ui-table-page-status></span>
-      <button class="btn btn-outline-secondary" type="button" data-ui-table-next>次へ</button>
-    </nav>
+    <div class="ui-data-table-footer">
+      <p class="ui-data-table-summary" data-ui-table-status role="status"></p>
+      <nav class="ui-data-table-pagination" aria-label="プロジェクトのページ送り">
+        <button class="btn btn-outline-secondary" type="button" data-ui-table-prev>前へ</button>
+        <span data-ui-table-page-status></span>
+        <button class="btn btn-outline-secondary" type="button" data-ui-table-next>次へ</button>
+      </nav>
+    </div>
   </div>
 `;
 </script>

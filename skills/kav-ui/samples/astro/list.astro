@@ -6,8 +6,6 @@ import {
   KavPageHeader,
   KavProvider,
   KavSelect,
-  KavStack,
-  KavToolbar,
 } from "@kav-ui/astro";
 ---
 
@@ -28,15 +26,15 @@ import {
           description="名前や状態（進行中・完了・準備中）を入力して絞り込めます。"
         />
         <!-- 通常HTMLのData tableをProviderのランタイムで初期化します。 -->
-        <KavStack
+        <div
           data-kav-ui-widget
           class="ui-data-table"
           data-ui-data-table
           data-ui-page-size="3"
         >
-          <KavToolbar label="プロジェクトの絞り込み">
-            <Fragment>
-              <label for="project-search">名前・状態で絞り込み</label>
+          <div class="ui-data-table-toolbar">
+            <label class="ui-data-table-search" for="project-search">
+              <span>名前・状態で絞り込み</span>
               <KavInput
                 id="project-search"
                 name="query"
@@ -44,9 +42,9 @@ import {
                 data-ui-table-search
                 placeholder="例：進行中"
               />
-            </Fragment>
-            <Fragment slot="end">
-              <label for="project-size">表示件数</label>
+            </label>
+            <label class="ui-data-table-size fx-self-end" for="project-size">
+              <span>表示件数</span>
               <KavSelect
                 id="project-size"
                 data-ui-table-page-size
@@ -56,8 +54,8 @@ import {
                 ]}
                 value="3"
               />
-            </Fragment>
-          </KavToolbar>
+            </label>
+          </div>
 
           <div
             class="ui-table-scroll"
@@ -120,26 +118,28 @@ import {
             </table>
           </div>
 
-          <p data-ui-table-status role="status"></p>
-          <nav
-            class="ui-data-table-pagination"
-            aria-label="プロジェクトのページ送り"
-          >
-            <KavButton
-              type="button"
-              data-ui-table-prev
-              color="secondary"
-              variant="outline"
-            >前へ</KavButton>
-            <span data-ui-table-page-status></span>
-            <KavButton
-              type="button"
-              data-ui-table-next
-              color="secondary"
-              variant="outline"
-            >次へ</KavButton>
-          </nav>
-        </KavStack>
+          <div class="ui-data-table-footer">
+            <p class="ui-data-table-summary" data-ui-table-status role="status"></p>
+            <nav
+              class="ui-data-table-pagination"
+              aria-label="プロジェクトのページ送り"
+            >
+              <KavButton
+                type="button"
+                data-ui-table-prev
+                color="secondary"
+                variant="outline"
+              >前へ</KavButton>
+              <span data-ui-table-page-status></span>
+              <KavButton
+                type="button"
+                data-ui-table-next
+                color="secondary"
+                variant="outline"
+              >次へ</KavButton>
+            </nav>
+          </div>
+        </div>
       </KavPage>
     </main>
   </body>

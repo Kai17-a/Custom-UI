@@ -3,6 +3,7 @@ import { nextTick, ref } from "vue";
 import "@kav-ui/core/style.css";
 import {
   KavButton,
+  KavWidget,
   KavCluster,
   KavField,
   KavInput,
@@ -19,10 +20,13 @@ async function goToStep(value: string) {
   await nextTick();
   document.querySelector<HTMLElement>("#" + value + "-heading")?.focus();
 }
-function revealInvalid(event: Event) {
+async function revealInvalid(event: Event) {
   const target = event.target as HTMLInputElement;
+  if (target !== target.form?.querySelector("input:invalid, select:invalid, textarea:invalid")) return;
   step.value =
     target.id === "request-date" ? "request-schedule" : "request-input";
+  await nextTick();
+  target.focus();
 }
 </script>
 
@@ -34,7 +38,9 @@ function revealInvalid(event: Event) {
       description="入力・予定・確認の順に進めます。タブは矢印キーでも移動できます。"
     />
 
-    <form
+    <!-- 共有ランタイムのフォーム検証を読み込みます。 -->
+    <KavWidget html="" class="visually-hidden" />
+    <form data-ui-validate novalidate
       id="request-form"
       @invalid.capture="revealInvalid"
       class="ui-stack"
@@ -62,11 +68,13 @@ function revealInvalid(event: Event) {
                 v-model="requestTitle"
               />
             </KavField>
-            <KavButton
-              type="button"
-              color="primary"
-              @click="goToStep('request-schedule')"
-            >次へ</KavButton>
+            <KavCluster>
+              <KavButton
+                type="button"
+                color="primary"
+                @click="goToStep('request-schedule')"
+              >次へ</KavButton>
+            </KavCluster>
           </KavStack>
         </template>
         <template #request-schedule>
@@ -110,13 +118,15 @@ function revealInvalid(event: Event) {
               </dd>
             </dl>
             <p>修正する場合は前のタブへ戻ってください。送信処理はアプリ側で接続します。</p>
-            <KavButton
-              type="button"
-              variant="outline"
-              color="secondary"
-              @click="goToStep('request-schedule')"
-            >戻る</KavButton>
-            <KavButton type="submit" color="primary">この内容で依頼する</KavButton>
+            <KavCluster>
+              <KavButton
+                type="button"
+                variant="outline"
+                color="secondary"
+                @click="goToStep('request-schedule')"
+              >戻る</KavButton>
+              <KavButton type="submit" color="primary">この内容で依頼する</KavButton>
+            </KavCluster>
           </KavStack>
         </template>
       </KavTabs>

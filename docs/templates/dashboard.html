@@ -62,18 +62,20 @@
             <p class="ui-page-description">売上と利用状況を確認できます。</p>
           </div>
           <div class="ui-page-actions">
-            <button id="dashboard-export" type="button" class="btn btn-sm btn-outline-secondary"><span icon="mdi-download" aria-hidden="true"></span>CSVを書き出す</button>
+            <div class="ui-cluster">
+              <div class="field sp-m-0">
+                <label class="type-size-sm" for="dashboard-period">集計期間</label>
+                <select id="dashboard-period" class="form-select form-select-sm">
+                  <option value="7">過去7日</option>
+                  <option value="30">過去30日</option>
+                </select>
+              </div>
+              <button id="dashboard-export" type="button" class="fx-self-end btn btn-sm btn-outline-secondary"><span icon="mdi-download" aria-hidden="true"></span>CSVを書き出す</button>
+            </div>
           </div>
         </header>
         <div class="template-dashboard-toolbar">
           <p class="type-size-sm type-color-muted">サンプルデータ · 2026年10月22日時点</p>
-          <label class="ui-cluster" for="dashboard-period">
-            <span class="type-size-sm">集計期間</span>
-            <select id="dashboard-period" class="form-select form-select-sm">
-              <option value="7">過去7日</option>
-              <option value="30">過去30日</option>
-            </select>
-          </label>
         </div>
         <p class="visually-hidden" role="status" id="dashboard-status"></p>
         <div class="template-metrics">
@@ -108,9 +110,10 @@
         </div>
         <div class="template-dashboard-charts">
           <section class="ui-card">
+            <div class="ui-card-header"><h2 class="ui-card-title">売上の推移</h2></div>
             <div class="ui-card-body">
               <figure id="revenue-chart" class="ui-chart" data-ui-chart="area">
-                <figcaption>売上の推移</figcaption>
+                <figcaption class="visually-hidden">売上の推移</figcaption>
                 <script type="application/json" data-ui-chart-data>
 {
   "label": "売上の推移",
@@ -145,9 +148,10 @@
             </div>
           </section>
           <section class="ui-card">
+            <div class="ui-card-header"><h2 class="ui-card-title">流入元</h2></div>
             <div class="ui-card-body">
               <figure id="channel-chart" class="ui-chart" data-ui-chart="donut">
-                <figcaption>流入元</figcaption>
+                <figcaption class="visually-hidden">流入元</figcaption>
                 <script type="application/json" data-ui-chart-data>
 {
   "label": "流入元",
@@ -200,7 +204,7 @@
                       <td>佐藤 あかり</td>
                       <td>10/22</td>
                       <td>
-                        <span class="template-order-state">完了</span>
+                        <span class="badge text-bg-success">完了</span>
                       </td>
                       <td class="template-number">¥8,400</td>
                     </tr>
@@ -209,7 +213,7 @@
                       <td>田中 蓮</td>
                       <td>10/22</td>
                       <td>
-                        <span class="template-order-state">処理中</span>
+                        <span class="badge text-bg-warning">処理中</span>
                       </td>
                       <td class="template-number">¥3,600</td>
                     </tr>
@@ -218,7 +222,7 @@
                       <td>鈴木 みな</td>
                       <td>10/21</td>
                       <td>
-                        <span class="template-order-state">完了</span>
+                        <span class="badge text-bg-success">完了</span>
                       </td>
                       <td class="template-number">¥12,000</td>
                     </tr>
@@ -227,7 +231,7 @@
                       <td>高橋 海</td>
                       <td>10/21</td>
                       <td>
-                        <span class="template-order-state">完了</span>
+                        <span class="badge text-bg-success">完了</span>
                       </td>
                       <td class="template-number">¥6,800</td>
                     </tr>
@@ -236,7 +240,7 @@
                       <td>伊藤 はる</td>
                       <td>10/20</td>
                       <td>
-                        <span class="template-order-state">確認待ち</span>
+                        <span class="badge text-bg-warning">確認待ち</span>
                       </td>
                       <td class="template-number">¥4,200</td>
                     </tr>

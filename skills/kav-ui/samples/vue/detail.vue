@@ -20,16 +20,17 @@ const shareOpen = ref(false);
       eyebrow="木の葉制作室"
       title="秋の展示会"
       description="作品と制作の背景を紹介する、チームの共同プロジェクトです。"
-    />
-    <div class="ui-page-actions">
-      <KavButton
-        type="button"
-        color="primary"
-        variant="outline"
-        @click="shareOpen = true"
-      >共有情報</KavButton>
-      <KavButton href="../list/" color="secondary" variant="outline">一覧へ戻る</KavButton>
-    </div>
+    >
+      <template #actions>
+        <KavButton
+          type="button"
+          color="primary"
+          variant="outline"
+          @click="shareOpen = true"
+        >共有情報</KavButton>
+        <KavButton href="../list/" color="secondary" variant="outline">一覧へ戻る</KavButton>
+      </template>
+    </KavPageHeader>
 
     <KavPage rail-label="プロジェクトの補足">
       <KavTabs
@@ -42,17 +43,23 @@ const shareOpen = ref(false);
       >
         <template #overview>
           <KavStack>
-            <h2>開催概要</h2>
-            <p>11月の展示に向けて、作品の選定と会場の準備を進めています。</p>
-            <h3>次の作業</h3>
-            <p>展示作品の候補を11月10日までに集めます。</p>
+            <div class="ui-section">
+              <h2>開催概要</h2>
+              <p>11月の展示に向けて、作品の選定と会場の準備を進めています。</p>
+            </div>
+            <div class="ui-section">
+              <h3>次の作業</h3>
+              <p>展示作品の候補を11月10日までに集めます。</p>
+            </div>
           </KavStack>
         </template>
         <template #history>
           <KavStack>
-            <h2>更新履歴</h2>
-            <p>
-              <time datetime="2026-11-02">11月2日</time>：展示のテーマを決めました。</p>
+            <div class="ui-section">
+              <h2>更新履歴</h2>
+              <p>
+                <time datetime="2026-11-02">11月2日</time>：展示のテーマを決めました。</p>
+            </div>
           </KavStack>
         </template>
       </KavTabs>
@@ -61,11 +68,11 @@ const shareOpen = ref(false);
           <h2 class="ui-aside-title">担当と期限</h2>
           <dl>
             <dt>担当</dt>
-            <dd>制作チーム</dd>
+            <dd class="sp-m-0">制作チーム</dd>
             <dt>期限</dt>
-            <dd><time datetime="2026-11-20">2026年11月20日</time></dd>
+            <dd class="sp-m-0"><time datetime="2026-11-20">2026年11月20日</time></dd>
           </dl>
-          <KavBadge color="success">進行中</KavBadge>
+          <div class="ui-cluster"><KavBadge color="success">進行中</KavBadge></div>
         </div>
       </template>
     </KavPage>

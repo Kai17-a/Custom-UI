@@ -74,11 +74,57 @@ async function click(selector) {
   await send('Input.dispatchMouseEvent',{type:'mousePressed',...box,button:'left',clickCount:1});
   await send('Input.dispatchMouseEvent',{type:'mouseReleased',...box,button:'left',clickCount:1});
 }
-const timeout=setTimeout(()=>{console.error('Browser checks timed out');child.kill();process.exitCode=1;},360000);
+const timeout=setTimeout(()=>{console.error('Browser checks timed out');child.kill();process.exitCode=1;},420000);
 try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  // Screen layout regressions: geometry catches stretching and lost padding.
+  const layoutFailures=[];
+  const checkLayout=async(expression,message)=>{if(!await evaluate(expression))layoutFailures.push(message);};
+  for(const width of [390,820,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    for(const name of ['list','detail','settings','wizard','dashboard','ai-chat']) {
+      await navigate('templates/'+name+'.html');
+      await evaluate("KavUI.setColorTheme('light');KavUI.setDesignTheme('default')");
+      if(name==='list') {
+        await checkLayout(`(()=>{const card=document.querySelector('.ui-data-table').getBoundingClientRect();return ['[data-ui-table-status]','.ui-data-table-pagination'].every(s=>{const r=document.querySelector(s).getBoundingClientRect();return r.left-card.left>=12&&card.right-r.right>=12&&card.bottom-r.bottom>=12;});})()`, 'List footer padding @'+width);
+        if(width>=820)await checkLayout(`(()=>{const a=document.querySelector('#project-search').getBoundingClientRect(),b=(document.querySelector('#project-size').closest('.ui-select')?.querySelector('.ui-select-trigger')||document.querySelector('#project-size')).getBoundingClientRect();return Math.abs(a.bottom-b.bottom)<2;})()`, 'List toolbar baseline @'+width);
+      }
+      if(name==='detail') {
+        await checkLayout(`!!document.querySelector('.ui-page-header .ui-page-actions')`, 'Detail header actions @'+width);
+        await checkLayout(`(()=>{const badge=document.querySelector('main .badge'),r=document.createRange();r.selectNodeContents(badge);return badge.getBoundingClientRect().width-r.getBoundingClientRect().width<30;})()`, 'Detail badge width @'+width);
+        await checkLayout(`[...document.querySelectorAll('main dd')].every(el=>getComputedStyle(el).marginLeft==='0px')`, 'Detail definitions indent @'+width);
+        await checkLayout(`(()=>{const h=document.querySelector('[data-ui-panel="overview"] h3'),p=h.previousElementSibling||h.parentElement.previousElementSibling;return h.getBoundingClientRect().top-p.getBoundingClientRect().bottom>h.nextElementSibling.getBoundingClientRect().top-h.getBoundingClientRect().bottom;})()`, 'Detail heading rhythm @'+width);
+      }
+      if(name==='settings') {
+        await checkLayout(`(()=>{const gaps=[...document.querySelectorAll('main .ui-section')].map(s=>s.children[1].getBoundingClientRect().top-s.children[0].getBoundingClientRect().bottom);return gaps.length===2&&Math.abs(gaps[0]-gaps[1])<2;})()`, 'Settings section gaps @'+width);
+        await checkLayout(`(()=>{const a=document.querySelector('[name="weekly-report"]'),b=document.querySelector('[name="mentions"]');if(!a.nextElementSibling||!b.nextElementSibling)return false;return Math.abs(a.getBoundingClientRect().left-b.getBoundingClientRect().left)<1&&Math.abs(a.nextElementSibling.getBoundingClientRect().left-b.nextElementSibling.getBoundingClientRect().left)<1;})()`, 'Settings notification alignment @'+width);
+      }
+      if(name==='settings'||name==='wizard') {
+        await checkLayout(`document.querySelector('main form').matches('[data-ui-validate]')&&document.querySelector('main form').noValidate`, name+' inline validation @'+width);
+      }
+      if(name==='dashboard')await checkLayout(`!!document.querySelector('.ui-page-actions #dashboard-period')&&[...document.querySelectorAll('.template-dashboard-charts .ui-card')].every(c=>c.querySelector('.ui-card-header'))&&[...document.querySelectorAll('tbody td span')].every(s=>s.matches('.badge'))&&Math.abs(document.querySelector('#dashboard-period').closest('.ui-select').querySelector('.ui-select-trigger').getBoundingClientRect().bottom-document.querySelector('#dashboard-export').getBoundingClientRect().bottom)<2`, 'Dashboard grouping/cards/badges @'+width);
+      if(name==='ai-chat')await checkLayout(`(()=>{const input=document.querySelector('#chat-message'),hint=document.getElementById(input.getAttribute('aria-describedby'));return !!hint&&input.closest('.field').contains(hint);})()`, 'Chat field hint @'+width);
+      const steps=name==='wizard'?['request-input','request-schedule','request-confirm']:[null];
+      for(const step of steps) {
+        if(step)await evaluate(`document.querySelector('[data-ui-target="${step}"]').click()`);
+        if(step)await checkLayout(`(()=>{const b=document.querySelector('[data-ui-panel="${step}"] .btn-primary'),r=document.createRange();r.selectNodeContents(b);return b.getBoundingClientRect().width-r.getBoundingClientRect().width<60;})()`, 'Wizard natural button width '+step+' @'+width);
+        await evaluate(`scrollTo({top:0,left:0,behavior:'instant'})`);
+        await delay(250);
+        const clip=await evaluate('({x:0,y:0,width:innerWidth,height:Math.max(innerHeight,document.documentElement.scrollHeight),scale:1})');
+        const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,clip});
+        writeFileSync(join(artifacts,name+(step?'-'+step:'')+'-'+width+'.png'),Buffer.from(shot.data,'base64'));
+      }
+      if(name==='settings'||name==='wizard') {
+        await evaluate(`(()=>{const form=document.querySelector('main form');form.addEventListener('submit',e=>e.preventDefault(),{once:true});const input=document.querySelector(${JSON.stringify(name==='settings'?'#contact-email':'#request-title')});if(document.querySelector('#request-date'))document.querySelector('#request-date').value='';input.value='';input.dispatchEvent(new Event('input',{bubbles:true}));form.requestSubmit();})()`);
+        await checkLayout(`(()=>{const input=document.querySelector('[aria-invalid="true"]'),error=input?.closest('.field')?.querySelector('[data-ui-error]');return !!error&&!error.hidden&&error.textContent.length>0&&document.activeElement===input&&input.getClientRects().length>0;})()`, name+' visible inline error/focus @'+width);
+      }
+    }
+  }
+  console.log('Screen layout screenshots:',artifacts);
+  if(layoutFailures.length)throw new Error(layoutFailures.join('\n'));
+  console.log('Screen layout geometry: 6 templates × 3 widths, all wizard steps');
   await navigate('tests/ui.html');const canonical=await evaluate('window.uiTestsDone');console.log('Canonical UI regression:',JSON.stringify(canonical));if(canonical.failures.length)throw new Error('Legacy UI regressions');
   await checkMotion({evaluate,send});
   // Agent diagrams retain native list, disclosure and form behavior without UI JavaScript.
