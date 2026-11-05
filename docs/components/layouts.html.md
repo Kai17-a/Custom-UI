@@ -4,9 +4,9 @@
 
 # Layouts
 
-[ドラッグで幅・高さを変えるSplitter →](splitter.html.md)
-
 ページの骨組みを、タグとクラスの組み合わせで作ります。既存の色・余白・角丸を引き継ぎ、すべてのデザインテーマとライト／ダークに対応します。npmは不要です。
+
+[ドラッグで幅・高さを変えるSplitter →](splitter.html.md)
 
 <a id="responsive-devices"></a>
 

@@ -4,9 +4,9 @@
 
 # Theme switcher
 
-[ガラス・グラスモーフィズムに任意の背景画像を設定する →](themes.html.md#theme-background)
-
 タグと属性だけで使えるテーマ切り替えです。ライト・ダーク・システムを選べます。デザインの質感とカラーパレットは独立して切り替えられます。
+
+[ガラス・グラスモーフィズムに任意の背景画像を設定する →](themes.html.md#theme-background)
 
 <a id="palette-switcher"></a>
 

@@ -2,7 +2,7 @@
 
 [HTML版](docs.html) · [llms.txt](../llms.txt)
 
-WORKSPACE / GUIDE
+木の葉制作室
 
 # Workspaceを使い始める
 

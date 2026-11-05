@@ -97,6 +97,7 @@ async function validateForm(event: Event) {
                 :aria-describedby="errors['request-title'] ? 'request-title-error' : undefined"
                 id="request-title"
                 name="request-title"
+                autocomplete="off"
                 type="text"
                 required
                 maxlength="80"
@@ -121,6 +122,7 @@ async function validateForm(event: Event) {
                 :aria-describedby="errors['request-date'] ? 'request-date-error' : undefined"
                 id="request-date"
                 name="request-date"
+                autocomplete="off"
                 type="date"
                 required
                 v-model="requestDate"

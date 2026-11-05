@@ -204,3 +204,42 @@ class DocumentationStructureTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class CatalogConsistencyTests(unittest.TestCase):
+    """P3 polish: one eyebrow rule, one related-link position, spacing on the 4px scale."""
+
+    def test_eyebrows_follow_the_navigation_labels(self):
+        root = Path(__file__).resolve().parents[1] / 'docs'
+        index = (root / 'index.html').read_text()
+        # Allowed labels are the sidebar's category headings and overview links.
+        labels = set(re.findall(r'<div class="catalog-nav-group">\s*<h2>([^<]+)</h2>', index))
+        labels |= {re.sub(r'\s*→$', '', text) for text in re.findall(r'<a class="overview-link"[^>]*>([^<]+)</a>', index)}
+        for page in [*root.glob('*.html'), *(root / 'components').glob('*.html')]:
+            heading = re.search(r'<header class="page-heading">\s*<p class="eyebrow">([^<]*)</p>', page.read_text())
+            with self.subTest(page=page.name):
+                self.assertIsNotNone(heading)
+                self.assertTrue(heading.group(1).startswith('Kav-UI / '))
+                self.assertIn(heading.group(1).removeprefix('Kav-UI / '), labels)
+        for page in (root / 'templates').glob('*.html'):
+            for eyebrow in re.findall(r'<p class="ui-page-eyebrow">([^<]*)</p>', page.read_text()):
+                with self.subTest(page=page.name):
+                    self.assertEqual(eyebrow, '木の葉制作室')
+
+    def test_related_links_follow_the_lede(self):
+        root = Path(__file__).resolve().parents[1] / 'docs/components'
+        before = re.compile(r'</header>\s*<p>\s*<a [^>]*>[^<]*</a>\s*</p>\s*<p class="lede">')
+        self.assertEqual([p.name for p in root.glob('*.html') if before.search(p.read_text())], [])
+
+    def test_catalog_spacing_uses_the_4px_scale(self):
+        css = (Path(__file__).resolve().parents[1] / 'docs/assets/css/layout.css').read_text()
+        odd = re.findall(r'(?:margin|padding|gap|inset-block)[a-z-]*:[^;{}]*?(?<![\d.])(?:5|7|9|15)px', css)
+        self.assertEqual(odd, [])
+
+    def test_search_inputs_have_names(self):
+        root = Path(__file__).resolve().parents[1] / 'docs/templates'
+        for page in root.glob('*.html'):
+            for tag in re.findall(r'<input[^>]*type="search"[^>]*>', page.read_text()):
+                with self.subTest(page=page.name):
+                    self.assertIn(' name="', tag)
+                    self.assertIn('autocomplete="off"', tag)
