@@ -22,6 +22,8 @@ body[data-ui-theme="glass"] {
 /* A stronger frosted-glass treatment with luminous edges and layered color. */
 body[data-ui-theme="glassmorphism"] {
   --bs-secondary-color:#464a52;
+  /* Primary ink drops below 4.5:1 on the frosted backdrop; links use the emphasis ink. */
+  --ui-link-color:var(--bs-primary-text-emphasis);
   --bs-border-radius:.8rem;
   --bs-border-radius-sm:.55rem;
   --bs-border-radius-lg:1.1rem;

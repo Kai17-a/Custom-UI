@@ -1,5 +1,5 @@
 body { display:flex; flex-direction:column; min-height:100vh; height:auto; line-height:1.6; }
-a { color:var(--bs-primary); }
+/* Link color comes from the framework's :where(a), so themes can adjust it. */
 button, input, select, textarea { font:inherit; }
 :focus-visible { outline:2px solid var(--bs-primary); outline-offset:3px; }
 [hidden] { display:none !important; }

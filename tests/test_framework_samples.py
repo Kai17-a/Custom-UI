@@ -54,3 +54,22 @@ class FrameworkSampleTests(unittest.TestCase):
         self.assertEqual(len(files), 24)
         for path, data in files.items():
             self.assertEqual(path.read_bytes(), data)
+
+
+class StatusBadgeTests(unittest.TestCase):
+    """A status keeps one color across the catalog, templates and framework samples."""
+
+    def test_each_status_uses_one_badge_color(self):
+        pattern = re.compile(r'<span class="(badge[^"]*)">([^<]{1,8})</span>|<KavBadge color="([a-z]+)">([^<]{1,8})</KavBadge>')
+        colors = {}
+        sources = [*(ROOT / 'docs/templates').glob('*.html'), ROOT / 'docs/components/data-table.html',
+                   *(ROOT / 'examples/astro/src').rglob('*.vue'), *(ROOT / 'examples/astro/src').rglob('*.astro')]
+        for path in sources:
+            for html_class, html_text, kav_color, kav_text in pattern.findall(path.read_text()):
+                text = html_text or kav_text
+                color = html_class.split()[-1] if html_class else ('badge-neutral' if kav_color not in ('danger', 'success', 'warning') else 'text-bg-' + kav_color)
+                colors.setdefault(text, {}).setdefault(color, []).append(path.relative_to(ROOT).as_posix())
+        mixed = {text: found for text, found in colors.items() if len(found) > 1}
+        self.assertEqual(mixed, {})
+        self.assertEqual(set(colors['進行中']), {'badge-neutral'})
+        self.assertEqual(set(colors['完了']), {'text-bg-success'})

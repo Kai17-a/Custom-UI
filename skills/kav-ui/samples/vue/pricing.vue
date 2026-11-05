@@ -35,7 +35,7 @@ import {
       </KavCard>
       <KavCard class="ui-card-selected">
         <KavStack>
-          <div class="ui-cluster"><h2 class="ui-card-title">制作チーム</h2><span class="badge text-bg-success">おすすめ</span></div>
+          <div class="ui-cluster"><h2 class="ui-card-title">制作チーム</h2><span class="badge badge-neutral">おすすめ</span></div>
           <p class="ui-card-stat">
             ¥1,800
             <small>/ 月</small>
