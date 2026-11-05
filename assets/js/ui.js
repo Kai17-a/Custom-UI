@@ -1482,7 +1482,11 @@
       }
       button.focus();
     }
-    listen(button,'click',()=>{if(isOpen())close();else open();});
+    // Light dismiss closes the menu after pointerup, before this click, so remember it was open.
+    let pointerWasOpen=false;
+    listen(button,'pointerdown',()=>{pointerWasOpen=isOpen();});
+    listen(button,'pointercancel',()=>{pointerWasOpen=false;});
+    listen(button,'click',()=>{const wasOpen=pointerWasOpen||isOpen();pointerWasOpen=false;if(wasOpen)close();else open();});
     listen(button,'keydown',event=>{
       const options=[...select.options];
       if(event.key==='Escape' && isOpen()) { event.preventDefault();event.stopPropagation();close();return; }
@@ -2056,6 +2060,16 @@
       items.forEach(item=>item.tabIndex=item===next?0:-1);(next || panel).focus();
     } else (panel.querySelector('[autofocus]') || panel.querySelector('button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]') || panel).focus();
   }
+  // Light dismiss closes an auto popover after pointerup, before the trigger's click.
+  // Remember that it was open so the click closes it instead of reopening it.
+  let pointerOpenPopup=null;
+  doc.addEventListener('pointerdown',event=>{
+    const trigger=closest(event.target,'[data-ui-toggle="dropdown"], [data-ui-toggle="popover"]');
+    const panel=trigger && target(trigger);
+    pointerOpenPopup=isPopup(panel) && popupOpen(panel) ? panel : null;
+  },true);
+  doc.addEventListener('pointercancel',()=>{pointerOpenPopup=null;},true);
+  doc.addEventListener('keydown',()=>{pointerOpenPopup=null;},true);
   function closePopup(panel, restore=false) {
     if (!isPopup(panel)) return;
     if (!popupOpen(panel)) {openPopups.delete(panel);syncPopup(panel,false);return;}
@@ -3973,7 +3987,8 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
       setColorTheme(doc.documentElement.dataset.bsTheme === 'dark' ? 'light' : 'dark', {persist:true});
     } else if (['dropdown','popover'].includes(action)) {
       const panel=activatedTarget(button);if(!isPopup(panel))return;
-      event.preventDefault();if(popupOpen(panel))closePopup(panel,true);else openPopup(panel,button);
+      event.preventDefault();const wasOpen=pointerOpenPopup===panel || popupOpen(panel);pointerOpenPopup=null;
+      if(wasOpen)closePopup(panel,true);else openPopup(panel,button);
     } else if (action === 'sidebar-responsive') {
       event.preventDefault();responsiveSidebar(activatedTarget(button),{trigger:button});
     } else if (action === 'tab') {
