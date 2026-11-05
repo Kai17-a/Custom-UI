@@ -236,6 +236,7 @@ try {
      }
     }
     if(screen==='detail'){
+     assert(await evaluate(`!!document.querySelector('main .breadcrumb a[href="../list/"]')&&document.querySelector('.breadcrumb [aria-current="page"]')?.textContent.trim()==='秋の展示会'`),label+' breadcrumb current location');
      await click('.ui-page-actions button');await until(`document.querySelector('dialog').open`,label+' dialog opens');
      await key('Escape');await until(`!document.querySelector('dialog').open`,label+' dialog Escape');
      assert(await evaluate(`document.activeElement===document.querySelector('.ui-page-actions button')`),label+' dialog restores focus');

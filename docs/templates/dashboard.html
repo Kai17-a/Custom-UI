@@ -21,7 +21,7 @@
     <header class="ui-header ui-header-sticky">
       <div class="ui-container ui-header-inner">
         <a class="ui-brand" href="dashboard.html"><span class="template-brand-mark" icon="mdi-view-dashboard" aria-hidden="true"></span> Workspace</a>
-        <nav class="ui-header-nav" aria-label="サービス">
+        <nav class="ui-header-nav nav-nowrap" aria-label="サービス">
           <a href="docs.html">ドキュメント</a>
           <a href="dashboard.html" aria-current="page">ダッシュボード</a>
           <a href="changelog.html">更新履歴</a>
@@ -192,8 +192,8 @@
                   <thead>
                     <tr>
                       <th scope="col">注文番号</th>
-                      <th scope="col">顧客</th>
-                      <th scope="col">日付</th>
+                      <th scope="col" class="mobile:ui-hidden">顧客</th>
+                      <th scope="col" class="mobile:ui-hidden">日付</th>
                       <th scope="col">状態</th>
                       <th scope="col" class="template-number">金額</th>
                     </tr>
@@ -201,8 +201,8 @@
                   <tbody>
                     <tr>
                       <th scope="row">ORD-1048</th>
-                      <td>佐藤 あかり</td>
-                      <td>10/22</td>
+                      <td class="mobile:ui-hidden">佐藤 あかり</td>
+                      <td class="mobile:ui-hidden">10/22</td>
                       <td>
                         <span class="badge text-bg-success">完了</span>
                       </td>
@@ -210,8 +210,8 @@
                     </tr>
                     <tr>
                       <th scope="row">ORD-1047</th>
-                      <td>田中 蓮</td>
-                      <td>10/22</td>
+                      <td class="mobile:ui-hidden">田中 蓮</td>
+                      <td class="mobile:ui-hidden">10/22</td>
                       <td>
                         <span class="badge text-bg-warning">処理中</span>
                       </td>
@@ -219,8 +219,8 @@
                     </tr>
                     <tr>
                       <th scope="row">ORD-1046</th>
-                      <td>鈴木 みな</td>
-                      <td>10/21</td>
+                      <td class="mobile:ui-hidden">鈴木 みな</td>
+                      <td class="mobile:ui-hidden">10/21</td>
                       <td>
                         <span class="badge text-bg-success">完了</span>
                       </td>
@@ -228,8 +228,8 @@
                     </tr>
                     <tr>
                       <th scope="row">ORD-1045</th>
-                      <td>高橋 海</td>
-                      <td>10/21</td>
+                      <td class="mobile:ui-hidden">高橋 海</td>
+                      <td class="mobile:ui-hidden">10/21</td>
                       <td>
                         <span class="badge text-bg-success">完了</span>
                       </td>
@@ -237,8 +237,8 @@
                     </tr>
                     <tr>
                       <th scope="row">ORD-1044</th>
-                      <td>伊藤 はる</td>
-                      <td>10/20</td>
+                      <td class="mobile:ui-hidden">伊藤 はる</td>
+                      <td class="mobile:ui-hidden">10/20</td>
                       <td>
                         <span class="badge text-bg-warning">確認待ち</span>
                       </td>

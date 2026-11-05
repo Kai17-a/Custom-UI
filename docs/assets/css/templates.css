@@ -49,7 +49,10 @@
 .template-dashboard :is(.ui-card-title,table) { margin-bottom:0; }
 .template-dashboard .ui-card-description { font-size:var(--text-xs); margin-top:var(--space-2); }
 .table .template-number { text-align:end; font-variant-numeric:tabular-nums; white-space:nowrap; }
-.template-dashboard-bottom table { min-width:34rem; }
+@media (width >= 768px) {
+  .template-dashboard-bottom table { min-width:34rem; }
+  .service-template .ui-header-nav { flex-wrap:wrap; overflow:visible; padding-block:0; }
+}
 .template-order-state { white-space:nowrap; }
 .template-activity { list-style:none; padding:0; margin:0 0 var(--space-6); display:grid; gap:var(--space-6); }
 .template-activity li { display:flex; gap:var(--space-3); align-items:flex-start; font-size:var(--text-sm); }
@@ -81,8 +84,17 @@
 }
 @media (width < 768px) {
   .service-template .ui-container { padding-inline:var(--space-4); }
-  .service-template .ui-header-inner { gap:var(--space-2); }
-  .service-template .ui-header-nav { order:3; width:100%; gap:var(--space-1); font-size:var(--text-xs); }
+  .service-template .ui-header-inner { gap:var(--space-2); padding-block:var(--space-2); }
+  .service-template .ui-brand { font-size:var(--text-sm); min-height:var(--ui-touch-target); }
+  .service-template .ui-header-actions { flex-wrap:nowrap; flex:1; justify-content:flex-end; }
+  .service-template .ui-header-actions label { min-width:0; max-width:6rem; }
+  .service-template .ui-header-actions label > span:first-child {
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip-path:inset(50%); white-space:nowrap;
+  }
+  .service-template .ui-header-actions .ui-select { width:100%; }
+  .service-template .ui-header-actions .form-select { width:100%; }
+  .service-template .ui-header-nav { order:3; width:100%; flex-wrap:nowrap; gap:var(--space-1); padding-block:0; font-size:var(--text-xs); }
   .service-template .ui-header-nav a { padding:var(--space-2); }
   .template-doc-layout { grid-template-columns:minmax(0,1fr); gap:var(--space-6); padding-block:var(--space-6); }
   .template-doc-aside, .template-doc-toc { position:static; max-height:none; overflow:visible; }

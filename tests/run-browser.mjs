@@ -88,6 +88,16 @@ try {
       await navigate('templates/'+name);
       await evaluate(`document.fonts.ready.then(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))))`);
       if(!await evaluate(headerControls))consistencyFailures.push(name+' @'+width+' header order/alignment '+JSON.stringify(await evaluate(`[...document.querySelectorAll('.ui-header :is(.ui-select-trigger,.ui-header-nav a)')].map(el=>({text:el.textContent,y:el.getBoundingClientRect().y,h:el.getBoundingClientRect().height}))`)));
+      if(width===390) {
+        const geometry=await evaluate(`({height:document.querySelector('body > .ui-header').getBoundingClientRect().height,overflow:document.documentElement.scrollWidth>innerWidth})`);
+        if(geometry.height>120||geometry.overflow)consistencyFailures.push(name+' mobile header '+JSON.stringify(geometry));
+      }
+      if(['docs.html','changelog.html','dashboard.html'].includes(name)&&!await evaluate(`document.querySelectorAll('.ui-header-nav [aria-current="page"]').length===1&&document.querySelector('.ui-header-nav [aria-current="page"]').getAttribute('href')===${JSON.stringify(name)}`))consistencyFailures.push(name+' current location');
+      if(name==='detail.html'&&!await evaluate(`!!document.querySelector('main .breadcrumb a[href="list.html"]')&&document.querySelector('.breadcrumb [aria-current="page"]')?.textContent.trim()==='秋の展示会'`))consistencyFailures.push(name+' breadcrumb');
+      if(name==='dashboard.html') {
+        const orders=await evaluate(`(()=>{const table=document.querySelector('[aria-label="直近の注文"] table');return [...table.rows].every(row=>[...row.cells].every((cell,i)=>{const r=cell.getBoundingClientRect();return innerWidth>=768?r.width>0:([0,3,4].includes(i)?r.width>0&&r.left>=0&&r.right<=innerWidth:r.width===0);}))&&(innerWidth>=768||table.parentElement.scrollWidth<=table.parentElement.clientWidth);})()`);
+        if(!orders)consistencyFailures.push('Dashboard visible order columns @'+width);
+      }
       if(name==='auth.html') {
         if(!await evaluate(authLayout))consistencyFailures.push(name+' @'+width+' centered validated auth card');
         await evaluate(`document.querySelector('[role=tab]').focus()`);await key('ArrowRight');
@@ -95,9 +105,24 @@ try {
         await key('ArrowLeft');
       }
       if(name==='pricing.html'&&!await evaluate(pricingHierarchy))consistencyFailures.push(name+' @'+width+' recommended plan');
-      if(['auth.html','pricing.html','settings.html','dashboard.html'].includes(name)) {
+      if(['auth.html','pricing.html','settings.html','dashboard.html','detail.html','docs.html','changelog.html'].includes(name)) {
         const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});
         writeFileSync(join(artifacts,name.replace('.html','')+'-'+width+'.png'),Buffer.from(shot.data,'base64'));
+      }
+      if(width===390) {
+        await send('Emulation.setTouchEmulationEnabled',{enabled:true});
+        for(const design of ['default','glassmorphism']) {
+          await evaluate(`KavUI.setDesignTheme(${JSON.stringify(design)});KavUI.setColorTheme(${JSON.stringify(design==='default'?'light':'dark')})`);
+          await evaluate(`document.fonts.ready.then(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))))`);
+          const touch=await evaluate(`(()=>{const header=document.querySelector('body > .ui-header'),controls=[...header.querySelectorAll('.ui-select-trigger,[data-ui-toggle="theme"],.ui-header-nav a,.ui-brand')];return {coarse:matchMedia('(pointer:coarse)').matches,height:header.getBoundingClientRect().height,overflow:document.documentElement.scrollWidth>innerWidth,short:controls.filter(el=>{const r=el.getBoundingClientRect();return r.width<44||r.height<44;}).map(el=>el.textContent.trim()),labels:[...header.querySelectorAll('.ui-select-trigger')].map(el=>el.getAttribute('aria-label'))};})()`);
+          if(!touch.coarse||touch.height>120||touch.overflow||touch.short.length||touch.labels.join(',')!=='デザイン,配色')consistencyFailures.push(name+' touch '+design+' '+JSON.stringify(touch));
+          if(design==='glassmorphism'&&['dashboard.html','detail.html','docs.html','changelog.html','settings.html'].includes(name)) {
+            const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});
+            writeFileSync(join(artifacts,name.replace('.html','')+'-390-glassmorphism-dark.png'),Buffer.from(shot.data,'base64'));
+          }
+        }
+        await evaluate("KavUI.setDesignTheme('default');KavUI.setColorTheme('light')");
+        await send('Emulation.setTouchEmulationEnabled',{enabled:false});
       }
     }
   }
