@@ -95,7 +95,7 @@
     const opacity = Number(timing.opacity);
     const destination = element.matches('.ui-drawer')
       ? timing.getPropertyValue('--ui-drawer-x').trim()+' '+timing.getPropertyValue('--ui-drawer-y').trim() : '0 5px';
-    const parent = region || element.parentElement?.closest('dialog[open]') || doc.body;
+    const parent = (region || element).parentElement?.closest('dialog[open]') || doc.body;
     if (!bounds.width || !bounds.height || opacity < .01) return () => {};
     // A closed shadow contains a frozen, inert visual copy. No duplicate IDs,
     // controls, live regions or UI selectors enter the application document.
@@ -104,9 +104,11 @@
     host.setAttribute('aria-hidden', 'true');
     host.inert = true;
     Object.assign(host.style, {position:'fixed',left:bounds.left+'px',top:bounds.top+'px',width:bounds.width+'px',height:bounds.height+'px',pointerEvents:'none',zIndex:'2147483000',margin:'0'});
+    // The toast region is bottom-anchored and shrinks when a note leaves, so the
+    // copy stays at fixed viewport coordinates one layer below the region.
     if (region) {
-      const box = region.getBoundingClientRect();
-      Object.assign(host.style, {position:'absolute',left:(bounds.left-box.left-region.clientLeft+region.scrollLeft)+'px',top:(bounds.top-box.top-region.clientTop+region.scrollTop)+'px',zIndex:'-1'});
+      const layer = parseInt(getComputedStyle(region).zIndex, 10);
+      host.style.zIndex = String(Number.isFinite(layer) ? layer - 1 : 0);
     }
     const shadow = host.attachShadow({mode:'closed'});
     const clone = element.cloneNode(true);
@@ -167,18 +169,33 @@
   doc.addEventListener('beforetoggle', event => {
     if (event.newState === 'open') event.target.removeAttribute('data-ui-motion-immediate');
   }, true);
+  // A shrinking region would clip survivors that slide in from above its new edge.
+  const toastOverflowHolds = new WeakMap();
+  function holdToastOverflow(region, animations) {
+    if (!animations.length) return;
+    let hold = toastOverflowHolds.get(region);
+    if (!hold) { hold = {count:0, previous:region.style.overflow}; toastOverflowHolds.set(region, hold); region.style.overflow = 'visible'; }
+    hold.count++;
+    Promise.allSettled(animations.map(animation => animation.finished)).then(() => {
+      if (--hold.count) return;
+      region.style.overflow = hold.previous;
+      toastOverflowHolds.delete(region);
+    });
+  }
   function toastReflow(note, remove) {
     const region = note.closest('.ui-toasts');
     const remaining = region ? all(region, ':scope > .ui-toast').filter(item=>item!==note) : [];
     const before = remaining.map(item=>item.getBoundingClientRect());
+    const fits = region && region.scrollHeight <= region.clientHeight;
     exitMotion(note);
     remove();
-    remaining.forEach((item,index)=>{
+    const animations = remaining.map((item,index)=>{
       elementMotions.get(item)?.cancel();
       const after = item.getBoundingClientRect();
       const dx = before[index].left-after.left, dy = before[index].top-after.top;
-      if (dx || dy) motion(item,[{transform:'translate('+dx+'px, '+dy+'px)'},{transform:'translate(0, 0)'}]);
-    });
+      return dx || dy ? motion(item,[{transform:'translate('+dx+'px, '+dy+'px)'},{transform:'translate(0, 0)'}]) : null;
+    }).filter(Boolean);
+    if (fits) holdToastOverflow(region, animations);
   }
   function enterMotion(element) { motion(element, [{opacity:.25},{opacity:1}]); }
 
@@ -3975,7 +3992,7 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
   }
   function setColorTheme(mode, {persist = false} = {}) {
     if(!colorModes.includes(mode))return false;
-    chosen=mode;const theme=resolvedColorTheme();applyTheme(theme,doc.documentElement.dataset.bsTheme!==theme);
+    chosen=mode;const theme=resolvedColorTheme();applyTheme(theme);
     if(persist)try {localStorage.setItem('kav-ui-theme',mode);} catch { /* Storage is optional. */ }
     return true;
   }
@@ -4000,7 +4017,7 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
     } else button.textContent = label;
     button.setAttribute('aria-label', label);
   }
-  function applyTheme(theme, animate = false, notify = true) {
+  function applyTheme(theme, notify = true) {
     const before=doc.documentElement.dataset.bsTheme,previousMode=doc.documentElement.dataset.uiColorPreference;
     doc.documentElement.dataset.bsTheme = theme;
     doc.documentElement.dataset.uiColorPreference = chosen;
@@ -4008,7 +4025,7 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
     all(doc, '[data-ui-toggle="theme"]').forEach(syncThemeToggle);
     if(notify && (before!==theme || previousMode!==chosen))emit(doc.body,'colorchange',{mode:chosen,theme});
   }
-  preference.addEventListener('change', () => { if (chosen==='system') applyTheme(resolvedColorTheme(), true); });
+  preference.addEventListener('change', () => { if (chosen==='system') applyTheme(resolvedColorTheme()); });
   doc.addEventListener('click', event => {
     const button = closest(event.target, '[data-ui-toggle], [data-ui-dismiss], [data-ui-toast], [data-ui-tooltip], [data-ui-page], [data-ui-page-step]');
     if (!button || disabled(button)) return;
@@ -4187,7 +4204,7 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
   doc.addEventListener('dragend', endDrag);
   window.KavUI = Object.freeze({init, destroy, show, hide, toast, loading, copy, chart, splitter, sidebar:responsiveSidebar, setDesignTheme, setColorTheme, setPalette, setCustomPalette, getCustomPalette});
   function boot() {
-    applyTheme(resolvedColorTheme(), false, false);
+    applyTheme(resolvedColorTheme(), false);
     let savedDesign = null, savedPalette = null, savedCustom = null;
     if (doc.body.hasAttribute('data-ui-theme-persist')) {
       try { savedDesign = localStorage.getItem('kav-ui-design-theme'); savedPalette = localStorage.getItem('kav-ui-palette'); savedCustom=JSON.parse(localStorage.getItem('kav-ui-custom-palette') || 'null'); } catch { /* Storage is optional. */ }

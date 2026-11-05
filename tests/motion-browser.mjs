@@ -95,27 +95,31 @@ export async function checkMotion({evaluate, send}) {
       const notes=[1,2,3].map(n=>KavUI.toast('Stack '+n,{duration:0}));
       const region=notes[0].parentElement;
       await frame();await Promise.all(notes.map(settle));
-      const before=notes[0].getBoundingClientRect();
+      const before=notes[0].getBoundingClientRect(),removedTop=notes[1].getBoundingClientRect().top,overflowBefore=getComputedStyle(region).overflowY;
       notes[1].querySelector('[data-ui-dismiss="toast"]').click();
-      const ghost=region.querySelector('[data-ui-motion-ghost]');
+      const ghost=document.querySelector('[data-ui-motion-ghost]');
       assert(!notes[1].isConnected,'toast immediate removal');
       if(!reduced){
-        assert(ghost&&ghost.parentElement===region&&getComputedStyle(ghost).position==='absolute','toast local exit');
-        assert(Number(getComputedStyle(ghost).zIndex)<0,'toast exit below survivors');
+        // The region shrinks from the top, so the copy keeps its viewport position.
+        assert(ghost&&ghost.parentElement===region.parentElement&&getComputedStyle(ghost).position==='fixed','toast exit outside the shrinking region');
+        assert(Math.abs(ghost.getBoundingClientRect().top-removedTop)<1,'toast exit keeps its position');
+        assert(Number(getComputedStyle(ghost).zIndex)<Number(getComputedStyle(region).zIndex),'toast exit below survivors');
+        assert(getComputedStyle(region).overflowY==='visible','toast survivors are not clipped while sliding');
         const flip=notes[0].getAnimations().find(a=>a.effect.getKeyframes().some(k=>k.transform&&k.transform!=='none'));
         assert(!!flip,'toast survivor FLIP transform');
         const after=notes[0].getBoundingClientRect();
         assert(Math.abs(before.top-after.top)<3,'toast survivor starts at old position');
       }else assert(!ghost&&notes.every(n=>!n.getAnimations().length),'toast reduced motion');
-      await Promise.all([...region.querySelectorAll('[data-ui-motion-ghost]'),...notes].map(settle));
+      await Promise.all([...document.querySelectorAll('[data-ui-motion-ghost]'),...notes].map(settle));await frame();
+      assert(getComputedStyle(region).overflowY===overflowBefore,'toast region overflow restored');
       notes.forEach(n=>n.remove());
       // Overflow eviction must count notifications, never the inert ghosts.
       const overflow=Array.from({length:8},()=>KavUI.toast('Evict',{duration:0}));
       assert(region.querySelectorAll(':scope > .ui-toast').length===5,'toast eviction limit');
-      await Promise.all([...region.querySelectorAll('[data-ui-motion-ghost]')].map(settle));overflow.forEach(n=>n.remove());
+      await Promise.all([...document.querySelectorAll('[data-ui-motion-ghost]')].map(settle));overflow.forEach(n=>n.remove());
       const timed=KavUI.toast('Timeout',{duration:20});
       await new Promise(resolve=>setTimeout(resolve,50));assert(!timed.isConnected,'toast automatic removal');
-      await Promise.all([...region.querySelectorAll('[data-ui-motion-ghost]')].map(settle));
+      await Promise.all([...document.querySelectorAll('[data-ui-motion-ghost]')].map(settle));
       // Close from actual captured scroll events; opening again restores CSS motion.
       const popup=document.createElement('div');popup.id='motion-popup';popup.className='ui-popup';popup.dataset.uiDropdown='';popup.innerHTML='<button class="ui-dropdown-item">Item</button>';fixture.append(popup);
       const opener=document.createElement('button');opener.dataset.uiToggle='dropdown';opener.dataset.uiTarget='#motion-popup';opener.textContent='Menu';fixture.append(opener);KavUI.init(fixture);
