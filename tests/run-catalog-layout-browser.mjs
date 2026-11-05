@@ -90,6 +90,34 @@ try {
     await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});await navigate('index.html');
     check(await evaluate(`(()=>{const cards=[...document.querySelectorAll('.catalog-card')];return cards.every((a,i)=>!i||Math.abs(a.offsetTop-cards[i-1].offsetTop)>1||a.offsetHeight===cards[i-1].offsetHeight);})()`),'Cards align at '+width);
   }
+  // Home preview: reading order, desktop composition and shared theme runtime.
+  for(const width of [320,390,820,1024,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
+    await navigate('index.html');
+    await evaluate('document.fonts.ready');
+    assert(await evaluate(`!!document.querySelector('[aria-label="デザインと配色の見本"]')`),'Home needs a live design preview');
+    const geometry=await evaluate(`(()=>{const rect=s=>document.querySelector(s).getBoundingClientRect();const text=rect('.catalog-hero-copy'),preview=rect('.catalog-hero-preview'),h1=rect('h1'),links=rect('.catalog-hero-copy > .ui-cluster');return {right:preview.left>=h1.right,center:Math.abs(text.top+text.height/2-preview.top-preview.height/2),after:preview.top>=links.bottom,overflow:document.documentElement.scrollWidth>innerWidth,squeezed:[...document.querySelectorAll('.catalog-hero :is(p,h2,label,button,td)')].filter(el=>{const r=el.getBoundingClientRect(),size=parseFloat(getComputedStyle(el).fontSize);return r.width>0&&(size<12||(el.textContent.trim().length>=4&&r.width<size*2&&r.height>size*4));}).map(el=>el.textContent)};})()`);
+    check(!geometry.overflow&&!geometry.squeezed.length,'Home readable @'+width+' '+JSON.stringify(geometry));
+    check(width>=1024?geometry.right&&geometry.center<=24:geometry.after,'Home preview layout @'+width+' '+JSON.stringify(geometry));
+  }
+  await evaluate(`document.querySelector('.catalog-hero-preview [data-ui-design="glass"]').click()`);
+  check(await evaluate(`document.body.dataset.uiTheme==='glass'&&document.querySelector('.catalog-header [data-ui-theme-select]').value==='glass'&&document.querySelector('.catalog-header .ui-select-trigger').textContent.includes('ガラス')`),'Glass design and visible header select sync');
+  await evaluate(`document.querySelector('.catalog-hero-preview [data-ui-palette-value="sage"]').click()`);
+  check(await evaluate(`document.documentElement.dataset.uiPalette==='sage'&&document.querySelector('.catalog-header [data-ui-palette-select]').value==='sage'`),'Sage palette and header sync');
+  await evaluate(`KavUI.setColorTheme('light');document.querySelector('.catalog-hero-preview [data-ui-toggle="theme"]').click()`);
+  check(await evaluate(`document.documentElement.dataset.bsTheme==='dark'`),'Preview mode toggle');
+  await navigate('index.html');
+  check(await evaluate(`document.body.dataset.uiTheme==='glass'&&document.documentElement.dataset.uiPalette==='sage'&&document.documentElement.dataset.bsTheme==='dark'`),'Preview settings persist across reload');
+  await evaluate(`KavUI.setDesignTheme('default',{persist:true});KavUI.setPalette('default',{persist:true});KavUI.setColorTheme('light',{persist:true})`);
+  await evaluate(`document.querySelector('.catalog-hero-preview [data-ui-design="flat"]').focus()`);
+  await key('Enter');
+  check(await evaluate(`document.body.dataset.uiTheme==='flat'&&document.querySelector('.catalog-hero-preview [data-ui-design="flat"]').getAttribute('aria-pressed')==='true'`),'Design buttons work with the keyboard');
+  await evaluate(`document.querySelector('[data-ui-target="#home-project-share"]').focus()`);
+  await key('Enter');
+  check(await evaluate(`document.querySelector('#home-project-share').open`),'Preview share information opens');
+  await evaluate(`document.querySelector('#home-project-share [data-ui-dismiss]').click()`);
+  check(await evaluate(`!document.querySelector('#home-project-share').open`),'Preview share information closes');
+  await evaluate(`KavUI.setDesignTheme('default',{persist:true})`);
   if(failures.length)throw new Error(failures.join('\n'));
   if(process.env.CATALOG_SCREENSHOTS) {
     const dir=resolve(process.env.CATALOG_SCREENSHOTS);mkdirSync(dir,{recursive:true});
@@ -102,6 +130,19 @@ try {
         writeFileSync(join(dir,path.replaceAll('/','-').replace('.html','')+'-'+width+'-'+mode+'.png'),Buffer.from(shot.data,'base64'));
       }
     }
+    for(const width of [390,820,1440]) for(const mode of ['light','dark']) {
+      await send('Emulation.setDeviceMetricsOverride',{width,height:width===1440?1100:1600,deviceScaleFactor:1,mobile:false});
+      await navigate('index.html');
+      await evaluate(`KavUI.setDesignTheme('default');KavUI.setPalette('default');KavUI.setColorTheme('${mode}');document.fonts.ready`);await delay(100);
+      const shot=await send('Page.captureScreenshot',{format:'png'});
+      writeFileSync(join(dir,'home-hero-'+width+'-'+mode+'.png'),Buffer.from(shot.data,'base64'));
+    }
+    for(const design of ['glass','glassmorphism','flat']) {
+      await evaluate(`KavUI.setDesignTheme('${design}');KavUI.setPalette('sage');KavUI.setColorTheme('light')`);await delay(100);
+      const shot=await send('Page.captureScreenshot',{format:'png'});
+      writeFileSync(join(dir,'home-hero-1440-'+design+'-sage.png'),Buffer.from(shot.data,'base64'));
+    }
+    await evaluate(`KavUI.setDesignTheme('default',{persist:true});KavUI.setPalette('default',{persist:true});KavUI.setColorTheme('light',{persist:true})`);
     console.log('Screenshots: '+dir);
   }
   console.log('PASS: compact home/header, grouped TOC, preserved anchors, readable splitter, aligned rows');

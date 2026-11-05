@@ -70,6 +70,23 @@ class DocumentationStructureTests(unittest.TestCase):
         self.assertEqual(len(cards), 46)
         self.assertEqual(len(set(cards)), 46)
 
+    def test_home_has_live_design_preview(self):
+        source = (DOCS / 'index.html').read_text()
+        match = re.search(r'<section[^>]*aria-label="デザインと配色の見本"[^>]*>(.*?)</section>', source, re.S)
+        self.assertIsNotNone(match, 'Home needs a live design preview')
+        preview = match.group(1)
+        self.assertEqual(re.findall(r'data-ui-design="([^"]+)"', preview),
+                         ['default', 'glass', 'glassmorphism', 'flat', 'soft'])
+        self.assertEqual(re.findall(r'data-ui-palette-value="([^"]+)"', preview),
+                         ['default', 'slate', 'sage', 'teal', 'mauve', 'sand', 'clay'])
+        self.assertIn('data-ui-toggle="theme"', preview)
+        self.assertIn('data-ui-theme-icon', preview)
+        ids = re.findall(r'\bid="([^"]+)"', source)
+        self.assertEqual(len(ids), len(set(ids)), 'IDs must remain unique on the home page')
+        for target in re.findall(r'<label[^>]*for="([^"]+)"', preview):
+            self.assertIn(target, ids)
+
+
     def test_home_entry_points_precede_component_groups(self):
         main = (DOCS / 'index.html').read_text().split('<main', 1)[1]
         first_group = main.index('<section')
