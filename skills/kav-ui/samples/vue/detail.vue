@@ -77,7 +77,7 @@ const shareOpen = ref(false);
             <dt>期限</dt>
             <dd class="sp-m-0"><time datetime="2026-11-20">2026年11月20日</time></dd>
           </dl>
-          <div class="ui-cluster"><KavBadge color="success">進行中</KavBadge></div>
+          <div class="ui-cluster"><KavBadge color="neutral">進行中</KavBadge></div>
         </div>
       </template>
     </KavPage>

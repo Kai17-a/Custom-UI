@@ -10,12 +10,13 @@ export async function checkCatalogAccessibility({navigate,evaluate,send,pages,ar
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     for(const design of ['glassmorphism','glass'])for(const color of ['light','dark']) {
       if(design==='glass'&&color==='light')continue;
-      for(const page of ['index.html','components/forms.html','templates/settings.html','templates/pricing.html','templates/auth.html','templates/list.html']) {
+      for(const page of ['index.html','getting-started.html','components/forms.html','templates/settings.html','templates/pricing.html','templates/auth.html','templates/list.html','templates/detail.html']) {
         await navigate(page);
         await evaluate(`KavUI.setDesignTheme('${design}');KavUI.setColorTheme('${color}')`);
-        const selectors=design==='glass'?['.ui-page-eyebrow']:['.ui-page-eyebrow','.ui-page-description','.lede','.tabs > button','.catalog-toc-link','.overview-link','.catalog-search-label','.ui-header-nav a'];
+        const selectors=design==='glass'?['.ui-page-eyebrow']:['.ui-page-eyebrow','.ui-page-description','.lede','.tabs > button','.catalog-toc-link','.overview-link','.catalog-search-label','.ui-header-nav a','main p > a','.breadcrumb a'];
         for(const selector of selectors) {
-          const count=await evaluate(`document.querySelectorAll('${selector}').length`);
+          // Prose links are numerous; the first dozen per page cover every backdrop band.
+          const count=Math.min(await evaluate(`document.querySelectorAll('${selector}').length`),selector==='main p > a'?12:Infinity);
           for(let i=0;i<count;i++) {
             const sample=await evaluate(`(()=>{
               const el=document.querySelectorAll('${selector}')[${i}];if(!el.getClientRects().length)return null;
