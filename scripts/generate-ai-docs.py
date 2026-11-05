@@ -141,7 +141,7 @@ class Markdown:
             language = 'html' if code.lstrip().startswith('<') else ''
             return fence(code, language)
         if node.has_class('catalog-card'):
-            title = next((item.text() for item in node.walk() if item.tag == 'h2'), node.text())
+            title = next((item.text() for item in node.walk() if item.tag in {'h2', 'h3'}), node.text())
             description = next((item.text() for item in node.walk() if item.tag == 'p'), '')
             return '- [' + compact(title) + '](' + self.link(node.attrs.get('href', '')) + '): ' + compact(description)
         if node.tag in {'h1', 'h2', 'h3', 'h4', 'h5', 'h6'}:
