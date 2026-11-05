@@ -8,7 +8,7 @@ AIエージェントの処理手順、役割の階層、並列実行、タスク
 
 <a id="agent-flow"></a>
 
-## AI Agent Workflow Visualization
+## 処理の流れ
 
 左から右へ処理が進みます。スマートフォンでは上から下へ並びます。色に加えて文字で実行状態を示します。
 
@@ -18,7 +18,7 @@ AIエージェントの処理手順、役割の階層、並列実行、タスク
 
 <a id="agent-hierarchy"></a>
 
-## Hierarchical Node Graph UI
+## 役割の階層
 
 親ノードの下に担当エージェントと子タスクを配置します。接続は上から下への委任を表します。狭い画面では図の領域を横にスクロールできます。
 
@@ -28,7 +28,7 @@ AIエージェントの処理手順、役割の階層、並列実行、タスク
 
 <a id="agent-orchestration"></a>
 
-## Agent Orchestration Graph
+## エージェントの連携
 
 Coordinatorが3つの作業を並列に委任し、すべての結果をReviewerへ渡します。確認待ちのノードがあるため、レビューは開始していません。
 
@@ -38,7 +38,7 @@ Coordinatorが3つの作業を並列に委任し、すべての結果をReviewer
 
 <a id="task-tree"></a>
 
-## Interactive Task Tree
+## タスクの内訳
 
 見出しで子タスクを開閉し、チェックで完了を切り替えます。Tabで移動し、EnterまたはSpaceで開閉、Spaceでチェックできます。
 
