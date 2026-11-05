@@ -52,6 +52,9 @@ async function evaluate(expression) {
   if(result.exceptionDetails)throw new Error(result.exceptionDetails.exception?.description||result.exceptionDetails.text);
   return result.result.value;
 }
+// Text squeezed into a column narrower than two characters wraps one character per line.
+// Splitter panels are resized by the user, so their width is not a layout error.
+const squeezedText=`[...document.querySelectorAll('main :is(p,li,h1,h2,h3,h4,h5,h6,dt,dd,summary,label,strong,a,button,td,th)')].filter(el=>{const text=el.textContent.trim();if(text.length<4||!el.getClientRects().length||el.closest('[data-ui-splitter-panel]'))return false;const r=el.getBoundingClientRect(),size=parseFloat(getComputedStyle(el).fontSize);return r.width>0&&r.width<size*2&&r.height>size*4;}).map(el=>el.tagName+':'+el.textContent.trim().slice(0,12))`;
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function navigate(path) {
   await send('Page.navigate',{url:pathToFileURL(documentPath(path)).href});
@@ -207,8 +210,8 @@ try {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     for(const path of pages) {
       await navigate(path);
-      const state=await evaluate('({overflow:document.documentElement.scrollWidth>innerWidth+1, css:getComputedStyle(document.body).fontFamily, broken:[...document.querySelectorAll("link[rel=stylesheet]")].filter(link=>!link.sheet).length})');
-      if(state.overflow||state.broken)throw new Error(path+' @'+width+': '+JSON.stringify(state));
+      const state=await evaluate('({overflow:document.documentElement.scrollWidth>innerWidth+1, css:getComputedStyle(document.body).fontFamily, broken:[...document.querySelectorAll("link[rel=stylesheet]")].filter(link=>!link.sheet).length, squeezed:'+squeezedText+'})');
+      if(state.overflow||state.broken||state.squeezed.length)throw new Error(path+' @'+width+': '+JSON.stringify(state));
       if(path==='components/flex-grid.html') {
         const alignment=await evaluate('getComputedStyle(document.querySelector("#responsive-alignment .fx-grid")).justifyContent');
         const expected=width>=1024?'flex-end':width>=768?'space-between':'center';
