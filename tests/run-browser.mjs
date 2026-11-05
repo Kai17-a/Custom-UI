@@ -149,7 +149,7 @@ try {
   await navigate('templates/pricing.html');
   for(const design of ['default','glass','glassmorphism','flat','soft'])for(const mode of ['light','dark']) {
     await evaluate(`KavUI.setDesignTheme('${design}');KavUI.setColorTheme('${mode}')`);
-    if(!await evaluate(`(()=>{const card=document.querySelector('.ui-card-selected'),cs=getComputedStyle(card),primary=getComputedStyle(document.body).getPropertyValue('--bs-primary').trim();const probe=document.createElement('span');probe.style.color=primary;document.body.append(probe);const ink=getComputedStyle(probe).color;probe.remove();return cs.boxShadow.includes('inset')&&cs.boxShadow.includes(ink)&&cs.borderTopColor===ink;})()`))polishFailures.push('Recommended plan emphasis '+design+'/'+mode);
+    if(!await evaluate(`(()=>{const card=document.querySelector('.ui-card-selected'),cs=getComputedStyle(card),primary=getComputedStyle(document.body).getPropertyValue('--bs-primary').trim();const probe=document.createElement('span');probe.style.color=primary;document.body.append(probe);const ink=getComputedStyle(probe).color;probe.remove();probe.style.color='var(--bs-primary-bg-subtle)';document.body.append(probe);const bg=getComputedStyle(probe).color;probe.remove();return cs.borderLeftWidth===cs.borderTopWidth&&cs.borderTopColor===ink&&cs.backgroundColor===bg&&!!card.querySelector('.badge');})()`))polishFailures.push('Recommended plan emphasis '+design+'/'+mode);
   }
   await evaluate("KavUI.setDesignTheme('default');KavUI.setColorTheme('light')");
   await navigate('templates/wizard.html');

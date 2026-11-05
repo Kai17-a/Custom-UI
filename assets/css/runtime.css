@@ -63,3 +63,8 @@ html[data-ui-focus-modality="pointer"] :is(button.form-control, .form-select):fo
   .ui-select-trigger, .ui-input-picker-trigger { min-height:var(--ui-touch-target); }
   :is(.ui-calendar-compact, .ui-datepicker-popup, .ui-input-popup) .ui-calendar-day { min-height:var(--ui-touch-target); }
 }
+
+/* Summary is a native action regardless of the disclosure component. */
+@media (pointer:coarse) {
+  summary { min-width:var(--ui-touch-target); min-height:var(--ui-touch-target); align-content:center; }
+}

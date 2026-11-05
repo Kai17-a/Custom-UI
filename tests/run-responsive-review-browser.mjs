@@ -1,3 +1,4 @@
+import {checkComponentReview} from './component-review.mjs';
 import {spawn} from 'node:child_process';
 import {existsSync, mkdtempSync, readdirSync, rmSync} from 'node:fs';
 import {homedir, tmpdir} from 'node:os';
@@ -57,7 +58,7 @@ async function key(key, code = key) {
   await send('Input.dispatchKeyEvent', {type: 'keyUp', key, code, windowsVirtualKeyCode: virtualKey});
 }
 
-const timeout = setTimeout(() => { child.kill(); process.exitCode = 1; }, 60000);
+const timeout = setTimeout(() => { child.kill(); process.exitCode = 1; }, process.env.COMPONENT_SCREENSHOTS ? 180000 : 60000);
 try {
   const {targetId} = await send('Target.createTarget', {url: 'about:blank'}, null);
   ({sessionId: session} = await send('Target.attachToTarget', {targetId, flatten: true}, null));
@@ -87,12 +88,40 @@ try {
   const touch = await evaluate(`(()=>{document.querySelector('.catalog-mobile-menu').open=true;document.querySelector('.catalog-navigation').open=true;document.querySelectorAll('.catalog-nav-category,.catalog-nav-branch').forEach(item=>item.open=true);const controls=[...document.querySelectorAll('.catalog-sidebar nav a,.catalog-sidebar nav summary')].filter(item=>item.getClientRects().length);return {count:controls.length,short:controls.filter(item=>item.getBoundingClientRect().height<44).slice(0,5).map(item=>[item.textContent.trim(),item.getBoundingClientRect().height])};})()`);
   assert(touch.count >= 46 && !touch.short.length, `Touch menu targets below 44px: ${JSON.stringify(touch)}`);
 
+  await send('Emulation.setDeviceMetricsOverride', {width:390,height:900,deviceScaleFactor:1,mobile:true});
+  for (const [path, selector] of [
+    ['data-table', '.example .form-check-input'], ['tips', '.example .tip-disclosure summary'],
+    ['typography', '.example details > summary'], ['navigation', '.example .navbar a'],
+    ['banner', '.example .ui-banner-inner > a, .example .ui-banner-actions a'], ['cards', '.example .ui-card-footer a'],
+    ['layouts', '.example .ui-card-footer a']
+  ]) {
+    await navigate('components/' + path + '.html');
+    if(path==='navigation')await evaluate(`[...document.querySelectorAll('.example [data-ui-navbar-toggle]')].forEach(el=>el.click())`);
+    const hits = await evaluate(`(()=>{
+      const els=[...document.querySelectorAll('${selector}')].filter(el=>el.getClientRects().length);
+      return els.map(el=>{el.scrollIntoView({block:'center',inline:'center',behavior:'instant'});const r=el.getBoundingClientRect();
+        const points=[[r.left+1,r.top+r.height/2],[r.right-1,r.top+r.height/2],[r.left+r.width/2,r.top+1],[r.left+r.width/2,r.bottom-1]];
+        return {text:el.textContent.trim(),width:r.width,height:r.height,hit:points.every(([x,y])=>el.contains(document.elementFromPoint(x,y)))};
+      });})()`);
+    assert(hits.length && hits.every(h=>h.width>=44 && h.height>=44 && h.hit), `Component touch targets ${path}: ${JSON.stringify(hits)}`);
+  }
+
+  await navigate('components/data-table.html');
+  const edge = await evaluate(`(()=>{const el=document.querySelector('.example [data-ui-row-select]');el.scrollIntoView({block:'center',inline:'center',behavior:'instant'});const r=el.getBoundingClientRect();return {x:r.left+1,y:r.top+r.height/2,before:el.checked}})()`);
+  await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:edge.x,y:edge.y}]});
+  await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  assert(await evaluate(`document.querySelector('.example [data-ui-row-select]').checked`)!==edge.before,'Checkbox toggles when tapped at the outer edge');
+  await navigate('components/tips.html');
+  assert(await evaluate(`[...document.querySelectorAll('main p a')].every(el=>getComputedStyle(el).minHeight!=='44px')`),'Prose links must retain inline text layout');
+
   for (const path of readdirSync(join(root, 'docs/templates')).filter(name => name.endsWith('.html'))) {
     await navigate('templates/' + path);
     const labels = await evaluate(`[...document.querySelectorAll('.ui-header label > span:first-child')].map(item=>({text:item.textContent.trim(),visible:!!item.getClientRects().length}))`);
     assert(labels.length === 2 && labels.every(item => item.visible) && labels[0].text !== labels[1].text, `Theme controls need distinct visible labels in ${path}: ${JSON.stringify(labels)}`);
     assert(await evaluate(`document.documentElement.scrollWidth<=innerWidth+1`), `Template overflow in ${path}`);
   }
+
+  await checkComponentReview({send,navigate,evaluate});
 
   await send('Network.setBlockedURLs', {urls: ['*.js']});
   await navigate('components/ai-visuals.html');
