@@ -21,7 +21,7 @@ body[data-ui-theme="glass"] {
 }
 /* A stronger frosted-glass treatment with luminous edges and layered color. */
 body[data-ui-theme="glassmorphism"] {
-  --bs-secondary-color:#4c5058;
+  --bs-secondary-color:#464a52;
   --bs-border-radius:.8rem;
   --bs-border-radius-sm:.55rem;
   --bs-border-radius-lg:1.1rem;
