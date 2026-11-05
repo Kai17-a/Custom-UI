@@ -98,6 +98,10 @@ export async function checkMotion({evaluate, send}) {
       await new Promise(r=>setTimeout(r,80));assert(polite.textContent==='Repeat'&&announcements.filter(x=>x==='Repeat').length===2,'repeat announced twice');
       const error=KavUI.toast({title:'Error',body:'Failed',meta:'Now',variant:'danger',duration:0});await new Promise(r=>setTimeout(r,80));
       assert(assertive.textContent==='Error Failed Now','assertive announcement');observer.disconnect();[note,again,error].forEach(n=>n.remove());
+      // A page swap can drop the regions; the next toast recreates them.
+      polite.remove();const swapped=KavUI.toast('After swap',{duration:0});await new Promise(r=>setTimeout(r,80));
+      const restored=document.querySelector('.visually-hidden[aria-live="polite"]');
+      assert(restored&&restored!==polite&&restored.textContent==='After swap','live region recreated after removal');swapped.remove();
       for(const method of ['cancel','submit']) {
         const native=document.createElement('dialog');native.className='ui-dialog';native.dataset.uiDialog='';
         native.innerHTML='<form method="dialog"><button>Done</button></form>';fixture.append(native);

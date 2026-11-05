@@ -435,13 +435,15 @@
   const toastAnnouncers = new Map();
   function initToastAnnouncers() {
     for (const urgency of ['polite','assertive']) {
-      if (toastAnnouncers.has(urgency)) continue;
+      // Recreate a region whose node was dropped, e.g. by a page swap that replaces body.
+      const existing = toastAnnouncers.get(urgency);
+      if (existing?.live.isConnected) continue;
       const live = doc.createElement('div');
       live.className = 'visually-hidden';
       live.setAttribute('aria-live', urgency);
       live.setAttribute('aria-atomic', 'true');
       doc.body.append(live);
-      toastAnnouncers.set(urgency, {live, queue:[], running:false});
+      toastAnnouncers.set(urgency, {live, queue:existing?.queue || [], running:false});
     }
   }
   function announceToast(text, urgency) {
