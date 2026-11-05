@@ -29,8 +29,8 @@ import {
           title="ワークスペース設定"
           description="チームの基本情報と通知の受け取り方を変更します。"
         />
-        <form class="ui-stack">
-          <KavSection title="基本情報">
+        <form data-ui-validate novalidate class="ui-stack">
+          <KavSection class="ui-stack" title="基本情報">
             <KavField label="ワークスペース名" for="workspace-name">
               <KavInput
                 id="workspace-name"
@@ -55,11 +55,13 @@ import {
 
           <KavSection class="ui-stack" title="通知">
             <KavCheckbox
+              class="form-check-input-lg sp-me-2"
               name="weekly-report"
               label="週次レポートをメールで受け取る"
               checked
             />
             <KavSwitch
+              class="sp-m-0"
               role="switch"
               name="mentions"
               label="メンションを通知する"

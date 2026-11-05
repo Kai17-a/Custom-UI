@@ -27,7 +27,7 @@ import {
           description="入力・予定・確認の順に進めます。タブは矢印キーでも移動できます。"
         />
 
-        <form id="request-form" class="ui-stack">
+        <form data-ui-validate novalidate id="request-form" class="ui-stack">
           <!-- 通常HTMLのタブをProviderのランタイムで初期化します。 -->
           <div data-ui-tabs data-kav-ui-widget>
             <div class="tabs" role="tablist" aria-label="依頼の手順">
@@ -60,11 +60,13 @@ import {
                   maxlength="80"
                 />
               </KavField>
-              <KavButton
-                type="button"
-                color="primary"
-                data-request-step="request-schedule"
-              >次へ</KavButton>
+              <KavCluster>
+                <KavButton
+                  type="button"
+                  color="primary"
+                  data-request-step="request-schedule"
+                >次へ</KavButton>
+              </KavCluster>
             </section>
             <section
               class="tab-panel ui-stack"
@@ -112,13 +114,15 @@ import {
                 </dd>
               </dl>
               <p>修正する場合は前のタブへ戻ってください。送信処理はアプリ側で接続します。</p>
-              <KavButton
-                type="button"
-                variant="outline"
-                color="secondary"
-                data-request-step="request-schedule"
-              >戻る</KavButton>
-              <KavButton type="submit" color="primary">この内容で依頼する</KavButton>
+              <KavCluster>
+                <KavButton
+                  type="button"
+                  variant="outline"
+                  color="secondary"
+                  data-request-step="request-schedule"
+                >戻る</KavButton>
+                <KavButton type="submit" color="primary">この内容で依頼する</KavButton>
+              </KavCluster>
             </section>
           </div>
         </form>
@@ -157,10 +161,11 @@ import {
           ?.focus();
       });
     });
-  // 非表示タブ内の必須入力にもブラウザの検証結果を表示します。
+  // 非表示タブ内の必須入力にもインラインの検証結果を表示します。
   form.addEventListener(
     "invalid",
     (event) => {
+      if (event.target !== form.querySelector("input:invalid, select:invalid, textarea:invalid")) return;
       const panel = (event.target as HTMLElement).closest<HTMLElement>(
         "[data-ui-panel]",
       );

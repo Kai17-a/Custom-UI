@@ -52,16 +52,15 @@ import {
           </article>
         </section>
         <form class="ui-stack">
-          <KavField label="メッセージ" for="chat-message">
+          <KavField label="メッセージ" for="chat-message" hint="個人情報や秘密情報は入力しないでください。">
             <KavTextarea
-              id="chat-message"
+              id="chat-message" aria-describedby="chat-message-hint"
               name="message"
               rows="3"
               required
               placeholder="次に整理したいことを入力"
             />
           </KavField>
-          <p class="type-caption">個人情報や秘密情報は入力しないでください。</p>
           <KavCluster>
             <KavButton type="submit" color="primary">送信</KavButton>
           </KavCluster>
