@@ -15,7 +15,7 @@
 サイズ・最小・最大はパネル領域全体に対する割合（%）です。ハンドルの幅は含みません。
 
 ```html
-<div class="ui-splitter ui-splitter-sm" data-ui-splitter id="splitter-basic">
+<div class="ui-splitter ui-splitter-sm ui-splitter-mobile-stack" data-ui-splitter id="splitter-basic">
         <section data-ui-splitter-panel data-ui-size="30" data-ui-min="15" data-ui-max="60" aria-labelledby="splitter-projects-title"><div class="ui-splitter-content"><h3 id="splitter-projects-title">プロジェクト</h3><nav class="nav nav-vertical" aria-label="プロジェクト"><a class="nav-link" href="layouts.html">レイアウト</a><a class="nav-link" href="cards.html">カード</a><a class="nav-link" href="forms.html">フォーム</a></nav></div></section>
         <section data-ui-splitter-panel data-ui-size="70" data-ui-min="20" aria-label="プロジェクトの本文"><div class="ui-splitter-content"><h3>デザインカタログ</h3><p>境界線を左右にドラッグして、一覧と本文の幅を調整できます。</p><p class="type-caption">ハンドルにTabで移動し、左右矢印で2%ずつ、Shift＋矢印で10%ずつ変更できます。</p></div></section>
       </div>
@@ -31,7 +31,7 @@
 `data-ui-orientation="vertical"`で上下に並べます。縦分割のキー操作は上下矢印です。境界ごとに、隣り合う2領域のサイズだけを変更します。
 
 ```html
-<div class="ui-splitter" data-ui-splitter data-ui-orientation="vertical" id="splitter-vertical-demo">
+<div class="ui-splitter ui-splitter-mobile-stack" data-ui-splitter data-ui-orientation="vertical" id="splitter-vertical-demo">
         <section data-ui-splitter-panel data-ui-size="35" data-ui-min="15" aria-label="プレビュー"><div class="ui-splitter-content"><h3>プレビュー</h3><p>変更した画面の見え方を表示します。</p></div></section>
         <section data-ui-splitter-panel data-ui-size="35" data-ui-min="15" aria-label="エディター"><div class="ui-splitter-content"><h3>エディター</h3><p>ハンドルを上下へ動かして、作業領域を広げられます。</p></div></section>
         <section data-ui-splitter-panel data-ui-size="30" data-ui-min="15" aria-label="ログ"><div class="ui-splitter-content"><h3>ログ</h3><p class="type-caption">12:30 プレビューを更新しました。</p></div></section>
@@ -46,7 +46,7 @@
 <div class="ui-splitter ui-splitter-lg ui-splitter-mobile-stack" data-ui-splitter id="splitter-nested-demo">
         <section data-ui-splitter-panel data-ui-size="25" data-ui-min="15" data-ui-max="45" aria-label="ファイル一覧"><div class="ui-splitter-content"><h3>ファイル</h3><ul><li>index.html</li><li>app.css</li><li>app.js</li></ul></div></section>
         <section data-ui-splitter-panel data-ui-size="75" data-ui-min="40" aria-label="編集エリア">
-          <div class="ui-splitter" data-ui-splitter data-ui-orientation="vertical">
+          <div class="ui-splitter ui-splitter-mobile-stack" data-ui-splitter data-ui-orientation="vertical">
             <section data-ui-splitter-panel data-ui-size="65" data-ui-min="25" aria-label="画面の編集"><div class="ui-splitter-content"><h3>画面の編集</h3><p>親の左右分割とは独立して、上下のサイズを調整できます。</p><label class="field">プロジェクト名<input class="form-control" value="Design catalog"></label></div></section>
             <section data-ui-splitter-panel data-ui-size="35" data-ui-min="15" aria-label="ターミナル"><div class="ui-splitter-content"><h3>ターミナル</h3><p class="type-caption">Ready. npmや追加ライブラリは不要です。</p></div></section>
           </div>
@@ -63,7 +63,7 @@
 パネルにdata-ui-collapsibleを追加します。ハンドルでEnterまたはダブルクリックすると、その手前のパネルを折り畳み、再操作で直前のサイズへ戻します。ドラッグでは最小サイズの半分より小さくすると折り畳みます。ドラッグでの折り畳みは、隣の領域の最大サイズに収まる場合に行います。
 
 ```html
-<div class="ui-splitter ui-splitter-sm" data-ui-splitter id="splitter-collapse-demo">
+<div class="ui-splitter ui-splitter-sm ui-splitter-mobile-stack" data-ui-splitter id="splitter-collapse-demo">
         <section data-ui-splitter-panel data-ui-size="30" data-ui-min="20" data-ui-max="50" data-ui-collapsible aria-label="補助パネル"><div class="ui-splitter-content"><h3>補助パネル</h3><p>折り畳むとこの中のリンクや入力欄はフォーカス対象から外れます。</p><a href="sidebar.html">Sidebarを見る</a></div></section>
         <section data-ui-splitter-panel data-ui-size="70" data-ui-min="30" aria-label="メインパネル"><div class="ui-splitter-content"><h3>メインパネル</h3><p>Enterで補助パネルを開閉できます。折り畳んだ後もハンドルは残ります。</p></div></section>
       </div>
@@ -79,7 +79,7 @@ Enterによる開閉では、制約に収まるよう他のパネルへ再配分
 data-ui-splitter-saveに画面固有のキーを付けると、操作完了時に割合をlocalStorageへ保存します。この例は再読み込みしても同じ配分で開きます。属性を省略すると保存しません。
 
 ```html
-<div class="ui-splitter ui-splitter-sm" data-ui-splitter data-ui-splitter-save="catalog-workspace" id="splitter-saved-demo">
+<div class="ui-splitter ui-splitter-sm ui-splitter-mobile-stack" data-ui-splitter data-ui-splitter-save="catalog-workspace" id="splitter-saved-demo">
         <section data-ui-splitter-panel data-ui-size="40" data-ui-min="20" data-ui-max="70" aria-label="保存される一覧"><div class="ui-splitter-content"><h3>一覧</h3><p>横幅を変えてからページを再読み込みしてください。</p></div></section>
         <section data-ui-splitter-panel data-ui-size="60" data-ui-min="20" aria-label="保存される詳細"><div class="ui-splitter-content"><h3>詳細</h3><p>デザインやカラーパレットを変えても割合を保持します。</p></div></section>
       </div>
@@ -93,7 +93,7 @@ data-ui-splitter-saveに画面固有のキーを付けると、操作完了時�
 ## サイズ変更を無効にする
 
 ```html
-<div class="ui-splitter ui-splitter-sm" data-ui-splitter data-ui-splitter-disabled>
+<div class="ui-splitter ui-splitter-sm ui-splitter-mobile-stack" data-ui-splitter data-ui-splitter-disabled>
         <section data-ui-splitter-panel aria-label="読み取り専用の左領域"><div class="ui-splitter-content"><h3>一覧</h3><p>ハンドルの操作は無効ですが、中身は操作できます。</p></div></section>
         <section data-ui-splitter-panel aria-label="読み取り専用の右領域"><div class="ui-splitter-content"><h3>詳細</h3><a href="layouts.html">レイアウトを見る</a></div></section>
       </div>

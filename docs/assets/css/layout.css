@@ -28,7 +28,7 @@ button, input, select, textarea { font:inherit; }
 .index-tools label { display:block; font-size:12px; margin-bottom:7px; }
 .index-tools p { margin:8px 0; }
 .catalog-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
-.catalog-card { display:flex; flex-direction:column; padding:20px; border:1px solid var(--bs-border-color); border-radius:var(--bs-border-radius-lg); color:var(--bs-body-color); text-decoration:none; min-height:174px; transition:border-color .15s; }
+.catalog-card { display:flex; flex-direction:column; padding:20px; border:1px solid var(--bs-border-color); border-radius:var(--bs-border-radius-lg); color:var(--bs-body-color); text-decoration:none; transition:border-color .15s; }
 .catalog-card:hover { border-color:var(--bs-primary); background:var(--bs-tertiary-bg); }
 .card-number { color:var(--bs-secondary-color); font:var(--text-xs) var(--bs-font-monospace); }
 .catalog-card :is(h2,h3) { font-size:16px; margin:12px 0 5px; }
@@ -37,17 +37,17 @@ button, input, select, textarea { font:inherit; }
 .usage { margin-top:40px; padding-top:16px; border-top:1px solid var(--bs-border-color); }
 .usage li { padding:4px 0; }
 .specimen { margin:40px 0; min-width:0; }
-.catalog-main > .specimen > h2 { font-size:18px; font-weight:600; line-height:1.5; margin:0 0 12px; }
-.catalog-main > .specimen > h3 { margin:24px 0 8px; font-size:16px; line-height:1.5; }
+:is(.catalog-main, .catalog-main > .usage) > .specimen > :is(h2,h3) { font-size:18px; font-weight:600; line-height:1.5; margin:0 0 12px; }
+:is(.catalog-main, .catalog-main > .usage) > .specimen > h3 { margin:24px 0 8px; font-size:16px; line-height:1.5; }
 /* Article rhythm is scoped to direct children, never to live sample contents. */
 .catalog-main > .lede { line-height:1.8; margin-bottom:32px; }
-.catalog-main > .specimen > :is(p,ul,ol) { max-inline-size:76ch; margin-block:0 16px; line-height:1.8; color:var(--bs-body-color); overflow-wrap:anywhere; }
-.catalog-main > .specimen > :is(ul,ol) { padding-inline-start:24px; }
-.catalog-main > .specimen > :is(ul,ol) > li + li { margin-top:6px; }
-.catalog-main > .specimen > :is(p,ul,ol) code { font-size:.9em; }
-.catalog-main > .specimen > .example { margin-top:16px; }
-.catalog-main > .specimen > .source + :is(p,ul,ol,pre,table) { margin-top:16px; }
-.catalog-main > .specimen > :last-child { margin-bottom:0; }
+:is(.catalog-main, .catalog-main > .usage) > .specimen > :is(p,ul,ol) { max-inline-size:76ch; margin-block:0 16px; line-height:1.8; color:var(--bs-body-color); overflow-wrap:anywhere; }
+:is(.catalog-main, .catalog-main > .usage) > .specimen > :is(ul,ol) { padding-inline-start:24px; }
+:is(.catalog-main, .catalog-main > .usage) > .specimen > :is(ul,ol) > li + li { margin-top:6px; }
+:is(.catalog-main, .catalog-main > .usage) > .specimen > :is(p,ul,ol) code { font-size:.9em; }
+:is(.catalog-main, .catalog-main > .usage) > .specimen > .example { margin-top:16px; }
+:is(.catalog-main, .catalog-main > .usage) > .specimen > .source + :is(p,ul,ol,pre,table) { margin-top:16px; }
+:is(.catalog-main, .catalog-main > .usage) > .specimen > :last-child { margin-bottom:0; }
 .example { border:1px solid var(--bs-border-color); border-radius:var(--bs-border-radius-lg); padding:24px; min-width:0; overflow-x:auto; }
 .source { font-size:13px; margin-top:6px; }
 .source summary { cursor:pointer; color:var(--bs-body-color); font-weight:500; padding:8px 0; }
@@ -79,7 +79,7 @@ dialog .buttons { flex-wrap:wrap; }
  .catalog-card { padding:15px; }
  .example { padding:16px; }
  .specimen { margin-block:32px; }
- .catalog-main > .specimen > h2 { font-size:17px; }
+ :is(.catalog-main, .catalog-main > .usage) > .specimen > :is(h2,h3) { font-size:17px; }
  .ui-dialog form { grid-template-columns:1fr; }
 }
 @media (max-width:420px) { .catalog-grid { grid-template-columns:1fr; } }
@@ -268,4 +268,22 @@ html:not(.ui-scroll-smooth) .catalog-navigation:not([open]) > nav { display:none
 }
 @media (prefers-reduced-motion:reduce) {
   .catalog-sidebar :is(a,summary) { transition:none; }
+}
+
+/* Nested guide sections retain the article rhythm and expose purpose groups. */
+.catalog-page-toc ol ol { padding-inline-start:12px; max-height:none; overflow:visible; }
+.catalog-page-toc nav > ol > li:has(ol) > a { font-weight:600; }
+@media (width < 768px) {
+  .catalog-card { min-height:0; padding:12px 15px; }
+  .catalog-card :is(h2,h3) { margin-top:0; }
+  .catalog-card p { margin-bottom:8px; }
+  .catalog-header { flex-wrap:nowrap; gap:8px; min-height:56px; padding:6px 12px; }
+  .brand { font-size:16px; flex-shrink:0; }
+  .brand span { display:none; }
+  .catalog-toolbar { width:auto; flex:1; min-width:0; gap:6px; }
+  .catalog-theme-control > span:first-child { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+  .catalog-theme-control .form-select { padding-inline-start:8px; }
+  .catalog-mobile-menu > summary, .catalog-toc-heading { padding-block:9px; }
+  .catalog-main { padding-top:4px; }
+  .page-heading > .eyebrow { display:none; }
 }
