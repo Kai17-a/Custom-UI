@@ -73,7 +73,8 @@ try {
   for(const path of ['index.html','getting-started.html','components/forms.html','components/splitter.html']) {
     await navigate(path);
     const top=await evaluate(`document.querySelector('h1').getBoundingClientRect().top`);
-    check(top<=150,path+' h1 top '+top);
+    // Touch emulation enlarges the header controls to 44px and the theme labels stay visible.
+    check(top<=170,path+' h1 top '+top);
   }
   await navigate('getting-started.html');
   const toc=await evaluate(`(()=>{const list=document.querySelector('.catalog-page-toc nav > ol');return {groups:list.children.length,nested:list.querySelectorAll(':scope > li > ol a').length,broken:[...list.querySelectorAll('a')].filter(a=>!document.getElementById(decodeURIComponent(a.hash.slice(1)))).length};})()`);

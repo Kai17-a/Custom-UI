@@ -3,6 +3,7 @@ import { ref } from "vue";
 import "@kav-ui/core/style.css";
 import {
   KavButton,
+  KavCluster,
   KavCard,
   KavCheckbox,
   KavPage,
@@ -44,7 +45,9 @@ const projectReady = ref(false);
       <KavStack>
         <h2 class="ui-card-title">プロジェクトはまだありません</h2>
         <p>目的と期限を決めて、制作を始めましょう。</p>
-        <KavButton href="../wizard/" color="primary">最初のプロジェクトを作成</KavButton>
+        <KavCluster>
+          <KavButton href="../wizard/" color="primary">最初のプロジェクトを作成</KavButton>
+        </KavCluster>
       </KavStack>
     </KavCard>
     <KavCard>

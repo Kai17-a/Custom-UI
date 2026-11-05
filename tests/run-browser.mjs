@@ -114,7 +114,8 @@ try {
           await evaluate(`KavUI.setDesignTheme(${JSON.stringify(design)});KavUI.setColorTheme(${JSON.stringify(design==='default'?'light':'dark')})`);
           await evaluate(`document.fonts.ready.then(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))))`);
           const touch=await evaluate(`(()=>{const header=document.querySelector('body > .ui-header'),controls=[...header.querySelectorAll('.ui-select-trigger,[data-ui-toggle="theme"],.ui-header-nav a,.ui-brand')];return {coarse:matchMedia('(pointer:coarse)').matches,height:header.getBoundingClientRect().height,overflow:document.documentElement.scrollWidth>innerWidth,short:controls.filter(el=>{const r=el.getBoundingClientRect();return r.width<44||r.height<44;}).map(el=>el.textContent.trim()),labels:[...header.querySelectorAll('.ui-select-trigger')].map(el=>el.getAttribute('aria-label'))};})()`);
-          if(!touch.coarse||touch.height>120||touch.overflow||touch.short.length||touch.labels.join(',')!=='デザイン,配色')consistencyFailures.push(name+' touch '+design+' '+JSON.stringify(touch));
+          // 44px touch targets plus the visible theme labels; mouse layouts keep the 120px limit.
+          if(!touch.coarse||touch.height>140||touch.overflow||touch.short.length||touch.labels.join(',')!=='デザイン,配色')consistencyFailures.push(name+' touch '+design+' '+JSON.stringify(touch));
           if(design==='glassmorphism'&&['dashboard.html','detail.html','docs.html','changelog.html','settings.html'].includes(name)) {
             const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true});
             writeFileSync(join(artifacts,name.replace('.html','')+'-390-glassmorphism-dark.png'),Buffer.from(shot.data,'base64'));
@@ -128,6 +129,35 @@ try {
   console.log('Consistency screenshots:',artifacts);
   if(consistencyFailures.length)throw new Error(consistencyFailures.join('\n'));
   console.log('Template consistency: all headers, centered auth with keyboard tabs, one recommended pricing plan at 390/820/1440');
+  // Re-review polish: visible header labels, single field spacing, natural button width,
+  // the recommended plan under every theme and forward validation in the wizard.
+  const polishFailures=[];
+  await send('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:false});
+  for(const path of ['index.html','templates/settings.html']) {
+    await navigate(path);
+    const labels=await evaluate(`[...document.querySelectorAll('.catalog-theme-control > span:first-child, .ui-header-actions label > span:first-child')].map(span=>span.getBoundingClientRect().width>8&&getComputedStyle(span).clipPath==='none')`);
+    if(labels.length!==2||!labels.every(Boolean))polishFailures.push(path+' visible theme labels @390 '+JSON.stringify(labels));
+  }
+  await navigate('templates/settings.html');
+  const fieldGap=await evaluate(`(()=>{const [a,b]=document.querySelectorAll('main .field');return b.getBoundingClientRect().top-a.getBoundingClientRect().bottom;})()`);
+  if(fieldGap>24)polishFailures.push('Settings field gap '+fieldGap);
+  await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await navigate('templates/empty-onboarding.html');
+  if(!await evaluate(`(()=>{const b=document.querySelector('main .ui-card .btn-primary'),c=b.closest('.ui-card');return b.getBoundingClientRect().width<c.getBoundingClientRect().width/2;})()`))polishFailures.push('Onboarding primary button stretched');
+  await navigate('components/forms.html');
+  if(!await evaluate(`(()=>{const b=document.querySelector('#select-box button[type=reset]'),f=b.closest('form');return b.getBoundingClientRect().width<f.getBoundingClientRect().width/2;})()`))polishFailures.push('Forms reset button stretched');
+  await navigate('templates/pricing.html');
+  for(const design of ['default','glass','glassmorphism','flat','soft'])for(const mode of ['light','dark']) {
+    await evaluate(`KavUI.setDesignTheme('${design}');KavUI.setColorTheme('${mode}')`);
+    if(!await evaluate(`(()=>{const card=document.querySelector('.ui-card-selected'),cs=getComputedStyle(card),primary=getComputedStyle(document.body).getPropertyValue('--bs-primary').trim();const probe=document.createElement('span');probe.style.color=primary;document.body.append(probe);const ink=getComputedStyle(probe).color;probe.remove();return cs.boxShadow.includes('inset')&&cs.boxShadow.includes(ink)&&cs.borderTopColor===ink;})()`))polishFailures.push('Recommended plan emphasis '+design+'/'+mode);
+  }
+  await evaluate("KavUI.setDesignTheme('default');KavUI.setColorTheme('light')");
+  await navigate('templates/wizard.html');
+  await evaluate(`(()=>{const input=document.getElementById('request-title');input.value='';input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  await click('[data-ui-panel="request-input"] [data-request-step="request-schedule"]');
+  if(!await evaluate(`(()=>{const input=document.getElementById('request-title'),error=document.getElementById(input.getAttribute('aria-describedby')?.split(' ').find(id=>document.getElementById(id)?.hasAttribute('data-ui-error'))||'');return !input.closest('[data-ui-panel]').hidden&&input.getAttribute('aria-invalid')==='true'&&error&&!error.hidden&&document.activeElement===input;})()`))polishFailures.push('Wizard next validates the current step');
+  if(polishFailures.length)throw new Error(polishFailures.join('\n'));
+  console.log('Review polish: visible header labels, single field spacing, natural button width, recommended plan in 5 designs × 2 modes, wizard step validation');
   // Screen layout regressions: geometry catches stretching and lost padding.
   const layoutFailures=[];
   const checkLayout=async(expression,message)=>{if(!await evaluate(expression))layoutFailures.push(message);};

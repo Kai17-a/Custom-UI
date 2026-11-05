@@ -88,10 +88,9 @@
   .service-template .ui-brand { font-size:var(--text-sm); min-height:var(--ui-touch-target); }
   .service-template .ui-header-actions { flex-wrap:nowrap; flex:1; justify-content:flex-end; }
   .service-template .ui-header-actions label { min-width:0; max-width:6rem; }
-  .service-template .ui-header-actions label > span:first-child {
-    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
-    overflow:hidden; clip-path:inset(50%); white-space:nowrap;
-  }
+  /* Both selects read 「標準」 by default, so their labels stay visible above them. */
+  .service-template .ui-header-actions label { display:grid; gap:2px; }
+  .service-template .ui-header-actions label > span:first-child { font-size:var(--text-xs); line-height:1.2; }
   .service-template .ui-header-actions .ui-select { width:100%; }
   .service-template .ui-header-actions .form-select { width:100%; }
   .service-template .ui-header-nav { order:3; width:100%; flex-wrap:nowrap; gap:var(--space-1); padding-block:0; font-size:var(--text-xs); }
