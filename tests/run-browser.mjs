@@ -757,6 +757,26 @@ try {
   if(!await evaluate('document.getElementById("popover-form-panel").matches(":popover-open") && document.getElementById("popover-view").selectedIndex===1'))throw new Error('Nested select commit');
   await key('Escape');
   if(!await evaluate('!document.getElementById("popover-form-panel").matches(":popover-open") && document.activeElement.matches("[data-ui-target=\\"#popover-form-panel\\"]")'))throw new Error('Popover Escape focus return');
+  // Pressing an open popup's trigger again closes it; light dismiss must not reopen it on click.
+  for(const [path,trigger,popup] of [
+    ['components/dropdown.html','[data-ui-target="#dropdown-basic-menu"]','#dropdown-basic-menu'],
+    ['components/popover.html','[data-ui-target="#popover-project"]','#popover-project'],
+    ['components/forms.html','.ui-select-trigger','.ui-select-menu'],
+    ['components/forms.html','.ui-input-picker-trigger','.ui-input-popup'],
+    ['components/datepicker.html','[data-ui-datepicker-action="toggle"]','.ui-datepicker-popup'],
+  ]) {
+    await navigate(path);
+    const open=`!!document.querySelector(${JSON.stringify(popup+':popover-open')})`;
+    const expanded=`document.querySelector(${JSON.stringify(trigger)}).getAttribute('aria-expanded')`;
+    await click(trigger);
+    if(!await evaluate(open))throw new Error('Popup trigger opens '+path+' '+trigger);
+    await click(trigger);await delay(10);
+    if(await evaluate(open) || await evaluate(expanded)!=='false')throw new Error('Popup trigger click closes '+path+' '+trigger);
+    await click(trigger);
+    if(!await evaluate(open))throw new Error('Popup trigger reopens '+path+' '+trigger);
+    await key('Escape');
+  }
+  console.log('Popup triggers: second click closes and third reopens dropdown, popover, custom select, input picker and datepicker');
 
   await navigate('components/drawer.html');
   for(const width of [320,768,1440])for(const mode of ['light','dark'])for(const design of ['default','glass','glassmorphism','flat','soft'])for(const direction of ['end','start','bottom','top']) {
