@@ -123,5 +123,5 @@ body[data-ui-theme="glassmorphism"] :is(.ui-dialog, .ui-datepicker-popup, .ui-se
   body:is([data-ui-theme="glass"], [data-ui-theme="glassmorphism"]) .ui-dialog::backdrop { -webkit-backdrop-filter:none; backdrop-filter:none; }
 }
 /* Theme surfaces restyle card borders and shadows; keep the selected card distinguishable. */
-body[data-ui-theme] .ui-card.ui-card-selected { border-color:var(--bs-primary); box-shadow:inset 3px 0 var(--bs-primary), var(--ui-theme-shadow, 0 0 transparent); }
-body[data-ui-theme="flat"] .ui-card.ui-card-selected { box-shadow:inset 3px 0 var(--bs-primary); }
+body[data-ui-theme] .ui-card.ui-card-selected { border-color:var(--bs-primary); background:var(--bs-primary-bg-subtle); box-shadow:var(--ui-theme-shadow,none); }
+body[data-ui-theme="flat"] .ui-card.ui-card-selected { background:var(--bs-primary-bg-subtle); box-shadow:none; }

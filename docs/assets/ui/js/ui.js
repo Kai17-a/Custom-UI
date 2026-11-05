@@ -2560,6 +2560,10 @@
       }else if(input.matches('input[type="checkbox"][data-ui-row-select]')&&records.some(record=>rowCheck(record.row)===input))selection(true);
     });
     listen(root,'click',event=>{
+      // A tap on the check cell's padding toggles its checkbox, so the cell is the touch target.
+      const cell=event.target instanceof Element&&event.target.matches('.ui-data-table-check')?event.target:null;
+      const check=cell?.querySelector(':scope > input[type="checkbox"]:is([data-ui-row-select],[data-ui-table-select-all])');
+      if(check&&cell.closest('[data-ui-data-table]')===root&&!inactive(check)){check.click();return;}
       const button=closest(event.target,'button[data-ui-table-sort], button[data-ui-table-prev], button[data-ui-table-next], button[data-ui-table-first], button[data-ui-table-last], button[data-ui-table-page]');if(!button||button.closest('[data-ui-data-table]')!==root||inactive(button))return;
       event.preventDefault();
       if(button.hasAttribute('data-ui-table-sort')){

@@ -87,3 +87,9 @@
   .ui-steps > li:not(:last-child)::after { display:none; }
 }
 @media (prefers-reduced-motion:reduce) { .nav-link { transition:none; } }
+
+@media (pointer:coarse) {
+  /* .nav-link is already flex; keep its block/inline behaviour in vertical and filled navs. */
+  .navbar a:not(.nav-link) { display:inline-flex; align-items:center; }
+  .navbar a, .nav-link { min-width:var(--ui-touch-target); min-height:var(--ui-touch-target); }
+}
