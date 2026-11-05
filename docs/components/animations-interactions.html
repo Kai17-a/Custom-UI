@@ -126,7 +126,7 @@
     </ul>
   </div>
 </nav></details><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><nav class="catalog-breadcrumb" aria-label="パンくず"><a href="animations.html">Animations</a><span aria-hidden="true"> / </span><span>操作時の動き</span></nav><header class="page-heading"><p class="eyebrow">Kav-UI / 状態・動き</p><h1>Animations · 操作時の動き</h1></header><p class="lede">モーダル・通知・開閉・タブなど、操作に自動で付く動きを確認できます。</p><section class="specimen"><h2>開く・閉じる・通知</h2><p class="dim">表示時のフェードと閉じる動きを確認できます。閉じる操作・フォーカス・イベントは即座に反映します。</p><div class="example" data-example>
+<main id="main" class="catalog-main"><nav class="catalog-breadcrumb" aria-label="パンくず"><a href="animations.html">Animations</a><span aria-hidden="true"> / </span><span>操作時の動き</span></nav><header class="page-heading"><p class="eyebrow">Kav-UI / 状態・動き</p><h1>Animations · 操作時の動き</h1></header><p class="lede">モーダル・通知・開閉・タブなど、操作に自動で付く動きを確認できます。</p><section class="specimen"><h2>開く・閉じる・通知</h2><p class="dim">表示時のフェードと閉じる動きを確認できます。通常の流れにあるパネルは閉じるとすぐに隠れます。閉じる操作・フォーカス・イベントは即座に反映します。</p><div class="example" data-example>
 <div class="fx fx-wrap fx-gap-3">
   <button type="button" class="btn btn-primary" data-ui-toggle="dialog" data-ui-target="#motion-dialog">モーダルを開く</button>
   <button type="button" class="btn btn-outline-primary" data-ui-toast="追加した通知はフェードで現れ、閉じるときも短くフェードします。" data-ui-duration="0">トーストを表示</button>
@@ -158,7 +158,7 @@
   --motion-duration-base: 200ms;
   --motion-duration-fast: 120ms;
 }</code></pre>
-<p>Dialog・Drawer・Dropdown・Popover・Select・Command・Date picker は <code>@starting-style</code> と <code>display</code> / <code>overlay</code> の離散トランジションで開閉します。閉じる操作はすぐに hidden・open・フォーカス・イベントへ反映され、見た目だけが短く残ります。DOM から削除する Tooltip・Toast は操作できない退場用の表示を使います。再オープンは進行中の遷移を引き継ぎます。</p>
+<p>Dropdown・Popover・Select・Date picker は CSS の離散トランジションで開閉します。Dialog・Drawer・Command と Tooltip は操作できないコピーで退場し、Toast のコピーは通知領域内で残った通知の下に表示します。通常の流れのパネルは即座に隠れ、スクロールによって閉じるポップアップと Tooltip は退場の動きを省略します。閉じる操作・フォーカス・イベントは即座に反映します。Drawer は入ってきた方向へ戻り、テーマ切り替えではページ全体をフェードしません。</p>
 <p>折り畳みは <code>interpolate-size:allow-keywords</code> と <code>::details-content</code> で高さを補間します。未対応のブラウザは即座に切り替わります。OS の「動きを減らす」設定では補間も退場用表示もなくなり、待ち時間は発生しません。任意指定のアニメーションプリセットは従来どおりです。</p>
 </section>
 <section class="specimen"><h2>自動アニメーションの対象</h2><div class="example"><table class="table"><thead><tr><th scope="col">操作</th><th scope="col">動きとサンプル</th></tr></thead><tbody>

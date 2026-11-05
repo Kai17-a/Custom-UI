@@ -118,3 +118,6 @@ progress[value]::-moz-progress-bar { transition:width var(--motion-duration-base
   }
   :where(.ui-card-link, [data-ui-card]):is(:hover,:focus-visible) { translate:none; }
 }
+
+/* Scroll closes commit display:none immediately; the next open restores motion. */
+[popover][data-ui-motion-immediate] { transition:none !important; animation:none !important; }

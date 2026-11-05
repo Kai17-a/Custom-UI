@@ -2312,6 +2312,7 @@
   "data-ui-min",
   "data-ui-month",
   "data-ui-motion-ghost",
+  "data-ui-motion-immediate",
   "data-ui-move",
   "data-ui-name",
   "data-ui-navbar",

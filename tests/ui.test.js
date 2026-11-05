@@ -1063,9 +1063,17 @@ window.uiTestsDone = (async () => {
     find('[data-ui-tooltip]').focus();check(document.querySelector('.ui-tooltip'));
     document.body.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
   });
-  await test('閉じる動きは操作・ARIA・IDを残さず、再表示で打ち消せる', async () => {
+  await test('通常フローを閉じるとコピーを残さず状態とフォーカスを更新する', async () => {
     await wait(200);
-    mount('<button data-ui-toggle="show" data-ui-target="#exit-alert">再表示</button><div id="exit-alert" class="alert alert-info"><span id="exit-label">通知</span><button data-ui-dismiss="alert">閉じる</button></div>');
+    mount('<button data-ui-toggle="show" data-ui-target="#flow-alert">再表示</button><div id="flow-alert" class="alert alert-info"><button data-ui-dismiss="alert">閉じる</button></div>');
+    const panel=find('#flow-alert');find('[data-ui-dismiss]').focus();KavUI.hide(panel);
+    assert(panel.hidden && document.activeElement===find('[data-ui-toggle]'),'状態とフォーカスを即座に更新');
+    assert(!document.querySelector('[data-ui-motion-ghost]'),'通常フローのコピーを作らない');
+    KavUI.show(panel);assert(!panel.hidden,'再表示できる');
+  });
+  await test('絶対配置の閉じる動きは操作・ARIA・IDを残さず、再表示で打ち消せる', async () => {
+    await wait(200);
+    mount('<button data-ui-toggle="show" data-ui-target="#exit-alert">再表示</button><div id="exit-alert" class="alert alert-info" style="position:absolute"><span id="exit-label">通知</span><button data-ui-dismiss="alert">閉じる</button></div>');
     const panel=find('#exit-alert');panel.getAnimations().forEach(animation=>animation.finish());
     find('[data-ui-dismiss]').focus();KavUI.hide(panel);
     assert(panel.hidden && document.activeElement===find('[data-ui-toggle]'),'状態とフォーカスを即座に更新');
