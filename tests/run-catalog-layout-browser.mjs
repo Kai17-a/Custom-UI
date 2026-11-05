@@ -100,18 +100,18 @@ try {
     check(!geometry.overflow&&!geometry.squeezed.length,'Home readable @'+width+' '+JSON.stringify(geometry));
     check(width>=1024?geometry.right&&geometry.center<=24:geometry.after,'Home preview layout @'+width+' '+JSON.stringify(geometry));
   }
-  await evaluate(`document.querySelector('.catalog-hero-preview [data-ui-design="glass"]').click()`);
+  await evaluate(`document.querySelector('.catalog-hero-controls [data-ui-design="glass"]').click()`);
   check(await evaluate(`document.body.dataset.uiTheme==='glass'&&document.querySelector('.catalog-header [data-ui-theme-select]').value==='glass'&&document.querySelector('.catalog-header .ui-select-trigger').textContent.includes('ガラス')`),'Glass design and visible header select sync');
-  await evaluate(`document.querySelector('.catalog-hero-preview [data-ui-palette-value="sage"]').click()`);
+  await evaluate(`document.querySelector('.catalog-hero-controls [data-ui-palette-value="sage"]').click()`);
   check(await evaluate(`document.documentElement.dataset.uiPalette==='sage'&&document.querySelector('.catalog-header [data-ui-palette-select]').value==='sage'`),'Sage palette and header sync');
-  await evaluate(`KavUI.setColorTheme('light');document.querySelector('.catalog-hero-preview [data-ui-toggle="theme"]').click()`);
+  await evaluate(`KavUI.setColorTheme('light');document.querySelector('.catalog-hero-controls [data-ui-toggle="theme"]').click()`);
   check(await evaluate(`document.documentElement.dataset.bsTheme==='dark'`),'Preview mode toggle');
   await navigate('index.html');
   check(await evaluate(`document.body.dataset.uiTheme==='glass'&&document.documentElement.dataset.uiPalette==='sage'&&document.documentElement.dataset.bsTheme==='dark'`),'Preview settings persist across reload');
   await evaluate(`KavUI.setDesignTheme('default',{persist:true});KavUI.setPalette('default',{persist:true});KavUI.setColorTheme('light',{persist:true})`);
-  await evaluate(`document.querySelector('.catalog-hero-preview [data-ui-design="flat"]').focus()`);
+  await evaluate(`document.querySelector('.catalog-hero-controls [data-ui-design="flat"]').focus()`);
   await key('Enter');
-  check(await evaluate(`document.body.dataset.uiTheme==='flat'&&document.querySelector('.catalog-hero-preview [data-ui-design="flat"]').getAttribute('aria-pressed')==='true'`),'Design buttons work with the keyboard');
+  check(await evaluate(`document.body.dataset.uiTheme==='flat'&&document.querySelector('.catalog-hero-controls [data-ui-design="flat"]').getAttribute('aria-pressed')==='true'`),'Design buttons work with the keyboard');
   await evaluate(`document.querySelector('[data-ui-target="#home-project-share"]').focus()`);
   await key('Enter');
   check(await evaluate(`document.querySelector('#home-project-share').open`),'Preview share information opens');

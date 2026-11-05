@@ -75,12 +75,16 @@ class DocumentationStructureTests(unittest.TestCase):
         match = re.search(r'<section[^>]*aria-label="デザインと配色の見本"[^>]*>(.*?)</section>', source, re.S)
         self.assertIsNotNone(match, 'Home needs a live design preview')
         preview = match.group(1)
-        self.assertEqual(re.findall(r'data-ui-design="([^"]+)"', preview),
+        # The switches sit in the copy column, in their own labelled group.
+        controls = re.search(r'<div class="ui-stack catalog-hero-controls" role="group" aria-label="見本のデザインと配色を切り替える">(.*?)\n</div>\n</div>\n<section', source, re.S)
+        self.assertIsNotNone(controls, 'Home needs labelled design switches')
+        switches = controls.group(1)
+        self.assertEqual(re.findall(r'data-ui-design="([^"]+)"', switches),
                          ['default', 'glass', 'glassmorphism', 'flat', 'soft'])
-        self.assertEqual(re.findall(r'data-ui-palette-value="([^"]+)"', preview),
+        self.assertEqual(re.findall(r'data-ui-palette-value="([^"]+)"', switches),
                          ['default', 'slate', 'sage', 'teal', 'mauve', 'sand', 'clay'])
-        self.assertIn('data-ui-toggle="theme"', preview)
-        self.assertIn('data-ui-theme-icon', preview)
+        self.assertIn('data-ui-toggle="theme"', switches)
+        self.assertIn('data-ui-theme-icon', switches)
         ids = re.findall(r'\bid="([^"]+)"', source)
         self.assertEqual(len(ids), len(set(ids)), 'IDs must remain unique on the home page')
         for target in re.findall(r'<label[^>]*for="([^"]+)"', preview):
