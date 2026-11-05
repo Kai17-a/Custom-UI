@@ -2,7 +2,7 @@
 
 [HTML版](changelog.html) · [llms.txt](../llms.txt)
 
-WORKSPACE / CHANGELOG
+木の葉制作室
 
 # 更新履歴
 

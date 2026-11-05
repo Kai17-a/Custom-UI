@@ -15,6 +15,12 @@
     document.getElementById('search-result').textContent = count + ' コンポーネント';
     document.getElementById('search-empty').hidden = count > 0;
   });
+  // The empty result offers a way back instead of a dead end.
+  document.querySelector('[data-catalog-search-clear]')?.addEventListener('click', () => {
+    search.value = '';
+    search.dispatchEvent(new Event('input', {bubbles:true}));
+    search.focus();
+  });
   // Format a snapshot for display; the live example is never rewritten.
   const voidTags = new Set(['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr']);
   const inlineTags = new Set(['a','abbr','b','bdi','bdo','cite','code','del','em','i','ins','kbd','mark','q','s','samp','small','span','strong','sub','sup','time','u','var']);

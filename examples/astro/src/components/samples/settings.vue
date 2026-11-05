@@ -65,6 +65,7 @@ async function validateForm(event: Event) {
             :aria-describedby="errors['workspace-name'] ? 'workspace-name-error' : undefined"
             id="workspace-name"
             name="workspace-name"
+            autocomplete="off"
             type="text"
             required
             maxlength="80"

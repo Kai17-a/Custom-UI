@@ -2,7 +2,7 @@
 
 [HTML版](dashboard.html) · [llms.txt](../llms.txt)
 
-WORKSPACE / ANALYTICS
+木の葉制作室
 
 # ダッシュボード
 

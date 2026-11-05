@@ -319,6 +319,10 @@ try {
     if(result.groups !== 8 || !result.consistent || result.status !== result.count + ' コンポーネント' || result.empty !== (result.count > 0) || (query === '' && result.count !== 46)) throw new Error('Catalog grouped filter '+query+': '+JSON.stringify(result));
   }
   console.log('Catalog grouped filter: aliases across categories, empty groups, no results and reset');
+  // An empty result offers a way back: the clear button restores every card and focuses the search.
+  await evaluate(`(()=>{const input=document.getElementById('catalog-search');input.value='該当なしxyz';input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  await click('[data-catalog-search-clear]');
+  if(!await evaluate(`document.getElementById('catalog-search').value===''&&document.activeElement.id==='catalog-search'&&document.getElementById('search-empty').hidden&&document.querySelectorAll('[data-catalog-item]:not([hidden])').length===46`))throw new Error('Catalog empty result clear button');
   await checkControlAppearance({navigate,evaluate,send,key});
   for (const width of [320,768,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});

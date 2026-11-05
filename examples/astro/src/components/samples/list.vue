@@ -9,6 +9,7 @@ const tableMarkup = `
         <input
           class="form-control"
           id="project-search"
+          autocomplete="off"
           name="query"
           type="search"
           data-ui-table-search
