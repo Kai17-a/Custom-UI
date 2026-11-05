@@ -233,6 +233,13 @@ try {
       await click('button[type=submit]');await assertSampleError('request-date',label);
       await assertSampleCorrected('request-date','2026-11-20',label);
      }
+     // "次へ" checks the current step before moving on (Vue state or the shared runtime).
+     await evaluate(`document.querySelectorAll('[role=tab]')[0].click()`);
+     await until(`!!document.querySelector('#request-title')?.getClientRects().length`,label+' back to first step');
+     await setSampleInput('request-title','');
+     await evaluate(`[...document.querySelectorAll('button')].find(button=>button.textContent.trim()==='次へ'&&button.getClientRects().length).click()`);
+     await until(`(()=>{const input=document.getElementById('request-title');return input.getClientRects().length>0&&input.getAttribute('aria-invalid')==='true'&&document.activeElement===input;})()`,label+' next validates the current step');
+     await setSampleInput('request-title','展示会の案内状');
     }
     if(screen==='detail'){
      assert(await evaluate(`!!document.querySelector('main .breadcrumb a[href="../list/"]')&&document.querySelector('.breadcrumb [aria-current="page"]')?.textContent.trim()==='秋の展示会'`),label+' breadcrumb current location');

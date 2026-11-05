@@ -281,7 +281,9 @@ html:not(.ui-scroll-smooth) .catalog-navigation:not([open]) > nav { display:none
   .brand { font-size:16px; flex-shrink:0; }
   .brand span { display:none; }
   .catalog-toolbar { width:auto; flex:1; min-width:0; gap:6px; }
-  .catalog-theme-control > span:first-child { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+  /* Both selects read 「標準」 by default, so their labels stay visible. */
+  .catalog-theme-control { gap:2px; }
+  .catalog-theme-control > span:first-child { line-height:1.2; }
   .catalog-theme-control .form-select { padding-inline-start:8px; }
   .catalog-mobile-menu > summary, .catalog-toc-heading { padding-block:9px; }
   .catalog-main { padding-top:4px; }

@@ -120,6 +120,14 @@
         form.querySelectorAll('[data-request-step]').forEach(button => {
           button.addEventListener('click', () => {
             const step = button.dataset.requestStep;
+            const panels = [...form.querySelectorAll('[data-ui-panel]')];
+            const current = button.closest('[data-ui-panel]');
+            // 先の手順へ進むときに未入力があれば、送信時と同じインラインの検証を表示して止まります。
+            if (panels.indexOf(form.querySelector('[data-ui-panel="' + step + '"]')) > panels.indexOf(current)
+              && current.querySelector('input:invalid, select:invalid, textarea:invalid')) {
+              form.requestSubmit();
+              return;
+            }
             form.querySelector('[data-ui-toggle="tab"][data-ui-target="' + step + '"]').click();
             form.querySelector('[data-ui-panel="' + step + '"] h2').focus();
           });

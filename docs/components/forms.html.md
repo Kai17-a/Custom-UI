@@ -40,7 +40,7 @@
 <form class="stack">
   <div class="field"><label for="select-project">プロジェクト</label><select id="select-project" class="form-select" name="project" required><option value="">選択してください</option><optgroup label="進行中"><option value="catalog">デザインカタログ</option><option value="app">自作アプリ</option></optgroup><optgroup label="アーカイブ"><option value="old" disabled>旧プロジェクト（選択不可）</option></optgroup></select></div>
   <div class="field"><label for="select-disabled">変更不可</label><select id="select-disabled" class="form-select" disabled><option>現在は選択できません</option></select></div>
-  <button type="reset" class="btn btn-sm btn-outline-secondary">選択をリセット</button>
+  <div class="ui-cluster"><button type="reset" class="btn btn-sm btn-outline-secondary">選択をリセット</button></div>
 </form>
 ```
 

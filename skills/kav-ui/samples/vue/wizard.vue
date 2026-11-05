@@ -14,7 +14,20 @@ import {
 const step = ref("request-input");
 const requestTitle = ref("展示会の案内状");
 const requestDate = ref("2026-11-20");
+const stepOrder = ["request-input", "request-schedule", "request-confirm"];
+const stepFields: Record<string, string> = {
+  "request-input": "request-title",
+  "request-schedule": "request-date",
+};
 async function goToStep(value: string) {
+  // 先の手順へ進むときは、今の手順の必須入力を送信時と同じ方法で確かめます。
+  if (stepOrder.indexOf(value) > stepOrder.indexOf(step.value)) {
+    const input = document.querySelector<HTMLInputElement>("#" + stepFields[step.value]);
+    if (input && !validateField(input)) {
+      input.focus();
+      return;
+    }
+  }
   step.value = value;
   await nextTick();
   document.querySelector<HTMLElement>("#" + value + "-heading")?.focus();
