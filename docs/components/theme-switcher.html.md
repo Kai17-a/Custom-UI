@@ -70,7 +70,7 @@ Material 3に基づく低彩度の6配色を、質感・明暗とは独立して
 
 ```html
 <label class="fx fx-wrap fx-items-center fx-gap-2"><span class="fx-shrink-0">表示モード</span>
-  <select class="form-select form-select-sm w-auto" data-ui-color-select>
+  <select class="form-select form-select-sm ui-w-auto" data-ui-color-select>
     <option value="light">ライト</option>
     <option value="dark">ダーク</option>
     <option value="system">システム</option>
@@ -101,7 +101,7 @@ Material 3に基づく低彩度の6配色を、質感・明暗とは独立して
 ```html
 <div class="ui-theme-switcher">
   <label class="fx fx-wrap fx-items-center fx-gap-2"><span class="fx-shrink-0">デザイン</span>
-    <select class="form-select form-select-sm w-auto" data-ui-theme-select>
+    <select class="form-select form-select-sm ui-w-auto" data-ui-theme-select>
       <option value="default">標準</option><option value="glass">ガラス</option><option value="glassmorphism">グラスモーフィズム</option><option value="flat">フラット</option><option value="soft">ソフト</option>
     </select>
   </label>

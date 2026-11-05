@@ -19,8 +19,8 @@
 
 ```html
 <div class="row" style="flex-direction:column; align-items:stretch; max-width:40rem;">
-    <div class="alert alert-success py-2 px-3 shadow-sm notice" role="status"><span class="words">Saved.</span><button class="btn-close" data-ui-dismiss="alert" aria-label="Close"></button></div>
-    <div class="alert alert-danger py-2 px-3 shadow-sm notice" role="alert"><span class="words">Something went wrong, so it stays until it is closed.</span><button class="btn-close" data-ui-dismiss="alert" aria-label="Close"></button></div>
+    <div class="alert alert-success sp-py-2 sp-px-4 shadow-sm notice" role="status"><span class="words">Saved.</span><button class="btn-close" data-ui-dismiss="alert" aria-label="Close"></button></div>
+    <div class="alert alert-danger sp-py-2 sp-px-4 shadow-sm notice" role="alert"><span class="words">Something went wrong, so it stays until it is closed.</span><button class="btn-close" data-ui-dismiss="alert" aria-label="Close"></button></div>
   </div>
 ```
 

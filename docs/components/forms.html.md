@@ -15,7 +15,7 @@
 ```html
 <div class="row sp-gap-4 fx-items-start">
     <input type="search" class="form-control form-control-sm" aria-label="タスクを検索" placeholder="タスクを検索" style="max-width:18rem;">
-    <select class="form-select form-select-sm w-auto" aria-label="tool">
+    <select class="form-select form-select-sm ui-w-auto" aria-label="tool">
       <option>Claude</option><option>Codex</option><option>Cline</option>
     </select>
     <label class="form-check"><input type="checkbox" class="form-check-input" checked><span class="form-check-label">follow</span></label>
@@ -37,7 +37,7 @@
 - 文字を入力すると、一致する項目を探せます。
 
 ```html
-<form class="stack">
+<form class="ui-stack">
   <div class="field"><label for="select-project">プロジェクト</label><select id="select-project" class="form-select" name="project" required><option value="">選択してください</option><optgroup label="進行中"><option value="catalog">デザインカタログ</option><option value="app">自作アプリ</option></optgroup><optgroup label="アーカイブ"><option value="old" disabled>旧プロジェクト（選択不可）</option></optgroup></select></div>
   <div class="field"><label for="select-disabled">変更不可</label><select id="select-disabled" class="form-select" disabled><option>現在は選択できません</option></select></div>
   <div class="ui-cluster"><button type="reset" class="btn btn-sm btn-outline-secondary">選択をリセット</button></div>

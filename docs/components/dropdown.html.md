@@ -13,7 +13,7 @@
 ボタンの`data-ui-toggle="dropdown"`と`data-ui-target`を指定します。メニューには`data-ui-dropdown popover`を付けます。項目を選ぶと閉じます。
 
 ```html
-<button type="button" class="btn btn-outline-secondary" data-ui-toggle="dropdown" data-ui-target="#dropdown-basic-menu">操作メニュー</button>
+<button type="button" class="btn btn-outline-secondary" data-ui-toggle="dropdown" data-ui-target="#dropdown-basic-menu">操作メニュー<span icon="mdi-chevron-down" aria-hidden="true"></span></button>
 <div id="dropdown-basic-menu" class="ui-dropdown-menu" data-ui-dropdown popover>
   <div class="ui-dropdown-heading">プロジェクトの操作</div>
   <button type="button" class="ui-dropdown-item" data-ui-value="edit" data-ui-toast="編集を選びました"><span icon="mdi-pencil" aria-hidden="true"></span>編集</button>
@@ -31,7 +31,7 @@
 `data-ui-placement`でbottom-start・bottom-end・top-start・top-endを指定できます。画面端では位置を補正し、必要なら上下を入れ替えます。
 
 ```html
-<div class="ui-cluster"><button type="button" class="btn btn-outline-secondary" data-ui-toggle="dropdown" data-ui-target="#dropdown-up" data-ui-placement="top-start">上に開く</button><button type="button" class="btn btn-outline-secondary" data-ui-toggle="dropdown" data-ui-target="#dropdown-end" data-ui-placement="bottom-end">末尾に揃える</button></div>
+<div class="ui-cluster"><button type="button" class="btn btn-outline-secondary" data-ui-toggle="dropdown" data-ui-target="#dropdown-up" data-ui-placement="top-start">上に開く<span icon="mdi-chevron-down" aria-hidden="true"></span></button><button type="button" class="btn btn-outline-secondary" data-ui-toggle="dropdown" data-ui-target="#dropdown-end" data-ui-placement="bottom-end">末尾に揃える<span icon="mdi-chevron-down" aria-hidden="true"></span></button></div>
 <div id="dropdown-up" class="ui-dropdown-menu" data-ui-dropdown popover>
   <div class="ui-dropdown-heading">プロジェクトの操作</div>
   <button type="button" class="ui-dropdown-item" data-ui-value="edit" data-ui-toast="編集を選びました"><span icon="mdi-pencil" aria-hidden="true"></span>編集</button>
@@ -57,7 +57,7 @@
 Enter・Space・↓で開き、↑で最後の項目から開きます。メニュー内の↑↓、Home・Endで移動し、Escapeで閉じて元のボタンへ戻ります。Tabはメニューを閉じて次の操作へ移動します。ボタンのdisabled、項目のdisabled／aria-disabledに対応します。フォームなど自由な内容にはPopoverを使用してください。
 
 ```html
-<button type="button" class="btn btn-outline-secondary" data-ui-toggle="dropdown" data-ui-target="#dropdown-basic-menu" disabled>操作できません</button>
+<button type="button" class="btn btn-outline-secondary" data-ui-toggle="dropdown" data-ui-target="#dropdown-basic-menu" disabled>操作できません<span icon="mdi-chevron-down" aria-hidden="true"></span></button>
 ```
 
 <a id="dropdown-api"></a>

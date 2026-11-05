@@ -12,6 +12,7 @@ body {
    application styles override these without !important or extra selectors. */
 :where(h1, h2, h3, h4, h5, h6) {
   margin:0 0 var(--space-3);
+  text-wrap:balance;
   font-family:inherit;
   font-weight:600;
   line-height:var(--leading-tight);

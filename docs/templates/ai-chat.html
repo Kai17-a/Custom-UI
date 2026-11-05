@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f3f0" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1b1c1e" media="(prefers-color-scheme: dark)">
     <title>制作アシスタント — 木の葉制作室</title>
     <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
     <script src="../assets/ui/js/theme-init.js"></script>
@@ -90,7 +92,7 @@
       </article>
     </section>
     <form class="ui-stack" action="/assistant/messages" method="post">
-      <div class="field">
+      <div class="field ui-w-full">
         <label for="chat-message">メッセージ</label>
         <textarea class="form-control" id="chat-message" aria-describedby="chat-message-hint" name="message" rows="3" required placeholder="次に整理したいことを入力"></textarea>
         <p class="type-caption" id="chat-message-hint">個人情報や秘密情報は入力しないでください。</p>

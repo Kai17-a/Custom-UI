@@ -63,7 +63,7 @@ function sendMessage() {
       </article>
     </section>
     <form class="ui-stack" @submit.prevent="sendMessage">
-      <KavField label="メッセージ" for="chat-message" hint="個人情報や秘密情報は入力しないでください。">
+      <KavField class="ui-w-full" label="メッセージ" for="chat-message" hint="個人情報や秘密情報は入力しないでください。">
         <KavTextarea
           id="chat-message" aria-describedby="chat-message-hint"
           name="message"
