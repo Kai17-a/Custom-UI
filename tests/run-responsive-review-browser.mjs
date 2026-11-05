@@ -93,7 +93,8 @@ try {
     ['data-table', '.example .ui-data-table-check'], ['tips', '.example .tip-disclosure summary'],
     ['typography', '.example details > summary'], ['navigation', '.example .navbar a'],
     ['banner', '.example .ui-banner-inner > a, .example .ui-banner-actions a'], ['cards', '.example .ui-card-footer a'],
-    ['layouts', '.example .ui-card-footer a']
+    ['layouts', '.example .ui-card-footer a'], ['navigation', '.example .breadcrumb a'],
+    ['layouts', '.example :is(.ui-stack, .ui-cluster, .ui-section-header) > a:not([class])']
   ]) {
     await navigate('components/' + path + '.html');
     if(path==='navigation')await evaluate(`[...document.querySelectorAll('.example [data-ui-navbar-toggle]')].forEach(el=>el.click())`);
@@ -107,6 +108,9 @@ try {
     assert(hits.length && hits.every(h=>h.width>=44 && h.height>=44 && h.hit), `Component touch targets ${path}: ${JSON.stringify(hits)}`);
   }
 
+  // The extra hit area must not change the layout of the trail or the stack.
+  await navigate('components/navigation.html');
+  assert(await evaluate(`[...document.querySelectorAll('.example .breadcrumb li')].every(li=>li.getBoundingClientRect().height<32)`),'Breadcrumb rows keep their height');
   await navigate('components/data-table.html');
   const edge = await evaluate(`(()=>{const el=document.querySelector('.example [data-ui-row-select]');el.scrollIntoView({block:'center',inline:'center',behavior:'instant'});const r=el.closest('td').getBoundingClientRect(),box=el.getBoundingClientRect();if(box.width>24||box.height>24)throw new Error('Row checkbox must keep its visual size: '+box.width);return {x:r.left+2,y:r.top+2,before:el.checked}})()`);
   await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:edge.x,y:edge.y}]});

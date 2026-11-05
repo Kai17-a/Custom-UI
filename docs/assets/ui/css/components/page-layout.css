@@ -36,6 +36,9 @@
 .ui-section { min-width:0; }
 .ui-section + .ui-section { border-top:1px solid var(--bs-border-color); padding-top:var(--space-6); }
 .ui-section-header { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:var(--space-3); margin-bottom:var(--space-4); }
+@media (pointer:coarse) {
+  .ui-section-header > a:not([class]) { min-width:var(--ui-touch-target); padding-block:max(0px, (var(--ui-touch-target) - 1lh) / 2 + 1px); margin-block:min(0px, (1lh - var(--ui-touch-target)) / 2 - 1px); }
+}
 .ui-section-title { margin:0; font-size:var(--text-lg); font-weight:600; }
 .ui-section-description { margin:var(--space-2) 0 0; color:var(--bs-secondary-color); font-size:var(--text-sm); }
 .ui-toolbar { padding:var(--space-3) var(--space-4); border:1px solid var(--bs-border-color); border-radius:var(--bs-border-radius); }
