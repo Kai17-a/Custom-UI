@@ -170,6 +170,20 @@ try {
   await navigate('components/dialog.html');
   await evaluate("localStorage.removeItem('kav-ui-theme');localStorage.removeItem('kav-ui-design-theme')");
   console.log('First paint with UI blocked: saved light/dark before rendering across 5 pages, glass restoration, OS fallback with absent/invalid/blocked storage');
+  await navigate('index.html');
+  for (const query of ['フォーム', '通知', '該当なしxyz', '']) {
+    const result = await evaluate(`(() => {
+      const input = document.getElementById('catalog-search');
+      input.value = ${JSON.stringify(query)};
+      input.dispatchEvent(new Event('input', {bubbles:true}));
+      const groups = [...document.querySelectorAll('main > section.specimen')];
+      const visible = [...document.querySelectorAll('[data-catalog-item]')].filter(item => !item.hidden);
+      return {groups:groups.length, consistent:groups.every(group => group.hidden === ![...group.querySelectorAll('[data-catalog-item]')].some(item => !item.hidden)),
+        count:visible.length, status:document.getElementById('search-result').textContent, empty:document.getElementById('search-empty').hidden};
+    })()`);
+    if(result.groups !== 8 || !result.consistent || result.status !== result.count + ' コンポーネント' || result.empty !== (result.count > 0) || (query === '' && result.count !== 46)) throw new Error('Catalog grouped filter '+query+': '+JSON.stringify(result));
+  }
+  console.log('Catalog grouped filter: aliases across categories, empty groups, no results and reset');
   await checkControlAppearance({navigate,evaluate,send,key});
   for (const width of [320,768,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});

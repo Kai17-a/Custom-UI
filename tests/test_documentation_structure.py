@@ -50,6 +50,55 @@ class DocumentationStructureTests(unittest.TestCase):
             self.assertEqual(list(categories.items()), list(reference.items()), str(page))
         self.assertIsNotNone(reference)
 
+    def test_home_groups_follow_sidebar_and_preserve_destinations(self):
+        source = (DOCS / 'index.html').read_text()
+        nav = re.search(r'<nav aria-label="コンポーネント">(.*?)</nav>', source, re.S).group(1)
+        categories = re.findall(r'<div class="catalog-nav-group">\s*<h2>(.*?)</h2>(.*?)</div>', nav, re.S)
+        main = source.split('<main', 1)[1]
+        groups = re.findall(r'<section class="specimen"[^>]*>\s*<h2>(.*?)</h2>\s*<div class="catalog-grid">(.*?)</div>\s*</section>', main, re.S)
+        self.assertEqual([name for name, _ in groups], [name for name, _ in categories])
+        self.assertNotIn('card-number', main)
+        cards = []
+        for (name, content), (_, navigation) in zip(groups, categories):
+            links = re.findall(r'href="([^"]+)"', content)
+            nav_links = re.findall(r'href="([^"]+)"', navigation)
+            self.assertTrue(links, name)
+            self.assertEqual(links, [href for href in nav_links if href in links], name)
+            self.assertEqual(len(links), content.count('data-catalog-item'), name)
+            self.assertNotIn('<h2>', content)
+            cards.extend(links)
+        self.assertEqual(len(cards), 46)
+        self.assertEqual(len(set(cards)), 46)
+
+    def test_home_entry_points_precede_component_groups(self):
+        main = (DOCS / 'index.html').read_text().split('<main', 1)[1]
+        first_group = main.index('<section')
+        for href in ('templates.html', 'getting-started.html'):
+            self.assertLess(main.index('href="' + href + '"'), first_group)
+
+    def test_top_level_overview_marks_only_current_page(self):
+        for name in ('index.html', 'getting-started.html', 'installation.html', 'ai-agents.html', 'templates.html'):
+            source = (DOCS / name).read_text()
+            links = re.findall(r'<a class="overview-link" href="([^"]+)"([^>]*)>', source)
+            self.assertTrue(all(attrs.count('aria-current="page"') <= 1 for _, attrs in links), name)
+            self.assertEqual([href for href, attrs in links if 'aria-current="page"' in attrs], [name], name)
+
+    def test_internal_catalog_links_do_not_use_external_arrow(self):
+        for page in [*DOCS.glob('*.html'), *(DOCS / 'components').glob('*.html')]:
+            for href, text in re.findall(r'<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>', page.read_text(), re.S):
+                if not urlsplit(href).scheme and not href.startswith('//'):
+                    self.assertNotIn('↗', text, (page.name, href))
+
+    def test_template_cards_name_screen_types_and_share_action(self):
+        source = (DOCS / 'templates.html').read_text()
+        cards = dict(re.findall(r'<a class="catalog-card" href="templates/([^"]+)">(.*?)</a>', source, re.S))
+        for file, title in {'profile.html': 'プロフィール', 'detail.html': '詳細', 'pricing.html': '料金プラン', 'auth.html': 'ログイン・新規登録', 'empty-onboarding.html': 'オンボーディング', 'ai-chat.html': 'AIチャット'}.items():
+            self.assertIn('<h3>' + title + '</h3>', cards[file])
+        for content in cards.values():
+            self.assertIn('<span class="card-link">画面を開く →</span>', content)
+        for file, name in {'profile.html': 'こもれび', 'detail.html': '秋の展示会', 'pricing.html': 'チームに合うプラン'}.items():
+            self.assertRegex(cards[file], r'<p>[^<]*' + name)
+
     def test_retired_app_sample_is_not_published(self):
         self.assertFalse((DOCS / 'starter.html').exists())
         self.assertFalse((DOCS / 'starter.html.md').exists())
