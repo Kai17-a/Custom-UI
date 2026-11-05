@@ -87,6 +87,17 @@ async function serve(directory,transformHTML){
 async function visit(url,ready){await send('Page.navigate',{url});for(let i=0;i<200;i++){await delay(25);if(await evaluate('document.readyState==="complete" && ('+ready+')'))return;}throw new Error('Page readiness: '+url);}
 async function until(expression,label){for(let i=0;i<100;i++){if(await evaluate(expression))return;await delay(20);}throw new Error(label+': '+expression);}
 function assert(value,label){if(!value)throw new Error(label);}
+// Exercise Vue-owned validation without relying on the shared HTML runtime.
+async function setSampleInput(id,value){
+ await evaluate(`(()=>{const input=document.getElementById(${JSON.stringify(id)});input.value=${JSON.stringify(value)};input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+}
+async function assertSampleError(id,label){
+ await until(`(()=>{const input=document.getElementById(${JSON.stringify(id)}),field=input.closest('.field'),error=field?.querySelector('.ui-invalid-feedback');return error&&error.textContent==='このフィールドを入力してください。'&&input.getAttribute('aria-invalid')==='true'&&input.getAttribute('aria-describedby')?.split(/\\s+/).includes(error.id)&&document.activeElement===input&&input.getClientRects().length>0;})()`,label+' inline Japanese error, ARIA linkage and focus');
+}
+async function assertSampleCorrected(id,value,label){
+ await setSampleInput(id,value);
+ await until(`(()=>{const input=document.getElementById(${JSON.stringify(id)});return input.getAttribute('aria-invalid')!=='true'&&!input.closest('.field').querySelector('.ui-invalid-feedback');})()`,label+' corrected field clears error');
+}
 try {
  const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
  await send('Runtime.enable');await send('Page.enable');
@@ -188,6 +199,15 @@ try {
     await click('#workspace-name');await send('Input.insertText',{text:'更新'});
     await click('button[type=reset]');
     await until(`document.querySelector('#workspace-name').value==='木の葉制作室'`,label+' reset');
+    if(framework==='vue'){
+     await setSampleInput('workspace-name','');await click('button[type=submit]');
+     await assertSampleError('workspace-name',label);
+     assert(await evaluate(`[...document.querySelectorAll('[data-kav-ui-html]')].every(el=>el.innerHTML.trim())`),label+' no empty runtime widget');
+     await assertSampleCorrected('workspace-name','木の葉制作室',label);
+     await setSampleInput('contact-email','invalid');await click('button[type=submit]');
+     await until(`document.querySelector('#contact-email').getAttribute('aria-invalid')==='true'&&document.querySelector('#contact-email-error').textContent==='メールアドレスを正しい形式で入力してください。'`,label+' email validity');
+     await assertSampleCorrected('contact-email','team@example.com',label);
+    }
     break;
    case 'auth':case 'notifications':case 'wizard':case 'detail': {
     await until(`document.querySelector('[role=tab]')`,label+' tabs initialize');
@@ -205,7 +225,15 @@ try {
       await evaluate(`(()=>{const panel=[...document.querySelectorAll('[role=tabpanel]')].find(el=>!el.hidden);[...panel.querySelectorAll('button')].find(button=>button.textContent.trim()==='${text}').click();})()`);
       await until(`document.activeElement?.matches('h2[tabindex="-1"]')&&document.activeElement.textContent.trim()==='${heading}'`,label+' step button focuses '+heading);
      }
-
+     if(framework==='vue'){
+      await setSampleInput('request-title','');await setSampleInput('request-date','');
+      await click('button[type=submit]');await assertSampleError('request-title',label);
+      assert(await evaluate(`[...document.querySelectorAll('[data-kav-ui-html]')].every(el=>el.innerHTML.trim())`),label+' no empty runtime widget');
+      await assertSampleCorrected('request-title','展示会の案内状',label);
+      await evaluate(`document.querySelectorAll('[role=tab]')[2].click()`);
+      await click('button[type=submit]');await assertSampleError('request-date',label);
+      await assertSampleCorrected('request-date','2026-11-20',label);
+     }
     }
     if(screen==='detail'){
      await click('.ui-page-actions button');await until(`document.querySelector('dialog').open`,label+' dialog opens');

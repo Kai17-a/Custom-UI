@@ -65,7 +65,7 @@
       </div>
     </header>
     <!-- 手順の移動はTabs、最終検証と送信は通常のフォームです。 -->
-    <form id="request-form" class="ui-stack" action="/requests" method="post">
+    <form data-ui-validate novalidate id="request-form" class="ui-stack" action="/requests" method="post">
       <div data-ui-tabs>
         <div class="tabs" role="tablist" aria-label="依頼の手順">
           <button type="button" data-ui-toggle="tab" data-ui-target="request-input" aria-selected="true">1. 基本情報</button>
@@ -78,7 +78,9 @@
             <label for="request-title">依頼名</label>
             <input class="form-control" id="request-title" name="request-title" type="text" value="展示会の案内状" required maxlength="80">
           </div>
-          <button class="btn btn-primary" type="button" data-request-step="request-schedule">次へ</button>
+          <div class="ui-cluster">
+            <button class="btn btn-primary" type="button" data-request-step="request-schedule">次へ</button>
+          </div>
         </section>
         <section class="tab-panel ui-stack" data-ui-panel="request-schedule" hidden>
           <h2 tabindex="-1">予定</h2>
@@ -100,8 +102,10 @@
             <dd><output id="confirm-date" for="request-date">2026-11-20</output></dd>
           </dl>
           <p>修正する場合は前のタブへ戻ってください。送信処理はアプリ側で接続します。</p>
-          <button class="btn btn-outline-secondary" type="button" data-request-step="request-schedule">戻る</button>
-          <button class="btn btn-primary" type="submit" >この内容で依頼する</button>
+          <div class="ui-cluster">
+            <button class="btn btn-outline-secondary" type="button" data-request-step="request-schedule">戻る</button>
+            <button class="btn btn-primary" type="submit" >この内容で依頼する</button>
+          </div>
         </section>
       </div>
     </form>
@@ -120,8 +124,9 @@
             form.querySelector('[data-ui-panel="' + step + '"] h2').focus();
           });
         });
-        // 非表示タブ内の必須入力にもブラウザの検証結果を表示します。
+        // 非表示タブ内の必須入力にもインラインの検証結果を表示します。
         form.addEventListener('invalid', event => {
+          if (event.target !== form.querySelector('input:invalid, select:invalid, textarea:invalid')) return;
           const panel = event.target.closest('[data-ui-panel]');
           form.querySelector('[data-ui-target="' + panel.dataset.uiPanel + '"]').click();
         }, true);
