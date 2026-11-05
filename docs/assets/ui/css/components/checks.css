@@ -34,8 +34,3 @@
   .form-check-input { appearance:auto; -webkit-appearance:auto; background-image:none !important; background-color:Canvas; border-color:ButtonText; forced-color-adjust:auto; }
   .form-check-input:focus-visible { outline-color:Highlight; box-shadow:none; }
 }
-
-/* Native input owns the whole hit box, including when there is no label. */
-@media (pointer:coarse) {
-  .form-check-input { min-width:var(--ui-touch-target); min-height:var(--ui-touch-target); }
-}

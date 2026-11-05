@@ -90,7 +90,7 @@ try {
 
   await send('Emulation.setDeviceMetricsOverride', {width:390,height:900,deviceScaleFactor:1,mobile:true});
   for (const [path, selector] of [
-    ['data-table', '.example .form-check-input'], ['tips', '.example .tip-disclosure summary'],
+    ['data-table', '.example .ui-data-table-check'], ['tips', '.example .tip-disclosure summary'],
     ['typography', '.example details > summary'], ['navigation', '.example .navbar a'],
     ['banner', '.example .ui-banner-inner > a, .example .ui-banner-actions a'], ['cards', '.example .ui-card-footer a'],
     ['layouts', '.example .ui-card-footer a']
@@ -100,17 +100,18 @@ try {
     const hits = await evaluate(`(()=>{
       const els=[...document.querySelectorAll('${selector}')].filter(el=>el.getClientRects().length);
       return els.map(el=>{el.scrollIntoView({block:'center',inline:'center',behavior:'instant'});const r=el.getBoundingClientRect();
-        const points=[[r.left+1,r.top+r.height/2],[r.right-1,r.top+r.height/2],[r.left+r.width/2,r.top+1],[r.left+r.width/2,r.bottom-1]];
+        // The bottom probe stays clear of the overlay scrollbar of a horizontally scrollable table.
+        const points=[[r.left+2,r.top+r.height/2],[r.right-2,r.top+r.height/2],[r.left+r.width/2,r.top+2],[r.left+r.width/2,r.bottom-8]];
         return {text:el.textContent.trim(),width:r.width,height:r.height,hit:points.every(([x,y])=>el.contains(document.elementFromPoint(x,y)))};
       });})()`);
     assert(hits.length && hits.every(h=>h.width>=44 && h.height>=44 && h.hit), `Component touch targets ${path}: ${JSON.stringify(hits)}`);
   }
 
   await navigate('components/data-table.html');
-  const edge = await evaluate(`(()=>{const el=document.querySelector('.example [data-ui-row-select]');el.scrollIntoView({block:'center',inline:'center',behavior:'instant'});const r=el.getBoundingClientRect();return {x:r.left+1,y:r.top+r.height/2,before:el.checked}})()`);
+  const edge = await evaluate(`(()=>{const el=document.querySelector('.example [data-ui-row-select]');el.scrollIntoView({block:'center',inline:'center',behavior:'instant'});const r=el.closest('td').getBoundingClientRect(),box=el.getBoundingClientRect();if(box.width>24||box.height>24)throw new Error('Row checkbox must keep its visual size: '+box.width);return {x:r.left+2,y:r.top+2,before:el.checked}})()`);
   await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:edge.x,y:edge.y}]});
   await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
-  assert(await evaluate(`document.querySelector('.example [data-ui-row-select]').checked`)!==edge.before,'Checkbox toggles when tapped at the outer edge');
+  assert(await evaluate(`document.querySelector('.example [data-ui-row-select]').checked`)!==edge.before,'Row checkbox toggles when its cell is tapped at the edge');
   await navigate('components/tips.html');
   assert(await evaluate(`[...document.querySelectorAll('main p a')].every(el=>getComputedStyle(el).minHeight!=='44px')`),'Prose links must retain inline text layout');
 
