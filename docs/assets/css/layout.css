@@ -287,3 +287,16 @@ html:not(.ui-scroll-smooth) .catalog-navigation:not([open]) > nav { display:none
   .catalog-main { padding-top:4px; }
   .page-heading > .eyebrow { display:none; }
 }
+
+/* The home preview uses framework components; only its composition is catalog-specific. */
+.catalog-hero { display:grid; grid-template-columns:minmax(0,1fr); gap:var(--space-8); align-items:center; }
+.catalog-hero-copy, .catalog-hero-preview { min-width:0; }
+.catalog-hero-copy > .ui-cluster { margin:0; }
+/* The switches sit with the copy so the preview card and the text column share one height. */
+.catalog-hero-controls { gap:var(--space-3); margin-top:var(--space-6); }
+@media (min-width:1024px) {
+  .catalog-hero { grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:var(--space-8); }
+}
+@media (width < 768px) {
+  .catalog-hero-extra-task { display:none; }
+}

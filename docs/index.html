@@ -126,7 +126,63 @@
     </ul>
   </div>
 </nav></details><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / カタログ一覧</p><h1>Design catalog</h1></header><p class="lede">自作アプリのための、静かでコンパクトなUIパーツ集。<br>ライト／ダーク両方で確認し、必要なパーツをアプリに取り込めます。</p><p class="ui-cluster"><a class="btn btn-outline-secondary" href="templates.html">サービステンプレート →</a><a class="btn btn-outline-secondary" href="getting-started.html">使い方・属性一覧 →</a></p><div class="index-tools"><label for="catalog-search">一覧のコンポーネントを絞り込む</label><input id="catalog-search" type="search" class="form-control form-control-sm" placeholder="名前・用途で検索（例：フォーム、通知）" aria-describedby="search-result"><p id="search-result" class="dim small" role="status">46 コンポーネント</p></div>
+<main id="main" class="catalog-main"><div class="catalog-hero">
+<div class="catalog-hero-copy"><header class="page-heading"><p class="eyebrow">Kav-UI / カタログ一覧</p><h1>Design catalog</h1></header><p class="lede">自作アプリのための、静かでコンパクトなUIパーツ集。<br>ライト／ダーク両方で確認し、必要なパーツをアプリに取り込めます。</p><p class="ui-cluster"><a class="btn btn-outline-secondary" href="templates.html">サービステンプレート →</a><a class="btn btn-outline-secondary" href="getting-started.html">使い方・属性一覧 →</a></p>
+<div class="ui-stack catalog-hero-controls" role="group" aria-label="見本のデザインと配色を切り替える">
+  <div><p class="small dim sp-m-0 sp-mb-2">デザイン</p>
+<div class="ui-theme-options" role="group" aria-label="デザインテーマ">
+    <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-design="default"><span class="ui-theme-swatch" aria-hidden="true"></span>標準</button>
+    <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-design="glass"><span class="ui-theme-swatch" data-swatch="glass" aria-hidden="true"></span>ガラス</button>
+    <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-design="glassmorphism"><span class="ui-theme-swatch" data-swatch="glassmorphism" aria-hidden="true"></span>グラスモーフィズム</button>
+    <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-design="flat"><span class="ui-theme-swatch" data-swatch="flat" aria-hidden="true"></span>フラット</button>
+    <button type="button" class="btn btn-sm btn-ghost-secondary" data-ui-design="soft"><span class="ui-theme-swatch" data-swatch="soft" aria-hidden="true"></span>ソフト</button>
+  </div>
+  </div>
+  <div><p class="small dim sp-m-0 sp-mb-2">配色</p>
+<div class="ui-palette-switcher" role="group" aria-label="カラーパレット">
+<button class="btn btn-sm btn-outline-secondary" type="button" data-ui-palette-value="default"><span class="ui-palette-swatch" data-ui-palette-swatch="default" aria-hidden="true"></span>標準</button>
+<button class="btn btn-sm btn-outline-secondary" type="button" data-ui-palette-value="slate"><span class="ui-palette-swatch" data-ui-palette-swatch="slate" aria-hidden="true"></span>スレート</button>
+<button class="btn btn-sm btn-outline-secondary" type="button" data-ui-palette-value="sage"><span class="ui-palette-swatch" data-ui-palette-swatch="sage" aria-hidden="true"></span>セージ</button>
+<button class="btn btn-sm btn-outline-secondary" type="button" data-ui-palette-value="teal"><span class="ui-palette-swatch" data-ui-palette-swatch="teal" aria-hidden="true"></span>ティール</button>
+<button class="btn btn-sm btn-outline-secondary" type="button" data-ui-palette-value="mauve"><span class="ui-palette-swatch" data-ui-palette-swatch="mauve" aria-hidden="true"></span>モーブ</button>
+<button class="btn btn-sm btn-outline-secondary" type="button" data-ui-palette-value="sand"><span class="ui-palette-swatch" data-ui-palette-swatch="sand" aria-hidden="true"></span>サンド</button>
+<button class="btn btn-sm btn-outline-secondary" type="button" data-ui-palette-value="clay"><span class="ui-palette-swatch" data-ui-palette-swatch="clay" aria-hidden="true"></span>クレイ</button>
+</div>
+  </div>
+  <div class="ui-cluster" role="group" aria-label="明暗"><span class="small dim">ライト / ダーク</span><button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button></div>
+</div>
+</div>
+<section class="catalog-hero-preview ui-stack" aria-label="デザインと配色の見本">
+<div class="ui-card">
+  <div class="ui-card-header">
+    <p class="small dim sp-m-0 sp-mb-2">木の葉制作室 / プロジェクト</p>
+    <div class="ui-cluster"><h2 class="ui-card-title sp-m-0">秋の展示会</h2><span class="badge badge-neutral">進行中</span></div>
+  </div>
+  <div class="ui-card-body ui-stack">
+    <div><div class="ui-progress-heading"><label for="home-project-progress">展示の準備</label><span>60%</span></div><progress id="home-project-progress" class="ui-progress" max="100" value="60">60%</progress></div>
+    <table class="table small sp-m-0" aria-label="展示会のタスク">
+      <thead><tr><th scope="col">タスク</th><th scope="col">状態</th></tr></thead>
+      <tbody>
+        <tr><td>展示作品の選定</td><td><span class="badge badge-neutral">進行中</span></td></tr>
+        <tr><td>案内状の校正</td><td><span class="badge text-bg-warning">確認待ち</span></td></tr>
+        <tr class="catalog-hero-extra-task"><td>会場の予約</td><td><span class="badge text-bg-success">完了</span></td></tr>
+      </tbody>
+    </table>
+    <div class="field"><label for="home-project-owner">担当</label><input id="home-project-owner" class="form-control form-control-sm" value="制作チーム" autocomplete="off"></div>
+  </div>
+  <div class="ui-card-footer">
+    <button class="btn btn-sm btn-primary" type="button" data-ui-toggle="dialog" data-ui-target="#home-project-share">共有情報</button>
+    <a class="btn btn-sm btn-outline-secondary" href="templates/detail.html">詳細を見る</a>
+  </div>
+</div>
+<dialog class="ui-dialog" id="home-project-share" data-ui-dialog aria-labelledby="home-project-share-title">
+  <h2 id="home-project-share-title">秋の展示会の共有情報</h2>
+  <p>制作チームで展示作品と会場の準備を進めています。</p>
+  <div class="ui-cluster"><button class="btn btn-primary" type="button" data-ui-dismiss="dialog">閉じる</button></div>
+</dialog>
+</section>
+</div>
+<div class="index-tools"><label for="catalog-search">一覧のコンポーネントを絞り込む</label><input id="catalog-search" type="search" class="form-control form-control-sm" placeholder="名前・用途で検索（例：フォーム、通知）" aria-describedby="search-result"><p id="search-result" class="dim small" role="status">46 コンポーネント</p></div>
 <section class="specimen">
 <h2>基本スタイル</h2>
 <div class="catalog-grid">
