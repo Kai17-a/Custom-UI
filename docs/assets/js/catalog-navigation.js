@@ -19,7 +19,7 @@
     menu.append(menuLabel, navigation);
   }
 
-  const headings = [...main.querySelectorAll(':scope > h2, :scope > section > h2')];
+  const headings = [...main.querySelectorAll(':scope > h2, :scope > section > h2, :scope > section > section > h3')];
   let toc, tocRail;
   if (headings.length >= 4) {
     toc = document.createElement('details');
@@ -36,6 +36,7 @@
     list.className = 'ui-scroll-smooth';
     list.setAttribute('data-ui-scroll-active','');
     const used = new Set();
+    let groupItem;
     const entries = headings.map((heading, index) => {
       const section = heading.parentElement;
       const target = section.matches('section') && !used.has(section) ? section : heading;
@@ -54,7 +55,12 @@
       link.className = 'catalog-toc-link';
       link.href = '#' + encodeURIComponent(target.id);
       link.textContent = heading.textContent.trim().replace(/\s+/g, ' ');
-      item.append(link); list.append(item);
+      item.append(link);
+      if (heading.tagName === 'H3' && groupItem) {
+        let nested = groupItem.querySelector('ol');
+        if (!nested) { nested = document.createElement('ol'); groupItem.append(nested); }
+        nested.append(item);
+      } else { list.append(item); groupItem = item; }
       return {target, link};
     });
     const desktopLabel=document.createElement('p');

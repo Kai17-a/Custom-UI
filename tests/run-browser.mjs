@@ -55,8 +55,7 @@ async function evaluate(expression) {
   return result.result.value;
 }
 // Text squeezed into a column narrower than two characters wraps one character per line.
-// Splitter panels are resized by the user, so their width is not a layout error.
-const squeezedText=`[...document.querySelectorAll('main :is(p,li,h1,h2,h3,h4,h5,h6,dt,dd,summary,label,strong,a,button,td,th)')].filter(el=>{const text=el.textContent.trim();if(text.length<4||!el.getClientRects().length||el.closest('[data-ui-splitter-panel]'))return false;const r=el.getBoundingClientRect(),size=parseFloat(getComputedStyle(el).fontSize);return r.width>0&&r.width<size*2&&r.height>size*4;}).map(el=>el.tagName+':'+el.textContent.trim().slice(0,12))`;
+const squeezedText=`[...document.querySelectorAll('main :is(p,li,h1,h2,h3,h4,h5,h6,dt,dd,summary,label,strong,a,button,td,th)')].filter(el=>{const text=el.textContent.trim();if(text.length<4||!el.getClientRects().length)return false;const r=el.getBoundingClientRect(),size=parseFloat(getComputedStyle(el).fontSize);return r.width>0&&r.width<size*2&&r.height>size*4;}).map(el=>el.tagName+':'+el.textContent.trim().slice(0,12))`;
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function navigate(path) {
   await send('Page.navigate',{url:pathToFileURL(documentPath(path)).href});
@@ -1057,14 +1056,16 @@ try {
       if(!await evaluate('document.documentElement.scrollWidth<=innerWidth+1 && [...document.querySelectorAll("[data-ui-splitter]")].every(root=>{const sizes=KavUI.splitter(root),r=root.getBoundingClientRect();return Array.isArray(sizes) && Math.abs(sizes.reduce((a,b)=>a+b,0)-100)<.001 && r.left>=0 && r.right<=innerWidth+1;})'))throw new Error('Splitter responsive/theme '+[width,mode,design]);
     }
     await evaluate('KavUI.setDesignTheme("glassmorphism");KavUI.setColorTheme("light");KavUI.splitter("#splitter-basic",{reset:true})');
-    await splitterDragHandle('#splitter-basic > [role=separator]',30);
+    // Below 768px the basic demo stacks (ui-splitter-mobile-stack), so drags run on the block axis.
+    const basicDrag=distance=>width<768?[0,Math.abs(distance)]:[distance,0];
+    await splitterDragHandle('#splitter-basic > [role=separator]',...basicDrag(30));
     if(!await evaluate('KavUI.splitter("#splitter-basic")[0]>30 && !document.documentElement.hasAttribute("data-ui-splitter-resizing")'))throw new Error('Splitter native pointer drag/capture cleanup');
     await click('[data-ui-splitter-reset="#splitter-basic"]');
     if(!await evaluate('KavUI.splitter("#splitter-basic")[0]===30'))throw new Error('Splitter reset button');
-    await splitterDragHandle('#splitter-basic > [role=separator]',35,0,true);
+    await splitterDragHandle('#splitter-basic > [role=separator]',...basicDrag(35),true);
     if(!await evaluate('KavUI.splitter("#splitter-basic")[0]===30 && !document.documentElement.hasAttribute("data-ui-splitter-resizing")'))throw new Error('Splitter Escape cancels drag');
-    for(const cancel of ['capture','pointercancel']) {await splitterDragHandle('#splitter-basic > [role=separator]',25,0,cancel);if(!await evaluate('KavUI.splitter("#splitter-basic")[0]===30 && !document.documentElement.hasAttribute("data-ui-splitter-resizing")'))throw new Error('Splitter pointer cancellation '+cancel);}
-    await evaluate('document.getElementById("splitter-basic").dir="rtl"');await splitterDragHandle('#splitter-basic > [role=separator]',-20);
+    for(const cancel of ['capture','pointercancel']) {await splitterDragHandle('#splitter-basic > [role=separator]',...basicDrag(25),cancel);if(!await evaluate('KavUI.splitter("#splitter-basic")[0]===30 && !document.documentElement.hasAttribute("data-ui-splitter-resizing")'))throw new Error('Splitter pointer cancellation '+cancel);}
+    await evaluate('document.getElementById("splitter-basic").dir="rtl"');await splitterDragHandle('#splitter-basic > [role=separator]',...basicDrag(-20));
     if(!await evaluate('KavUI.splitter("#splitter-basic")[0]>30'))throw new Error('Splitter RTL pointer direction');
     await evaluate('document.getElementById("splitter-basic").removeAttribute("dir");KavUI.splitter("#splitter-basic",{reset:true})');
     await splitterDragHandle('#splitter-vertical-demo > [role=separator]',0,25);
@@ -1090,9 +1091,10 @@ try {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});await delay(50);
     if(!await evaluate('getComputedStyle(document.getElementById("splitter-nested-demo")).flexDirection===(innerWidth<768?"column":"row") && document.querySelector("#splitter-nested-demo > [role=separator]").getAttribute("aria-orientation")===(innerWidth<768?"horizontal":"vertical")'))throw new Error('Splitter live mobile orientation/ARIA '+width);
   }
+  // At 390px the basic demo is stacked, so the touch drag moves along the block axis.
   await send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});await send('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:true});await navigate('components/splitter.html');
   const touch=await evaluate(`(async()=>{const el=document.querySelector('#splitter-basic > [role=separator]');el.scrollIntoView({behavior:"instant",block:'center'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));const b=el.getBoundingClientRect();return {x:b.x+b.width/2,y:b.y+b.height/2};})()`);
-  await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...touch,id:1}]});await send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:touch.x+35,y:touch.y,id:1}]});await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...touch,id:1}]});await send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:touch.x,y:touch.y+35,id:1}]});await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
   if(!await evaluate('KavUI.splitter("#splitter-basic")[0]>30 && !document.documentElement.hasAttribute("data-ui-splitter-resizing")'))throw new Error('Splitter native touch');
   await send('Emulation.setTouchEmulationEnabled',{enabled:false});await send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
   await navigate('components/splitter.html');
