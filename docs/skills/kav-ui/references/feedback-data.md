@@ -99,6 +99,18 @@ progressはvalueを省略すると進捗未確定。完了時にaria-busyとプ�
 
 `ui-ai`を親に、`ui-ai-message`と`ui-ai-disclosure`で回答と出典、`ui-ai-tool-list`で実行履歴、`ui-ai-result`で取得資料と抜粋を表示する。開閉には標準の`details / summary`を使い、共通CSSだけで利用できる。状態は`ui-ai-status`の`data-state="complete|error"`と文字の両方で示す。
 
+`ui-ai-message`はアバター用の2rem幅の列と本文の列からなるグリッドなので、子要素は`ui-ai-avatar`と`ui-ai-message-body`の2つだけにする。送信者名・本文・リスト・`ui-ai-disclosure`は、すべて`ui-ai-message-body`の中に入れる。送信者名は`ui-ai-head`に置く。
+
+```html
+<article class="ui-ai-message">
+  <span class="ui-ai-avatar" aria-hidden="true">AI</span>
+  <div class="ui-ai-message-body">
+    <div class="ui-ai-head"><strong>アシスタント</strong></div>
+    <p>回答の本文</p>
+  </div>
+</article>
+```
+
 `ui-ai-budget-track`はコンテキスト使用量のバー、`ui-ai-budget-breakdown`は内訳。バーの各spanのflex-grow、凡例の数値、role="meter"のaria-valuenow/aria-valuemax/aria-valuetextは同じアプリデータから更新する。例示の128,000は特定モデルの上限ではない。
 
 `ui-ai-voice`内のcheckboxを切り替えると、`ui-ai-wave`と待機/解析の文字表示が切り替わる。波形は表示例で録音はしない。reduced motionでは変形の遷移を止める。通信・トークン計算・音声認識はアプリで接続し、実際のモデル内部の思考を表示するものとして使わない。

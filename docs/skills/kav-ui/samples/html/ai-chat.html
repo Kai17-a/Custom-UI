@@ -9,21 +9,27 @@
     </header>
     <section class="ui-ai ui-stack" aria-label="会話履歴">
       <article class="ui-ai-message">
-        <h2>あなた</h2>
-        <p>展示会の案内状に必要な情報を整理して。</p>
+        <span class="ui-ai-avatar" aria-hidden="true">あ</span>
+        <div class="ui-ai-message-body">
+          <div class="ui-ai-head"><strong>あなた</strong></div>
+          <p>展示会の案内状に必要な情報を整理して。</p>
+        </div>
       </article>
       <article class="ui-ai-message">
-        <h2>アシスタント</h2>
-        <p>開催日時、会場、展示のテーマ、問い合わせ先を揃えましょう。</p>
-        <ul>
-          <li>開催日：11月20日</li>
-          <li>テーマ：日々の発見</li>
-          <li>会場：チームで確認してください</li>
-        </ul>
-        <details class="ui-ai-disclosure">
-          <summary>回答の根拠と確認事項</summary>
-          <p>この会話に記載された内容だけを参照しています。開催場所は未確認です。</p>
-        </details>
+        <span class="ui-ai-avatar" aria-hidden="true">AI</span>
+        <div class="ui-ai-message-body">
+          <div class="ui-ai-head"><strong>アシスタント</strong></div>
+          <p>開催日時、会場、展示のテーマ、問い合わせ先を揃えましょう。</p>
+          <ul>
+            <li>開催日：11月20日</li>
+            <li>テーマ：日々の発見</li>
+            <li>会場：チームで確認してください</li>
+          </ul>
+          <details class="ui-ai-disclosure">
+            <summary>回答の根拠と確認事項</summary>
+            <p>この会話に記載された内容だけを参照しています。開催場所は未確認です。</p>
+          </details>
+        </div>
       </article>
     </section>
     <form class="ui-stack" action="/assistant/messages" method="post">

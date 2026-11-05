@@ -65,6 +65,9 @@ async function navigate(path) {
   throw new Error('Page load timed out: '+path);
 }
 async function key(key,code=key) { const vk={Escape:27,ArrowRight:39,ArrowLeft:37,Tab:9,Enter:13,ArrowDown:40,ArrowUp:38,' ':32}[key] || 0; await send('Input.dispatchKeyEvent',{type:key==='Enter'?'keyDown':'rawKeyDown',key,code,windowsVirtualKeyCode:vk,...(key==='Enter'?{text:'\r',unmodifiedText:'\r'}:{})}); await send('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode:vk}); }
+// Text squeezed into a column narrower than two characters wraps one character per line.
+// Splitter panels are resized by the user, so their width is not a layout error.
+const squeezedText=`[...document.querySelectorAll('main :is(p,li,h1,h2,h3,h4,h5,h6,dt,dd,summary,label,strong,a,button,td,th)')].filter(el=>{const text=el.textContent.trim();if(text.length<4||!el.getClientRects().length||el.closest('[data-ui-splitter-panel]'))return false;const r=el.getBoundingClientRect(),size=parseFloat(getComputedStyle(el).fontSize);return r.width>0&&r.width<size*2&&r.height>size*4;}).map(el=>el.tagName+':'+el.textContent.trim().slice(0,12))`;
 async function click(selector) {
   // Deliver programmatic scroll events before opening a scroll-sensitive popup.
   const box=await evaluate(`(async()=>{const el=document.querySelector(${JSON.stringify(selector)});el.scrollIntoView({block:'center'});await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));const r=el.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
@@ -173,6 +176,7 @@ try {
   if(screen==='list')await until(`document.querySelector('[data-ui-table-status]').textContent.includes('全5件')`,label+' table initializes');
   if(screen==='files')await until(`document.querySelector('.ui-file-list')`,label+' upload initializes');
   assert(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),label+' page overflow');
+  const squeezed=await evaluate(squeezedText);assert(!squeezed.length,label+' squeezed text '+squeezed.join(', '));
   // Scrollable tables/boards may overflow internally, but their host must fit the page.
   assert(await evaluate(`[...document.querySelectorAll('.ui-table-scroll,.ui-board-wrap')].every(el=>{const r=el.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1;})`),label+' scroll region bounds');
   assert(await evaluate(`[...document.querySelectorAll('input:not([type=hidden]),textarea,select')].filter(el=>!el.classList.contains('ui-select-search')).every(el=>el.labels?.length||el.getAttribute('aria-label')||el.getAttribute('aria-labelledby'))`),label+' input labels');
