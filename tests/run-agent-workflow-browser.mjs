@@ -74,6 +74,8 @@ try {
     for(const id of ['agent-flow','agent-hierarchy','agent-orchestration']) {
       await evaluate(`document.getElementById('${id}').scrollIntoView({behavior:'instant',block:'start'});window.flowRoot=document.getElementById('${id}').querySelector('[data-ui-agent-flow]');window.flowLine=flowRoot.querySelector('.ui-agent-flow > li:not(:last-child), .ui-agent-tree ul');window.flowPseudo=flowLine.matches('li')?'::after':'::before'`);
       await until(`flowRoot.hasAttribute('data-ui-agent-visible')`);
+      // Late Japanese heading glyphs can reflow the page; measure motion after fonts settle.
+      await evaluate('document.fonts.ready.then(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))))');
       const start=await evaluate(`({position:getComputedStyle(flowLine,flowPseudo).backgroundPosition,box:JSON.stringify(flowRoot.getBoundingClientRect()),border:getComputedStyle(flowLine,flowPseudo).borderImageSource})`);
       await delay(180);
       assert(await evaluate(`getComputedStyle(flowLine,flowPseudo).backgroundPosition!==${JSON.stringify(start.position)} && getComputedStyle(flowLine,flowPseudo).backgroundImage.includes('gradient')`),'Chase highlight travels '+[width,mode,id]);

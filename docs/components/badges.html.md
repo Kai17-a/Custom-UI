@@ -6,16 +6,18 @@
 
 ステータスとラベル。下の「HTMLを表示」からマークアップをコピーできます。
 
-## Badges / chips
+## 状態とタグ
+
+状態の色は意味で決め、画面をまたいで同じ色を使います。進行中・処理中・準備中は `badge-neutral`、確認待ち・レビューは `text-bg-warning`、完了は `text-bg-success`、エラーは `text-bg-danger` です。分類やタグには、枠付きのピル型を使います。
 
 ```html
-<div class="row">
-    <span class="badge badge-neutral rounded-pill fw-normal border">chip</span>
-    <span class="badge text-bg-danger">danger</span>
-    <span class="badge text-bg-success">success</span>
-    <span class="badge text-bg-warning">warning</span>
-    <span class="badge bg-danger">bg-danger</span>
-    <span class="small">small dim text</span>
+<div class="ui-cluster">
+    <span class="badge badge-neutral">進行中</span>
+    <span class="badge text-bg-warning">確認待ち</span>
+    <span class="badge text-bg-success">完了</span>
+    <span class="badge text-bg-danger">エラー</span>
+    <span class="badge badge-neutral rounded-pill fw-normal border">デザイン</span>
+    <span class="small">更新：10月22日</span>
   </div>
 ```
 

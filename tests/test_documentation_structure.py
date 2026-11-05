@@ -243,3 +243,29 @@ class CatalogConsistencyTests(unittest.TestCase):
                 with self.subTest(page=page.name):
                     self.assertIn(' name="', tag)
                     self.assertIn('autocomplete="off"', tag)
+
+
+class UnslopTests(unittest.TestCase):
+    """Catalog chrome stays quiet: no tracked uppercase labels, real copy in examples."""
+    root = Path(__file__).resolve().parents[1]
+
+    def test_labels_are_not_tracked_uppercase(self):
+        css = (self.root / 'docs/assets/css/layout.css').read_text()
+        spacing = [float(value) for value in re.findall(r'\.eyebrow[^{]*\{[^}]*letter-spacing:([\d.]+)em', css)]
+        self.assertTrue(spacing)
+        self.assertTrue(all(value <= .02 for value in spacing), spacing)
+        for page in [*(self.root / 'docs').glob('*.html'), *(self.root / 'docs/components').glob('*.html')]:
+            with self.subTest(page=page.name):
+                self.assertNotIn('<p class="eyebrow">COMPONENTS</p>', page.read_text())
+
+    def test_badges_use_semibold_and_real_statuses(self):
+        self.assertIn('font-weight: 600', (self.root / 'assets/css/components/badges.css').read_text().split('\n')[1])
+        badges = (self.root / 'docs/components/badges.html').read_text()
+        for word in ('進行中', '確認待ち', '完了', 'エラー'):
+            self.assertIn(f'>{word}</span>', badges)
+        self.assertNotIn('>danger</span>', badges)
+
+    def test_section_headings_and_cards_say_what_they_show(self):
+        workflow = (self.root / 'docs/components/agent-workflow.html').read_text()
+        self.assertEqual(re.findall(r'<h2>([A-Za-z ]+)</h2>', workflow), [])
+        self.assertNotIn('サンプルを見る', (self.root / 'docs/index.html').read_text())
