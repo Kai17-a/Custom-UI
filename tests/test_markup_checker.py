@@ -257,6 +257,14 @@ class RecipeTests(unittest.TestCase):
                                  if name.startswith('ui-') and name not in defined)
         self.assertEqual(sorted(undefined), [])
 
+    def test_catalog_pages_declare_theme_color_and_avoid_legacy_utilities(self):
+        pages = [*(ROOT / 'docs').glob('*.html'), *(ROOT / 'docs/components').glob('*.html'), *(ROOT / 'docs/templates').glob('*.html')]
+        for page in pages:
+            text = page.read_text()
+            with self.subTest(page=page.name):
+                self.assertEqual(len(re.findall(r'<meta name="theme-color" content="#[0-9a-f]{6}" media="\(prefers-color-scheme: (?:light|dark)\)">', text)), 2)
+                self.assertEqual([rule for rule, _ in rules(text, page.name) if rule == 'legacy-utility'], [])
+
     def test_skill_reference_examples_have_no_errors(self):
         for page in (SKILL / 'references').glob('*.md'):
             for block in re.findall(r'```html\n(.*?)```', page.read_text(), re.S):

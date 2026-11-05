@@ -156,6 +156,15 @@ try {
   await evaluate(`(()=>{const input=document.getElementById('request-title');input.value='';input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
   await click('[data-ui-panel="request-input"] [data-request-step="request-schedule"]');
   if(!await evaluate(`(()=>{const input=document.getElementById('request-title'),error=document.getElementById(input.getAttribute('aria-describedby')?.split(' ').find(id=>document.getElementById(id)?.hasAttribute('data-ui-error'))||'');return !input.closest('[data-ui-panel]').hidden&&input.getAttribute('aria-invalid')==='true'&&error&&!error.hidden&&document.activeElement===input;})()`))polishFailures.push('Wizard next validates the current step');
+  // P3 polish: readable badges, enabled-looking secondary outline, balanced headings,
+  // a full-width chat composer and a visible dropdown affordance.
+  await navigate('templates/dashboard.html');
+  if(!await evaluate(`[...document.querySelectorAll('main .badge')].every(b=>parseFloat(getComputedStyle(b).fontSize)>=12)`))polishFailures.push('Badges at least 12px');
+  if(!await evaluate(`getComputedStyle(document.querySelector('h1')).textWrap.includes('balance')`))polishFailures.push('Balanced headings');
+  await navigate('components/dropdown.html');
+  if(!await evaluate(`(()=>{const b=document.querySelector('[data-ui-target="#dropdown-basic-menu"]');return getComputedStyle(b).color===getComputedStyle(document.body).color&&!!b.querySelector('[icon="mdi-chevron-down"] svg');})()`))polishFailures.push('Outline secondary label and dropdown chevron');
+  await navigate('templates/ai-chat.html');
+  if(!await evaluate(`(()=>{const f=document.querySelector('#chat-message').closest('.field'),t=document.querySelector('.ui-ai');return Math.abs(f.getBoundingClientRect().width-t.getBoundingClientRect().width)<2;})()`))polishFailures.push('Chat composer spans the conversation width');
   if(polishFailures.length)throw new Error(polishFailures.join('\n'));
   console.log('Review polish: visible header labels, single field spacing, natural button width, recommended plan in 5 designs × 2 modes, wizard step validation');
   // Screen layout regressions: geometry catches stretching and lost padding.

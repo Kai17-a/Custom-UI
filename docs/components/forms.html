@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f4f3f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1b1c1e" media="(prefers-color-scheme: dark)">
 <title>Forms — Kav-UI design catalog</title>
 <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
 <script src="../assets/ui/js/theme-init.js"></script>
@@ -127,7 +129,7 @@
 <main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / DESIGN SYSTEM</p><h1>Forms</h1></header><p class="lede">入力・選択・バリデーション。下の「HTMLを表示」からマークアップをコピーできます。</p><p><a href="datepicker.html">フォーム用の日付入力・Date pickerはこちら →</a></p><section class="specimen"><h2>Form controls</h2><p>入力欄とボタンの標準文字サイズは14pxです。小型指定では文字を小さくせず余白を抑えます。タッチ環境では入力文字を16px、操作領域の高さを44px以上にします。枠線は装飾罫線とは別の <code>--ui-control-outline</code>、入力例の色は <code>--ui-placeholder-color</code> で調整できます。キーボードのフォーカスは輪郭で示し、強制色モードにも対応します。</p><div class="example" data-example>
   <div class="row sp-gap-4 fx-items-start">
     <input type="search" class="form-control form-control-sm" aria-label="タスクを検索" placeholder="タスクを検索" style="max-width:18rem;">
-    <select class="form-select form-select-sm w-auto" aria-label="tool">
+    <select class="form-select form-select-sm ui-w-auto" aria-label="tool">
       <option>Claude</option><option>Codex</option><option>Cline</option>
     </select>
     <label class="form-check"><input type="checkbox" class="form-check-input" checked><span class="form-check-label">follow</span></label>
@@ -138,7 +140,7 @@
   </div>
 
 </div></section><section class="specimen" id="select-box"><h2>テーマに合わせたselect</h2><p><code>select.form-select</code> の単一選択を、現在のテーマに合わせた選択メニューで表示します。</p><ul><li>矢印キーで移動し、Enterで確定します。</li><li>Escapeでキャンセルします。</li><li>文字を入力すると、一致する項目を探せます。</li></ul><div class="example" data-example>
-<form class="stack">
+<form class="ui-stack">
   <div class="field"><label for="select-project">プロジェクト</label><select id="select-project" class="form-select" name="project" required><option value="">選択してください</option><optgroup label="進行中"><option value="catalog">デザインカタログ</option><option value="app">自作アプリ</option></optgroup><optgroup label="アーカイブ"><option value="old" disabled>旧プロジェクト（選択不可）</option></optgroup></select></div>
   <div class="field"><label for="select-disabled">変更不可</label><select id="select-disabled" class="form-select" disabled><option>現在は選択できません</option></select></div>
   <div class="ui-cluster"><button type="reset" class="btn btn-sm btn-outline-secondary">選択をリセット</button></div>

@@ -105,7 +105,7 @@ theme-init.jsは任意です。保存した配色をCSSの描画前に復元し�
 ```html
 <label class="fx fx-wrap fx-items-center fx-gap-2">
               <span>カラーパレット</span>
-              <select class="form-select w-auto" data-ui-palette-select>
+              <select class="form-select ui-w-auto" data-ui-palette-select>
                 <option value="default">標準</option>
                 <option value="slate">スレート</option>
                 <option value="sage">セージ</option>
