@@ -57,7 +57,7 @@
 ```html
 <form data-ui-validate data-demo-form novalidate>
 <div class="field" data-ui-field><label>プロジェクト名（必須）<input name="project" class="form-control form-control-sm" required maxlength="80" pattern=".*\S.*" data-ui-message="プロジェクト名を1〜80文字で入力してください。" placeholder="例：My app"></label><small>80文字以内で入力してください。</small><small class="ui-invalid-feedback" data-ui-error hidden></small></div>
-<div class="field"><label>プロジェクトID（読み取り専用）<input class="form-control form-control-sm" value="project_001" readonly></label></div>
+<div class="field"><label>プロジェクトID（読み取り専用）<input class="form-control form-control-sm" value="project_001" readonly aria-describedby="readonly-help"></label><small id="readonly-help">読み取り専用です。破線の枠で示し、文字の選択・コピーとキーボードでのフォーカスができます。編集や無効の欄とは表示を分けます。</small></div>
 <div class="field"><label>プラン<input class="form-control form-control-sm" value="Free" disabled></label><small>このデモではプランを変更できません。</small></div>
 <fieldset class="choice-list"><legend>公開範囲</legend><label class="form-check"><input type="radio" class="form-check-input" name="visibility" value="private" checked> 非公開</label><label class="form-check"><input type="radio" class="form-check-input" name="visibility" value="public"> 公開</label></fieldset>
 <p><label class="switch"><input type="checkbox" role="switch" checked> メール通知</label></p>

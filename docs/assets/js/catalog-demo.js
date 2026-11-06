@@ -130,8 +130,18 @@ document.addEventListener('click',event=>{
   const root=document.querySelector('[data-demo-theme-background]');if(!root)return;
   // CSS custom-property URLs resolve where they are consumed (the shared theme CSS).
   const sampleImage=new URL('../images/theme-background.svg',document.currentScript.src).href;
-  const body=document.body,file=root.querySelector('input[type="file"]'),range=root.querySelector('[type="range"]');
-  const status=root.querySelector('[data-demo-background-status]'),output=root.querySelector('output');
+  const body=document.body,file=root.querySelector('input[type="file"]'),range=root.querySelector('#theme-background-opacity');
+  const status=root.querySelector('[data-demo-background-status]'),output=root.querySelector('output[for="theme-background-opacity"]');
+  const surface=root.querySelector('#theme-surface-opacity'),surfaceOutput=root.querySelector('output[for="theme-surface-opacity"]');
+  const syncSurface=()=>{
+    const glass=body.dataset.uiTheme==='glass';surface.min=glass?'78':'52';
+    surface.value=Math.max(glass?78:52, Math.min(100,parseFloat(getComputedStyle(body).getPropertyValue('--ui-theme-surface-opacity')) || (glass?78:52)));
+    surfaceOutput.value=surface.value+'%';
+  };
+  surface.addEventListener('input',()=>{
+    KavUI.setSurfaceOpacity(Number(surface.value),{persist:body.hasAttribute('data-ui-theme-persist')});syncSurface();
+  });
+  document.addEventListener('ui:designchange',syncSurface);syncSurface();
   let current=null,request=0;
   const release=()=>{if(current){URL.revokeObjectURL(current);current=null;}};
   const activate=()=>{if(!['glass','glassmorphism'].includes(body.dataset.uiTheme))KavUI.setDesignTheme('glassmorphism');};
