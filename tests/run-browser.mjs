@@ -1,5 +1,6 @@
 /* node tests/run-browser.mjs — uses an installed Chromium, no npm dependencies.
    Set CHROME_BIN if Chromium is not installed in one of the detected locations. */
+import {checkThemeSurfaces} from './theme-surfaces.mjs';
 import {spawn} from 'node:child_process';
 import {authLayout, pricingHierarchy, headerControls} from './sample-consistency.mjs';
 import {checkCatalogAccessibility} from './catalog-accessibility.mjs';
@@ -80,6 +81,7 @@ try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  await checkThemeSurfaces({navigate,evaluate,send});
   const consistencyFailures=[];
   for(const width of [390,820,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
