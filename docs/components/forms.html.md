@@ -36,6 +36,10 @@
 - Escapeでキャンセルします。
 - 文字を入力すると、一致する項目を探せます。
 
+コードから値を変更したら、`select.value = x;` のあとに `KavUI.sync(select);` を呼び出してください。トリガーの文字と開いている選択肢の状態を更新し、`change`・`input` イベントは送りません。初期化前に呼んでも安全で、設定した値は `KavUI.init()` 時に表示されます。
+
+中身に合う幅にするには `ui-w-auto` を指定します。`ui-w-full` と tablet・mobile 版も wrapper に引き継がれます。ツールバーの `.ui-toolbar-group` 内では最も長い選択肢の幅を確保するため、選択を変えても横並びがずれません。
+
 ```html
 <form class="ui-stack">
   <div class="field"><label for="select-project">プロジェクト</label><select id="select-project" class="form-select" name="project" required><option value="">選択してください</option><optgroup label="進行中"><option value="catalog">デザインカタログ</option><option value="app">自作アプリ</option></optgroup><optgroup label="アーカイブ"><option value="old" disabled>旧プロジェクト（選択不可）</option></optgroup></select></div>

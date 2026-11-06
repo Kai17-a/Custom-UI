@@ -17,6 +17,8 @@
 .ui-header-nav a:hover, .ui-aside-nav a:hover { background:var(--bs-tertiary-bg); color:var(--bs-body-color); }
 .ui-header-nav a[aria-current="page"], .ui-aside-nav a[aria-current="page"] { color:var(--bs-primary); background:var(--bs-primary-bg-subtle); font-weight:600; }
 .ui-header-actions, .ui-page-actions, .ui-toolbar-group { display:flex; flex-wrap:wrap; align-items:center; gap:var(--space-2); min-width:0; }
+.ui-toolbar-group { flex-wrap:nowrap; flex-shrink:0; }
+.ui-toolbar-group > label { white-space:nowrap; }
 .ui-header-actions, .ui-toolbar-end { margin-inline-start:auto; }
 .ui-footer { border-top:1px solid var(--bs-border-color); }
 .ui-footer-inner { justify-content:space-between; padding-block:var(--space-4); font-size:var(--text-sm); color:var(--bs-secondary-color); }

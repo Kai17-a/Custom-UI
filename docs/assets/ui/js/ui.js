@@ -1500,7 +1500,10 @@
     button.className = select.className;
     button.classList.add('form-select','ui-select-trigger');
     if(select.hasAttribute('tabindex'))button.tabIndex=select.tabIndex;
-    if(select.classList.contains('w-auto'))wrapper.classList.add('w-auto');
+    // Width belongs to the wrapper; reuse the utilities for all device ranges.
+    for(const name of select.classList)if(name==='w-auto' || /^(?:(?:tablet|mobile):)?ui-w-/.test(name)) {
+      wrapper.classList.add(name);button.classList.remove(name);
+    }
     button.style.cssText = select.style.cssText;
     if (select.style.width) wrapper.style.width = select.style.width;
     button.setAttribute('role','combobox'); button.setAttribute('aria-haspopup','listbox');
@@ -1643,7 +1646,7 @@
       for(const [name,value] of [['tabindex',original.tabindex],['aria-hidden',original.hidden]]){if(value===null)select.removeAttribute(name);else select.setAttribute(name,value);}
       if(wrapper.parentNode)wrapper.replaceWith(select);selectControls.delete(select);
     });
-    selectControls.set(select,{sync:syncControl});syncControl();
+    selectControls.set(select,{sync:()=>{syncControl();if(isOpen()){render();highlight(select.selectedIndex);}}});syncControl();
   }
   window.addEventListener('resize',()=>withoutExitMotion(()=>openSelect?.close()));
   doc.addEventListener('scroll',event=>{if(openSelect && !openSelect.popup.contains(event.target))withoutExitMotion(()=>openSelect.close());},true);
@@ -4234,7 +4237,7 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
     event.preventDefault(); moveCard(dragging.card, column); endDrag();
   });
   doc.addEventListener('dragend', endDrag);
-  window.KavUI = Object.freeze({init, destroy, show, hide, toast, loading, copy, chart, splitter, sidebar:responsiveSidebar, setDesignTheme, setColorTheme, setPalette, setCustomPalette, getCustomPalette});
+  window.KavUI = Object.freeze({init, destroy, sync:syncSelect, show, hide, toast, loading, copy, chart, splitter, sidebar:responsiveSidebar, setDesignTheme, setColorTheme, setPalette, setCustomPalette, getCustomPalette});
   function boot() {
     initToastAnnouncers();
     applyTheme(resolvedColorTheme(), false);

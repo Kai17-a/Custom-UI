@@ -139,7 +139,7 @@
     <textarea class="form-control" rows="2" aria-label="メッセージ" placeholder="メッセージを入力（表示サンプル）" style="max-width:32rem;"></textarea>
   </div>
 
-</div></section><section class="specimen" id="select-box"><h2>テーマに合わせたselect</h2><p><code>select.form-select</code> の単一選択を、現在のテーマに合わせた選択メニューで表示します。</p><ul><li>矢印キーで移動し、Enterで確定します。</li><li>Escapeでキャンセルします。</li><li>文字を入力すると、一致する項目を探せます。</li></ul><div class="example" data-example>
+</div></section><section class="specimen" id="select-box"><h2>テーマに合わせたselect</h2><p><code>select.form-select</code> の単一選択を、現在のテーマに合わせた選択メニューで表示します。</p><ul><li>矢印キーで移動し、Enterで確定します。</li><li>Escapeでキャンセルします。</li><li>文字を入力すると、一致する項目を探せます。</li></ul><p>コードから値を変更したら、<code>select.value = x;</code> のあとに <code>KavUI.sync(select);</code> を呼び出してください。トリガーの文字と開いている選択肢の状態を更新し、<code>change</code>・<code>input</code> イベントは送りません。初期化前に呼んでも安全で、設定した値は <code>KavUI.init()</code> 時に表示されます。</p><p>中身に合う幅にするには <code>ui-w-auto</code> を指定します。<code>ui-w-full</code> と tablet・mobile 版も wrapper に引き継がれます。ツールバーの <code>.ui-toolbar-group</code> 内では最も長い選択肢の幅を確保するため、選択を変えても横並びがずれません。</p><div class="example" data-example>
 <form class="ui-stack">
   <div class="field"><label for="select-project">プロジェクト</label><select id="select-project" class="form-select" name="project" required><option value="">選択してください</option><optgroup label="進行中"><option value="catalog">デザインカタログ</option><option value="app">自作アプリ</option></optgroup><optgroup label="アーカイブ"><option value="old" disabled>旧プロジェクト（選択不可）</option></optgroup></select></div>
   <div class="field"><label for="select-disabled">変更不可</label><select id="select-disabled" class="form-select" disabled><option>現在は選択できません</option></select></div>
