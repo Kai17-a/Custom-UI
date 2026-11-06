@@ -2703,6 +2703,16 @@
     }
     return true;
   }
+  // Percent units, matching the public CSS variable. Each glass theme clamps its lower bound.
+  function setSurfaceOpacity(value, {persist = false} = {}) {
+    if (typeof value !== 'number' || !Number.isFinite(value)) return false;
+    const opacity = Math.min(100, Math.max(52, value));
+    doc.body.style.setProperty('--ui-theme-surface-opacity', opacity + '%');
+    if (persist) {
+      try { localStorage.setItem('kav-ui-surface-opacity', String(opacity)); } catch { /* Storage is optional. */ }
+    }
+    return true;
+  }
   doc.addEventListener('change', event => {
     const select = closest(event.target, 'select[data-ui-theme-select]');
     if (!select || disabled(select)) return;
@@ -4237,13 +4247,19 @@ return {signum,lerp,clampInt,clampDouble,sanitizeDegreesInt,sanitizeDegreesDoubl
     event.preventDefault(); moveCard(dragging.card, column); endDrag();
   });
   doc.addEventListener('dragend', endDrag);
-  window.KavUI = Object.freeze({init, destroy, sync:syncSelect, show, hide, toast, loading, copy, chart, splitter, sidebar:responsiveSidebar, setDesignTheme, setColorTheme, setPalette, setCustomPalette, getCustomPalette});
+  window.KavUI = Object.freeze({init, destroy, sync:syncSelect, show, hide, toast, loading, copy, chart, splitter, sidebar:responsiveSidebar, setSurfaceOpacity, setDesignTheme, setColorTheme, setPalette, setCustomPalette, getCustomPalette});
   function boot() {
     initToastAnnouncers();
     applyTheme(resolvedColorTheme(), false);
     let savedDesign = null, savedPalette = null, savedCustom = null;
     if (doc.body.hasAttribute('data-ui-theme-persist')) {
       try { savedDesign = localStorage.getItem('kav-ui-design-theme'); savedPalette = localStorage.getItem('kav-ui-palette'); savedCustom=JSON.parse(localStorage.getItem('kav-ui-custom-palette') || 'null'); } catch { /* Storage is optional. */ }
+    }
+    if (doc.body.hasAttribute('data-ui-theme-persist') && !doc.body.style.getPropertyValue('--ui-theme-surface-opacity')) {
+      try {
+        const saved = localStorage.getItem('kav-ui-surface-opacity');
+        if (saved !== null && saved.trim() !== '') setSurfaceOpacity(Number(saved));
+      } catch { /* Storage is optional. */ }
     }
     const explicitSeed=doc.documentElement.getAttribute('data-ui-palette-seed');
     const explicitChroma=doc.documentElement.getAttribute('data-ui-palette-chroma');

@@ -118,6 +118,16 @@ try {
   await evaluate(`document.querySelector('#home-project-share [data-ui-dismiss]').click()`);
   check(await evaluate(`!document.querySelector('#home-project-share').open`),'Preview share information closes');
   await evaluate(`KavUI.setDesignTheme('default',{persist:true})`);
+  for(const width of [320,390,1440]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
+    await navigate('components/themes.html');
+    await evaluate(`KavUI.setDesignTheme('glassmorphism');const range=document.querySelector('#theme-surface-opacity');range.value='85';range.dispatchEvent(new Event('input',{bubbles:true}));`);
+    check(await evaluate(`document.body.style.getPropertyValue('--ui-theme-surface-opacity')==='85%' && document.querySelector('output[for="theme-surface-opacity"]').value==='85%'`),'Surface slider @'+width);
+    await evaluate(`KavUI.setDesignTheme('glass')`);
+    check(await evaluate(`document.querySelector('#theme-surface-opacity').min==='78'`),'Glass surface slider bound');
+    check(await evaluate(`document.documentElement.scrollWidth<=innerWidth && document.querySelector('#theme-panel-header').getBoundingClientRect().width<=innerWidth`),'Panel sample fits @'+width);
+    await evaluate(`localStorage.removeItem('kav-ui-surface-opacity');document.body.style.removeProperty('--ui-theme-surface-opacity');KavUI.setDesignTheme('default',{persist:true})`);
+  }
   if(failures.length)throw new Error(failures.join('\n'));
   if(process.env.CATALOG_SCREENSHOTS) {
     const dir=resolve(process.env.CATALOG_SCREENSHOTS);mkdirSync(dir,{recursive:true});

@@ -62,3 +62,6 @@
   .ui-page-with-aside.ui-page-with-rail { grid-template-columns:12rem minmax(0,1fr) 12rem; }
   .ui-page-with-aside.ui-page-with-rail > .ui-page-rail { grid-column:auto; }
 }
+
+/* Opt-in panel; the unmodified page header keeps its underline-only appearance. */
+.ui-page-header.ui-page-header-panel { padding:var(--space-4); }

@@ -67,10 +67,30 @@ try {
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
   await navigate('components/agent-workflow.html');
+  assert(await evaluate(`document.querySelector('#agent-flow .ui-agent-node[data-state=review]') !== null`),'Catalog includes a human review node');
   assert(await evaluate(`document.querySelectorAll('[data-ui-agent-flow]').length===3`),'Three diagrams offer flowing connections');
+  await evaluate(`window.reviewNode=document.querySelector('#agent-flow .ui-agent-node[data-state=review]')`);
+  assert(await evaluate(`reviewNode.querySelector('.ui-agent-state').textContent.trim()==='確認待ち' && reviewNode.querySelector('svg.ui-icon[aria-hidden=true] path')!==null`),'Review has visible state text and a decorative asset icon');
+  const ax=await send('Accessibility.getFullAXTree');
+  assert(ax.nodes.some(node=>!node.ignored && node.role?.value==='StaticText' && node.name?.value==='確認待ち'),'Review label is exposed in the accessibility tree');
   for(const width of [320,768,1440])for(const mode of ['light','dark']) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
     await evaluate(`KavUI.setColorTheme('${mode}')`);
+    assert(await evaluate(`(()=>{
+      const state=reviewNode.querySelector('.ui-agent-state'),style=getComputedStyle(state),icon=state.querySelector('svg');
+      const others=[...document.querySelectorAll('.ui-agent-node:not([data-state=review])')];
+      const waiting=others.find(node=>node.dataset.state==='pending').cloneNode(true);
+      waiting.removeAttribute('data-state');reviewNode.after(waiting);others.push(waiting);
+      const distinct=others.every(node=>getComputedStyle(node.querySelector('.ui-agent-state')).color!==style.color);
+      waiting.remove();
+      return distinct && style.display!=='none' && style.visibility==='visible' && state.getBoundingClientRect().height>0
+        && getComputedStyle(reviewNode).borderColor!==getComputedStyle(others[0]).borderColor
+        && getComputedStyle(state,'::before').display==='none'
+        && icon.getBoundingClientRect().width>0 && getComputedStyle(icon).fill===style.color;
+    })()`),'Review color differs from none/pending, running, complete and blocked; label and icon render '+[width,mode]);
+    await evaluate(`reviewNode.scrollIntoView({behavior:'instant',block:'center'})`);
+    const reviewShot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+    writeFileSync(join(artifacts,'review-'+width+'-'+mode+'.png'),Buffer.from(reviewShot.data,'base64'));
     for(const id of ['agent-flow','agent-hierarchy','agent-orchestration']) {
       await evaluate(`document.getElementById('${id}').scrollIntoView({behavior:'instant',block:'start'});window.flowRoot=document.getElementById('${id}').querySelector('[data-ui-agent-flow]');window.flowLine=flowRoot.querySelector('.ui-agent-flow > li:not(:last-child), .ui-agent-tree ul');window.flowPseudo=flowLine.matches('li')?'::after':'::before'`);
       await until(`flowRoot.hasAttribute('data-ui-agent-visible')`);
@@ -94,6 +114,20 @@ try {
   assert(await evaluate(`getComputedStyle(flowLine,flowPseudo).animationName==='none' && getComputedStyle(flowLine,flowPseudo).backgroundImage.includes('gradient')`),'Reduced motion keeps static connections');
   await send('Emulation.setEmulatedMedia',{features:[{name:'forced-colors',value:'active'}]});
   assert(await evaluate(`getComputedStyle(flowLine,flowPseudo).animationName==='none' && getComputedStyle(flowLine,flowPseudo).maskImage==='none' && getComputedStyle(flowLine,flowPseudo).borderLeftStyle==='solid'`),'Forced colors keeps solid visible connections');
+  for(const mode of ['light','dark']) {
+    await evaluate(`KavUI.setColorTheme('${mode}');reviewNode.scrollIntoView({behavior:'instant',block:'center'})`);
+    assert(await evaluate(`(()=>{
+      const state=reviewNode.querySelector('.ui-agent-state'),icon=state.querySelector('svg'),path=icon.querySelector('path');
+      const nodeStyle=getComputedStyle(reviewNode),stateStyle=getComputedStyle(state);
+      return matchMedia('(forced-colors:active)').matches && state.textContent.trim()==='確認待ち'
+        && stateStyle.visibility==='visible' && state.getBoundingClientRect().height>0
+        && icon.getBoundingClientRect().width>0 && getComputedStyle(path).fill!==nodeStyle.backgroundColor
+        && nodeStyle.borderTopStyle==='solid' && parseFloat(nodeStyle.borderTopWidth)>0
+        && nodeStyle.borderTopColor!==nodeStyle.backgroundColor;
+    })()`),'Forced colors keeps review border, label and SVG visible '+mode);
+    const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+    writeFileSync(join(artifacts,'review-forced-'+mode+'.png'),Buffer.from(shot.data,'base64'));
+  }
   await send('Emulation.setEmulatedMedia',{features:[]});
   await evaluate(`document.querySelector('#task-tree').scrollIntoView({behavior:'instant',block:'start'})`);
   await until(`!flowRoot.hasAttribute('data-ui-agent-visible')`);
@@ -110,8 +144,9 @@ try {
   await send('Page.navigate',{url:pathToFileURL(documentPath('components/agent-workflow.html')).href});
   await until(`document.readyState==='complete'&&typeof KavUI==='undefined'`);
   assert(await evaluate(`(()=>{const root=document.querySelector('[data-ui-agent-flow]'),line=root.querySelector('.ui-agent-flow > li');return !root.hasAttribute('data-ui-agent-visible')&&getComputedStyle(line,'::after').animationPlayState==='paused'&&getComputedStyle(line,'::after').backgroundImage.includes('gradient');})()`),'CSS-only fallback keeps static connections');
+  assert(await evaluate(`(()=>{const node=document.querySelector('.ui-agent-node[data-state=review]');return node.querySelector('.ui-agent-state').textContent.trim()==='確認待ち'&&node.querySelector('svg path').getBoundingClientRect().width>0;})()`),'Review text and inline icon render without runtime');
   if(errors.length)throw new Error(errors.join('\n'));
-  console.log('PASS: chase frames, pause/resume, 3 diagrams × 3 widths × light/dark; reduced motion, forced colors, offscreen/visibility, destroy/reinit and no-runtime fallback');
+  console.log('PASS: review colors, visible/accessible label, SVG and forced colors/no-runtime; chase frames, pause/resume, 3 diagrams × 3 widths × light/dark; reduced motion, forced colors, offscreen/visibility, destroy/reinit and no-runtime fallback');
   console.log('Screenshots:',artifacts);
 } finally {
   clearTimeout(timeout);try{await send('Browser.close',{},null);}catch{}child.kill();await delay(100);
