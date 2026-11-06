@@ -4,6 +4,7 @@ import {checkThemeSurfaces} from './theme-surfaces.mjs';
 import {spawn} from 'node:child_process';
 import {authLayout, pricingHierarchy, headerControls} from './sample-consistency.mjs';
 import {checkCatalogAccessibility} from './catalog-accessibility.mjs';
+import {checkSelect} from './select-browser.mjs';
 import {checkMotion} from './motion-browser.mjs';
 import {checkControlAppearance} from './control-appearance.mjs';
 import {existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync, rmSync} from 'node:fs';
@@ -81,6 +82,7 @@ try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  await checkSelect({navigate,evaluate,click,key,send});
   await checkThemeSurfaces({navigate,evaluate,send});
   const consistencyFailures=[];
   for(const width of [390,820,1440]) {
