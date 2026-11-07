@@ -140,7 +140,7 @@ class AiDocumentationTests(unittest.TestCase):
                         self.assertTrue(target.is_file(), (path.name, value))
                         local.append(target)
             self.assertIn(copied / 'references/integration.md', local)
-            self.assertEqual(len(list((copied / 'samples/html').glob('*.html'))), 12)
+            self.assertEqual(len(list((copied / 'samples/html').glob('*.html'))), 13)
             # A copied skill must lead to every bundled reference without the source tree.
             reachable = set()
             pending = [copied / 'SKILL.md']

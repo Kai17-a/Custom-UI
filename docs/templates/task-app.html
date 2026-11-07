@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f3f0" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1b1c1e" media="(prefers-color-scheme: dark)">
+    <title>タスク管理アプリ — 木の葉制作室</title>
+    <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+    <script src="../assets/ui/js/theme-init.js"></script>
+    <link rel="stylesheet" href="../assets/ui/css/ui.css">
+    <link rel="stylesheet" href="../assets/css/templates.css">
+    <script defer src="../assets/ui/js/ui.js"></script>
+    <script defer src="../assets/js/templates.js"></script>
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../llms.txt">
+<link rel="alternate" type="text/markdown" href="task-app.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+  <body class="ui-app service-template" data-template="task-app">
+    <a class="template-skip" href="#main">コンテンツへ移動</a>
+    <main id="main" class="ui-container ui-layout ui-app-main">
+<!-- kav-sample:start -->
+<div class="ui-page" data-ui-tabs>
+<div class="ui-page-body">
+<header class="ui-page-header ui-page-header-panel">
+<div class="ui-page-heading"><h1 class="ui-page-title">タスク管理アプリ</h1><p class="ui-page-description">木の葉制作室 · 秋の展示会の準備</p></div>
+<div class="ui-page-actions"><button class="btn btn-primary" type="button" data-ui-toggle="dialog" data-ui-target="#task-new">新規作成</button><button class="btn btn-outline-secondary" type="button" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="明暗を切り替え"></button></div>
+</header>
+<nav class="tabs tabs-pills" role="tablist" aria-label="タスク管理の画面">
+<button type="button" data-ui-toggle="tab" data-ui-target="overview" aria-selected="true">概要</button>
+<button type="button" data-ui-toggle="tab" data-ui-target="board" aria-selected="false">ボード</button>
+<button type="button" data-ui-toggle="tab" data-ui-target="activity" aria-selected="false">アクティビティ</button>
+<button type="button" data-ui-toggle="tab" data-ui-target="settings" aria-selected="false">設定</button>
+</nav>
+<p class="type-caption type-color-muted">架空の固定データです。検索・絞り込み・編集・保存は動作の対象外です。テーマ設定はこのページ内だけに反映します。</p>
+<section class="ui-stack" data-ui-panel="overview">
+<h2 class="ui-page-title">概要</h2>
+<div class="fx-grid fx-grid-4 tablet:fx-grid-2 mobile:fx-grid-1 fx-gap-4">
+<section class="ui-card ">
+<div class="ui-card-header">
+<h3 class="ui-card-title">AIが作業中</h3>
+</div>
+<div class="ui-card-body ui-stack">
+<p class="ui-card-stat">1</p>
+<p class="type-caption">写真の説明を作成中</p>
+</div>
+</section>
+<section class="ui-card ">
+<div class="ui-card-header">
+<h3 class="ui-card-title">確認待ち</h3>
+</div>
+<div class="ui-card-body ui-stack">
+<p class="ui-card-stat">1</p>
+<p class="type-caption">案内文の確認をお願いします</p>
+</div>
+</section>
+<section class="ui-card ">
+<div class="ui-card-header">
+<h3 class="ui-card-title">未着手</h3>
+</div>
+<div class="ui-card-body ui-stack">
+<p class="ui-card-stat">2</p>
+<p class="type-caption">次に取り組むタスク</p>
+</div>
+</section>
+<section class="ui-card ">
+<div class="ui-card-header">
+<h3 class="ui-card-title">完了</h3>
+</div>
+<div class="ui-card-body ui-stack">
+<p class="ui-card-stat">2</p>
+<p class="type-caption">展示会の準備を進めました</p>
+</div>
+</section>
+</div>
+<div class="fx-grid fx-grid-3 tablet:fx-grid-1 mobile:fx-grid-1 fx-gap-4">
+<section class="ui-card ">
+<div class="ui-card-header">
+<h3 class="ui-card-title">確認待ち</h3>
+</div>
+<div class="ui-card-body ui-stack">
+<ul class="ui-list-group ui-list-group-flush" role="list">
+<li class="ui-list-item">
+<span class="ui-list-body">
+<span class="ui-list-title">展示会の案内文を整える</span>
+<span class="ui-list-description">AI · 14:20 提出</span>
+</span>
+</li>
+</ul>
+</div>
+</section>
+<section class="ui-card ">
+<div class="ui-card-header">
+<h3 class="ui-card-title">作業中</h3>
+</div>
+<div class="ui-card-body ui-stack">
+<ul class="ui-list-group ui-list-group-flush" role="list">
+<li class="ui-list-item">
+<span class="ui-list-body">
+<span class="ui-list-title">写真の説明を作る</span>
+<span class="ui-list-description">AI · 親タスク #201</span>
+</span>
+</li>
+</ul>
+</div>
+</section>
+<section class="ui-card ">
+<div class="ui-card-header">
+<h3 class="ui-card-title">最近</h3>
+</div>
+<div class="ui-card-body ui-stack">
+<ul class="ui-list-group ui-list-group-flush" role="list">
+<li class="ui-list-item">
+<span class="ui-list-body">
+<span class="ui-list-title">見出しを整理する</span>
+<span class="ui-list-description">ひなた · 11月7日 完了</span>
+</span>
+</li>
+</ul>
+</div>
+</section>
+</div>
+<div class="fx-grid fx-grid-2 mobile:fx-grid-1 fx-gap-4">
+<figure class="ui-chart" data-ui-chart="area">
+<figcaption>完了数の推移（サンプル）</figcaption>
+<script type="application/json" data-ui-chart-data>{"label": "完了数の推移", "labels": ["月", "火", "水", "木", "金"], "unit": "件", "series": [{"name": "タスク", "values": [1, 2, 1, 3, 2]}]}</script>
+</figure>
+<figure class="ui-chart" data-ui-chart="donut">
+<figcaption>タスクの状態（サンプル）</figcaption>
+<script type="application/json" data-ui-chart-data>{"label": "タスクの状態", "labels": ["未着手", "作業中", "確認待ち", "完了"], "unit": "件", "series": [{"name": "タスク", "values": [2, 1, 1, 2]}]}</script>
+</figure>
+</div>
+</section>
+<section class="ui-stack" data-ui-panel="board" hidden>
+<h2 class="ui-page-title">ボード</h2>
+<div class="ui-page-header-panel">
+<div class="ui-toolbar">
+<label class="field">検索（見本）<input class="form-control" type="search" name="task-search" autocomplete="off" placeholder="タスク名で検索" disabled>
+</label>
+<label class="field">担当（見本）<select class="form-select" disabled>
+<option>すべて</option>
+<option>AI</option>
+<option>ひなた</option>
+</select>
+</label>
+<p class="type-caption">全6件 · 親子は同じ色帯と番号で表示</p>
+</div>
+</div>
+<div class="ui-board">
+<section class="column ui-surface sp-p-3">
+<h2 class="ui-section-title">未着手 <span class="count">2</span>
+</h2>
+<article class="task-card">
+<p class="type-caption">#203</p>
+<h3 class="title">作品紹介を更新する</h3>
+<p class="type-caption">ひなた · 展示会の準備</p>
+</article>
+<article class="task-card">
+<p class="type-caption">#204</p>
+<h3 class="title">搬入時間を決める</h3>
+<p class="type-caption">ひなた · 展示会の準備</p>
+</article>
+</section>
+<section class="column ui-surface sp-p-3">
+<h2 class="ui-section-title">作業中 <span class="count">1</span>
+</h2>
+<article class="task-card">
+<progress class="ui-progress ui-progress-sm" value="100" max="100" aria-label="案内文の親子グループ">
+</progress>
+<p class="type-caption">案内文 #201 → 子 #202</p>
+<p class="type-caption">#202</p>
+<h3 class="title">写真の説明を作る</h3>
+<p class="type-caption">AI が作業中</p>
+</article>
+</section>
+<section class="column ui-surface sp-p-3">
+<h2 class="ui-section-title">確認待ち <span class="count">1</span>
+</h2>
+<article class="task-card">
+<progress class="ui-progress ui-progress-sm" value="100" max="100" aria-label="案内文の親子グループ">
+</progress>
+<p class="type-caption">案内文 #201 · 親タスク</p>
+<p class="type-caption">#201</p>
+<h3 class="title">展示会の案内文を整える</h3>
+<p>
+<span class="badge text-bg-warning">ユーザーの確認待ち</span>
+</p>
+<label class="type-caption">子タスク 1 / 2 完了<progress class="ui-progress" value="1" max="2">50%</progress>
+</label>
+<button type="button" class="btn btn-sm btn-outline-primary" data-ui-toggle="dialog" data-ui-target="#task-detail">詳細を開く</button>
+</article>
+</section>
+<section class="column ui-surface sp-p-3">
+<h2 class="ui-section-title">完了 <span class="count">2</span>
+</h2>
+<article class="task-card">
+<p class="type-caption">#200</p>
+<h3 class="title">見出しを整理する</h3>
+<p class="type-caption">ひなた · 展示会の準備</p>
+</article>
+<details>
+<summary>非表示のタスク（1件）</summary>
+<article class="task-card">
+<span class="badge badge-neutral">非表示</span>
+<h3 class="title">#206 初回の打ち合わせ</h3>
+<p class="type-caption">完了 · 整理済みのタスクの見本</p>
+</article>
+</details>
+</section>
+</div>
+</section>
+<section class="ui-stack" data-ui-panel="activity" hidden>
+<h2 class="ui-page-title">アクティビティ</h2>
+<div class="ui-toolbar">
+<label class="field">担当（見本）<select class="form-select" disabled>
+<option>すべて</option>
+<option>AI</option>
+</select>
+</label>
+<label class="field">種類（見本）<select class="form-select" disabled>
+<option>すべての履歴</option>
+<option>状態の変更</option>
+</select>
+</label>
+</div>
+<ol class="ui-timeline" role="list">
+<li class="ui-timeline-item">
+<span class="ui-timeline-marker" aria-hidden="true">
+</span>
+<div class="ui-timeline-content">
+<time class="ui-timeline-date" datetime="2026-11-07T14:20:00">11月7日 14:20</time>
+<h3 class="ui-timeline-title">AI が案内文を提出</h3>
+<p>展示会の案内を確認待ちにしました。</p>
+</div>
+</li>
+<li class="ui-timeline-item">
+<span class="ui-timeline-marker" aria-hidden="true">
+</span>
+<div class="ui-timeline-content">
+<time class="ui-timeline-date" datetime="2026-11-07T13:40:00">11月7日 13:40</time>
+<h3 class="ui-timeline-title">ひなたが写真を選定</h3>
+<p>作品紹介の写真を3枚選びました。</p>
+</div>
+</li>
+<li class="ui-timeline-item">
+<span class="ui-timeline-marker" aria-hidden="true">
+</span>
+<div class="ui-timeline-content">
+<time class="ui-timeline-date" datetime="2026-11-07T11:10:00">11月7日 11:10</time>
+<h3 class="ui-timeline-title">AI が見出しを整理</h3>
+<p>案内文の構成を作成しました。</p>
+</div>
+</li>
+</ol>
+</section>
+<section class="ui-stack" data-ui-panel="settings" hidden>
+<h2 class="ui-page-title">設定</h2>
+<div class="fx-grid fx-grid-2 mobile:fx-grid-1 fx-gap-4">
+<section class="ui-card ">
+<div class="ui-card-header">
+<h3 class="ui-card-title">表示</h3>
+</div>
+<div class="ui-card-body ui-stack">
+<label class="field">デザイン<select class="form-select" data-ui-theme-select>
+<option value="default">標準</option>
+<option value="glass">ガラス</option>
+<option value="glassmorphism">グラスモーフィズム</option>
+<option value="flat">フラット</option>
+<option value="soft">ソフト</option>
+</select>
+</label>
+<label class="field">配色<select class="form-select" data-ui-palette-select>
+<option value="default">標準</option>
+<option value="sage">セージ</option>
+<option value="teal">ティール</option>
+<option value="sand">サンド</option>
+</select>
+</label>
+<div class="ui-color-switcher" role="group" aria-label="明暗">
+<button class="btn btn-outline-secondary" type="button" data-ui-color-mode="light">ライト</button>
+<button class="btn btn-outline-secondary" type="button" data-ui-color-mode="dark">ダーク</button>
+<button class="btn btn-outline-secondary" type="button" data-ui-color-mode="auto">自動</button>
+</div>
+<label class="field">面の不透明度：<output for="task-opacity" id="task-opacity-value">85%</output>
+<input class="form-range" id="task-opacity" type="range" min="78" max="100" value="85">
+</label>
+<p class="type-caption">ガラス系テーマで適用。既存APIの範囲内で面の濃さを調整します。</p>
+<div class="ui-clipboard">
+<code class="ui-clipboard-value" id="task-theme-value">--ui-theme-surface-opacity: 85%;</code>
+<button class="btn btn-outline-secondary" type="button" data-ui-copy-target="#task-theme-value">値をコピー</button>
+<p class="ui-copy-status" data-ui-copy-status role="status">
+</p>
+</div>
+</div>
+</section>
+<section class="ui-card ">
+<div class="ui-card-header">
+<h3 class="ui-card-title">背景画像</h3>
+</div>
+<div class="ui-card-body ui-stack">
+<p>ガラス系テーマで背景を確認できます。画像はアップロード・保存しません。</p>
+<div class="ui-stack">
+<input class="form-control" id="task-background" type="file" accept="image/*">
+<label class="ui-file-dropzone" data-ui-file-zone for="task-background">
+<strong>背景画像を選択・ドロップ</strong>
+<span class="ui-file-hint">このページ内だけでプレビューします</span>
+</label>
+</div>
+<button class="btn btn-outline-secondary" type="button" id="task-background-clear">背景画像を解除</button>
+<p class="type-caption" id="task-background-status" role="status">画像は未設定です。</p>
+</div>
+</section>
+</div>
+</section>
+</div>
+</div>
+<dialog class="ui-dialog ui-stack" data-ui-dialog id="task-detail" aria-labelledby="task-detail-title">
+<div class="ui-cluster">
+<h2 id="task-detail-title">展示会の案内文を整える</h2>
+<span class="badge text-bg-warning">確認待ち</span>
+</div>
+<p>#201 · ひなたから AI への依頼</p>
+<section>
+<h3>説明</h3>
+<p>木の葉制作室の秋の展示会に向けて、日時・会場・作品紹介を読みやすくまとめます。初めて訪れる方にも伝わる案内文にします。</p>
+</section>
+<section>
+<h3>子タスク</h3>
+<ul class="ui-list-group" role="list">
+<li class="ui-list-item">#200 見出しを整理する <span class="badge text-bg-success">完了</span>
+</li>
+<li class="ui-list-item">#202 写真の説明を作る <span class="badge badge-neutral">作業中</span>
+</li>
+</ul>
+</section>
+<section>
+<h3>AI の作業の流れ</h3>
+<div class="ui-agent-workflow" data-state="review">
+<ol class="ui-agent-flow" aria-label="案内文の作業">
+<li>
+<div class="ui-agent-node" data-state="complete">
+<span class="ui-agent-state">完了</span>
+<strong>構成を整理</strong>
+</div>
+</li>
+<li>
+<div class="ui-agent-node" data-state="complete">
+<span class="ui-agent-state">完了</span>
+<strong>案内文を作成</strong>
+</div>
+</li>
+<li aria-current="step">
+<div class="ui-agent-node" data-state="review">
+<span class="ui-agent-state">確認待ち</span>
+<strong>ひなたが確認</strong>
+<small>日時と会場の記載を確認</small>
+</div>
+</li>
+</ol>
+</div>
+</section>
+<section>
+<h3>履歴</h3>
+<ol class="ui-timeline ui-timeline-compact" role="list">
+<li class="ui-timeline-item">
+<span class="ui-timeline-marker" aria-hidden="true">
+</span>
+<div class="ui-timeline-content">
+<time class="ui-timeline-date" datetime="2026-11-07T14:20:00">11月7日 14:20</time>
+<h3 class="ui-timeline-title">AI が案内文を提出</h3>
+<p>展示会の案内を確認待ちにしました。</p>
+</div>
+</li>
+<li class="ui-timeline-item">
+<span class="ui-timeline-marker" aria-hidden="true">
+</span>
+<div class="ui-timeline-content">
+<time class="ui-timeline-date" datetime="2026-11-07T13:40:00">11月7日 13:40</time>
+<h3 class="ui-timeline-title">ひなたが写真を選定</h3>
+<p>作品紹介の写真を3枚選びました。</p>
+</div>
+</li>
+<li class="ui-timeline-item">
+<span class="ui-timeline-marker" aria-hidden="true">
+</span>
+<div class="ui-timeline-content">
+<time class="ui-timeline-date" datetime="2026-11-07T11:10:00">11月7日 11:10</time>
+<h3 class="ui-timeline-title">AI が見出しを整理</h3>
+<p>案内文の構成を作成しました。</p>
+</div>
+</li>
+</ol>
+</section>
+<p class="type-caption">承認・差し戻し・編集は表示のみの見本です。</p>
+<div class="ui-cluster">
+<button class="btn btn-primary" type="button" disabled>承認する</button>
+<button class="btn btn-outline-secondary" type="button" disabled>差し戻す</button>
+<button class="btn btn-outline-secondary" type="button" disabled>編集する</button>
+<button class="btn btn-outline-secondary" type="button" data-ui-dismiss="dialog">閉じる</button>
+</div>
+</dialog>
+<dialog class="ui-dialog ui-stack" data-ui-dialog id="task-new" aria-labelledby="task-new-title">
+<h2 id="task-new-title">新しいタスク</h2>
+<p>入力フォームの見本です。タスクの作成・保存は行いません。</p>
+<label class="field">タイトル<input class="form-control" placeholder="例：展示会の持ち物をまとめる">
+</label>
+<label class="field">説明<textarea class="form-control" rows="3">
+</textarea>
+</label>
+<div class="ui-cluster">
+<button class="btn btn-outline-secondary" type="button" data-ui-dismiss="dialog">閉じる</button>
+<button class="btn btn-primary" type="button" disabled>作成する（見本）</button>
+</div>
+</dialog>
+<!-- kav-sample:end -->
+    </main>
+    <footer class="ui-footer">
+      <div class="ui-container ui-footer-inner">
+        <p>Workspace · Kav-UI サービステンプレート</p>
+        <div class="ui-cluster">
+          <a href="../templates.html">テンプレート一覧</a>
+          <a href="../index.html">UIカタログ</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

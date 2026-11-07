@@ -120,7 +120,7 @@ class InventoryTests(unittest.TestCase):
 class ScreenMarkupTests(unittest.TestCase):
     def test_portable_screen_markup(self):
         samples = sorted((SKILL / 'samples/html').glob('*.html'))
-        self.assertEqual(len(samples), 12)
+        self.assertEqual(len(samples), 13)
         for page in samples:
             with self.subTest(page=page.name):
                 source = page.read_text()

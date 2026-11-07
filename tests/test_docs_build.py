@@ -16,7 +16,7 @@ class StandaloneDocsBuildTests(unittest.TestCase):
         build = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(build)
         samples = build.screen_samples()
-        self.assertEqual(len(samples), 12)
+        self.assertEqual(len(samples), 13)
         for path, expected in samples.items():
             self.assertEqual(path.read_bytes(), expected)
             self.assertEqual((ROOT / 'docs/skills/kav-ui/samples/html' / path.name).read_bytes(), expected)

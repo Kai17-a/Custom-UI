@@ -69,4 +69,35 @@
       filter=button.dataset.releaseFilter;doc.querySelectorAll('[data-release-filter]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));apply();
     }));search.addEventListener('input',apply);
   }
+  // Task app settings are ephemeral; task data stays in the authored HTML.
+  const opacity=doc.getElementById('task-opacity');
+  if(opacity) {
+    const syncOpacity=()=>{
+      opacity.min=doc.body.dataset.uiTheme==='glassmorphism'?'52':'78';
+      opacity.value=String(Math.max(Number(opacity.min),Number(opacity.value)));
+      KavUI.setSurfaceOpacity(Number(opacity.value));
+      doc.getElementById('task-opacity-value').value=opacity.value+'%';
+      doc.getElementById('task-theme-value').textContent='--ui-theme-surface-opacity: '+opacity.value+'%;';
+    };
+    opacity.addEventListener('input',syncOpacity);
+    doc.body.addEventListener('ui:designchange',syncOpacity);syncOpacity();
+    const file=doc.getElementById('task-background'),status=doc.getElementById('task-background-status');
+    let imageUrl;
+    const clear=()=>{
+      doc.body.style.removeProperty('--ui-theme-background-image');
+      if(imageUrl)URL.revokeObjectURL(imageUrl);imageUrl=null;file.value='';
+      status.textContent='画像は未設定です。';
+    };
+    file.addEventListener('change',()=>{
+      const image=file.files[0];clear();
+      if(!image)return;
+      if(!image.type.startsWith('image/')){status.textContent='画像ファイルを選んでください。';return;}
+      imageUrl=URL.createObjectURL(image);
+      doc.body.style.setProperty('--ui-theme-background-image','url("'+imageUrl+'")');
+      doc.body.style.setProperty('--ui-theme-background-opacity','18%');
+      status.textContent='背景画像をこのページ内でプレビュー中です。';
+    });
+    doc.getElementById('task-background-clear').addEventListener('click',clear);
+    window.addEventListener('pagehide',clear);
+  }
 })();

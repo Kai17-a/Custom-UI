@@ -17,6 +17,12 @@ HTMLリンクは同梱のHTML断片です。ネットワークやカタログは
 | ファイル管理 | File drop・List group・Page rail | [files.html](../samples/html/files.html) | [files.vue](../samples/vue/files.vue) | [files.astro](../samples/astro/files.astro) |
 | 空の状態・オンボーディング | Section・Forms・Progress・Cards | [empty-onboarding.html](../samples/html/empty-onboarding.html) | [empty-onboarding.vue](../samples/vue/empty-onboarding.vue) | [empty-onboarding.astro](../samples/astro/empty-onboarding.astro) |
 
+## 複数画面のアプリ
+
+[タスク管理アプリ（HTML）](../samples/html/task-app.html) は、架空の固定データを使い、1つのシェルで概要・ボード・アクティビティ・設定を切り替えます。Tabs・Cards・List group・Chart・Board・Dialog・Agent workflow・Timelineを組み合わせています。画面切り替えとダイアログ開閉は共通ui.jsだけで動作します。Vue/Astro版はありません。
+
+カタログ版の背景画像・不透明度の操作にはdocs/assets/js/templates.js、ボードとダイアログの幅調整にはdocs/assets/css/templates.cssのtask-app用の短い処理を使います。この断片をアプリに組み込む際は同じ設定をアプリ側で接続してください。`KavUI.setSurfaceOpacity(value)` と `--ui-theme-background-image` / `--ui-theme-background-opacity` を使用し、保存・送信は行いません。親子の色帯はui-progress-smと同じグループ名で表しています。
+
 HTML版のコピー元はリポジトリのdocs/templates内にある同名HTMLのkav-sampleマーカー内です。配布版はbuild-docs.pyで抽出します。配布先で元リポジトリを探す必要はありません。
 
 Vue版はVue 3.5以降のSFC、Astro版はページとしてコピーします。公開パッケージを導入し、[組み込み方](frameworks.md)を参照してください。リンクは例のルート構成に合わせてあるため、コピー先のルートへ調整してください。ローカルの操作だけを実装し、フォームは送信を抑止しています。
