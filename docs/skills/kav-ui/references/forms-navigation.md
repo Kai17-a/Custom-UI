@@ -32,7 +32,9 @@
 
 `field`はラベル・項目・補足の間を6pxに揃える。`textarea.form-control`、小さな入力の`form-control-sm`、スイッチの`label.switch > input[type=checkbox][role=switch]`も利用できる。
 
-単一の`select.form-select`はJSで共通メニューへ変わる。name・required・disabled・optgroup・送信値は標準HTMLを使う。multiple/sizeは標準UIを維持する。プログラムで値を変えたらchangeを発行するか`KavUI.init(select)`で同期する。
+単一の`select.form-select`はJSで共通メニューへ変わる。name・required・disabled・optgroup・送信値は標準HTMLを使う。multiple/sizeは標準UIを維持する。プログラムで値を変えたら`KavUI.sync(select)`でイベントを発行せず同期する。
+
+検索付きにする場合は`<select class="form-select" data-ui-searchable>`を使う。表示名とoptionの`data-ui-keywords`をNFKC・大文字小文字を区別せず部分一致で検索し、空白区切りの語をすべて要求する。検索欄にフォーカスし、上下キーで移動、Enterで確定、Escapeで閉じてトリガーへ戻る。日本語変換中のEnterは確定しない。件数と一致なしを通知し、無効な項目は表示するが選べない。検索語は開くたびにリセットし、開いた状態のsyncでは保持する。値が変わった確定時だけchangeを1回送る。multiple・非同期検索・自由入力は対象外。
 
 時刻・日時・月・週・色は`input.form-control`の標準typeを使い、対応版のJSが選択UIを付ける。Date pickerのmin/max/requiredも標準属性。日付の送信値は`YYYY-MM-DD`で扱い、表示文字列から日時を再解釈しない。
 

@@ -54,6 +54,48 @@
 
 複数選択・リスト表示（multiple / size）はHTML標準の表示を維持します。JavaScriptやPopover APIが利用できない場合も標準selectを使えます。
 
+<a id="searchable-select"></a>
+
+## 検索付きselect
+
+`data-ui-searchable` を付けると、一覧の上に検索欄を表示します。選択肢の表示名と `data-ui-keywords` を部分一致で検索します。全角英数字はNFKCで正規化し、大文字・小文字を区別しません。空白で区切った語をすべて含む項目に絞り込みます。
+
+```html
+<form class="ui-stack">
+  <div class="field"><label for="searchable-project">プロジェクトを検索して選択</label>
+  <select id="searchable-project" class="form-select" name="project" data-ui-searchable required>
+    <option value="">選択してください</option>
+    <optgroup label="プロジェクト">
+    <option value="catalog" data-ui-keywords="catalog design">デザインカタログ</option>
+    <option value="app" data-ui-keywords="app application">自作アプリ</option>
+    <option value="website" data-ui-keywords="website web">公式サイト</option>
+    <option value="dashboard" data-ui-keywords="dashboard admin">管理画面</option>
+    <option value="shop" data-ui-keywords="shop store">オンラインストア</option>
+    <option value="booking" data-ui-keywords="booking">予約システム</option>
+    <option value="help" data-ui-keywords="help support">ヘルプセンター</option>
+    <option value="blog" data-ui-keywords="blog">技術ブログ</option>
+    <option value="event" data-ui-keywords="event">イベント受付</option>
+    <option value="survey" data-ui-keywords="survey">アンケート</option>
+    <option value="crm" data-ui-keywords="crm customer">顧客管理</option>
+    <option value="tasks" data-ui-keywords="task">タスク管理</option>
+    <option value="files" data-ui-keywords="file">ファイル共有</option>
+    <option value="chat" data-ui-keywords="chat">社内チャット</option>
+    <option value="report" data-ui-keywords="report">レポート</option>
+    <option value="calendar" data-ui-keywords="calendar">カレンダー</option>
+    <option value="wiki" data-ui-keywords="wiki">社内Wiki</option>
+    <option value="photos" data-ui-keywords="photo">写真ギャラリー</option>
+    <option value="learning" data-ui-keywords="learning">学習ポータル</option>
+    <option value="archive" data-ui-keywords="archive" disabled>旧プロジェクト（選択不可）</option>
+    </optgroup>
+  </select></div>
+  <div class="ui-cluster"><button type="reset" class="btn btn-sm btn-outline-secondary">選択をリセット</button></div>
+</form>
+```
+
+開くと検索欄にフォーカスします。上下キーで候補へ移動し、Enterで確定します。日本語変換中のEnterでは確定しません。Escapeで閉じると選択ボタンに戻ります。件数と一致なしを読み上げ、一致する項目がないグループ見出しは隠します。無効な項目は表示しますが選択できません。
+
+検索語は開くたびに空に戻ります。`name`・`required`・フォーム送信は元のselectを使い、値が変わった確定時だけ `change` を1回送ります。コードから値を変えたら `KavUI.sync(select)` で表示を同期できます。開いている間は検索語を保ちます。複数選択・非同期検索・自由入力は対象外です。
+
 ## 入力状態とバリデーション
 
 `field`では、ラベルと入力欄の間隔を6pxに揃え、補足文との間隔も同じ6pxにします。ラベル内に入力欄を置く場合も、別要素にする場合も同じです。
