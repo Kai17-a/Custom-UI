@@ -6,6 +6,8 @@
 
 タスクと進捗管理。下の「HTMLを表示」からマークアップをコピーできます。
 
+glass・glassmorphism テーマでは、実行中以外のタスクカードも `--ui-theme-surface-opacity` に連動し、100% で不透明になります。`--faint` を指定したカードは、その背景を優先します。
+
 ## Kanban board — drag a card to another column
 
 ```html
