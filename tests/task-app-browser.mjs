@@ -2,6 +2,11 @@
 export async function checkTaskApp({navigate, evaluate, assert, send}) {
   await navigate('templates/task-app.html');
   assert(await evaluate(`!!document.querySelector('[data-ui-panel="overview"]')`), 'Task app overview exists');
+  // Closed dialogs must not take layout space; a display utility on <dialog> overrides the UA display:none.
+  for (const screen of ['overview', 'board', 'activity', 'settings']) {
+    await evaluate(`document.querySelector('[data-ui-target="${screen}"]').click()`);
+    assert(await evaluate(`[...document.querySelectorAll('dialog:not([open])')].every(d=>getComputedStyle(d).display==='none') && document.documentElement.scrollHeight<=Math.max(innerHeight,Math.ceil(document.querySelector('footer').getBoundingClientRect().bottom+scrollY))+1`), 'Task app has no scroll beyond the footer: '+screen);
+  }
   for (const screen of ['board', 'activity', 'settings', 'overview']) {
     await evaluate(`document.querySelector('[data-ui-target="${screen}"]').click()`);
     assert(await evaluate(`!document.querySelector('[data-ui-panel="${screen}"]').hidden && document.querySelectorAll('[data-ui-panel]:not([hidden])').length===1`), 'Task app screen '+screen);
