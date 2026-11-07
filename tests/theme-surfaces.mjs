@@ -2,17 +2,38 @@ export async function checkThemeSurfaces({navigate,evaluate,send}) {
   await navigate('components/themes.html');
   const result=await evaluate(`(()=>{
     const bad=[],check=(ok,label)=>{if(!ok)bad.push(label);};
-    const host=document.createElement('div');host.innerHTML='<div class="ui-card"></div><div class="ui-toolbar"></div><aside class="app-sidebar"></aside><section class="ui-surface"></section><header class="ui-page-header ui-page-header-panel"><h2>Panel</h2><p class="type-caption">Description</p></header><input class="form-control"><input class="form-control" readonly value="Readonly"><input class="form-control" disabled><div class="ui-input-popup"></div>';
+    const host=document.createElement('div');host.innerHTML='<div class="ui-card"></div><div class="ui-toolbar"></div><aside class="app-sidebar"></aside><section class="ui-surface"></section><header class="ui-page-header ui-page-header-panel"><h2>Panel</h2><p class="type-caption">Description</p></header><input class="form-control"><input class="form-control" readonly value="Readonly"><input class="form-control" disabled><div class="ui-input-popup"></div><article class="task-card"></article><article class="task-card is-running"></article>';
     document.body.append(host);
-    const [card,toolbar,sidebar,surface,header,editable,readonly,disabled,overlay]=host.children;
+    const [card,toolbar,sidebar,surface,header,editable,readonly,disabled,overlay,task,running]=host.children;
     const css=el=>getComputedStyle(el),color=el=>css(el).backgroundColor;
     const ctx=document.createElement('canvas').getContext('2d');
     const rgb=value=>{ctx.clearRect(0,0,1,1);ctx.fillStyle=value;ctx.fillRect(0,0,1,1);return [...ctx.getImageData(0,0,1,1).data];};
     const lum=rgb=>rgb.slice(0,3).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
     const ratio=(a,b)=>{a=lum(a);b=lum(b);return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);};
+    document.body.style.setProperty('--ui-theme-background-image','linear-gradient(90deg,#fff,#000,#f0f)');
+    const runningBaseline={};
+    const ring=()=>{const r=css(running),p=getComputedStyle(running,'::after');return JSON.stringify([r.backgroundColor,r.borderColor,r.boxShadow,p.backgroundImage,p.filter,p.padding,p.maskImage,p.maskComposite,p.animationName,p.animationDuration]);};
     for(const mode of ['light','dark'])for(const theme of ['default','glass','glassmorphism','flat','soft']) {
       KavUI.setColorTheme(mode);KavUI.setDesignTheme(theme);document.body.style.removeProperty('--ui-theme-surface-opacity');
       const tag=theme+'/'+mode;
+      const expectedTask=document.createElement('div');host.append(expectedTask);
+      expectedTask.style.background='var(--bs-tertiary-bg)';
+      if(theme==='default')runningBaseline[mode]=ring();
+      check(ring()===runningBaseline[mode],'running baseline '+tag);
+      const glass=['glass','glassmorphism'].includes(theme);
+      for(const opacity of [null,-1,35,55,85,100]) {
+        if(opacity===null)document.body.style.removeProperty('--ui-theme-surface-opacity');
+        else document.body.style.setProperty('--ui-theme-surface-opacity',opacity+'%');
+        if(glass)expectedTask.style.background='color-mix(in srgb, var(--bs-tertiary-bg) '+(opacity===null?(theme==='glass'?78:52):Math.max(theme==='glass'?55:35,opacity))+'%, transparent)';
+        check(color(task)===color(expectedTask),'task opacity '+tag+'/'+opacity);
+        if(glass)check(opacity===100?rgb(color(task))[3]===255:rgb(color(task))[3]<255,'task alpha '+tag+'/'+opacity);
+        check(ring()===runningBaseline[mode],'running opacity '+tag+'/'+opacity);
+        check(css(task).backdropFilter==='none'&&css(task).boxShadow==='none','task no extra effects '+tag);
+        task.style.setProperty('--faint','#123456');expectedTask.style.background='#123456';
+        check(color(task)===color(expectedTask),'task faint override '+tag+'/'+opacity);
+        task.style.removeProperty('--faint');expectedTask.style.background='var(--bs-tertiary-bg)';
+      }
+      expectedTask.remove();document.body.style.removeProperty('--ui-theme-surface-opacity');
       if(theme==='glass'||theme==='glassmorphism') {
         const expected=document.createElement('div');host.append(expected);
         for(const [el,percent] of [[card,theme==='glass'?78:52],[editable,theme==='glass'?86:72],[overlay,theme==='glass'?94:90]]) {
@@ -42,7 +63,7 @@ export async function checkThemeSurfaces({navigate,evaluate,send}) {
       check(color(surface)===color(card)&&css(surface).borderTopWidth==='1px','generic surface '+tag);
 
     }
-    host.remove();document.body.style.removeProperty('--ui-theme-surface-opacity');KavUI.setDesignTheme('default');KavUI.setColorTheme('light');return bad;
+    host.remove();document.body.style.removeProperty('--ui-theme-background-image');document.body.style.removeProperty('--ui-theme-surface-opacity');KavUI.setDesignTheme('default');KavUI.setColorTheme('light');return bad;
   })()`);
   if(result.length)throw new Error('Theme surfaces: '+result.join(', '));
   // Save only when requested; restore only on opted-in pages, before paint as well as at boot.
@@ -85,28 +106,29 @@ export async function checkThemeSurfaces({navigate,evaluate,send}) {
   // Isolate shared surfaces from opaque catalog ancestors. Body's real photo tint,
   // decorative gradients and each surface's backdrop filter remain in use.
   await send('Emulation.setDeviceMetricsOverride',{width:1000,height:800,deviceScaleFactor:1,mobile:false});
-  for(const theme of ['glass','glassmorphism'])for(const mode of ['light','dark'])for(const background of ['bright','dark','saturated']) {
-    const opacity=theme==='glass'?55:35;
+  for(const theme of ['glass','glassmorphism'])for(const mode of ['light','dark'])for(const background of ['bright','dark','saturated'])for(const level of ['floor','default']) {
+    const opacity=level==='floor'?(theme==='glass'?55:35):(theme==='glass'?78:52);
     await evaluate(`(()=>{KavUI.setDesignTheme('${theme}');KavUI.setColorTheme('${mode}');KavUI.setSurfaceOpacity(${opacity});
       document.body.style.setProperty('--ui-theme-background-image',${JSON.stringify({bright:'linear-gradient(#fff,#f8f8f8)',dark:'linear-gradient(#000,#080808)',saturated:'linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f)'}[background])});
       document.body.style.removeProperty('--ui-theme-background-opacity');
       const host=document.createElement('div');host.id='contrast-surfaces';host.style.cssText='position:fixed;inset:60px 20px;z-index:99999;display:grid;gap:20px;grid-template-columns:1fr 1fr;pointer-events:none';
       host.innerHTML=['ui-surface','ui-card','ui-toolbar','app-sidebar','ui-page-header ui-page-header-panel'].map(c=>'<section class="'+c+'" style="position:static;padding:24px"><p style="color:var(--bs-body-color)">本文 Body text</p><p style="color:var(--bs-secondary-color)">補足 Secondary text</p></section>').join('');
+      const column=document.createElement('section');column.className='ui-surface';column.innerHTML='<article class="task-card"><div class="title">本文 Body text</div><div class="where">補足 Secondary text</div></article>';column.style.padding='24px';host.append(column);
       document.body.append(host);})()`);
     await evaluate('new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))');
     const sample=await evaluate(`(()=>{
-      const points=[...document.querySelectorAll('#contrast-surfaces p')].flatMap(el=>{
-        const r=el.getBoundingClientRect();return [.1,.5,.9].map(x=>({x:Math.ceil(r.x+r.width*x),y:Math.ceil(r.y+r.height/2),fg:getComputedStyle(el).color}));
+      const points=[...document.querySelectorAll('#contrast-surfaces p, #contrast-surfaces .title, #contrast-surfaces .where')].flatMap(el=>{
+        const r=el.getBoundingClientRect();return [.1,.5,.9].map(x=>({x:Math.ceil(r.x+r.width*x),y:Math.ceil(r.y+r.height/2),fg:getComputedStyle(el).color,kind:el.className||'surface'}));
       });
       const style=document.createElement('style');style.id='surface-hide';style.textContent='#contrast-surfaces * {-webkit-text-fill-color:transparent!important;text-shadow:none!important}';document.head.append(style);return points;
     })()`);
     const {data}=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
     const ratios=await evaluate(`new Promise(resolve=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=img.width;c.height=img.height;const ctx=c.getContext('2d');ctx.drawImage(img,0,0);const lum=a=>a.slice(0,3).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);const values=${JSON.stringify(sample)}.map(p=>{const pixel=[...ctx.getImageData(p.x,p.y,1,1).data];const bg=lum(pixel);ctx.clearRect(0,0,1,1);ctx.fillStyle='rgb('+pixel.slice(0,3).join(',')+')';ctx.fillRect(0,0,1,1);ctx.fillStyle=p.fg;ctx.fillRect(0,0,1,1);const fg=lum([...ctx.getImageData(0,0,1,1).data]);return (Math.max(bg,fg)+.05)/(Math.min(bg,fg)+.05);});document.querySelector('#surface-hide').remove();resolve(values);};img.src='data:image/png;base64,${data}';})`);
-    measurements.push({theme,mode,background,min:Math.min(...ratios)});
+    measurements.push({theme,mode,background,opacity,min:Math.min(...ratios),taskMin:Math.min(...ratios.filter((v,i)=>sample[i].kind==='title'||sample[i].kind==='where'))});
     await evaluate("document.querySelector('#contrast-surfaces').remove()");
     if(ratios.some(v=>v<4.5))throw new Error('Surface rendered AA '+theme+'/'+mode+'/'+background+'/'+opacity+': '+ratios);
   }
-  console.log('Surface floor rendered contrast:',JSON.stringify(measurements));
+  console.log('Surface floor/default rendered contrast:',JSON.stringify(measurements));
   await evaluate("document.body.style.removeProperty('--ui-theme-background-image');document.querySelector('#isolate-surfaces').remove()");
   await send('Emulation.setEmulatedMedia',{features:[{name:'forced-colors',value:'active'}]});
   await check(`getComputedStyle(document.querySelector('#theme-panel-header')).backdropFilter==='none'`,'Forced colors opaque panel');
