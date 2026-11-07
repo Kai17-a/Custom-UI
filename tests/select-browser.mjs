@@ -1,5 +1,6 @@
 // Public select synchronization and width utilities, exercised in the shared Chromium session.
 export async function checkSelect({navigate, evaluate, click, key, send}) {
+  await checkToolbarOverflow({navigate,evaluate,send});
   await checkSearchable({navigate,evaluate,click,key,send});
   await navigate('components/forms.html');
   const preInit = await evaluate(`(()=>{
@@ -34,8 +35,8 @@ export async function checkSelect({navigate, evaluate, click, key, send}) {
   await navigate('components/layouts.html');
   for(const width of [1280,768,390]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
-    const layout=await evaluate(`(()=>{const s=document.querySelector('#layout-view'),w=s.closest('.ui-select'),g=w.closest('.ui-toolbar-group'),label=g.querySelector('label');s.value='list';KavUI.sync(s);const before=w.getBoundingClientRect();s.value='stack';KavUI.sync(s);const after=w.getBoundingClientRect(),l=label.getBoundingClientRect(),toolbar=g.closest('.ui-toolbar');return {row:l.bottom>after.top&&l.top<after.bottom,stable:Math.abs(before.width-after.width)<1,overflow:toolbar.scrollWidth>toolbar.clientWidth};})()`);
-    if(!layout.row||!layout.stable||layout.overflow)throw new Error('Catalog toolbar @'+width+' '+JSON.stringify(layout));
+    const layout=await evaluate(`(()=>{const s=document.querySelector('#layout-view'),w=s.closest('.ui-select'),g=w.closest('.ui-toolbar-group'),label=g.querySelector('label');s.value='list';KavUI.sync(s);const before=w.getBoundingClientRect();s.value='stack';KavUI.sync(s);const after=w.getBoundingClientRect(),l=label.getBoundingClientRect(),toolbar=g.closest('.ui-toolbar'),source=document.querySelector('#layout-source').closest('.ui-select'),sr=source.getBoundingClientRect(),sl=source.parentElement.querySelector('label').getBoundingClientRect(),trigger=source.querySelector('.ui-select-trigger');return {row:l.bottom>after.top&&l.top<after.bottom,stable:Math.abs(before.width-after.width)<1,overflow:toolbar.scrollWidth>toolbar.clientWidth||document.documentElement.scrollWidth>innerWidth,longFits:sr.width<=20*parseFloat(getComputedStyle(document.documentElement).fontSize)+1,longRow:sl.bottom>sr.top&&sl.top<sr.bottom,ellipsis:trigger.scrollWidth>trigger.clientWidth};})()`);
+    if(!layout.row||!layout.stable||layout.overflow||!layout.longFits||!layout.longRow||!layout.ellipsis)throw new Error('Catalog toolbar @'+width+' '+JSON.stringify(layout));
   }
   console.log('Select: pre-init and open-list sync without input/change; stable content width and toolbar grouping; full/auto/legacy/responsive widths @1280/768/390');
 }
@@ -111,4 +112,32 @@ async function checkSearchable({navigate,evaluate,click,key,send}) {
   await key('Tab');
   await assert(`!document.querySelector('.ui-select-searchable:popover-open')`,'Tab dismiss');
   console.log('Searchable select: normalize/AND/keywords, disabled/groups/empty, keyboard/IME, ARIA, change/form/required, sync/lifecycle, themes @390/1280 and forced colors');
+}
+
+// Exercise production classes without catalog styles masking document overflow.
+async function checkToolbarOverflow({navigate,evaluate,send}) {
+  await navigate('components/forms.html');
+  await evaluate(`(()=>{
+    const host=document.createElement('div');host.className='ui-container';host.id='toolbar-overflow-test';
+    host.innerHTML='<div class="ui-toolbar"><div class="ui-toolbar-group"><label for="toolbar-long">表示</label><select id="toolbar-long" class="form-select ui-w-auto"><option value="short">一覧</option><option value="long">GitHub: API-PF/rd2026_agent_skills_catalog_implementation（3）</option></select></div><div class="ui-toolbar-group"><button class="btn">適用</button></div></div><div class="ui-toolbar"><div class="ui-toolbar-group"><label for="toolbar-short">表示</label><select id="toolbar-short" class="form-select ui-w-auto"><option value="short">一覧</option><option value="long">重ねて表示</option></select></div></div>';
+    document.body.replaceChildren(host);KavUI.init(host);
+  })()`);
+  for(const width of [390,768,1280]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+    for(const cap of [null,'12rem','24rem']) {
+      const result=await evaluate(`(()=>{
+        const host=document.querySelector('#toolbar-overflow-test');
+        host.style.setProperty('--ui-toolbar-select-max-width',${JSON.stringify(cap||'')});
+        const s=document.querySelector('#toolbar-long'),w=s.closest('.ui-select'),g=w.parentElement,l=g.querySelector('label'),t=w.querySelector('.ui-select-trigger');
+        s.value='short';KavUI.sync(s);const before=w.getBoundingClientRect();
+        s.value='long';KavUI.sync(s);const r=w.getBoundingClientRect(),label=l.getBoundingClientRect(),native=s.getBoundingClientRect(),limit=${cap?parseInt(cap):20}*parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const short=document.querySelector('#toolbar-short'),sw=short.closest('.ui-select');
+        short.value='short';KavUI.sync(short);const a=sw.getBoundingClientRect();
+        short.value='long';KavUI.sync(short);const b=sw.getBoundingClientRect(),st=sw.querySelector('.ui-select-trigger');
+        return {overflow:document.documentElement.scrollWidth>innerWidth,width:r.width,limit,contained:r.right<=g.getBoundingClientRect().right+1,nativeFits:native.width<=r.width+1,row:label.bottom>r.top&&label.top<r.bottom,stable:Math.abs(before.width-r.width)<1,ellipsis:t.scrollWidth>t.clientWidth&&getComputedStyle(t).textOverflow==='ellipsis',shortStable:Math.abs(a.width-b.width)<1,shortFits:st.scrollWidth<=st.clientWidth};
+      })()`);
+      if(result.overflow||result.width>result.limit+1||!result.contained||!result.nativeFits||!result.row||!result.stable||!result.ellipsis||!result.shortStable||!result.shortFits)throw new Error('Toolbar long select @'+width+' cap='+cap+' '+JSON.stringify(result));
+    }
+  }
+  console.log('Toolbar select: document overflow, default/custom caps, same row, ellipsis and stable longest-option widths @390/768/1280');
 }
