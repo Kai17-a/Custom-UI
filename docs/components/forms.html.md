@@ -54,6 +54,28 @@
 
 複数選択・リスト表示（multiple / size）はHTML標準の表示を維持します。JavaScriptやPopover APIが利用できない場合も標準selectを使えます。
 
+<a id="autocomplete"></a>
+
+## 候補付きテキスト入力
+
+`input.form-control` に `list` と `data-ui-autocomplete` を指定すると、参照先の datalist から候補を表示します。一覧にない値も自由に入力・送信できます。
+
+```html
+<div class="field"><label for="autocomplete-assignee">担当者</label>
+<input id="autocomplete-assignee" class="form-control" name="assignee" list="assignee-suggestions" data-ui-autocomplete placeholder="名前・拠点で検索">
+<datalist id="assignee-suggestions">
+  <option value="田中 花子" data-ui-keywords="Tokyo 東京"></option>
+  <option value="佐藤 太郎" data-ui-keywords="Osaka 大阪"></option>
+  <option value="鈴木 葵" data-ui-keywords="Kyoto 京都"></option>
+</datalist></div>
+```
+
+値・表示名（label）と `data-ui-keywords` をNFKCで正規化し、大文字小文字を区別せず部分一致で検索します。空白区切りの語をすべて含む候補を表示し、件数を日本語で通知します。disabled・hidden・空の候補は表示しません。
+
+入力で開き、上下キーで候補を選択、Enterで確定します。選択していないときのEnterはフォーム送信を妨げません。確定時は値を設定し、input・changeを各1回発行します。日本語変換中はキー操作を無視します。Escapeは一覧だけを閉じ、2回押しても値を消しません。Tabやフォーカス移動でも閉じます。
+
+元のinputで name・required・pattern とフォーム送信を維持します。初期化時は list を退避して標準の一覧との二重表示を防ぎ、`KavUI.destroy` で復元します。再初期化とdatalistの変更に対応します。JavaScriptまたはPopover APIがない場合は標準datalistを使います。チップ入力・非同期候補・インライン補完は対象外です。
+
 <a id="searchable-select"></a>
 
 ## 検索付きselect
