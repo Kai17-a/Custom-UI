@@ -134,8 +134,9 @@ document.addEventListener('click',event=>{
   const status=root.querySelector('[data-demo-background-status]'),output=root.querySelector('output[for="theme-background-opacity"]');
   const surface=root.querySelector('#theme-surface-opacity'),surfaceOutput=root.querySelector('output[for="theme-surface-opacity"]');
   const syncSurface=()=>{
-    const glass=body.dataset.uiTheme==='glass';surface.min=glass?'78':'52';
-    surface.value=Math.max(glass?78:52, Math.min(100,parseFloat(getComputedStyle(body).getPropertyValue('--ui-theme-surface-opacity')) || (glass?78:52)));
+    const glass=body.dataset.uiTheme==='glass';surface.min=glass?'55':'35';
+    const requested=parseFloat(getComputedStyle(body).getPropertyValue('--ui-theme-surface-opacity'));
+    surface.value=Math.max(Number(surface.min), Math.min(100,Number.isFinite(requested)?requested:(glass?78:52)));
     surfaceOutput.value=surface.value+'%';
   };
   surface.addEventListener('input',()=>{

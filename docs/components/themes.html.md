@@ -39,7 +39,7 @@ glass・glassmorphismでは、背景画像をテーマの色と重ねて薄く�
         <label class="ui-file-dropzone" data-ui-file-zone for="theme-background-file"><span icon="mdi-image" aria-hidden="true"></span><strong>手元の画像をドロップ</strong><span>またはクリックして選択</span><span class="ui-file-hint" id="theme-background-file-help">このページ内だけでプレビューします。アップロード・保存はしません。</span></label>
       </div>
       <label class="field" for="theme-background-opacity">画像の濃さ：<output for="theme-background-opacity">18%</output><input class="form-range" id="theme-background-opacity" type="range" min="0" max="100" step="1" value="18"></label>
-      <label class="field" for="theme-surface-opacity">面の不透明度：<output for="theme-surface-opacity">52%</output><input class="form-range" id="theme-surface-opacity" type="range" min="52" max="100" step="1" value="52"></label>
+      <label class="field" for="theme-surface-opacity">面の不透明度：<output for="theme-surface-opacity">52%</output><input class="form-range" id="theme-surface-opacity" type="range" min="35" max="100" step="1" value="52"></label>
       <p class="type-caption" id="theme-background-status" role="status" data-demo-background-status>画像は未設定です。サンプルまたは手元の画像を選んでください。</p>
     </div>
 ```
@@ -86,9 +86,9 @@ glass・glassmorphismでは、背景画像をテーマの色と重ねて薄く�
 
 ## 面の不透明度と汎用パネル
 
-`--ui-theme-surface-opacity` は百分率です。glassmorphismでは52〜100%（既定52%）、glassでは78〜100%（既定78%）に制限します。入力欄は面にそれぞれ20・8ポイント、ダイアログは38・16ポイントを加え、100%で止めます。未指定時の52/72/90%と78/86/94%は変わりません。ほかのテーマには影響しません。
+`--ui-theme-surface-opacity` は百分率です。glassmorphismでは35〜100%（既定52%）、glassでは55〜100%（既定78%）に制限します。入力欄は面にそれぞれ20・8ポイント、ダイアログは38・16ポイントを加え、100%で止めます。未指定時の52/72/90%と78/86/94%は変わりません。ほかのテーマには影響しません。スライダーはテーマの下限と実際に適用される値を表示します。テーマ切り替えでは指定値を保持するため、glassで55%と表示されてもglassmorphismに戻すと元の35%を使えます。
 
-下限は従来の透明度です。不透明度を上げても、既定パレットの本文と説明文のAAコントラストを維持します。背景画像の濃さは既定18%を推奨します。任意の画像を100%の濃さにした場合や独自パレットでは、背景を含めてコントラストを確認してください。ぼかし非対応・強制カラー表示では従来どおり不透明になります。
+下限は既定パレットで、明るい背景・暗い背景・彩度の高い背景の画素から本文と補足文のAAコントラスト（4.5:1以上）を確認して決めています。背景画像の濃さは既定18%を推奨します。任意の画像を100%の濃さにした場合や独自パレットでは、背景を含めてコントラストを確認してください。ぼかし非対応・強制カラー表示では従来どおり不透明になります。
 
 ```
 /* アプリのCSSでbodyに適用するクラス */
@@ -99,7 +99,7 @@ KavUI.setSurfaceOpacity(85);
 KavUI.setSurfaceOpacity(85, { persist: true });
 ```
 
-保存は他のテーマAPIと同じく明示的な`persist: true`で行い、`data-ui-theme-persist`付きのbodyで復元します。保存キーは`kav-ui-surface-opacity`です。theme-init.jsをheadに置くと初回描画前にも復元します。bodyのstyle属性に明示した値は保存値より優先します。数値は52〜100に制限し、NaN・Infinity・数値以外はfalseを返して変更しません。CSSクラスを優先する場合は保存の復元を有効にしないでください。背景画像とその濃さのプレビューは従来どおり保存しません。
+保存は他のテーマAPIと同じく明示的な`persist: true`で行い、`data-ui-theme-persist`付きのbodyで復元します。保存キーは`kav-ui-surface-opacity`です。theme-init.jsをheadに置くと初回描画前にも復元します。bodyのstyle属性に明示した値は保存値より優先します。APIと保存値の復元では数値を共通の範囲35〜100に制限し、NaN・Infinity・数値以外はfalseを返して変更しません。CSSクラスを優先する場合は保存の復元を有効にしないでください。背景画像とその濃さのプレビューは従来どおり保存しません。
 
 `ui-surface`は任意の要素にカードと共通の面・枠・角丸・影を付けます。内側の余白とレイアウトは既存のユーティリティで指定します。`ui-page-header ui-page-header-panel`はページ見出しをパネルにする任意指定です。通常のui-page-headerは従来のままです。
 
