@@ -34,6 +34,11 @@ export async function checkAutocomplete({navigate,evaluate,click,key,send}) {
   await evaluate(`acType('New');document.getElementById('ac-list').insertAdjacentHTML('beforeend','<option value="New Option">')`);
   await assert(`acItems().length===1&&acItems()[0].textContent==='New Option'`,'datalist mutation');
   await key('ArrowUp');await key('Enter');await assert(`ac.value==='New Option'`,'ArrowUp first item');
+  await evaluate(`(()=>{const g=document.createElement('div');g.className='ui-input-group';g.id='ac-group';g.innerHTML='<span class="ui-input-addon">@</span><input id="ac-grouped" class="form-control" list="ac-list" data-ui-autocomplete aria-label="グループ内の担当">';acForm.append(g);KavUI.init(acForm);})()`);
+  await assert(`(()=>{const g=document.getElementById('ac-group'),i=document.getElementById('ac-grouped');return g.lastElementChild===i&&g.nextElementSibling?.classList.contains('ui-select-menu')&&parseFloat(getComputedStyle(i).borderEndEndRadius)>0;})()`,'input-group keeps last-child corners');
+  await evaluate(`KavUI.destroy(acForm)`);
+  await assert(`!document.querySelector('#ac-group + .ui-select-menu')&&document.getElementById('ac-grouped').getAttribute('list')==='ac-list'`,'input-group destroy removes popup');
+  await evaluate(`document.getElementById('ac-group').remove();KavUI.init(acForm)`);
   await evaluate(`KavUI.destroy(acForm)`);
   await assert(`ac.getAttribute('list')==='ac-list'&&!ac.hasAttribute('role')&&!acForm.querySelector('.ui-select-menu')`,'destroy restores native');
   await evaluate(`KavUI.init(acForm);KavUI.init(acForm)`);

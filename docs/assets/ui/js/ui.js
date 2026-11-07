@@ -1517,7 +1517,9 @@
     const popup=doc.createElement('div');popup.className='ui-select-menu ui-select-searchable';popup.setAttribute('popover','auto');
     const list=doc.createElement('div');list.setAttribute('role','listbox');list.setAttribute('aria-label','入力候補');
     const status=doc.createElement('div');status.className='ui-select-group';status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.setAttribute('aria-atomic','true');
-    popup.append(list,status);input.after(popup);
+    popup.append(list,status);
+    // Keep the popup out of input-group child order so :first-child / :last-child corners stay intact.
+    (input.parentElement?.classList.contains('ui-input-group')?input.parentElement:input).after(popup);
     input.removeAttribute('list');input.setAttribute('role','combobox');input.setAttribute('aria-autocomplete','list');
     input.setAttribute('aria-expanded','false');input.setAttribute('aria-controls',id(list));input.removeAttribute('aria-activedescendant');
     let active=-1,options=[],committing=false,composing=false,anchor=null,committedValue=null;
