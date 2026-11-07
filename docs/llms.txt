@@ -111,6 +111,7 @@
 - [チームに合うプラン](templates/pricing.html.md)
 - [こもれび](templates/profile.html.md)
 - [ワークスペース設定](templates/settings.html.md)
+- [タスク管理アプリ](templates/task-app.html.md)
 - [制作依頼を作成](templates/wizard.html.md)
 
 ## Optional

@@ -1,3 +1,4 @@
+import {checkTaskApp} from './task-app-browser.mjs';
 /* node tests/run-browser.mjs — uses an installed Chromium, no npm dependencies.
    Set CHROME_BIN if Chromium is not installed in one of the detected locations. */
 import {checkThemeSurfaces} from './theme-surfaces.mjs';
@@ -89,7 +90,8 @@ try {
   const consistencyFailures=[];
   for(const width of [390,820,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
-    for(const name of readdirSync(join(site,'templates')).filter(name=>name.endsWith('.html'))) {
+    // Multi-screen app has its own shared shell and settings, checked by checkTaskApp.
+    for(const name of readdirSync(join(site,'templates')).filter(name=>name.endsWith('.html') && name!=='task-app.html')) {
       await navigate('templates/'+name);
       await evaluate(`document.fonts.ready.then(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))))`);
       if(!await evaluate(headerControls))consistencyFailures.push(name+' @'+width+' header order/alignment '+JSON.stringify(await evaluate(`[...document.querySelectorAll('.ui-header :is(.ui-select-trigger,.ui-header-nav a)')].map(el=>({text:el.textContent,y:el.getBoundingClientRect().y,h:el.getBoundingClientRect().height}))`)));
@@ -833,6 +835,7 @@ try {
   console.log('Interaction motion: native Escape, immediate close, exit cleanup and mid-animation reduced motion');
   // This disposable browser profile cannot display a permission prompt.
   await send('Browser.grantPermissions',{permissions:['clipboardReadWrite','clipboardSanitizedWrite']},null);
+  await checkTaskApp({navigate,evaluate,send,assert:(ok,message)=>{if(!ok)throw new Error(message);}});
   await navigate('components/clipboard.html');
   await send('Page.bringToFront');
   await evaluate("window.copyTestError=null;document.addEventListener('ui:copyerror',event=>{window.copyTestError=event.detail.error.name+': '+event.detail.error.message;})");

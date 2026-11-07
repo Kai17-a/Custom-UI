@@ -1,3 +1,4 @@
+import {checkTaskApp} from './task-app-browser.mjs';
 import {spawn} from 'node:child_process';
 import {existsSync, mkdtempSync, readdirSync, rmSync, writeFileSync, mkdirSync, readFileSync} from 'node:fs';
 import {homedir, tmpdir} from 'node:os';
@@ -66,6 +67,7 @@ try {
   await send('Runtime.enable');await send('Page.enable');
   await send('Emulation.setTouchEmulationEnabled',{enabled:true});
   await send('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:false});
+  await checkTaskApp({navigate,evaluate,send,assert});
   await navigate('index.html');
   const home=await evaluate(`({height:document.documentElement.scrollHeight,top:document.querySelector('h1').getBoundingClientRect().top})`);
   console.log('390px home',home);
@@ -127,6 +129,27 @@ try {
     check(await evaluate(`document.querySelector('#theme-surface-opacity').min==='78'`),'Glass surface slider bound');
     check(await evaluate(`document.documentElement.scrollWidth<=innerWidth && document.querySelector('#theme-panel-header').getBoundingClientRect().width<=innerWidth`),'Panel sample fits @'+width);
     await evaluate(`localStorage.removeItem('kav-ui-surface-opacity');document.body.style.removeProperty('--ui-theme-surface-opacity');KavUI.setDesignTheme('default',{persist:true})`);
+  }
+  // All task app screens and overlays must fit, including the glass designs.
+  for(const width of [390,1280]) {
+    await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
+    await navigate('templates/task-app.html');
+    for(const design of ['default','glass','glassmorphism','flat','soft'])for(const mode of ['light','dark']) {
+      await evaluate(`KavUI.setDesignTheme('${design}');KavUI.setColorTheme('${mode}');document.fonts.ready`);
+      for(const screen of ['overview','board','activity','settings']) {
+        await evaluate(`document.querySelector('[data-ui-target="${screen}"]').click();new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))`);
+        check(await evaluate(`document.documentElement.scrollWidth<=innerWidth`),'Task app overflow '+width+'/'+design+'/'+mode+'/'+screen);
+        if(process.env.TASK_APP_SCREENSHOTS && design==='glassmorphism' && mode==='light' && ['overview','board'].includes(screen)) {
+          const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+          writeFileSync(join(tmpdir(),'task-app-'+screen+'-'+width+'.png'),Buffer.from(shot.data,'base64'));
+        }
+        if(screen==='board')for(const dialog of ['task-detail','task-new']) {
+          await evaluate(`document.querySelector('[data-ui-target="#${dialog}"]').click()`);
+          check(await evaluate(`(()=>{const el=document.querySelector('#${dialog}'),r=el.getBoundingClientRect();return el.open&&r.left>=0&&r.right<=innerWidth&&el.scrollWidth<=el.clientWidth;})()`),'Task dialog fits '+width+'/'+design+'/'+mode+'/'+dialog);
+          await evaluate(`document.querySelector('#${dialog} [data-ui-dismiss]').click()`);
+        }
+      }
+    }
   }
   if(failures.length)throw new Error(failures.join('\n'));
   if(process.env.CATALOG_SCREENSHOTS) {

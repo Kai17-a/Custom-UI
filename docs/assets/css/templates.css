@@ -133,3 +133,12 @@
   .template-error-code { font-size:calc(var(--text-5xl) * 1.5); }
   .template-error-actions > * { width:100%; justify-content:center; }
 }
+
+/* Task app composition: stack the board on phones; shared components own ink/surfaces. */
+[data-template="task-app"] .ui-board { grid-template-columns:repeat(4,minmax(0,1fr)); }
+[data-template="task-app"] .ui-board > *,
+[data-template="task-app"] [data-ui-panel] { min-width:0; }
+[data-template="task-app"] .ui-dialog { width:min(48rem,calc(100% - 2rem)); max-height:90dvh; overflow:auto; }
+@media (width < 768px) {
+  [data-template="task-app"] .ui-board { grid-template-columns:minmax(0,1fr); }
+}
