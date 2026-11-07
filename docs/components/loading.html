@@ -247,6 +247,21 @@
   <p role="status" data-demo-loading-result>ボタンを押すと、進捗と結果を確認できます。</p>
 </div>
 </div></section>
+<section class="specimen"><h2>画面の端に固定する進捗バー</h2>
+<p><code>ui-progress-top</code>を追加すると画面の上端に、<code>ui-progress-bottom</code>なら下端に、幅いっぱいの角のないバーを固定します。既定の高さは<code>ui-progress-sm</code>と同じ.25rem（通常4px）です。<code>ui-progress-lg</code>を併用すると.875rem（通常14px）になります。クラスを書く順序には依存しません。</p>
+<p>この見本は固定位置を枠内に閉じ込めています。アプリでは進捗バーをbody直下などに置いてください。transformなどで固定位置の基準や重なりの層を作る祖先の中に置くと、画面全体への固定や重なり順が変わります。</p>
+<div class="example" data-example>
+<div class="ui-card" style="transform:translate(0);height:6rem;overflow:hidden">
+  <progress class="ui-progress ui-progress-top" aria-label="GitHub と同期中"></progress>
+  <div class="ui-card-body">GitHub と同期中（上端・進捗未確定）</div>
+  <progress class="ui-progress ui-progress-bottom" max="100" value="60" aria-label="ダウンロードの進捗">60%</progress>
+</div>
+</div>
+<pre class="setup-code"><code>&lt;progress class="ui-progress ui-progress-top" aria-label="GitHub と同期中"&gt;&lt;/progress&gt;</code></pre>
+<p><code>value</code>を省略すると往復する表示、<code>max</code>と<code>value</code>を指定すると値に応じた表示になります。読み上げ名を<code>aria-label</code>で指定するか、説明文のIDを<code>aria-labelledby</code>で参照してください。処理中は対象の領域に<code>aria-busy="true"</code>を付け、完了したらfalseに戻し、進捗バーを取り除くか<code>hidden</code>を付けます。進み具合の更新はアプリ側で行います。</p>
+<p>重なり順はz-index:1050です。stickyヘッダー（10）やドロワーの外側のナビゲーションより前、selectの一覧（1080）、トースト（1100）、datepicker（1150）より後ろに表示します。開いたポップオーバーや<code>showModal()</code>で開いたモーダルの<code>dialog</code>（ドロワーを含む）はブラウザのtop layerにあり、進捗バーより前になります。</p>
+<p>色、動きを減らすOS設定、強制カラーモードの扱いは通常の進捗バーと共通です。</p>
+</section>
 <section class="specimen"><h2>アプリとの連携</h2><p>見た目は共通のui.cssとHTMLだけで利用できます。共通ui.jsの<code>KavUI.loading(要素またはセレクター, true / false)</code>を使うと、aria-busyとボタンのdisabledをまとめて切り替え、終了時に開始前の状態へ戻します。通信や進捗の更新はアプリ側で行います。</p><pre class="setup-code"><code>// ui-loading-buttonのHTMLを配置した後、アプリの処理から呼びます。
 async function save(button, values) {
   if (button.disabled) return;

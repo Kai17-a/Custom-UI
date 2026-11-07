@@ -87,6 +87,8 @@ KavUI.toast({title:'保存しました', body:'プロジェクトを更新しま
 
 progressはvalueを省略すると進捗未確定。完了時にaria-busyとプレースホルダーを解除する。Badge・Avatar・List group・TimelineはCSSだけの表示を選べる。空データやエラーの文面、再試行の処理はアプリ側で用意する。
 
+画面の上端への固定には`ui-progress ui-progress-top`、下端には`ui-progress ui-progress-bottom`を使う。角なし・幅100%・既定の高さ.25rem。`ui-progress-sm` / `ui-progress-lg`のサイズ指定を優先する。z-index:1050でヘッダーより前、一覧・トーストより後ろ。showModalのdialogや開いたpopoverのtop layerより後ろに表示される。aria-labelまたはaria-labelledbyで名前を付け、完了したら要素を外すかhiddenにし、対象領域のaria-busyをfalseに戻す。
+
 ## エージェントの処理・階層・タスクツリー
 
 `ui-agent-workflow`を親にし、処理順は`ol.ui-agent-flow`、親子関係は入れ子の`ul.ui-agent-tree`で記述する。各ノードは`ui-agent-node`、状態は`data-state="complete|running|pending|blocked"`と`ui-agent-state`内の文字で示す。図は`ui-agent-canvas`で囲み、`tabindex="0"`と説明のある`role="region"`・`aria-label`を付けると狭い画面でキーボードでも横スクロールできる。

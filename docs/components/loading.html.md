@@ -180,6 +180,30 @@ value属性を省略すると、往復するバーになります。進捗が不
 </div>
 ```
 
+## 画面の端に固定する進捗バー
+
+`ui-progress-top`を追加すると画面の上端に、`ui-progress-bottom`なら下端に、幅いっぱいの角のないバーを固定します。既定の高さは`ui-progress-sm`と同じ.25rem（通常4px）です。`ui-progress-lg`を併用すると.875rem（通常14px）になります。クラスを書く順序には依存しません。
+
+この見本は固定位置を枠内に閉じ込めています。アプリでは進捗バーをbody直下などに置いてください。transformなどで固定位置の基準や重なりの層を作る祖先の中に置くと、画面全体への固定や重なり順が変わります。
+
+```html
+<div class="ui-card" style="transform:translate(0);height:6rem;overflow:hidden">
+  <progress class="ui-progress ui-progress-top" aria-label="GitHub と同期中"></progress>
+  <div class="ui-card-body">GitHub と同期中（上端・進捗未確定）</div>
+  <progress class="ui-progress ui-progress-bottom" max="100" value="60" aria-label="ダウンロードの進捗">60%</progress>
+</div>
+```
+
+```html
+<progress class="ui-progress ui-progress-top" aria-label="GitHub と同期中"></progress>
+```
+
+`value`を省略すると往復する表示、`max`と`value`を指定すると値に応じた表示になります。読み上げ名を`aria-label`で指定するか、説明文のIDを`aria-labelledby`で参照してください。処理中は対象の領域に`aria-busy="true"`を付け、完了したらfalseに戻し、進捗バーを取り除くか`hidden`を付けます。進み具合の更新はアプリ側で行います。
+
+重なり順はz-index:1050です。stickyヘッダー（10）やドロワーの外側のナビゲーションより前、selectの一覧（1080）、トースト（1100）、datepicker（1150）より後ろに表示します。開いたポップオーバーや`showModal()`で開いたモーダルの`dialog`（ドロワーを含む）はブラウザのtop layerにあり、進捗バーより前になります。
+
+色、動きを減らすOS設定、強制カラーモードの扱いは通常の進捗バーと共通です。
+
 ## アプリとの連携
 
 見た目は共通のui.cssとHTMLだけで利用できます。共通ui.jsの`KavUI.loading(要素またはセレクター, true / false)`を使うと、aria-busyとボタンのdisabledをまとめて切り替え、終了時に開始前の状態へ戻します。通信や進捗の更新はアプリ側で行います。

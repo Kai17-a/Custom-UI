@@ -1,3 +1,4 @@
+import {checkFixedProgress} from './progress-browser.mjs';
 import {checkReviewState} from './review-state-browser.mjs';
 import {checkTaskApp} from './task-app-browser.mjs';
 /* node tests/run-browser.mjs — uses an installed Chromium, no npm dependencies.
@@ -85,6 +86,7 @@ try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  await checkFixedProgress({navigate,evaluate,send,click});
   await checkReviewState({navigate,evaluate,send});
   await checkAutocomplete({navigate,evaluate,click,key,send});
   await checkSelect({navigate,evaluate,click,key,send});
