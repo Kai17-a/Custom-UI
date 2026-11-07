@@ -100,6 +100,8 @@ Flexboxの方向・折り返し・整列・伸縮・列数・列幅、`sp-*`の�
 
 ## ページ見出し・アクション・ツールバー
 
+ツールバーのselectは最長の選択肢の幅を確保し、長い場合は省略記号で表示します。ラベルと選択欄は同じ行に並び、グループは利用可能な幅まで縮みます。幅の上限は`--ui-toolbar-select-max-width`で変更できます（既定は`calc(var(--space-8) * 10)`、標準トークンで20rem）。ツールバーや親要素に`style="--ui-toolbar-select-max-width:16rem"`を指定できます。開いた一覧の幅には影響しません。
+
 ```html
 <div class="ui-stack">
   <header class="ui-page-header">
@@ -109,6 +111,7 @@ Flexboxの方向・折り返し・整列・伸縮・列数・列幅、`sp-*`の�
   <div class="ui-toolbar" role="group" aria-label="プロジェクトの操作">
     <div class="ui-toolbar-group"><label for="layout-search">検索</label><input class="form-control form-control-sm" id="layout-search" type="search" placeholder="プロジェクト名"></div>
     <div class="ui-toolbar-group"><label for="layout-view">表示</label><select id="layout-view" class="form-select form-select-sm ui-w-auto"><option value="list">一覧</option><option value="stack">重ねて表示</option></select></div>
+    <div class="ui-toolbar-group"><label for="layout-source">取得元</label><select id="layout-source" class="form-select form-select-sm ui-w-auto"><option value="all">すべて</option><option value="github" selected>GitHub: API-PF/rd2026_agent_skills（3）</option></select></div>
     <div class="ui-toolbar-group ui-toolbar-end"><span class="type-caption">3件</span><a class="btn btn-sm btn-outline-secondary" href="table.html">一覧表示</a></div>
   </div>
   <p class="type-caption">検索処理はアプリ側で接続します。狭い領域ではツールバーとアクションが折り返されます。</p>
