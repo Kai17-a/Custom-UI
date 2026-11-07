@@ -1,6 +1,8 @@
 /* Kav-UI: dependency-free data attributes. Load once with defer. */
 (() => {
   'use strict';
+  // Shared API floor; CSS applies each theme's stricter floor. Keep theme-init.js in sync.
+  const SURFACE_OPACITY_MIN = 35;
   if (window.KavUI) return;
   const doc = document;
   const openers = new WeakMap();
@@ -2851,7 +2853,7 @@
   // Percent units, matching the public CSS variable. Each glass theme clamps its lower bound.
   function setSurfaceOpacity(value, {persist = false} = {}) {
     if (typeof value !== 'number' || !Number.isFinite(value)) return false;
-    const opacity = Math.min(100, Math.max(52, value));
+    const opacity = Math.min(100, Math.max(SURFACE_OPACITY_MIN, value));
     doc.body.style.setProperty('--ui-theme-surface-opacity', opacity + '%');
     if (persist) {
       try { localStorage.setItem('kav-ui-surface-opacity', String(opacity)); } catch { /* Storage is optional. */ }

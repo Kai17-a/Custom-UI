@@ -126,8 +126,12 @@ try {
     await evaluate(`KavUI.setDesignTheme('glassmorphism');const range=document.querySelector('#theme-surface-opacity');range.value='85';range.dispatchEvent(new Event('input',{bubbles:true}));`);
     check(await evaluate(`document.body.style.getPropertyValue('--ui-theme-surface-opacity')==='85%' && document.querySelector('output[for="theme-surface-opacity"]').value==='85%'`),'Surface slider @'+width);
     await evaluate(`KavUI.setDesignTheme('glass')`);
-    check(await evaluate(`document.querySelector('#theme-surface-opacity').min==='78'`),'Glass surface slider bound');
+    check(await evaluate(`document.querySelector('#theme-surface-opacity').min==='55'`),'Glass surface slider bound');
     check(await evaluate(`document.documentElement.scrollWidth<=innerWidth && document.querySelector('#theme-panel-header').getBoundingClientRect().width<=innerWidth`),'Panel sample fits @'+width);
+    await evaluate(`KavUI.setDesignTheme('glassmorphism');document.querySelector('#theme-surface-opacity').value='35';document.querySelector('#theme-surface-opacity').dispatchEvent(new Event('input',{bubbles:true}));KavUI.setDesignTheme('glass');`);
+    check(await evaluate(`document.querySelector('#theme-surface-opacity').value==='55' && document.querySelector('output[for="theme-surface-opacity"]').value==='55%' && document.body.style.getPropertyValue('--ui-theme-surface-opacity')==='35%'`),'Glass slider shows CSS floor without overwriting preference');
+    await evaluate(`KavUI.setDesignTheme('glassmorphism')`);
+    check(await evaluate(`document.querySelector('#theme-surface-opacity').min==='35' && document.querySelector('#theme-surface-opacity').value==='35'`),'Glassmorphism slider restores lower preference');
     await evaluate(`localStorage.removeItem('kav-ui-surface-opacity');document.body.style.removeProperty('--ui-theme-surface-opacity');KavUI.setDesignTheme('default',{persist:true})`);
   }
   // All task app screens and overlays must fit, including the glass designs.

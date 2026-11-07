@@ -72,14 +72,15 @@
   // Task app settings are ephemeral; task data stays in the authored HTML.
   const opacity=doc.getElementById('task-opacity');
   if(opacity) {
+    KavUI.setSurfaceOpacity(Number(opacity.value));
     const syncOpacity=()=>{
-      opacity.min=doc.body.dataset.uiTheme==='glassmorphism'?'52':'78';
-      opacity.value=String(Math.max(Number(opacity.min),Number(opacity.value)));
-      KavUI.setSurfaceOpacity(Number(opacity.value));
+      opacity.min=doc.body.dataset.uiTheme==='glassmorphism'?'35':'55';
+      const requested=parseFloat(getComputedStyle(doc.body).getPropertyValue('--ui-theme-surface-opacity'));
+      opacity.value=String(Math.max(Number(opacity.min),Math.min(100,Number.isFinite(requested)?requested:85)));
       doc.getElementById('task-opacity-value').value=opacity.value+'%';
       doc.getElementById('task-theme-value').textContent='--ui-theme-surface-opacity: '+opacity.value+'%;';
     };
-    opacity.addEventListener('input',syncOpacity);
+    opacity.addEventListener('input',()=>{KavUI.setSurfaceOpacity(Number(opacity.value));syncOpacity();});
     doc.body.addEventListener('ui:designchange',syncOpacity);syncOpacity();
     const file=doc.getElementById('task-background'),status=doc.getElementById('task-background-status');
     let imageUrl;

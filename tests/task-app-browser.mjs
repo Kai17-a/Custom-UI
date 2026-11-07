@@ -26,6 +26,10 @@ export async function checkTaskApp({navigate, evaluate, assert, send}) {
   assert(await evaluate(`!document.querySelector('#task-new').open`), 'New task closes');
   await evaluate(`document.querySelector('[data-ui-target="settings"]').click();KavUI.setDesignTheme('glassmorphism');const range=document.querySelector('#task-opacity');range.value='85';range.dispatchEvent(new Event('input',{bubbles:true}));`);
   assert(await evaluate(`document.body.style.getPropertyValue('--ui-theme-surface-opacity')==='85%' && document.querySelector('#task-theme-value').textContent.includes('85%')`), 'Opacity API and copyable value sync');
+  await evaluate(`document.querySelector('#task-opacity').value='35';document.querySelector('#task-opacity').dispatchEvent(new Event('input',{bubbles:true}));KavUI.setDesignTheme('glass');`);
+  assert(await evaluate(`document.querySelector('#task-opacity').min==='55' && document.querySelector('#task-opacity').value==='55' && document.querySelector('#task-opacity-value').value==='55%' && document.querySelector('#task-theme-value').textContent.includes('55%') && document.body.style.getPropertyValue('--ui-theme-surface-opacity')==='35%'`), 'Task glass shows effective floor, retains preference');
+  await evaluate(`KavUI.setDesignTheme('glassmorphism')`);
+  assert(await evaluate(`document.querySelector('#task-opacity').min==='35' && document.querySelector('#task-opacity').value==='35' && document.querySelector('#task-theme-value').textContent.includes('35%')`), 'Task glassmorphism restores preference');
   await evaluate(`const transfer=new DataTransfer();transfer.items.add(new File(['<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="green"/></svg>'],'sample.svg',{type:'image/svg+xml'}));const input=document.querySelector('#task-background');input.files=transfer.files;input.dispatchEvent(new Event('change',{bubbles:true}));`);
   assert(await evaluate(`document.body.style.getPropertyValue('--ui-theme-background-image').includes('blob:')`), 'Background preview uses local object URL');
   await evaluate(`document.querySelector('[data-ui-target="overview"]').click()`);
