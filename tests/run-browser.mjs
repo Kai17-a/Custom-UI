@@ -4,6 +4,7 @@ import {checkThemeSurfaces} from './theme-surfaces.mjs';
 import {spawn} from 'node:child_process';
 import {authLayout, pricingHierarchy, headerControls} from './sample-consistency.mjs';
 import {checkCatalogAccessibility} from './catalog-accessibility.mjs';
+import {checkAutocomplete} from './autocomplete-browser.mjs';
 import {checkSelect} from './select-browser.mjs';
 import {checkMotion} from './motion-browser.mjs';
 import {checkControlAppearance} from './control-appearance.mjs';
@@ -82,6 +83,7 @@ try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  await checkAutocomplete({navigate,evaluate,click,key,send});
   await checkSelect({navigate,evaluate,click,key,send});
   await checkThemeSurfaces({navigate,evaluate,send});
   const consistencyFailures=[];

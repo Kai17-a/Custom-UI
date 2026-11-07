@@ -102,3 +102,7 @@ Dropdownは操作一覧、自由な補足・フォームには`data-ui-toggle="p
 リンク先と現在地はアプリのルーターに合わせる。アイコンだけのrailでも`sidebar-label`を残して名前を伝える。独立した領域で現在地を初回だけ表示するには、スクロールする要素へ`data-ui-scroll-active="once"`を付ける。既定の継続追従とは異なり、折り畳み後に現在地へ引き戻さない。
 
 ページ内の滑らかな移動はスクロール領域の`ui-scroll-smooth`を使う。リンクと対象IDを実在させ、stickyヘッダーがある場合は対象へCSSのscroll-margin-topを設定する。
+
+### 候補付きテキスト入力
+
+`<input class="form-control" list="候補ID" data-ui-autocomplete>` と `<datalist id="候補ID"><option value="候補" data-ui-keywords="別名"></datalist>` を使う。自由入力・name・required・pattern・送信を維持する。value・label・keywordsを共通のNFKC正規化、大小文字を区別しない部分一致、空白区切りAND検索で絞り込む。入力で開き、上下キーで選びEnterで確定（input/changeを各1回）。候補未選択のEnterは送信を妨げない。変換中は操作を無視し、Escapeは何度押しても値を消さず一覧を閉じる。件数を日本語で通知するeditable combobox。disabled/hidden/空の候補は除外。既存のui-select-menu/ui-select-optionを使用する。初期化でlistを退避しdestroyで復元。再初期化とdatalist変更に対応。JS/Popover APIがなければnative datalist。チップ・非同期・インライン補完は対象外。
