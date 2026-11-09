@@ -2786,9 +2786,34 @@
     onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
   }
 
+  const tourStates=new WeakSet();let activeTour=null;
+  function initTour(root){
+    if(tourStates.has(root))return;tourStates.add(root);
+    const listen=scopedEvents(root),steps=[...root.querySelectorAll('[data-ui-tour-target]')],panel=doc.createElement('section');panel.className='ui-tour-panel';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','false');panel.tabIndex=-1;panel.hidden=true;
+    const native=typeof panel.showPopover==='function';if(native)panel.setAttribute('popover','manual');
+    const title=doc.createElement('h2'),description=doc.createElement('p'),progress=doc.createElement('p'),actions=doc.createElement('div');title.id=id(title);description.id=id(description);panel.setAttribute('aria-labelledby',title.id);panel.setAttribute('aria-describedby',description.id);progress.setAttribute('role','status');actions.className='ui-tour-actions';panel.append(title,description,progress,actions);doc.body.append(panel);
+    let index=-1,target=null,opener=null,restoreTarget=()=>{},open=false;
+    const button=(text,handler)=>{const el=doc.createElement('button');el.type='button';el.className='btn btn-sm btn-outline-secondary';el.textContent=text;listen(el,'click',handler);actions.append(el);return el;};
+    const back=button('戻る',()=>step(index-1,-1)),next=button('次へ',()=>step(index+1,1));button('終了',()=>finish('dismissed'));
+    function find(from,direction){for(let i=from;i>=0&&i<steps.length;i+=direction){const node=query(steps[i].dataset.uiTourTarget);if(node?.isConnected&&node.getClientRects().length)return {index:i,node};}return null;}
+    function place(){if(!open||!target)return;if(!target.isConnected||!target.getClientRects().length){step(index+1,1);return;}const r=target.getBoundingClientRect(),p=panel.getBoundingClientRect();panel.style.left=Math.max(8,Math.min(r.left,innerWidth-p.width-8))+'px';const top=r.bottom+p.height+8<=innerHeight?r.bottom+8:r.top-p.height-8;panel.style.top=Math.max(8,Math.min(top,innerHeight-p.height-8))+'px';}
+    function finish(reason){if(!open)return;open=false;restoreTarget();target=null;if(native&&panel.matches(':popover-open'))panel.hidePopover();panel.hidden=true;if(activeTour===finish)activeTour=null;if(opener?.isConnected)opener.focus({preventScroll:true});emit(root,'tourend',{reason,index});}
+    function step(from,direction){
+      const found=find(from,direction);if(!found){if(direction>0)finish('completed');return;}
+      restoreTarget();index=found.index;target=found.node;const previous=target.getAttribute('data-ui-tour-active');restoreTarget=()=>{if(previous===null)found.node.removeAttribute('data-ui-tour-active');else found.node.setAttribute('data-ui-tour-active',previous);};target.setAttribute('data-ui-tour-active','');target.scrollIntoView({block:'center',behavior:'instant'});
+      title.textContent=steps[index].dataset.uiTourTitle||'操作の案内';description.textContent=steps[index].textContent.trim();progress.textContent=(index+1)+' / '+steps.length;
+      back.disabled=!find(index-1,-1);next.textContent=find(index+1,1)?'次へ':'完了';panel.hidden=false;if(native&&!panel.matches(':popover-open'))panel.showPopover();place();panel.focus({preventScroll:true});emit(root,'tourstep',{index,target});
+    }
+    listen(doc,'click',e=>{const trigger=closest(e.target,'[data-ui-tour-start]');if(!trigger||disabled(trigger)||query(trigger.dataset.uiTourStart)!==root)return;e.preventDefault();activeTour?.('replaced');opener=trigger;open=true;activeTour=finish;if(!find(0,1)){finish('missing-target');return;}step(0,1);});
+    listen(doc,'keydown',e=>{if(open&&e.key==='Escape'){e.preventDefault();finish('dismissed');}});
+    listen(doc,'scroll',place,true);listen(window,'resize',place);
+    onDispose(root,()=>{finish('destroyed');panel.remove();tourStates.delete(root);});
+  }
+
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-tour]').forEach(initTour);
     scan('[data-ui-agent-flow]').forEach(initAgentFlow);
     scan('[data-ui-data-table]').forEach(initDataTable);
     scan('[data-ui-scroll-active]').forEach(initScrollActive);

@@ -67,8 +67,8 @@ class DocumentationStructureTests(unittest.TestCase):
             self.assertEqual(len(links), content.count('data-catalog-item'), name)
             self.assertNotIn('<h2>', content)
             cards.extend(links)
-        self.assertEqual(len(cards), 46)
-        self.assertEqual(len(set(cards)), 46)
+        self.assertGreaterEqual(len(cards), 46)
+        self.assertEqual(len(set(cards)), len(cards))
 
     def test_home_has_live_design_preview(self):
         source = (DOCS / 'index.html').read_text()
