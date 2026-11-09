@@ -2786,9 +2786,44 @@
     onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
   }
 
+  const treeListStates=new WeakSet();
+  function initTreeList(root){
+    if(treeListStates.has(root))return;treeListStates.add(root);
+    const listen=scopedEvents(root),items=owned(root,'[data-ui-tree-item]','[data-ui-tree]'),restores=[],toggles=[];
+    const remember=(el,attrs)=>restores.push(rememberAttributes(el,attrs));
+    remember(root,['role']);root.setAttribute('role','tree');
+    let current=items.find(item=>item.getAttribute('aria-selected')==='true')||items[0];
+    const group=item=>[...item.children].find(el=>el.matches('ul,ol'));
+    const label=item=>[...item.children].find(el=>el.hasAttribute('data-ui-tree-label'));
+    function visible(){return items.filter(item=>{for(let p=item.parentElement;p&&p!==root;p=p.parentElement)if(p.hidden)return false;return !item.hidden;});}
+    function focus(item){if(!item)return;current=item;items.forEach(el=>el.tabIndex=el===item?0:-1);item.focus();}
+    function expand(item,value){const child=group(item);if(!child)return;item.setAttribute('aria-expanded',String(value));child.hidden=!value;const button=item.querySelector(':scope > [data-ui-tree-toggle]');if(button)button.setAttribute('aria-label',value?'折り畳む':'展開する');}
+    function select(item){if(disabled(item))return;items.forEach(el=>el.setAttribute('aria-selected',String(el===item)));emit(root,'treeselect',{value:item.dataset.uiTreeItem,item});}
+    for(const item of items){
+      remember(item,['role','tabindex','aria-selected','aria-expanded','aria-labelledby']);item.setAttribute('role','treeitem');item.tabIndex=item===current?0:-1;item.setAttribute('aria-selected',String(item===current&&item.getAttribute('aria-selected')==='true'));
+      const name=label(item);if(name){remember(name,['id']);item.setAttribute('aria-labelledby',id(name));}
+      const child=group(item);if(child){remember(child,['role','hidden']);child.setAttribute('role','group');const button=doc.createElement('button');button.type='button';button.tabIndex=-1;button.className='btn btn-sm btn-outline-secondary';button.dataset.uiTreeToggle='';button.textContent='開閉';button.disabled=disabled(item);item.prepend(button);toggles.push(button);expand(item,item.getAttribute('aria-expanded')==='true');}
+    }
+    if(!visible().includes(current))current=visible()[0];items.forEach(item=>item.tabIndex=item===current?0:-1);
+    listen(root,'click',e=>{const item=closest(e.target,'[data-ui-tree-item]');if(!items.includes(item))return;focus(item);if(closest(e.target,'[data-ui-tree-toggle]'))expand(item,item.getAttribute('aria-expanded')!=='true');else select(item);});
+    listen(root,'keydown',e=>{
+      const item=closest(e.target,'[data-ui-tree-item]');if(!items.includes(item)||e.isComposing)return;
+      const shown=visible(),i=shown.indexOf(item);let target;
+      if(e.key==='ArrowDown')target=shown[Math.min(shown.length-1,i+1)];
+      else if(e.key==='ArrowUp')target=shown[Math.max(0,i-1)];
+      else if(e.key==='Home')target=shown[0];else if(e.key==='End')target=shown.at(-1);
+      else if(e.key==='ArrowRight'){if(group(item)&&item.getAttribute('aria-expanded')!=='true')expand(item,true);else target=group(item)?.querySelector('[data-ui-tree-item]');}
+      else if(e.key==='ArrowLeft'){if(group(item)&&item.getAttribute('aria-expanded')==='true')expand(item,false);else target=closest(item.parentElement,'[data-ui-tree-item]');}
+      else if(e.key==='Enter'||e.key===' ')select(item);else return;
+      e.preventDefault();if(target&&items.includes(target))focus(target);
+    });
+    onDispose(root,()=>{toggles.forEach(el=>el.remove());restores.reverse().forEach(fn=>fn());treeListStates.delete(root);});
+  }
+
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-tree]').forEach(initTreeList);
     scan('[data-ui-agent-flow]').forEach(initAgentFlow);
     scan('[data-ui-data-table]').forEach(initDataTable);
     scan('[data-ui-scroll-active]').forEach(initScrollActive);
