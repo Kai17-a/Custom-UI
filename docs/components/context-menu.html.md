@@ -9,7 +9,7 @@
 ## ファイルの操作を開く
 
 ```html
-<div data-ui-context-menu><div class="card sp-p-3" data-ui-context-item="brief" tabindex="0" aria-label="制作依頼.txt"><p>制作依頼.txt</p><button class="btn btn-outline-secondary" type="button" data-ui-context-open>操作を開く</button></div><div class="ui-context-menu" data-ui-context-panel hidden aria-label="ファイルの操作"><button class="btn btn-ghost" type="button" data-ui-context-action="rename">名前を変更</button><button class="btn btn-ghost" type="button" data-ui-context-action="duplicate">複製</button><button class="btn btn-ghost" type="button" data-ui-context-action="delete" disabled>削除（権限なし）</button></div></div>
+<div data-ui-context-menu><div class="card sp-p-3" data-ui-context-item="brief" tabindex="0" aria-label="制作依頼.txt"><p>制作依頼.txt</p><button class="btn btn-outline-secondary" type="button" data-ui-context-open>操作を開く</button></div><div class="ui-context-menu" data-ui-context-panel hidden aria-label="ファイルの操作"><button class="btn btn-ghost-secondary" type="button" data-ui-context-action="rename">名前を変更</button><button class="btn btn-ghost-secondary" type="button" data-ui-context-action="duplicate">複製</button><button class="btn btn-ghost-secondary" type="button" data-ui-context-action="delete" disabled>削除（権限なし）</button></div></div>
 ```
 
 ## 属性とイベント

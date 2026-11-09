@@ -2800,7 +2800,7 @@
     function close(restoreFocus=false){if(!open)return;open=false;if(native&&panel.matches(':popover-open'))panel.hidePopover();panel.hidden=true;if(restoreFocus&&opener?.isConnected)opener.focus();}
     function show(item,source,px,py){
       if(disabled(item))return;target=item;opener=source;x=px;y=py;panel.hidden=false;
-      if(native&&!panel.matches(':popover-open'))panel.showPopover();open=true;position();(available()[0]||panel).focus();emit(root,'contextopen',{target:item});
+      if(native&&!panel.matches(':popover-open'))panel.showPopover();open=true;position();(available()[0]||panel).focus({preventScroll:true});emit(root,'contextopen',{target:item});
     }
     listen(root,'contextmenu',e=>{const item=closest(e.target,'[data-ui-context-item]');if(!item||!root.contains(item)||panel.contains(e.target))return;e.preventDefault();show(item,item,e.clientX,e.clientY);});
     listen(root,'click',e=>{
