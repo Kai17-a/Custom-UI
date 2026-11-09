@@ -149,6 +149,8 @@
 
 - [Carousel](components/carousel.html.md): スライド・前後操作・スワイプ
 
+- [Lightbox](components/lightbox.html.md): 画像を拡大し、ズームと前後移動で確認します。
+
 - [Timeline](components/timeline.html.md): 時系列・作業履歴・進行状況
 
 ## 通知・補助表示

@@ -63,6 +63,7 @@
 - [Badges](components/badges.html.md): ステータスとラベル。
 - [Chart](components/chart.html.md): SVGで描く折れ線・面・棒・ドーナツチャート。
 - [Carousel](components/carousel.html.md): カードや機能紹介をスライドで表示。
+- [Lightbox](components/lightbox.html.md): 画像を拡大し、ズームと前後移動で確認します。
 - [Timeline](components/timeline.html.md): 履歴や作業の進行状況を、日付・状態・説明とともに縦に並べます。
 
 ## 通知・補助表示
