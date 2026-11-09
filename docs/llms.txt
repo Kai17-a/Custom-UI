@@ -39,6 +39,7 @@
 - [Buttons](components/buttons.html.md): 塗りつぶし・アウトライン・淡い背景・枠なしのボタン。
 - [Button group](components/button-group.html.md): ボタンの連結・縦並び・radio／checkboxの選択。
 - [Forms](components/forms.html.md): 入力・選択・バリデーション。
+- [Tokenizer](components/tokenizer.html.md): 検索しながらタグ形式で複数項目を選択します。
 - [Input group](components/input-group.html.md): 入力欄と接頭辞・接尾辞・ボタン・selectの連結。
 - [Date picker](components/datepicker.html.md): フォームに日付を設定する入力部品。
 - [Rating](components/rating.html.md): 星で評価を入力・表示するコンポーネント。
