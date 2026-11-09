@@ -41,6 +41,7 @@
 - [Forms](components/forms.html.md): 入力・選択・バリデーション。
 - [Input group](components/input-group.html.md): 入力欄と接頭辞・接尾辞・ボタン・selectの連結。
 - [Date picker](components/datepicker.html.md): フォームに日付を設定する入力部品。
+- [Date range](components/date-range.html.md): 開始日・終了日とプリセットで期間を指定します。
 - [Rating](components/rating.html.md): 星で評価を入力・表示するコンポーネント。
 - [Clipboard](components/clipboard.html.md): テキスト・入力欄・コードをクリップボードへコピーします。
 

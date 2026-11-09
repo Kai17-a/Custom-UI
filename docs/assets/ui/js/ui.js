@@ -2786,9 +2786,47 @@
     onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
   }
 
+  const dateRangeStates=new WeakSet();
+  function initDateRange(root){
+    if(dateRangeStates.has(root))return;
+    const start=root.querySelector('[data-ui-range-start]'),end=root.querySelector('[data-ui-range-end]');
+    if(!start||!end)return;dateRangeStates.add(root);
+    const listen=scopedEvents(root),status=doc.createElement('p');status.className='ui-date-range-status';status.setAttribute('role','status');root.append(status);
+    let timer,setting=false;
+    const invalidEnd=end.validity.customError?end.validationMessage:'';
+    function sync(notify=false){
+      end.setCustomValidity('');
+      const reversed=start.value&&end.value&&start.value>end.value;
+      if(reversed)end.setCustomValidity('終了日は開始日以降にしてください。');
+      else if(Boolean(start.value)!==Boolean(end.value))end.setCustomValidity('開始日と終了日の両方を入力してください。');
+      status.textContent=reversed?end.validationMessage:(!start.validity.valid||!end.validity.valid)?'指定できる日付の範囲を確認してください。':start.value&&end.value?start.value+' 〜 '+end.value:'開始日と終了日を選択してください。';
+      if(notify)emit(root,'rangechange',{start:start.value,end:end.value,valid:start.validity.valid&&end.validity.valid});
+    }
+    function set(a,b){
+      if(start.matches(':disabled')||end.matches(':disabled')||start.readOnly||end.readOnly)return;
+      setting=true;start.value=a;end.value=b;
+      for(const input of [start,end]){input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));}setting=false;sync(true);
+    }
+    listen(root,'input',e=>{if(!setting&&(e.target===start||e.target===end))sync(true);});
+    listen(root,'change',e=>{if(e.target===start||e.target===end)sync();});
+    listen(root,'click',e=>{
+      const button=closest(e.target,'[data-ui-range-preset], [data-ui-range-clear]');if(!button||!root.contains(button)||disabled(button))return;
+      if(button.hasAttribute('data-ui-range-clear')){set('','');return;}
+      const preset=button.dataset.uiRangePreset;
+      if(preset==='month'){
+        const today=new Date(),format=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        set(format(new Date(today.getFullYear(),today.getMonth(),1)),format(new Date(today.getFullYear(),today.getMonth()+1,0)));
+      }else set(button.dataset.uiRangeFrom||'',button.dataset.uiRangeTo||'');
+    });
+    listen(start.form,'reset',e=>{clearTimeout(timer);timer=setTimeout(()=>{if(!e.defaultPrevented)sync();},0);});
+    const observer=new MutationObserver(()=>sync());for(const input of [start,end])observer.observe(input,{attributes:true,attributeFilter:['min','max','required','disabled']});
+    onDispose(root,()=>{clearTimeout(timer);observer.disconnect();end.setCustomValidity(invalidEnd);status.remove();dateRangeStates.delete(root);});sync();
+  }
+
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-date-range]').forEach(initDateRange);
     scan('[data-ui-agent-flow]').forEach(initAgentFlow);
     scan('[data-ui-data-table]').forEach(initDataTable);
     scan('[data-ui-scroll-active]').forEach(initScrollActive);
