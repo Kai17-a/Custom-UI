@@ -111,6 +111,8 @@
 
 - [Input group](components/input-group.html.md): 入力欄と接頭辞・接尾辞・ボタン・selectの連結
 
+- [Transfer list](components/transfer-list.html.md): 候補と選択済みの一覧間で項目を移動します。
+
 - [Date picker](components/datepicker.html.md): 日付フォーム・日付入力・選択・必須・範囲指定
 
 - [Rating](components/rating.html.md): 星評価・フォーム送信・リセット

@@ -2060,6 +2060,10 @@
   "ui-toolbar-end",
   "ui-toolbar-group",
   "ui-tooltip",
+  "ui-transfer-list",
+  "ui-transfer-side",
+  "ui-transfer-source",
+  "ui-transfer-status",
   "ui-w-auto",
   "ui-w-full",
   "visually-hidden",
@@ -2232,7 +2236,9 @@
   "ui-toast-header",
   "ui-toasts",
   "ui-toolbar",
-  "ui-toolbar-group"
+  "ui-toolbar-group",
+  "ui-transfer-list",
+  "ui-transfer-side"
  ],
  "data_attributes": [
   "data-ui-agent-flow",
@@ -2402,6 +2408,7 @@
   "data-ui-toast-copy",
   "data-ui-toggle",
   "data-ui-tooltip",
+  "data-ui-transfer",
   "data-ui-validate",
   "data-ui-value",
   "data-ui-variant",

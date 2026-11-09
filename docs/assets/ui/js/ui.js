@@ -2786,9 +2786,48 @@
     onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
   }
 
+  const transferListStates=new WeakSet();
+  function initTransferList(source){
+    if(transferListStates.has(source)||!source.multiple)return;transferListStates.add(source);
+    const listen=scopedEvents(source),restore=rememberAttributes(source,['class','tabindex','aria-hidden']);
+    const root=doc.createElement('div');root.className='ui-transfer-list';root.setAttribute('role','group');root.setAttribute('aria-label',source.getAttribute('aria-label')||[...source.labels].map(el=>el.textContent).join(' ')||'項目の選択');source.after(root);
+    const sides=[false,true].map(selected=>{
+      const box=doc.createElement('div');box.className='ui-transfer-side';const heading=doc.createElement('label');heading.textContent=selected?'選択済み':'候補';
+      const search=doc.createElement('input');search.type='search';search.className='form-control';search.setAttribute('aria-label',heading.textContent+'を検索');search.placeholder=heading.textContent+'を検索';
+      const list=doc.createElement('select');list.multiple=true;list.size=8;list.className='form-select';list.id=id(list);heading.htmlFor=list.id;
+      const move=doc.createElement('button');move.type='button';move.className='btn btn-outline-secondary';move.textContent=selected?'候補へ戻す':'選択済みに追加';
+      box.append(heading,search,list,move);root.append(box);
+      const side={selected,search,list,move,options:new Map()};
+      listen(search,'input',render);listen(search,'keydown',e=>{if(e.key==='Enter'&&!e.isComposing)e.preventDefault();});listen(list,'change',buttons);
+      listen(move,'click',()=>{if(source.matches(':disabled'))return;for(const option of list.selectedOptions){const original=side.options.get(option);if(original&&!locked(original))original.selected=!selected;}source.dispatchEvent(new Event('input',{bubbles:true}));source.dispatchEvent(new Event('change',{bubbles:true}));emit(source,'transferchange',{values:[...source.selectedOptions].map(o=>o.value)});render();list.focus();});return side;
+    });
+    const status=doc.createElement('small');status.className='ui-transfer-status';status.setAttribute('role','status');root.append(status);let timer,disposed=false;
+    const locked=o=>o.disabled||o.parentElement?.disabled;
+    function buttons(){for(const side of sides)side.move.disabled=source.matches(':disabled')||![...side.list.selectedOptions].some(o=>!o.disabled);}
+    function render(){
+      if(disposed)return;const inactive=source.matches(':disabled');
+      for(const side of sides){
+        const chosen=new Set([...side.list.selectedOptions].map(o=>side.options.get(o)));side.options.clear();side.list.replaceChildren();side.list.disabled=side.search.disabled=inactive;
+        const words=side.search.value.normalize('NFKC').toLowerCase().trim().split(/\s+/);
+        for(const option of source.options){if(option.selected!==side.selected||option.hidden||option.parentElement.hidden||!words.every(w=>(option.textContent+' '+(option.dataset.uiKeywords||'')).normalize('NFKC').toLowerCase().includes(w)))continue;
+          const copy=doc.createElement('option');copy.textContent=option.textContent;copy.value=option.value;copy.disabled=locked(option);copy.selected=chosen.has(option);side.options.set(copy,option);side.list.append(copy);
+        }
+      }
+      status.textContent='候補 '+sides[0].list.options.length+'件、選択済み '+source.selectedOptions.length+'件（表示 '+sides[1].list.options.length+'件）';buttons();
+    }
+    source.classList.add('ui-transfer-source');source.tabIndex=-1;source.setAttribute('aria-hidden','true');
+    for(const label of source.labels)listen(label,'click',e=>{e.preventDefault();sides[0].list.focus();});
+    listen(source,'change',render);listen(source,'invalid',e=>{e.preventDefault();sides[0].list.focus();status.textContent='項目を選択してください。';});
+    listen(source.form,'reset',e=>{clearTimeout(timer);timer=setTimeout(()=>{if(!e.defaultPrevented){sides.forEach(side=>side.search.value='');render();}},0);});
+    const observer=new MutationObserver(render);observer.observe(source,{attributes:true,childList:true,subtree:true,characterData:true,attributeFilter:['selected','disabled','hidden','label','value','required']});
+    for(let parent=source.parentElement;parent;parent=parent.parentElement)if(parent.tagName==='FIELDSET')observer.observe(parent,{attributes:true,attributeFilter:['disabled']});
+    selectControls.set(source,{sync:render});onDispose(source,()=>{disposed=true;clearTimeout(timer);observer.disconnect();root.remove();restore();selectControls.delete(source);transferListStates.delete(source);});render();
+  }
+
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('select[data-ui-transfer]').forEach(initTransferList);
     scan('[data-ui-agent-flow]').forEach(initAgentFlow);
     scan('[data-ui-data-table]').forEach(initDataTable);
     scan('[data-ui-scroll-active]').forEach(initScrollActive);
