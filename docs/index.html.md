@@ -107,6 +107,8 @@
 
 - [Button group](components/button-group.html.md): ボタンの連結・縦並び・radio／checkboxの選択
 
+- [Overflow list](components/overflow-list.html.md): 幅に収まらない操作やタグをその他へまとめます。
+
 - [Forms](components/forms.html.md): 入力・選択・バリデーション
 
 - [Input group](components/input-group.html.md): 入力欄と接頭辞・接尾辞・ボタン・selectの連結
