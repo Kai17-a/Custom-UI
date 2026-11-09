@@ -49,6 +49,7 @@
 - [Navigation](components/navigation.html.md): ページ間の移動、表示内容の切り替え、階層・進捗・現在地を伝える部品です。
 - [Sidebar](components/sidebar.html.md): アプリ用サイドバー。
 - [Command menu](components/command.html.md): 検索からページや操作を選ぶメニュー。
+- [Power search](components/power-search.html.md): 検索語と複数条件を組み合わせて一覧を絞り込みます。
 - [Dropdown](components/dropdown.html.md): 操作メニュー・上下配置・キーボード・選択イベント。
 - [Accordion](components/disclosure.html.md): 補足情報を段階的に表示します。
 

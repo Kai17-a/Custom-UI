@@ -125,6 +125,8 @@
 
 - [Command menu](components/command.html.md): 操作を検索・キーボード選択・ダイアログ
 
+- [Power search](components/power-search.html.md): 検索語と複数条件を組み合わせて一覧を絞り込みます。
+
 - [Dropdown](components/dropdown.html.md): 操作メニュー・上下配置・キーボード・選択イベント
 
 - [Accordion](components/disclosure.html.md): 詳細情報の開閉
