@@ -133,6 +133,8 @@
 
 - [Table](components/table.html.md): 一覧表示
 
+- [Table row expansion](components/table-details.html.md): 一覧の行を開いて詳細を確認します。
+
 - [Data table](components/data-table.html.md): データテーブル・検索・ソート・ページ送り・行選択
 
 - [Kanban board](components/board.html.md): タスクと進捗管理
