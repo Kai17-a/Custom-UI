@@ -127,6 +127,8 @@
 
 - [Dropdown](components/dropdown.html.md): 操作メニュー・上下配置・キーボード・選択イベント
 
+- [Context menu](components/context-menu.html.md): 右クリック・キーボード・操作ボタンから項目のメニューを開きます。
+
 - [Accordion](components/disclosure.html.md): 詳細情報の開閉
 
 ## データ表示
