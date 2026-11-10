@@ -9,7 +9,7 @@
 ## 必要な列を表示する
 
 ```html
-<div data-ui-data-table data-ui-table-columns data-ui-page-size="5"><label>検索<input class="form-control" type="search" data-ui-table-search></label><div class="ui-table-scroll"><table class="table"><caption>プロジェクト一覧</caption><thead><tr><th data-ui-column-key="name" data-ui-column-required><button class="btn btn-ghost-secondary" type="button" data-ui-table-sort="text">名前</button></th><th data-ui-column-key="owner">担当者</th><th data-ui-column-key="status">状態</th></tr></thead><tbody><tr><td>カタログ</td><td>青木</td><td>進行中</td></tr><tr><td>導入ガイド</td><td>森</td><td>完了</td></tr></tbody></table></div><p data-ui-table-status></p></div>
+<div data-ui-data-table data-ui-table-columns data-ui-page-size="5"><label>検索<input class="form-control" type="search" data-ui-table-search></label><div class="ui-table-scroll"><table class="table"><caption>プロジェクト一覧</caption><thead><tr><th data-ui-column-key="name" data-ui-column-required><button class="ui-data-table-sort" type="button" data-ui-table-sort="text">名前</button></th><th data-ui-column-key="owner">担当者</th><th data-ui-column-key="status">状態</th></tr></thead><tbody><tr><td>カタログ</td><td>青木</td><td>進行中</td></tr><tr><td>導入ガイド</td><td>森</td><td>完了</td></tr></tbody></table></div><p data-ui-table-status></p></div>
 ```
 
 ## 属性とイベント

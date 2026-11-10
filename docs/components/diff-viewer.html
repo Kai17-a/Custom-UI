@@ -140,9 +140,9 @@
     </ul>
   </div>
 </nav></details><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / AI・ワークフロー</p><h1>DiffViewer</h1></header><p class="lede">文章やコードの追加・削除を左右で比較します。</p><section class="specimen"><h2>文章の変更を比較する</h2><div class="example" data-example><div data-ui-diff-viewer><label>変更前<textarea class="form-control" data-ui-diff-before>制作依頼
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / AI・ワークフロー</p><h1>DiffViewer</h1></header><p class="lede">文章やコードの追加・削除を左右で比較します。</p><section class="specimen"><h2>文章の変更を比較する</h2><div class="example" data-example><div class="fx fx-column fx-gap-3" data-ui-diff-viewer><label>変更前<textarea class="form-control" rows="4" data-ui-diff-before>制作依頼
 締切：月曜日
-確認をお願いします。</textarea></label><label>変更後<textarea class="form-control" data-ui-diff-after>制作依頼
+確認をお願いします。</textarea></label><label>変更後<textarea class="form-control" rows="4" data-ui-diff-after>制作依頼
 締切：水曜日
 資料を添付します。
 確認をお願いします。</textarea></label></div></div></section><section class="specimen"><h2>使い方</h2><p>data-ui-diff-viewer内にtextarea[data-ui-diff-before]とtextarea[data-ui-diff-after]を置きます。入力で再比較します。コードからvalueを設定した後はルートにui:diffrefreshイベントを送ります。ui:diffupdateのdetailはadded・removed・simplifiedです。</p><p>行単位で比較し、変更前と変更後を左右に表示します。追加・削除は文字と色で区別します。入力はHTMLとして実行しません。行数の積が100万を超える場合は共通先頭以降を削除・追加として扱う簡易比較に切り替えます。最小差分や文字単位の強調、Git連携は対象外です。</p><p>共通ui.cssとui.jsだけで利用できます。Vue・AstroではKavWidgetで同じHTMLを使用できます。参考：<a href="https://astryx.atmeta.com/storybook/?path=/story/lab-diffviewer--split">Astryx DiffViewer</a>。</p></section>

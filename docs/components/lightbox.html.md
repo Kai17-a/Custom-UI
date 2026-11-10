@@ -9,7 +9,7 @@
 ## 画像を拡大する
 
 ```html
-<div data-ui-lightbox data-ui-lightbox-label="制作物のプレビュー"><a class="btn btn-outline-secondary" href="../assets/images/theme-background.svg" data-ui-lightbox-item data-ui-lightbox-alt="テーマの背景に使う抽象図形" data-ui-lightbox-caption="テーマ背景の見本">背景画像を開く</a><a class="btn btn-outline-secondary" href="../assets/images/theme-background.svg" data-ui-lightbox-item data-ui-lightbox-alt="背景素材の確認用画像" data-ui-lightbox-caption="同じ素材の説明を添えた2枚目の例">2枚目の見本を開く</a></div>
+<div class="fx fx-wrap fx-gap-2" data-ui-lightbox data-ui-lightbox-label="制作物のプレビュー"><a class="btn btn-outline-secondary" href="../assets/images/theme-background.svg" data-ui-lightbox-item data-ui-lightbox-alt="テーマの背景に使う抽象図形" data-ui-lightbox-caption="テーマ背景の見本">背景画像を開く</a><a class="btn btn-outline-secondary" href="../assets/images/theme-background.svg" data-ui-lightbox-item data-ui-lightbox-alt="背景素材の確認用画像" data-ui-lightbox-caption="同じ素材の説明を添えた2枚目の例">2枚目の見本を開く</a></div>
 ```
 
 ## 属性と操作
