@@ -1,3 +1,4 @@
+import {check as checkTransferList} from './transfer-list-browser.mjs';
 import {check as checkOverflowList} from './overflow-list-browser.mjs';
 import {check as checkTableDetails} from './table-details-browser.mjs';
 import {check as checkTableColumns} from './table-columns-browser.mjs';
@@ -95,6 +96,7 @@ try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  await checkTransferList({navigate,evaluate,click,key,send});
   await checkOverflowList({navigate,evaluate,click,key,send});
   await checkTableDetails({navigate,evaluate,click,key,send});
   await checkTableColumns({navigate,evaluate,click,key,send});

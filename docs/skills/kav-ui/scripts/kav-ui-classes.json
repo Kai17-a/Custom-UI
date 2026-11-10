@@ -2080,6 +2080,10 @@
   "ui-toolbar-end",
   "ui-toolbar-group",
   "ui-tooltip",
+  "ui-transfer-list",
+  "ui-transfer-side",
+  "ui-transfer-source",
+  "ui-transfer-status",
   "ui-tree-list",
   "ui-w-auto",
   "ui-w-full",
@@ -2264,7 +2268,9 @@
   "ui-tokenizer",
   "ui-tokenizer-tags",
   "ui-toolbar",
-  "ui-toolbar-group"
+  "ui-toolbar-group",
+  "ui-transfer-list",
+  "ui-transfer-side"
  ],
  "data_attributes": [
   "data-ui-agent-flow",
@@ -2473,6 +2479,7 @@
   "data-ui-token-remove",
   "data-ui-tokenizer",
   "data-ui-tooltip",
+  "data-ui-transfer",
   "data-ui-tree",
   "data-ui-tree-item",
   "data-ui-tree-label",
