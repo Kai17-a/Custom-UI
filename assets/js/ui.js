@@ -2790,6 +2790,38 @@
     onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
   }
 
+  const overflowListStates=new WeakSet();
+  function initOverflowList(root){
+    if(overflowListStates.has(root))return;const strip=root.querySelector('[data-ui-overflow-items]');if(!strip)return;overflowListStates.add(root);
+    const listen=scopedEvents(root),more=doc.createElement('details'),summary=doc.createElement('summary'),panel=doc.createElement('div');
+    more.className='ui-overflow-more';summary.textContent=root.dataset.uiOverflowLabel||'その他';panel.className='ui-overflow-panel';panel.setAttribute('role','group');panel.setAttribute('aria-label',summary.textContent);more.append(summary,panel);root.append(more);
+    let items=[...strip.children],frame=0,disposed=false;
+    function place(){if(!more.open)return;const r=summary.getBoundingClientRect(),p=panel.getBoundingClientRect();panel.style.left=Math.max(4,Math.min(r.right-p.width,innerWidth-p.width-4))+'px';panel.style.top=Math.max(4,Math.min(r.bottom+4,innerHeight-p.height-4))+'px';}
+    function layout(){
+      frame=0;if(disposed||!root.getClientRects().length)return;observer.disconnect();
+      const focused=doc.activeElement,hadFocus=root.contains(focused);
+      items=items.filter(item=>strip.contains(item)||panel.contains(item));for(const item of [...strip.children,...panel.children])if(!items.includes(item))items.push(item);
+      items.forEach(item=>strip.append(item));more.hidden=true;
+      const style=getComputedStyle(root),available=root.clientWidth-parseFloat(style.paddingLeft||0)-parseFloat(style.paddingRight||0),gap=parseFloat(getComputedStyle(strip).columnGap)||0;
+      const widths=items.map(item=>{const s=getComputedStyle(item);return item.getBoundingClientRect().width+(parseFloat(s.marginLeft)||0)+(parseFloat(s.marginRight)||0);});
+      const total=widths.reduce((n,w)=>n+w,0)+gap*Math.max(0,items.length-1);
+      let keep=items.length;
+      if(total>available){more.hidden=false;const budget=Math.max(0,available-more.getBoundingClientRect().width-(parseFloat(style.columnGap)||0));let used=0;keep=0;for(const width of widths){const next=used+(keep?gap:0)+width;if(next>budget)break;used=next;keep++;}items.slice(keep).forEach(item=>panel.append(item));}
+      if(more.hidden)more.open=false;
+      if(hadFocus){if(panel.contains(focused))more.open=true;if(focused===summary&&more.hidden)(strip.querySelector('button,a[href],input,[tabindex]')||root).focus({preventScroll:true});else if(focused.isConnected)focused.focus({preventScroll:true});}
+      place();observer.observe(strip,{childList:true,subtree:true,characterData:true});observer.observe(panel,{childList:true,subtree:true,characterData:true});
+      emit(root,'overflowchange',{visible:keep,overflow:items.length-keep});
+    }
+    const schedule=()=>{if(!disposed&&!frame)frame=requestAnimationFrame(layout);};
+    const observer=new MutationObserver(schedule),resize=new ResizeObserver(schedule);resize.observe(root);
+    listen(more,'toggle',place);listen(window,'resize',schedule);
+    listen(root,'keydown',e=>{if(e.key==='Escape'&&more.open){e.preventDefault();more.open=false;summary.focus();}});
+    listen(doc,'pointerdown',e=>{if(more.open&&!more.contains(e.target))more.open=false;},true);
+    listen(doc,'scroll',e=>{if(more.open&&!panel.contains(e.target))place();},true);
+    doc.fonts?.ready.then(schedule);
+    onDispose(root,()=>{disposed=true;cancelAnimationFrame(frame);observer.disconnect();resize.disconnect();items.filter(item=>strip.contains(item)||panel.contains(item)).forEach(item=>strip.append(item));more.remove();overflowListStates.delete(root);});layout();
+  }
+
   const tableDetailStates=new WeakMap();
   function syncTableDetails(root){
     const state=tableDetailStates.get(root);if(!state)return;
@@ -3086,6 +3118,7 @@
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-overflow]').forEach(initOverflowList);
     scan('[data-ui-table-expandable]').forEach(initTableDetails);
     scan('[data-ui-table-columns]').forEach(initTableColumns);
     scan('[data-ui-lightbox]').forEach(initLightbox);
