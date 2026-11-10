@@ -109,9 +109,13 @@
 
 - [Forms](components/forms.html.md): 入力・選択・バリデーション
 
+- [Tokenizer](components/tokenizer.html.md): 検索しながらタグ形式で複数項目を選択します。
+
 - [Input group](components/input-group.html.md): 入力欄と接頭辞・接尾辞・ボタン・selectの連結
 
 - [Date picker](components/datepicker.html.md): 日付フォーム・日付入力・選択・必須・範囲指定
+
+- [Date range](components/date-range.html.md): 開始日・終了日とプリセットで期間を指定します。
 
 - [Rating](components/rating.html.md): 星評価・フォーム送信・リセット
 
@@ -125,7 +129,11 @@
 
 - [Command menu](components/command.html.md): 操作を検索・キーボード選択・ダイアログ
 
+- [Power search](components/power-search.html.md): 検索語と複数条件を組み合わせて一覧を絞り込みます。
+
 - [Dropdown](components/dropdown.html.md): 操作メニュー・上下配置・キーボード・選択イベント
+
+- [Context menu](components/context-menu.html.md): 右クリック・キーボード・操作ボタンから項目のメニューを開きます。
 
 - [Accordion](components/disclosure.html.md): 詳細情報の開閉
 
@@ -143,6 +151,8 @@
 
 - [List group](components/list-group.html.md): 一覧・操作・現在地・件数・チェック付きリスト
 
+- [Tree list](components/tree-list.html.md): 階層を開閉し、キーボードで項目を選択します。
+
 - [Avatar](components/avatar.html.md): イニシャル・画像・サイズ・ステータス・グループ
 
 - [Badges](components/badges.html.md): ステータスとラベル
@@ -150,6 +160,8 @@
 - [Chart](components/chart.html.md): 折れ線・面・棒・ドーナツ・データ表・動的更新
 
 - [Carousel](components/carousel.html.md): スライド・前後操作・スワイプ
+
+- [Lightbox](components/lightbox.html.md): 画像を拡大し、ズームと前後移動で確認します。
 
 - [Timeline](components/timeline.html.md): 時系列・作業履歴・進行状況
 
