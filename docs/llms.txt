@@ -38,9 +38,13 @@
 
 - [Buttons](components/buttons.html.md): 塗りつぶし・アウトライン・淡い背景・枠なしのボタン。
 - [Button group](components/button-group.html.md): ボタンの連結・縦並び・radio／checkboxの選択。
+- [Overflow list](components/overflow-list.html.md): 幅に収まらない操作やタグをその他へまとめます。
 - [Forms](components/forms.html.md): 入力・選択・バリデーション。
+- [Tokenizer](components/tokenizer.html.md): 検索しながらタグ形式で複数項目を選択します。
 - [Input group](components/input-group.html.md): 入力欄と接頭辞・接尾辞・ボタン・selectの連結。
+- [Transfer list](components/transfer-list.html.md): 候補と選択済みの一覧間で項目を移動します。
 - [Date picker](components/datepicker.html.md): フォームに日付を設定する入力部品。
+- [Date range](components/date-range.html.md): 開始日・終了日とプリセットで期間を指定します。
 - [Rating](components/rating.html.md): 星で評価を入力・表示するコンポーネント。
 - [Clipboard](components/clipboard.html.md): テキスト・入力欄・コードをクリップボードへコピーします。
 
@@ -49,20 +53,26 @@
 - [Navigation](components/navigation.html.md): ページ間の移動、表示内容の切り替え、階層・進捗・現在地を伝える部品です。
 - [Sidebar](components/sidebar.html.md): アプリ用サイドバー。
 - [Command menu](components/command.html.md): 検索からページや操作を選ぶメニュー。
+- [Power search](components/power-search.html.md): 検索語と複数条件を組み合わせて一覧を絞り込みます。
 - [Dropdown](components/dropdown.html.md): 操作メニュー・上下配置・キーボード・選択イベント。
+- [Context menu](components/context-menu.html.md): 右クリック・キーボード・操作ボタンから項目のメニューを開きます。
 - [Accordion](components/disclosure.html.md): 補足情報を段階的に表示します。
 
 ## データ表示
 
 - [Table](components/table.html.md): 静的な一覧表示です。
+- [Table row expansion](components/table-details.html.md): 一覧の行を開いて詳細を確認します。
 - [Data table](components/data-table.html.md): 検索・並べ替え・ページ送り・行選択を組み合わせたデータテーブルです。
+- [Table column settings](components/table-columns.html.md): 一覧で表示する列を選択し、既定の表示に戻せます。
 - [Kanban board](components/board.html.md): タスクと進捗管理。
 - [Calendar](components/calendar.html.md): 月の切り替え・日付選択・予定表示に対応したカレンダー。
 - [List group](components/list-group.html.md): 一覧・操作・現在地・件数・チェック付きリスト。
+- [Tree list](components/tree-list.html.md): 階層を開閉し、キーボードで項目を選択します。
 - [Avatar](components/avatar.html.md): イニシャル・画像・サイズ・ステータス・グループ。
 - [Badges](components/badges.html.md): ステータスとラベル。
 - [Chart](components/chart.html.md): SVGで描く折れ線・面・棒・ドーナツチャート。
 - [Carousel](components/carousel.html.md): カードや機能紹介をスライドで表示。
+- [Lightbox](components/lightbox.html.md): 画像を拡大し、ズームと前後移動で確認します。
 - [Timeline](components/timeline.html.md): 履歴や作業の進行状況を、日付・状態・説明とともに縦に並べます。
 
 ## 通知・補助表示
