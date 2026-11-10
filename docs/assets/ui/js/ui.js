@@ -2673,6 +2673,7 @@
     const inactive=element=>!element||element.matches(':disabled')||disabled(element);
     const rowCheck=row=>[...row.querySelectorAll('input[type="checkbox"][data-ui-row-select]')].find(input=>input.closest('tr')===row);
     let records=[],buttons=[],page=1,sort=null,visible=[],filtered=[],search=null,sizeControl=null,resetTimer=0,nextIndex=0;
+    let powerQuery='',powerFilters=[];
     const pageSize=()=>{const value=sizeControl?.value??root.dataset.uiPageSize??'10',number=Number(value);return String(value).trim()!==''&&Number.isInteger(number)&&number>=0?number:10;};
     const selectedRows=()=>records.filter(record=>!record.hidden&&rowCheck(record.row)?.checked&&!inactive(rowCheck(record.row)));
     function selection(notify=false) {
@@ -2693,8 +2694,8 @@
       return text;
     }
     function render(notify=false) {
-      const words=normalize(search?.value||'').split(/\s+/).filter(Boolean),data=records.filter(record=>!record.hidden);
-      filtered=data.filter(record=>{const text=normalize([...record.row.cells].filter(cell=>!cell.hasAttribute('data-ui-table-ignore')).map(cell=>cell.textContent).join(' ')+' '+(record.row.dataset.uiTableKeywords||''));return words.every(word=>text.includes(word));});
+      const words=normalize((search?.value||'')+' '+powerQuery).split(/\s+/).filter(Boolean),data=records.filter(record=>!record.hidden);
+      filtered=data.filter(record=>{const text=normalize([...record.row.cells].filter(cell=>!cell.hasAttribute('data-ui-table-ignore')).map(cell=>cell.textContent).join(' ')+' '+(record.row.dataset.uiTableKeywords||''));return words.every(word=>text.includes(word))&&powerFilters.every(filter=>{const actual=record.row.getAttribute('data-ui-filter-'+filter.field);if(actual===null)return false;const a=normalize(actual),b=normalize(filter.value);return filter.operator==='gte'?a>=b:filter.operator==='lte'?a<=b:a===b;});});
       let ordered=[...records];
       if(sort)ordered.sort((a,b)=>{
         const av=value(a,sort.index,sort.type),bv=value(b,sort.index,sort.type);if(av===null||bv===null)return av===bv?a.index-b.index:av===null?1:-1;
@@ -2765,6 +2766,7 @@
       }else {const size=pageSize(),pages=Math.max(1,size?Math.ceil(filtered.length/size):1);page=button.hasAttribute('data-ui-table-page')?Number(button.dataset.uiTablePage):button.hasAttribute('data-ui-table-prev')?page-1:button.hasAttribute('data-ui-table-next')?page+1:button.hasAttribute('data-ui-table-first')?1:pages;}
       render(true);
     });
+    listen(root,'ui:tablefilter',event=>{if(event.target!==root)return;powerQuery=String(event.detail?.query||'');powerFilters=Array.isArray(event.detail?.filters)?event.detail.filters.filter(f=>f&&/^[a-z][a-z0-9-]*$/.test(f.field)&&typeof f.value==='string').map(f=>({...f})):[];page=1;render(true);});
     dataTableStates.set(root,refresh);
     onDispose(root,()=>{clearTimeout(resetTimer);empty.remove();for(const [element,restore]of restores)restore();for(const [element,text]of texts)element.textContent=text;[...rows.values()].sort((a,b)=>a.index-b.index).filter(record=>record.row.parentElement===body).forEach(record=>body.append(record.row));dataTableStates.delete(root);});
     refresh();
@@ -2784,6 +2786,36 @@
     listen(doc,'visibilitychange',sync);
     agentFlowStates.add(root);
     onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
+  }
+
+  const powerSearchStates=new WeakSet();
+  function initPowerSearch(root){
+    if(powerSearchStates.has(root))return;powerSearchStates.add(root);
+    const listen=scopedEvents(root),queryInput=root.querySelector('[data-ui-power-query]'),controls=[...root.querySelectorAll('[data-ui-power-filter]')];
+    const target=query(root.dataset.uiPowerTarget||'');if(target?.matches('[data-ui-data-table]'))initDataTable(target);
+    const tags=doc.createElement('div');tags.className='ui-power-search-tags';tags.setAttribute('aria-label','適用中の条件');root.append(tags);
+    const status=doc.createElement('small');status.setAttribute('role','status');root.append(status);
+    const clear=root.querySelector('[data-ui-power-clear]');let timer;
+    const enabled=el=>el&&!el.matches(':disabled')&&!el.readOnly;
+    function update(notify=true){
+      const filters=controls.filter(el=>el.value&&/^[a-z][a-z0-9-]*$/.test(el.dataset.uiPowerFilter)).map(el=>({field:el.dataset.uiPowerFilter,operator:['gte','lte'].includes(el.dataset.uiPowerOperator)?el.dataset.uiPowerOperator:'eq',value:el.value}));
+      tags.replaceChildren();
+      for(const control of [queryInput,...controls].filter(el=>el?.value)){
+        const button=doc.createElement('button');button.type='button';button.className='btn btn-sm btn-outline-secondary';button.disabled=!enabled(control);
+        const label=control.getAttribute('aria-label')||[...(control.labels||[])].map(el=>[...el.childNodes].filter(node=>node.nodeType===Node.TEXT_NODE).map(node=>node.textContent).join('').trim()).join(' ')||control.dataset.uiPowerFilter||'検索語';
+        const value=control.tagName==='SELECT'?control.selectedOptions[0]?.textContent:control.value;button.textContent=label+': '+value+' を解除';
+        button.addEventListener('click',()=>{if(!enabled(control))return;control.value='';syncSelect(control);update();control.focus();});tags.append(button);
+      }
+      const detail={query:queryInput?.value||'',filters};status.textContent=tags.children.length+'件の条件';
+      if(target?.matches('[data-ui-data-table]'))emit(target,'tablefilter',detail);
+      if(notify)emit(root,'powerchange',detail);
+    }
+    listen(root,'input',e=>{if(e.target===queryInput||controls.includes(e.target)&&e.target.tagName!=='SELECT')update();});
+    listen(root,'change',e=>{if(controls.includes(e.target)&&e.target.tagName==='SELECT')update();});
+    listen(root,'keydown',e=>{if(e.key==='Enter'&&!e.isComposing&&(e.target===queryInput||controls.includes(e.target)))e.preventDefault();});
+    listen(clear,'click',()=>{for(const control of [queryInput,...controls])if(enabled(control)){control.value='';syncSelect(control);}update();});
+    for(const form of new Set([queryInput,...controls].map(el=>el?.form).filter(Boolean)))listen(form,'reset',e=>{clearTimeout(timer);timer=setTimeout(()=>{if(!e.defaultPrevented)update();},0);});
+    onDispose(root,()=>{clearTimeout(timer);tags.remove();status.remove();if(target?.isConnected)emit(target,'tablefilter',{query:'',filters:[]});powerSearchStates.delete(root);});update(false);
   }
 
   const treeListStates=new WeakSet();
@@ -2922,6 +2954,7 @@
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-power-search]').forEach(initPowerSearch);
     scan('[data-ui-tree]').forEach(initTreeList);
     scan('[data-ui-date-range]').forEach(initDateRange);
     scan('select[data-ui-tokenizer]').forEach(initTokenizer);

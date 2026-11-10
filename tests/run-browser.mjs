@@ -1,3 +1,4 @@
+import {check as checkPowerSearch} from './power-search-browser.mjs';
 import {check as checkTreeList} from './tree-list-browser.mjs';
 import {check as checkDateRange} from './date-range-browser.mjs';
 import {check as checkTokenizer} from './tokenizer-browser.mjs';
@@ -89,6 +90,7 @@ try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  await checkPowerSearch({navigate,evaluate,click,key,send});
   await checkTreeList({navigate,evaluate,click,key,send});
   await checkDateRange({navigate,evaluate,click,key,send});
   await checkTokenizer({navigate,evaluate,click,key,send});
