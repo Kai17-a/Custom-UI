@@ -11,7 +11,7 @@
 ## 担当者を複数選ぶ
 
 ```html
-<form><label for="token-members">担当者（必須）</label><select id="token-members" name="members" multiple required data-ui-tokenizer><option value="aoki" selected>青木</option><option value="mori">森</option><option value="ito">伊藤</option><option value="inactive" disabled>退会済み</option></select><button class="btn btn-outline-secondary" type="reset">リセット</button></form>
+<form><label for="token-members">担当者（必須）</label><select id="token-members" name="members" multiple required data-ui-tokenizer><option value="aoki" selected>青木</option><option value="mori">森</option><option value="ito">伊藤</option><option value="inactive" disabled>退会済み</option></select><button class="btn btn-outline-secondary sp-mt-3" type="reset">リセット</button></form>
 ```
 
 ## 属性とイベント

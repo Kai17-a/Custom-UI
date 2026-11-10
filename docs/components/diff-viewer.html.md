@@ -9,9 +9,9 @@
 ## 文章の変更を比較する
 
 ```html
-<div data-ui-diff-viewer><label>変更前<textarea class="form-control" data-ui-diff-before>制作依頼
+<div class="fx fx-column fx-gap-3" data-ui-diff-viewer><label>変更前<textarea class="form-control" rows="4" data-ui-diff-before>制作依頼
 締切：月曜日
-確認をお願いします。</textarea></label><label>変更後<textarea class="form-control" data-ui-diff-after>制作依頼
+確認をお願いします。</textarea></label><label>変更後<textarea class="form-control" rows="4" data-ui-diff-after>制作依頼
 締切：水曜日
 資料を添付します。
 確認をお願いします。</textarea></label></div>
