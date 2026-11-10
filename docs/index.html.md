@@ -109,6 +109,8 @@
 
 - [Forms](components/forms.html.md): 入力・選択・バリデーション
 
+- [Tokenizer](components/tokenizer.html.md): 検索しながらタグ形式で複数項目を選択します。
+
 - [Input group](components/input-group.html.md): 入力欄と接頭辞・接尾辞・ボタン・selectの連結
 
 - [Date picker](components/datepicker.html.md): 日付フォーム・日付入力・選択・必須・範囲指定

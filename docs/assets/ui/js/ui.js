@@ -2823,10 +2823,73 @@
     onDispose(root,()=>{clearTimeout(timer);observer.disconnect();end.setCustomValidity(invalidEnd);status.remove();dateRangeStates.delete(root);});sync();
   }
 
+  const tokenizerStates=new WeakSet();
+  function initTokenizer(select) {
+    if(tokenizerStates.has(select)||!select.multiple)return;
+    tokenizerStates.add(select);
+    const listen=scopedEvents(select),restore=rememberAttributes(select,['class','tabindex','aria-hidden']);
+    const root=doc.createElement('div');root.className='ui-tokenizer';select.after(root);
+    const tags=doc.createElement('div');tags.className='ui-tokenizer-tags';
+    const input=doc.createElement('input');input.type='search';input.className='form-control';input.autocomplete='off';input.placeholder='候補を検索';
+    const label=select.getAttribute('aria-label')||[...select.labels].map(x=>x.textContent).join(' ')||'項目';
+    input.setAttribute('aria-label',label+'を検索');input.setAttribute('role','combobox');input.setAttribute('aria-autocomplete','list');
+    const list=doc.createElement('div');list.className='ui-tokenizer-options';list.setAttribute('role','listbox');list.setAttribute('aria-label',label+'の候補');list.id=id(list);
+    input.setAttribute('aria-controls',list.id);
+    const clear=doc.createElement('button');clear.type='button';clear.className='btn btn-sm btn-outline-secondary';clear.textContent='全解除';clear.dataset.uiTokenClear='';
+    const status=doc.createElement('small');status.setAttribute('role','status');
+    root.append(tags,input,list,clear,status);
+    select.classList.add('ui-tokenizer-source');select.tabIndex=-1;select.setAttribute('aria-hidden','true');
+    let active=-1,options=[],expanded=false,disposed=false,resetTimer;
+    const inactive=()=>select.matches(':disabled');
+    const locked=o=>o.disabled||o.parentElement?.disabled;
+    function highlight(){
+      [...list.children].forEach((el,i)=>el.setAttribute('aria-selected',String(i===active)));
+      if(active>=0&&list.children[active]){input.setAttribute('aria-activedescendant',list.children[active].id);list.children[active].scrollIntoView({block:'nearest'});}
+      else input.removeAttribute('aria-activedescendant');
+    }
+    function render(){
+      if(disposed)return;
+      input.disabled=inactive();input.setAttribute('aria-required',String(select.required));
+      clear.disabled=inactive()||![...select.selectedOptions].some(o=>!locked(o));
+      tags.replaceChildren();
+      for(const o of select.selectedOptions){
+        const button=doc.createElement('button');button.type='button';button.className='btn btn-sm btn-outline-secondary';button.textContent=o.textContent+' を解除';button.dataset.uiTokenRemove=o.value;button.disabled=inactive()||locked(o);button.setAttribute('aria-label',o.textContent+'を選択から解除');
+        button.addEventListener('click',()=>{if(inactive()||locked(o))return;o.selected=false;commit();input.focus();});tags.append(button);
+      }
+      const words=input.value.normalize('NFKC').toLowerCase().trim().split(/\s+/);
+      options=[...select.options].filter(o=>!o.selected&&!locked(o)&&!o.hidden&&!o.parentElement.hidden&&words.every(w=>(o.textContent+' '+(o.dataset.uiKeywords||'')).normalize('NFKC').toLowerCase().includes(w)));
+      list.replaceChildren();active=-1;
+      options.forEach((o,i)=>{const item=doc.createElement('div');item.id=id(item);item.setAttribute('role','option');item.textContent=o.textContent;item.addEventListener('pointerdown',e=>e.preventDefault());item.addEventListener('click',()=>choose(i));list.append(item);});
+      list.hidden=!expanded||inactive();input.setAttribute('aria-expanded',String(!list.hidden));highlight();
+      status.textContent=expanded?(options.length?options.length+'件の候補':'候補がありません'):select.selectedOptions.length+'件を選択';
+    }
+    function commit(){select.dispatchEvent(new Event('input',{bubbles:true}));select.dispatchEvent(new Event('change',{bubbles:true}));input.removeAttribute('aria-invalid');emit(select,'tokenchange',{values:[...select.selectedOptions].map(o=>o.value)});render();}
+    function choose(i){const o=options[i];if(!o||inactive()||locked(o))return;o.selected=true;input.value='';commit();input.focus();}
+    for(const label of select.labels)listen(label,'click',e=>{e.preventDefault();input.focus();});
+    listen(input,'focus',()=>{expanded=true;render();});
+    listen(root,'focusout',e=>{if(!root.contains(e.relatedTarget)){expanded=false;render();}});
+    listen(input,'input',()=>{expanded=true;render();});
+    listen(input,'keydown',e=>{
+      if(e.isComposing||e.keyCode===229)return;
+      if(['ArrowDown','ArrowUp'].includes(e.key)){e.preventDefault();expanded=true;list.hidden=false;input.setAttribute('aria-expanded','true');active=options.length?(active+(e.key==='ArrowDown'?1:-1)+options.length)%options.length:-1;highlight();}
+      if(e.key==='Enter'){e.preventDefault();choose(active);}
+      if(e.key==='Escape'){e.preventDefault();expanded=false;render();}
+    });
+    listen(clear,'click',()=>{if(inactive())return;for(const o of select.options)if(!locked(o))o.selected=false;commit();input.focus();});
+    listen(select,'change',render);
+    listen(select,'invalid',e=>{e.preventDefault();input.setAttribute('aria-invalid','true');input.focus();status.textContent='項目を選択してください。';});
+    listen(select.form,'reset',e=>{clearTimeout(resetTimer);resetTimer=setTimeout(()=>{if(!e.defaultPrevented){input.value='';input.removeAttribute('aria-invalid');render();}},0);});
+    const observer=new MutationObserver(render);observer.observe(select,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['disabled','required','label','hidden','selected','value']});
+    for(let parent=select.parentElement;parent;parent=parent.parentElement)if(parent.tagName==='FIELDSET')observer.observe(parent,{attributes:true,attributeFilter:['disabled']});
+    selectControls.set(select,{sync:render});
+    onDispose(select,()=>{disposed=true;clearTimeout(resetTimer);observer.disconnect();root.remove();restore();selectControls.delete(select);tokenizerStates.delete(select);});render();
+  }
+
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
     scan('[data-ui-date-range]').forEach(initDateRange);
+    scan('select[data-ui-tokenizer]').forEach(initTokenizer);
     scan('[data-ui-agent-flow]').forEach(initAgentFlow);
     scan('[data-ui-data-table]').forEach(initDataTable);
     scan('[data-ui-scroll-active]').forEach(initScrollActive);
