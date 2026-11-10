@@ -151,6 +151,8 @@
 
 - [Timeline](components/timeline.html.md): 時系列・作業履歴・進行状況
 
+- [Log stream](components/log-stream.html.md): 追記されるログを表示し、末尾への追従を切り替えます。
+
 ## 通知・補助表示
 
 - [Alerts](components/alerts.html.md): アラート・成功・情報・警告・エラー

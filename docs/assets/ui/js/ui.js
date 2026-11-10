@@ -2786,9 +2786,26 @@
     onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
   }
 
+  const logStreamStates=new WeakSet();
+  function initLogStream(root){
+    if(logStreamStates.has(root))return;logStreamStates.add(root);const listen=scopedEvents(root),source=root.querySelector('[data-ui-log-source]');
+    const toolbar=doc.createElement('div'),toggle=doc.createElement('button'),latest=doc.createElement('button'),status=doc.createElement('small'),viewport=doc.createElement('div'),lines=doc.createElement('ol');toolbar.className='ui-log-toolbar';
+    for(const button of [toggle,latest]){button.type='button';button.className='btn btn-sm btn-outline-secondary';toolbar.append(button);}latest.textContent='末尾へ戻る';status.setAttribute('role','status');toolbar.append(status);viewport.className='ui-log-viewport';viewport.tabIndex=0;viewport.setAttribute('role','region');viewport.setAttribute('aria-label',root.dataset.uiLogLabel||'実行ログ');viewport.append(lines);root.append(toolbar,viewport);
+    let follow=true,unread=0;const configured=Number(root.dataset.uiLogLimit),limit=Number.isInteger(configured)&&configured>0?Math.min(10000,configured):500;
+    function update(){toggle.textContent=follow?'追従を停止':'追従を再開';toggle.setAttribute('aria-pressed',String(follow));status.textContent=lines.children.length?lines.children.length+'件'+(unread?'、新着 '+unread+'件':''):'ログはまだありません';latest.disabled=follow;}
+    function bottom(){follow=true;unread=0;viewport.scrollTop=viewport.scrollHeight;update();}
+    function append(values){const top=viewport.scrollTop,oldHeight=viewport.scrollHeight;for(const value of values){const li=doc.createElement('li');li.textContent=String(value);lines.append(li);}const excess=Math.max(0,lines.children.length-limit);let removedHeight=0;for(let i=0;i<excess;i++){const first=lines.firstElementChild;removedHeight+=first.getBoundingClientRect().height;first.remove();}if(follow)bottom();else{unread+=values.length;viewport.scrollTop=Math.max(0,top-removedHeight);update();}emit(root,'logchange',{count:lines.children.length,unread,following:follow,removed:excess});}
+    listen(root,'ui:logappend',e=>{if(e.target!==root)return;const value=e.detail?.lines??e.detail?.text;if(Array.isArray(value))append(value);else if(value!==undefined)append(String(value).split(/\r?\n/));});
+    listen(toggle,'click',()=>{if(follow){follow=false;update();}else bottom();});listen(latest,'click',bottom);
+    listen(viewport,'scroll',()=>{if(follow&&viewport.scrollHeight-viewport.clientHeight-viewport.scrollTop>8){follow=false;update();}});
+    listen(root,'click',e=>{const button=closest(e.target,'[data-ui-log-add]');if(button&&root.contains(button)&&!disabled(button))append([button.dataset.uiLogAdd]);});
+    onDispose(root,()=>{toolbar.remove();viewport.remove();logStreamStates.delete(root);});if(source?.textContent)append(source.textContent.trimEnd().split(/\r?\n/));else update();
+  }
+
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-log-stream]').forEach(initLogStream);
     scan('[data-ui-agent-flow]').forEach(initAgentFlow);
     scan('[data-ui-data-table]').forEach(initDataTable);
     scan('[data-ui-scroll-active]').forEach(initScrollActive);
