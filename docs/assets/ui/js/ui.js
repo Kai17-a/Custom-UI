@@ -2709,6 +2709,7 @@
       for(const record of records)record.row.hidden=record.hidden||!showing.has(record);
       const focused=doc.activeElement;
       ordered.forEach((record,index)=>{if(body.rows[index]!==record.row)body.insertBefore(record.row,body.rows[index]||null);});
+      syncTableDetails(root);
       body.append(empty);empty.hidden=filtered.length>0;emptyCell.colSpan=[...(table.tHead?.rows||[]),...records.map(record=>record.row)].reduce((columns,row)=>Math.max(columns,[...row.cells].reduce((sum,cell)=>sum+cell.colSpan,0)),1);
       emptyCell.textContent=root.dataset.uiTableEmpty||'一致するデータがありません。';
       if(focused&&root.contains(focused)&&doc.activeElement!==focused&&!focused.closest('[hidden]'))focused.focus({preventScroll:true});
@@ -2727,7 +2728,8 @@
       if(notify)emit(root,'tablechange',{search:search?.value||'',page,pageSize:size,total:data.length,filtered:filtered.length,pageCount:pages,sort:sort?{column:sort.index,type:sort.type,direction:sort.direction}:null});
     }
     function refresh() {
-      records=[...body.rows].filter(row=>row!==empty).map(row=>{if(!rows.has(row)){remember(row,['hidden','data-ui-row-selected']);rows.set(row,{row,hidden:row.hidden,index:nextIndex++});}return rows.get(row);});
+      if(root.hasAttribute('data-ui-table-expandable'))initTableDetails(root);
+      records=[...body.rows].filter(row=>row!==empty&&!row.hasAttribute('data-ui-table-detail')).map(row=>{if(!rows.has(row)){remember(row,['hidden','data-ui-row-selected']);rows.set(row,{row,hidden:row.hidden,index:nextIndex++});}return rows.get(row);});
       search=own('[data-ui-table-search]')[0];sizeControl=own('[data-ui-table-page-size]')[0];
       for(const control of [search,sizeControl].filter(Boolean)){remember(control,['aria-controls']);control.setAttribute('aria-controls',table.id);}
       buttons=own('button[data-ui-table-sort]').filter(button=>button.closest('table')===table&&button.closest('th'));
@@ -2786,6 +2788,35 @@
     listen(doc,'visibilitychange',sync);
     agentFlowStates.add(root);
     onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
+  }
+
+  const tableDetailStates=new WeakMap();
+  function syncTableDetails(root){
+    const state=tableDetailStates.get(root);if(!state)return;
+    for(const [row,entry] of state.rows){
+      if(!state.body.contains(row)){destroy(entry.detail);entry.detail.remove();entry.restore();state.rows.delete(row);continue;}
+      entry.cell.colSpan=Math.max(1,[...row.cells].filter(cell=>!cell.hidden).reduce((n,cell)=>n+cell.colSpan,0));
+      entry.detail.hidden=row.hidden||entry.button.getAttribute('aria-expanded')!=='true';
+      if(row.nextElementSibling!==entry.detail)row.after(entry.detail);
+    }
+  }
+  function initTableDetails(root){
+    const table=root.matches('table')?root:root.querySelector('table'),body=table?.tBodies[0];if(!body)return;
+    let state=tableDetailStates.get(root);
+    if(!state){
+      state={body,rows:new Map()};tableDetailStates.set(root,state);const listen=scopedEvents(root);
+      listen(root,'click',e=>{const button=closest(e.target,'[data-ui-row-expand]');if(!button||disabled(button)||!root.contains(button))return;const row=button.closest('tr'),entry=state.rows.get(row);if(!entry||entry.button!==button)return;e.preventDefault();const expanded=button.getAttribute('aria-expanded')!=='true';button.setAttribute('aria-expanded',String(expanded));syncTableDetails(root);emit(root,'rowexpand',{row,expanded});});
+      listen(root,'ui:columnchange',()=>syncTableDetails(root));
+      onDispose(root,()=>{for(const entry of state.rows.values()){destroy(entry.detail);entry.detail.remove();entry.restore();}tableDetailStates.delete(root);});
+    }
+    for(const row of [...body.rows]){
+      if(state.rows.has(row)||row.hasAttribute('data-ui-table-detail'))continue;
+      const template=row.querySelector('template[data-ui-row-detail]'),button=row.querySelector('[data-ui-row-expand]');if(!template||!button)continue;
+      const restore=rememberAttributes(button,['aria-expanded','aria-controls']);
+      const detail=doc.createElement('tr'),cell=doc.createElement('td');detail.className='ui-table-detail';detail.setAttribute('data-ui-table-detail','');detail.id=id(detail);cell.append(template.content.cloneNode(true));detail.append(cell);row.after(detail);
+      button.setAttribute('aria-controls',detail.id);button.setAttribute('aria-expanded',String(button.getAttribute('aria-expanded')==='true'));state.rows.set(row,{detail,cell,button,restore});init(detail);
+    }
+    syncTableDetails(root);
   }
 
   const tableColumnStates=new WeakSet();
@@ -3055,6 +3086,7 @@
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-table-expandable]').forEach(initTableDetails);
     scan('[data-ui-table-columns]').forEach(initTableColumns);
     scan('[data-ui-lightbox]').forEach(initLightbox);
     scan('[data-ui-context-menu]').forEach(initContextMenu);

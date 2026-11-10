@@ -141,6 +141,8 @@
 
 - [Table](components/table.html.md): 一覧表示
 
+- [Table row expansion](components/table-details.html.md): 一覧の行を開いて詳細を確認します。
+
 - [Data table](components/data-table.html.md): データテーブル・検索・ソート・ページ送り・行選択
 
 - [Table column settings](components/table-columns.html.md): 一覧で表示する列を選択し、既定の表示に戻せます。

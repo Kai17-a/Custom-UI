@@ -59,6 +59,7 @@
 ## データ表示
 
 - [Table](components/table.html.md): 静的な一覧表示です。
+- [Table row expansion](components/table-details.html.md): 一覧の行を開いて詳細を確認します。
 - [Data table](components/data-table.html.md): 検索・並べ替え・ページ送り・行選択を組み合わせたデータテーブルです。
 - [Table column settings](components/table-columns.html.md): 一覧で表示する列を選択し、既定の表示に戻せます。
 - [Kanban board](components/board.html.md): タスクと進捗管理。

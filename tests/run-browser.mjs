@@ -1,3 +1,4 @@
+import {check as checkTableDetails} from './table-details-browser.mjs';
 import {check as checkTableColumns} from './table-columns-browser.mjs';
 import {check as checkLightbox} from './lightbox-browser.mjs';
 import {check as checkContextMenu} from './context-menu-browser.mjs';
@@ -93,6 +94,7 @@ try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  await checkTableDetails({navigate,evaluate,click,key,send});
   await checkTableColumns({navigate,evaluate,click,key,send});
   await checkLightbox({navigate,evaluate,click,key,send});
   await checkContextMenu({navigate,evaluate,click,key,send});
