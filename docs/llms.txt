@@ -53,6 +53,7 @@
 - [Command menu](components/command.html.md): 検索からページや操作を選ぶメニュー。
 - [Power search](components/power-search.html.md): 検索語と複数条件を組み合わせて一覧を絞り込みます。
 - [Dropdown](components/dropdown.html.md): 操作メニュー・上下配置・キーボード・選択イベント。
+- [Context menu](components/context-menu.html.md): 右クリック・キーボード・操作ボタンから項目のメニューを開きます。
 - [Accordion](components/disclosure.html.md): 補足情報を段階的に表示します。
 
 ## データ表示
