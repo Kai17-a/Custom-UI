@@ -115,6 +115,8 @@
 
 - [Date picker](components/datepicker.html.md): 日付フォーム・日付入力・選択・必須・範囲指定
 
+- [Date range](components/date-range.html.md): 開始日・終了日とプリセットで期間を指定します。
+
 - [Rating](components/rating.html.md): 星評価・フォーム送信・リセット
 
 - [Clipboard](components/clipboard.html.md): クリップボード・コピー・テキスト・コード
