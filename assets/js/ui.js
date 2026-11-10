@@ -2788,6 +2788,37 @@
     onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
   }
 
+  const tableColumnStates=new WeakSet();
+  function initTableColumns(root){
+    if(tableColumnStates.has(root)||root.matches('table'))return;
+    const table=root.querySelector('table'),header=table?.tHead?.rows[0];
+    if(!header||table.tHead.rows.length!==1||[...header.cells].some(cell=>cell.colSpan!==1||cell.rowSpan!==1))return;
+    tableColumnStates.add(root);const listen=scopedEvents(root),restores=new Map();
+    const panel=doc.createElement('details');panel.className='ui-table-columns';
+    const summary=doc.createElement('summary');summary.textContent='表示する列';panel.append(summary);
+    const fields=doc.createElement('fieldset'),legend=doc.createElement('legend');legend.textContent='表示する列を選択';fields.append(legend);panel.append(fields);
+    const columns=[...header.cells].map((cell,index)=>({index,name:cell.dataset.uiColumnLabel||cell.textContent.trim()||'列'+(index+1),key:cell.dataset.uiColumnKey||String(index),required:cell.hasAttribute('data-ui-column-required'),initial:!cell.hidden,visible:!cell.hidden}));
+    for(const column of columns){
+      if(column.required)column.initial=column.visible=true;
+      const label=doc.createElement('label');label.className='form-check';const input=doc.createElement('input');input.type='checkbox';input.className='form-check-input';input.checked=column.visible;column.input=input;label.append(input,doc.createTextNode(column.name));fields.append(label);
+      listen(input,'change',()=>{if(column.required)return;column.visible=input.checked;if(!columns.some(c=>c.visible))column.visible=true;apply(true);});
+    }
+    if(!columns.some(c=>c.visible))columns[0].initial=columns[0].visible=true;
+    const reset=doc.createElement('button');reset.type='button';reset.className='btn btn-sm btn-outline-secondary';reset.textContent='既定の表示に戻す';panel.append(reset);root.prepend(panel);
+    function apply(notify=false){
+      const count=columns.filter(c=>c.visible).length;
+      for(const column of columns){column.input.checked=column.visible;column.input.disabled=column.required||(column.visible&&count===1);}
+      for(const row of table.rows){
+        if(row.cells.length!==columns.length||[...row.cells].some(cell=>cell.colSpan!==1||cell.rowSpan!==1))continue;
+        [...row.cells].forEach((cell,i)=>{if(!restores.has(cell))restores.set(cell,rememberAttributes(cell,['hidden']));cell.hidden=!columns[i].visible;});
+      }
+      if(notify)emit(root,'columnchange',{visible:columns.filter(c=>c.visible).map(c=>c.key)});
+    }
+    listen(reset,'click',()=>{columns.forEach(c=>c.visible=c.initial);apply(true);});
+    const observer=new MutationObserver(()=>apply());observer.observe(table,{childList:true,subtree:true});
+    onDispose(root,()=>{observer.disconnect();panel.remove();for(const restore of restores.values())restore();tableColumnStates.delete(root);});apply();
+  }
+
   const lightboxStates=new WeakSet();
   function initLightbox(root){
     if(lightboxStates.has(root))return;lightboxStates.add(root);
@@ -3024,6 +3055,7 @@
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-table-columns]').forEach(initTableColumns);
     scan('[data-ui-lightbox]').forEach(initLightbox);
     scan('[data-ui-context-menu]').forEach(initContextMenu);
     scan('[data-ui-power-search]').forEach(initPowerSearch);
