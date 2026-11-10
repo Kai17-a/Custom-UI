@@ -181,6 +181,8 @@
 
 - [AI visuals](components/ai-visuals.html.md): 回答・ツール履歴・RAG・意味マップ・コンテキスト・音声
 
+- [DiffViewer](components/diff-viewer.html.md): 文章やコードの追加・削除を左右で比較します。
+
 ## 使い方
 
 [ダウンロード・導入ガイドを開く](installation.html.md)

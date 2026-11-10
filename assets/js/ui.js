@@ -2786,9 +2786,27 @@
     onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
   }
 
+  const diffViewerStates=new WeakSet();
+  function initDiffViewer(root){
+    if(diffViewerStates.has(root))return;const before=root.querySelector('[data-ui-diff-before]'),after=root.querySelector('[data-ui-diff-after]');if(!before||!after)return;diffViewerStates.add(root);
+    const listen=scopedEvents(root),output=doc.createElement('div'),status=doc.createElement('p');output.className='ui-diff-output';output.tabIndex=0;output.setAttribute('role','region');output.setAttribute('aria-label','変更前後の比較');status.setAttribute('role','status');root.append(status,output);
+    function render(){
+      const lines=s=>s===''?[]:s.replace(/\r\n?/g,'\n').split('\n'),a=lines(before.value),b=lines(after.value),rows=[];let i=0,j=0;
+      const bounded=a.length*b.length<=1000000;
+      if(bounded){const dp=Array.from({length:a.length+1},()=>new Uint32Array(b.length+1));for(let x=a.length-1;x>=0;x--)for(let y=b.length-1;y>=0;y--)dp[x][y]=a[x]===b[y]?1+dp[x+1][y+1]:Math.max(dp[x+1][y],dp[x][y+1]);
+        while(i<a.length||j<b.length){if(i<a.length&&j<b.length&&a[i]===b[j])rows.push(['equal',a[i++],b[j++]]);else if(i<a.length&&(j===b.length||dp[i+1][j]>=dp[i][j+1]))rows.push(['delete',a[i++],'']);else rows.push(['insert','',b[j++]]);}
+      }else{while(i<a.length&&j<b.length&&a[i]===b[j])rows.push(['equal',a[i++],b[j++]]);while(i<a.length)rows.push(['delete',a[i++],'']);while(j<b.length)rows.push(['insert','',b[j++]]);}
+      const table=doc.createElement('table');table.className='ui-diff-table';const head=table.createTHead().insertRow();for(const name of ['変更前','変更後']){const th=doc.createElement('th');th.scope='col';th.textContent=name;head.append(th);}const body=table.createTBody();let removed=0,added=0,left=0,right=0;
+      for(const [kind,oldText,newText]of rows){const row=body.insertRow();row.dataset.diffKind=kind;if(kind==='delete')removed++;if(kind==='insert')added++;for(const [side,text]of [[0,oldText],[1,newText]]){const cell=row.insertCell();if(kind==='delete'&&side===1||kind==='insert'&&side===0)continue;const number=side===0?++left:++right;const marker=doc.createElement('span');marker.textContent=number+' '+(kind==='equal'?'変更なし':kind==='delete'?'削除 −':'追加 +')+' ';const code=doc.createElement('code');code.textContent=text;cell.append(marker,code);}}
+      output.replaceChildren(table);status.textContent=added||removed?'追加 '+added+'行、削除 '+removed+'行'+(bounded?'':'（大きな入力のため簡易比較）'):'差分はありません';emit(root,'diffupdate',{added,removed,simplified:!bounded});
+    }
+    listen(before,'input',render);listen(after,'input',render);listen(root,'ui:diffrefresh',render);onDispose(root,()=>{output.remove();status.remove();diffViewerStates.delete(root);});render();
+  }
+
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-diff-viewer]').forEach(initDiffViewer);
     scan('[data-ui-agent-flow]').forEach(initAgentFlow);
     scan('[data-ui-data-table]').forEach(initDataTable);
     scan('[data-ui-scroll-active]').forEach(initScrollActive);
