@@ -19,6 +19,8 @@ export async function check({navigate,evaluate,click,key,send}){
   await click(`.ui-richtext-toolbar button:nth-child(${index+1})`);
   await assert(`r.querySelectorAll('button')[${index}].getAttribute('aria-pressed')===String(document.queryCommandState('${command}'))`,'toggle '+command);
  }
+ await evaluate(`set('<p>例外前</p>');selectText(e);window.stateErrors=[];window.onStateError=event=>{stateErrors.push(event.message);event.preventDefault();};addEventListener('error',onStateError);window.queryState=document.queryCommandState;document.queryCommandState=name=>{if(name==='bold')throw new DOMException('Unsupported command','NotSupportedError');return queryState.call(document,name);};e.textContent='例外後';e.dispatchEvent(new InputEvent('input',{bubbles:true}));document.dispatchEvent(new Event('selectionchange'));document.queryCommandState=queryState;removeEventListener('error',onStateError)`);
+ await assert(`s.value===e.innerHTML&&s.value.includes('例外後')&&stateErrors.length===0`,'query state failure preserves source sync');
  await evaluate(`set('<p onclick="alert(1)" style="color:red">安全<img src=x onerror="window.hacked=1"><script>window.hacked=1<\/script><svg><a href="javascript:alert(1)">x</a></svg><iframe srcdoc="bad"></iframe><a href="jav&#x0a;ascript:alert(1)">危険</a><a href="https://example.test/x" target="_blank" onclick="bad()">安全リンク</a></p>')`);
  await assert(`!window.hacked&&!e.querySelector('img,script,svg,iframe,[onclick],[style],[target]')&&[...e.querySelectorAll('a[href]')].every(a=>a.href.startsWith('https://example.test/'))&&s.value===e.innerHTML`,'load sanitization');
  await evaluate(`e.focus();const data=new DataTransfer();data.setData('text/html','<p>貼付<img src=x onerror="window.hacked=1"><a href="data:text/html,bad">不正</a></p>');e.dispatchEvent(new ClipboardEvent('paste',{clipboardData:data,bubbles:true,cancelable:true}))`);
@@ -29,4 +31,6 @@ export async function check({navigate,evaluate,click,key,send}){
  await evaluate(`document.body.focus();e.blur()`);await click('label[for="rich-description"]');await assert(`document.activeElement===e`,'label focus');
  for(const width of [390,1280])for(const mode of ['light','dark']){await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});await evaluate(`KavUI.setColorTheme('${mode}')`);await assert(`document.documentElement.scrollWidth<=innerWidth+1`,'bounds');}
  await evaluate(`KavUI.destroy(r);KavUI.init(r);KavUI.init(r)`);await assert(`r.querySelectorAll('.ui-richtext-editor').length===1`,'lifecycle');
+ await evaluate(`window.e=r.querySelector('.ui-richtext-editor');e.focus();var range=document.createRange();range.selectNodeContents(e);getSelection().removeAllRanges();getSelection().addRange(range);window.stateCalls=0;window.queryState=document.queryCommandState;document.queryCommandState=name=>{stateCalls++;return queryState.call(document,name);};document.dispatchEvent(new Event('selectionchange'));document.queryCommandState=queryState`);
+ await assert(`stateCalls===4`,'one selection listener after repeated init');
 }
