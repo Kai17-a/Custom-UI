@@ -1,3 +1,4 @@
+import {check as checkDiffViewer} from './diff-viewer-browser.mjs';
 import {check as checkTour} from './tour-browser.mjs';
 import {check as checkTransferList} from './transfer-list-browser.mjs';
 import {check as checkOverflowList} from './overflow-list-browser.mjs';
@@ -97,6 +98,7 @@ try {
   const {targetId}=await send('Target.createTarget',{url:'about:blank'},null);
   ({sessionId:session}=await send('Target.attachToTarget',{targetId,flatten:true},null));
   await send('Runtime.enable');await send('Page.enable');
+  await checkDiffViewer({navigate,evaluate,click,key,send});
   await checkTour({navigate,evaluate,click,key,send});
   await checkTransferList({navigate,evaluate,click,key,send});
   await checkOverflowList({navigate,evaluate,click,key,send});

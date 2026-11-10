@@ -32,7 +32,7 @@ class DocumentationStructureTests(unittest.TestCase):
         expected = {
             'ナビゲーション': {'navigation.html', 'sidebar.html', 'command.html', 'dropdown.html', 'disclosure.html', 'power-search.html', 'context-menu.html'},
             '通知・補助表示': {'alerts.html', 'banner.html', 'toasts.html', 'tips.html', 'popover.html', 'dialog.html', 'drawer.html', 'tour.html'},
-            'AI・ワークフロー': {'agent-workflow.html', 'ai-visuals.html'},
+            'AI・ワークフロー': {'agent-workflow.html', 'ai-visuals.html', 'diff-viewer.html'},
         }
         reference = None
         for page in DOCS.rglob('*.html'):
