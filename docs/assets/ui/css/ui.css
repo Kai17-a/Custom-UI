@@ -71,6 +71,8 @@
 @import url("responsive-utilities.css");
 @import url("themes.css");
 
+@import url("components/richtext.css");
+
 @import url("components/log-stream.css");
 
 @import url("components/diff-viewer.css");

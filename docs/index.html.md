@@ -205,6 +205,8 @@
 
 - [AI visuals](components/ai-visuals.html.md): 回答・ツール履歴・RAG・意味マップ・コンテキスト・音声
 
+- [Rich text editor](components/richtext.html.md): 見出し・強調・リンク・リストを使って文章を編集します。
+
 - [DiffViewer](components/diff-viewer.html.md): 文章やコードの追加・削除を左右で比較します。
 
 ## 使い方
