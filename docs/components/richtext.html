@@ -59,9 +59,13 @@
     <ul>
       <li><a href="buttons.html">Buttons</a></li>
       <li><a href="button-group.html">Button group</a></li>
+      <li><a href="overflow-list.html">Overflow list</a></li>
       <li><a href="forms.html">Forms</a></li>
+      <li><a href="tokenizer.html">Tokenizer</a></li>
       <li><a href="input-group.html">Input group</a></li>
+      <li><a href="transfer-list.html">Transfer list</a></li>
       <li><a href="datepicker.html">Date picker</a></li>
+      <li><a href="date-range.html">Date range</a></li>
       <li><a href="rating.html">Rating</a></li>
       <li><a href="clipboard.html">Clipboard</a></li>
     </ul>
@@ -72,7 +76,9 @@
       <li><a href="navigation.html">Navigation</a></li>
       <li><a href="sidebar.html">Sidebar</a></li>
       <li><a href="command.html">Command menu</a></li>
+      <li><a href="power-search.html">Power search</a></li>
       <li><a href="dropdown.html">Dropdown</a></li>
+      <li><a href="context-menu.html">Context menu</a></li>
       <li><a href="disclosure.html">Accordion</a></li>
     </ul>
   </div>
@@ -80,15 +86,20 @@
     <h2>データ表示</h2>
     <ul>
       <li><a href="table.html">Table</a></li>
+      <li><a href="table-details.html">Table row expansion</a></li>
       <li><a href="data-table.html">Data table</a></li>
+      <li><a href="table-columns.html">Table column settings</a></li>
       <li><a href="board.html">Kanban board</a></li>
       <li><a href="calendar.html">Calendar</a></li>
       <li><a href="list-group.html">List group</a></li>
+      <li><a href="tree-list.html">Tree list</a></li>
       <li><a href="avatar.html">Avatar</a></li>
       <li><a href="badges.html">Badges</a></li>
       <li><a href="chart.html">Chart</a></li>
       <li><a href="carousel.html">Carousel</a></li>
+      <li><a href="lightbox.html">Lightbox</a></li>
       <li><a href="timeline.html">Timeline</a></li>
+<li><a href="log-stream.html">Log stream</a></li>
     </ul>
   </div>
   <div class="catalog-nav-group">
@@ -98,6 +109,7 @@
       <li><a href="banner.html">Banner</a></li>
       <li><a href="toasts.html">Toasts & alerts</a></li>
       <li><a href="tips.html">Tips & tooltips</a></li>
+      <li><a href="tour.html">Tour</a></li>
       <li><a href="popover.html">Popover</a></li>
       <li><a href="dialog.html">Dialog</a></li>
       <li><a href="drawer.html">Drawer</a></li>
@@ -123,9 +135,10 @@
     <ul>
       <li><a href="agent-workflow.html">Agent workflow</a></li>
       <li><a href="ai-visuals.html">AI visuals</a></li>
-<li><a href="richtext.html">Rich text editor</a></li>
+<li><a href="richtext.html" aria-current="page">Rich text editor</a></li>
+<li><a href="diff-viewer.html">DiffViewer</a></li>
     </ul>
   </div>
 </nav></details><p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>
-<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / AI・ワークフロー</p><h1>Rich text editor</h1></header><p class="lede">見出し・強調・リンク・リストを使って文章を編集します。</p><section class="specimen"><h2>説明文を編集する</h2><div class="example" data-example><form><div data-ui-richtext><label for="rich-description">説明文</label><textarea id="rich-description" class="form-control" name="description" data-ui-richtext-source>&lt;p&gt;制作依頼の&lt;strong&gt;説明文&lt;/strong&gt;を入力してください。&lt;/p&gt;</textarea></div><button type="reset" class="btn btn-outline-secondary sp-mt-3">リセット</button></form></div></section><section class="specimen"><h2>属性とデータ</h2><p>data-ui-richtext内のtextarea[data-ui-richtext-source]を編集画面へ拡張します。textareaのvalueにはHTMLを渡します。変更後も元のtextareaに値を保持するため、フォーム送信やFormDataで取得できます。ui:richtextchangeのdetail.htmlで変更を受け取れます。コードから再設定するときはルートへui:richtextsetイベントを送り、detail.htmlを渡します。</p><p>見出し・太字・斜体・リスト・リンク・装飾解除・元に戻す・やり直すを提供します。日本語変換中はツールバー操作を確定せず、変換終了後に値を同期します。readonly・disabled・resetにも対応します。</p><p>読み込み・貼り付け・送信値は許可した要素だけに制限します。許可要素はp・div・br・h2・h3・strong・b・em・i・ul・ol・li・aです。属性はリンクのhref以外を除去し、リンクはhttp・https・mailtoに制限します。画像・スタイル・スクリプトは取り込みません。保存先でも入力の検証を行ってください。</p><p>外部依存・追加容量・追加ライセンスはありません。ブラウザ標準のcontenteditableとexecCommandを使うため、装飾と履歴の動作はブラウザに依存します。共同編集・画像アップロードは対象外です。共通CSS/JSと通常HTMLで利用し、Vue・AstroではKavWidgetを使えます。参考：<a href="https://astryx.atmeta.com/storybook/?path=/story/richtext-richtexteditor--with-toolbar">Astryx RichTextEditor</a>。</p></section>
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / AI・ワークフロー</p><h1>Rich text editor</h1></header><p class="lede">見出し・強調・リンク・リストを使って文章を編集します。</p><section class="specimen"><h2>説明文を編集する</h2><div class="example" data-example><form><div data-ui-richtext><label for="rich-description">説明文</label><textarea id="rich-description" class="form-control" name="description" data-ui-richtext-source>&lt;p&gt;制作依頼の&lt;strong&gt;説明文&lt;/strong&gt;を入力してください。&lt;/p&gt;</textarea></div><button type="reset" class="btn btn-outline-secondary sp-mt-3">リセット</button></form></div></section><section class="specimen"><h2>属性とデータ</h2><p>data-ui-richtext内のtextarea[data-ui-richtext-source]を編集画面へ拡張します。textareaのvalueにはHTMLを渡します。変更後も元のtextareaに値を保持するため、フォーム送信やFormDataで取得できます。ui:richtextchangeのdetail.htmlで変更を受け取れます。コードから再設定するときはルートへui:richtextsetイベントを送り、detail.htmlを渡します。</p><p>見出し・太字・斜体・リスト・リンク・装飾解除・元に戻す・やり直すを提供します。日本語変換中はツールバー操作を確定せず、変換終了後に値を同期します。readonly・disabled・resetにも対応します。required指定時は空白や空の装飾だけの文章を受け付けません。ラベルを押すと編集欄へ移動します。</p><p>読み込み・貼り付け・送信値は許可した要素だけに制限します。許可要素はp・div・br・h2・h3・strong・b・em・i・ul・ol・li・aです。属性はリンクのhref以外を除去し、リンクはhttp・https・mailtoに制限します。画像・スタイル・スクリプトは取り込みません。保存先でも入力の検証を行ってください。</p><p>外部依存・追加容量・追加ライセンスはありません。ブラウザ標準のcontenteditableとexecCommandを使うため、装飾と履歴の動作はブラウザに依存します。共同編集・画像アップロードは対象外です。共通CSS/JSと通常HTMLで利用し、Vue・AstroではKavWidgetを使えます。参考：<a href="https://astryx.atmeta.com/storybook/?path=/story/richtext-richtexteditor--with-toolbar">Astryx RichTextEditor</a>。</p></section>
 </main></div></body></html>

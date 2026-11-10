@@ -16,7 +16,7 @@
 
 data-ui-richtext内のtextarea[data-ui-richtext-source]を編集画面へ拡張します。textareaのvalueにはHTMLを渡します。変更後も元のtextareaに値を保持するため、フォーム送信やFormDataで取得できます。ui:richtextchangeのdetail.htmlで変更を受け取れます。コードから再設定するときはルートへui:richtextsetイベントを送り、detail.htmlを渡します。
 
-見出し・太字・斜体・リスト・リンク・装飾解除・元に戻す・やり直すを提供します。日本語変換中はツールバー操作を確定せず、変換終了後に値を同期します。readonly・disabled・resetにも対応します。
+見出し・太字・斜体・リスト・リンク・装飾解除・元に戻す・やり直すを提供します。日本語変換中はツールバー操作を確定せず、変換終了後に値を同期します。readonly・disabled・resetにも対応します。required指定時は空白や空の装飾だけの文章を受け付けません。ラベルを押すと編集欄へ移動します。
 
 読み込み・貼り付け・送信値は許可した要素だけに制限します。許可要素はp・div・br・h2・h3・strong・b・em・i・ul・ol・li・aです。属性はリンクのhref以外を除去し、リンクはhttp・https・mailtoに制限します。画像・スタイル・スクリプトは取り込みません。保存先でも入力の検証を行ってください。
 
