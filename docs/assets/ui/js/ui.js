@@ -2818,10 +2818,146 @@
     onDispose(root,()=>{clearTimeout(timer);tags.remove();status.remove();if(target?.isConnected)emit(target,'tablefilter',{query:'',filters:[]});powerSearchStates.delete(root);});update(false);
   }
 
+  const treeListStates=new WeakSet();
+  function initTreeList(root){
+    if(treeListStates.has(root))return;treeListStates.add(root);
+    const listen=scopedEvents(root),items=owned(root,'[data-ui-tree-item]','[data-ui-tree]'),restores=[],toggles=[];
+    const remember=(el,attrs)=>restores.push(rememberAttributes(el,attrs));
+    remember(root,['role']);root.setAttribute('role','tree');
+    let current=items.find(item=>item.getAttribute('aria-selected')==='true')||items[0];
+    const group=item=>[...item.children].find(el=>el.matches('ul,ol'));
+    const label=item=>[...item.children].find(el=>el.hasAttribute('data-ui-tree-label'));
+    function visible(){return items.filter(item=>{for(let p=item.parentElement;p&&p!==root;p=p.parentElement)if(p.hidden)return false;return !item.hidden;});}
+    function focus(item){if(!item)return;current=item;items.forEach(el=>el.tabIndex=el===item?0:-1);item.focus();}
+    function expand(item,value){const child=group(item);if(!child)return;item.setAttribute('aria-expanded',String(value));child.hidden=!value;const button=item.querySelector(':scope > [data-ui-tree-toggle]');if(button)button.setAttribute('aria-label',value?'折り畳む':'展開する');}
+    function select(item){if(disabled(item))return;items.forEach(el=>el.setAttribute('aria-selected',String(el===item)));emit(root,'treeselect',{value:item.dataset.uiTreeItem,item});}
+    for(const item of items){
+      remember(item,['role','tabindex','aria-selected','aria-expanded','aria-labelledby']);item.setAttribute('role','treeitem');item.tabIndex=item===current?0:-1;item.setAttribute('aria-selected',String(item===current&&item.getAttribute('aria-selected')==='true'));
+      const name=label(item);if(name){remember(name,['id']);item.setAttribute('aria-labelledby',id(name));}
+      const child=group(item);if(child){remember(child,['role','hidden']);child.setAttribute('role','group');const button=doc.createElement('button');button.type='button';button.tabIndex=-1;button.className='btn btn-sm btn-outline-secondary';button.dataset.uiTreeToggle='';button.textContent='開閉';button.disabled=disabled(item);item.prepend(button);toggles.push(button);expand(item,item.getAttribute('aria-expanded')==='true');}
+    }
+    if(!visible().includes(current))current=visible()[0];items.forEach(item=>item.tabIndex=item===current?0:-1);
+    listen(root,'click',e=>{const item=closest(e.target,'[data-ui-tree-item]');if(!items.includes(item))return;focus(item);if(closest(e.target,'[data-ui-tree-toggle]'))expand(item,item.getAttribute('aria-expanded')!=='true');else select(item);});
+    listen(root,'keydown',e=>{
+      const item=closest(e.target,'[data-ui-tree-item]');if(!items.includes(item)||e.isComposing)return;
+      const shown=visible(),i=shown.indexOf(item);let target;
+      if(e.key==='ArrowDown')target=shown[Math.min(shown.length-1,i+1)];
+      else if(e.key==='ArrowUp')target=shown[Math.max(0,i-1)];
+      else if(e.key==='Home')target=shown[0];else if(e.key==='End')target=shown.at(-1);
+      else if(e.key==='ArrowRight'){if(group(item)&&item.getAttribute('aria-expanded')!=='true')expand(item,true);else target=group(item)?.querySelector('[data-ui-tree-item]');}
+      else if(e.key==='ArrowLeft'){if(group(item)&&item.getAttribute('aria-expanded')==='true')expand(item,false);else target=closest(item.parentElement,'[data-ui-tree-item]');}
+      else if(e.key==='Enter'||e.key===' ')select(item);else return;
+      e.preventDefault();if(target&&items.includes(target))focus(target);
+    });
+    onDispose(root,()=>{toggles.forEach(el=>el.remove());restores.reverse().forEach(fn=>fn());treeListStates.delete(root);});
+  }
+
+  const dateRangeStates=new WeakSet();
+  function initDateRange(root){
+    if(dateRangeStates.has(root))return;
+    const start=root.querySelector('[data-ui-range-start]'),end=root.querySelector('[data-ui-range-end]');
+    if(!start||!end)return;dateRangeStates.add(root);
+    const listen=scopedEvents(root),status=doc.createElement('p');status.className='ui-date-range-status';status.setAttribute('role','status');root.append(status);
+    let timer,setting=false;
+    const invalidEnd=end.validity.customError?end.validationMessage:'';
+    function sync(notify=false){
+      end.setCustomValidity('');
+      const reversed=start.value&&end.value&&start.value>end.value;
+      if(reversed)end.setCustomValidity('終了日は開始日以降にしてください。');
+      else if(Boolean(start.value)!==Boolean(end.value))end.setCustomValidity('開始日と終了日の両方を入力してください。');
+      status.textContent=reversed?end.validationMessage:(!start.validity.valid||!end.validity.valid)?'指定できる日付の範囲を確認してください。':start.value&&end.value?start.value+' 〜 '+end.value:'開始日と終了日を選択してください。';
+      if(notify)emit(root,'rangechange',{start:start.value,end:end.value,valid:start.validity.valid&&end.validity.valid});
+    }
+    function set(a,b){
+      if(start.matches(':disabled')||end.matches(':disabled')||start.readOnly||end.readOnly)return;
+      setting=true;start.value=a;end.value=b;
+      for(const input of [start,end]){input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));}setting=false;sync(true);
+    }
+    listen(root,'input',e=>{if(!setting&&(e.target===start||e.target===end))sync(true);});
+    listen(root,'change',e=>{if(e.target===start||e.target===end)sync();});
+    listen(root,'click',e=>{
+      const button=closest(e.target,'[data-ui-range-preset], [data-ui-range-clear]');if(!button||!root.contains(button)||disabled(button))return;
+      if(button.hasAttribute('data-ui-range-clear')){set('','');return;}
+      const preset=button.dataset.uiRangePreset;
+      if(preset==='month'){
+        const today=new Date(),format=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        set(format(new Date(today.getFullYear(),today.getMonth(),1)),format(new Date(today.getFullYear(),today.getMonth()+1,0)));
+      }else set(button.dataset.uiRangeFrom||'',button.dataset.uiRangeTo||'');
+    });
+    listen(start.form,'reset',e=>{clearTimeout(timer);timer=setTimeout(()=>{if(!e.defaultPrevented)sync();},0);});
+    const observer=new MutationObserver(()=>sync());for(const input of [start,end])observer.observe(input,{attributes:true,attributeFilter:['min','max','required','disabled']});
+    onDispose(root,()=>{clearTimeout(timer);observer.disconnect();end.setCustomValidity(invalidEnd);status.remove();dateRangeStates.delete(root);});sync();
+  }
+
+  const tokenizerStates=new WeakSet();
+  function initTokenizer(select) {
+    if(tokenizerStates.has(select)||!select.multiple)return;
+    tokenizerStates.add(select);
+    const listen=scopedEvents(select),restore=rememberAttributes(select,['class','tabindex','aria-hidden']);
+    const root=doc.createElement('div');root.className='ui-tokenizer';select.after(root);
+    const tags=doc.createElement('div');tags.className='ui-tokenizer-tags';
+    const input=doc.createElement('input');input.type='search';input.className='form-control';input.autocomplete='off';input.placeholder='候補を検索';
+    const label=select.getAttribute('aria-label')||[...select.labels].map(x=>x.textContent).join(' ')||'項目';
+    input.setAttribute('aria-label',label+'を検索');input.setAttribute('role','combobox');input.setAttribute('aria-autocomplete','list');
+    const list=doc.createElement('div');list.className='ui-tokenizer-options';list.setAttribute('role','listbox');list.setAttribute('aria-label',label+'の候補');list.id=id(list);
+    input.setAttribute('aria-controls',list.id);
+    const clear=doc.createElement('button');clear.type='button';clear.className='btn btn-sm btn-outline-secondary';clear.textContent='全解除';clear.dataset.uiTokenClear='';
+    const status=doc.createElement('small');status.setAttribute('role','status');
+    root.append(tags,input,list,clear,status);
+    select.classList.add('ui-tokenizer-source');select.tabIndex=-1;select.setAttribute('aria-hidden','true');
+    let active=-1,options=[],expanded=false,disposed=false,resetTimer;
+    const inactive=()=>select.matches(':disabled');
+    const locked=o=>o.disabled||o.parentElement?.disabled;
+    function highlight(){
+      [...list.children].forEach((el,i)=>el.setAttribute('aria-selected',String(i===active)));
+      if(active>=0&&list.children[active]){input.setAttribute('aria-activedescendant',list.children[active].id);list.children[active].scrollIntoView({block:'nearest'});}
+      else input.removeAttribute('aria-activedescendant');
+    }
+    function render(){
+      if(disposed)return;
+      input.disabled=inactive();input.setAttribute('aria-required',String(select.required));
+      clear.disabled=inactive()||![...select.selectedOptions].some(o=>!locked(o));
+      tags.replaceChildren();
+      for(const o of select.selectedOptions){
+        const button=doc.createElement('button');button.type='button';button.className='btn btn-sm btn-outline-secondary';button.textContent=o.textContent+' を解除';button.dataset.uiTokenRemove=o.value;button.disabled=inactive()||locked(o);button.setAttribute('aria-label',o.textContent+'を選択から解除');
+        button.addEventListener('click',()=>{if(inactive()||locked(o))return;o.selected=false;commit();input.focus();});tags.append(button);
+      }
+      const words=input.value.normalize('NFKC').toLowerCase().trim().split(/\s+/);
+      options=[...select.options].filter(o=>!o.selected&&!locked(o)&&!o.hidden&&!o.parentElement.hidden&&words.every(w=>(o.textContent+' '+(o.dataset.uiKeywords||'')).normalize('NFKC').toLowerCase().includes(w)));
+      list.replaceChildren();active=-1;
+      options.forEach((o,i)=>{const item=doc.createElement('div');item.id=id(item);item.setAttribute('role','option');item.textContent=o.textContent;item.addEventListener('pointerdown',e=>e.preventDefault());item.addEventListener('click',()=>choose(i));list.append(item);});
+      list.hidden=!expanded||inactive();input.setAttribute('aria-expanded',String(!list.hidden));highlight();
+      status.textContent=expanded?(options.length?options.length+'件の候補':'候補がありません'):select.selectedOptions.length+'件を選択';
+    }
+    function commit(){select.dispatchEvent(new Event('input',{bubbles:true}));select.dispatchEvent(new Event('change',{bubbles:true}));input.removeAttribute('aria-invalid');emit(select,'tokenchange',{values:[...select.selectedOptions].map(o=>o.value)});render();}
+    function choose(i){const o=options[i];if(!o||inactive()||locked(o))return;o.selected=true;input.value='';commit();input.focus();}
+    for(const label of select.labels)listen(label,'click',e=>{e.preventDefault();input.focus();});
+    listen(input,'focus',()=>{expanded=true;render();});
+    listen(root,'focusout',e=>{if(!root.contains(e.relatedTarget)){expanded=false;render();}});
+    listen(input,'input',()=>{expanded=true;render();});
+    listen(input,'keydown',e=>{
+      if(e.isComposing||e.keyCode===229)return;
+      if(['ArrowDown','ArrowUp'].includes(e.key)){e.preventDefault();expanded=true;list.hidden=false;input.setAttribute('aria-expanded','true');active=options.length?(active+(e.key==='ArrowDown'?1:-1)+options.length)%options.length:-1;highlight();}
+      if(e.key==='Enter'){e.preventDefault();choose(active);}
+      if(e.key==='Escape'){e.preventDefault();expanded=false;render();}
+    });
+    listen(clear,'click',()=>{if(inactive())return;for(const o of select.options)if(!locked(o))o.selected=false;commit();input.focus();});
+    listen(select,'change',render);
+    listen(select,'invalid',e=>{e.preventDefault();input.setAttribute('aria-invalid','true');input.focus();status.textContent='項目を選択してください。';});
+    listen(select.form,'reset',e=>{clearTimeout(resetTimer);resetTimer=setTimeout(()=>{if(!e.defaultPrevented){input.value='';input.removeAttribute('aria-invalid');render();}},0);});
+    const observer=new MutationObserver(render);observer.observe(select,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['disabled','required','label','hidden','selected','value']});
+    for(let parent=select.parentElement;parent;parent=parent.parentElement)if(parent.tagName==='FIELDSET')observer.observe(parent,{attributes:true,attributeFilter:['disabled']});
+    selectControls.set(select,{sync:render});
+    onDispose(select,()=>{disposed=true;clearTimeout(resetTimer);observer.disconnect();root.remove();restore();selectControls.delete(select);tokenizerStates.delete(select);});render();
+  }
+
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
     scan('[data-ui-power-search]').forEach(initPowerSearch);
+    scan('[data-ui-tree]').forEach(initTreeList);
+    scan('[data-ui-date-range]').forEach(initDateRange);
+    scan('select[data-ui-tokenizer]').forEach(initTokenizer);
     scan('[data-ui-agent-flow]').forEach(initAgentFlow);
     scan('[data-ui-data-table]').forEach(initDataTable);
     scan('[data-ui-scroll-active]').forEach(initScrollActive);
