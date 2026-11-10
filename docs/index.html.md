@@ -181,6 +181,8 @@
 
 - [Tips & tooltips](components/tips.html.md): ヒント・チップ・ツールチップ・補足
 
+- [Tour](components/tour.html.md): 対象要素を順に案内し、操作の流れを説明します。
+
 - [Popover](components/popover.html.md): 操作を含む補足パネル・フォーム・画面端補正
 
 - [Dialog](components/dialog.html.md): 確認・入力ダイアログ
