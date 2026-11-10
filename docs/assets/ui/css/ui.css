@@ -59,3 +59,5 @@
 @import url("spacing-utilities.css");
 @import url("responsive-utilities.css");
 @import url("themes.css");
+
+@import url("components/richtext.css");

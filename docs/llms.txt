@@ -90,6 +90,7 @@
 
 - [Agent workflow](components/agent-workflow.html.md): AIエージェントの処理手順、役割の階層、並列実行、タスクの内訳を可視化します。
 - [AI visuals](components/ai-visuals.html.md): AIの回答、参照資料、ツール実行、コンテキスト、音声の状態を見せるUI。
+- [Rich text editor](components/richtext.html.md): 見出し・強調・リンク・リストを使って文章を編集します。
 
 ## 画面サンプル
 

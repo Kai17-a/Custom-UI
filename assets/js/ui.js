@@ -2786,9 +2786,34 @@
     onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
   }
 
+  const richtextStates=new WeakSet();
+  function initRichtext(root){
+    if(richtextStates.has(root))return;const source=root.querySelector('textarea[data-ui-richtext-source]');if(!source)return;richtextStates.add(root);const listen=scopedEvents(root),restore=rememberAttributes(source,['hidden','tabindex']);
+    function sanitize(html){const parsed=new DOMParser().parseFromString(String(html),'text/html'),out=doc.createElement('div'),allowed=new Set(['P','DIV','BR','H2','H3','STRONG','B','EM','I','UL','OL','LI','A']);
+      function copy(node,parent){if(node.nodeType===Node.TEXT_NODE){parent.append(doc.createTextNode(node.textContent));return;}if(node.nodeType!==Node.ELEMENT_NODE||['SCRIPT','STYLE','IFRAME','OBJECT','SVG','MATH','TEMPLATE'].includes(node.tagName))return;if(!allowed.has(node.tagName)){for(const child of node.childNodes)copy(child,parent);return;}const el=doc.createElement(node.tagName.toLowerCase());if(node.tagName==='A'){try{const url=new URL(node.getAttribute('href')||'',doc.baseURI);if(['http:','https:','mailto:'].includes(url.protocol))el.setAttribute('href',url.href);}catch{}}for(const child of node.childNodes)copy(child,el);parent.append(el);}
+      for(const node of parsed.body.childNodes)copy(node,out);return out.innerHTML;
+    }
+    const toolbar=doc.createElement('div'),editor=doc.createElement('div'),status=doc.createElement('small');toolbar.className='ui-richtext-toolbar';toolbar.setAttribute('role','group');toolbar.setAttribute('aria-label','文章の装飾');editor.className='ui-richtext-editor';editor.setAttribute('role','textbox');editor.setAttribute('aria-multiline','true');editor.setAttribute('aria-label',source.getAttribute('aria-label')||[...source.labels].map(el=>el.textContent).join(' ')||'文章');editor.tabIndex=0;status.setAttribute('role','status');root.append(toolbar,editor,status);source.hidden=true;source.tabIndex=-1;let range=null,timer,composing=false;
+    function sync(){source.value=sanitize(editor.innerHTML);source.dispatchEvent(new Event('input',{bubbles:true}));source.dispatchEvent(new Event('change',{bubbles:true}));emit(root,'richtextchange',{html:source.value});}
+    function command(name,value=null){if(source.matches(':disabled')||source.readOnly||composing)return;editor.focus();if(range&&editor.contains(range.commonAncestorContainer)){const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);}doc.execCommand(name,false,value);sync();}
+    for(const [text,name,value]of [['本文','formatBlock','p'],['見出し','formatBlock','h2'],['太字','bold'],['斜体','italic'],['箇条書き','insertUnorderedList'],['番号リスト','insertOrderedList'],['リンク解除','unlink'],['装飾解除','removeFormat'],['元に戻す','undo'],['やり直す','redo']]){const b=doc.createElement('button');b.type='button';b.className='btn btn-sm btn-outline-secondary';b.textContent=text;listen(b,'click',()=>command(name,value));toolbar.append(b);}
+    const label=doc.createElement('label'),urlInput=doc.createElement('input'),link=doc.createElement('button');label.textContent='リンク先';urlInput.type='url';urlInput.className='form-control';label.append(urlInput);link.type='button';link.className='btn btn-sm btn-outline-secondary';link.textContent='リンクを設定';toolbar.append(label,link);
+    listen(link,'click',()=>{try{const url=new URL(urlInput.value,doc.baseURI);if(!['http:','https:','mailto:'].includes(url.protocol))throw Error();command('createLink',url.href);status.textContent='リンクを設定しました。';}catch{status.textContent='http・https・mailtoのリンク先を入力してください。';}});
+    function load(html){editor.innerHTML=sanitize(html);source.value=editor.innerHTML;range=null;}
+    function state(){const disabled=source.matches(':disabled'),readonly=source.readOnly;editor.contentEditable=String(!disabled&&!readonly);editor.setAttribute('aria-disabled',String(disabled));editor.setAttribute('aria-readonly',String(readonly));editor.setAttribute('aria-required',String(source.required));toolbar.querySelectorAll('button,input').forEach(el=>el.disabled=disabled||readonly);}
+    listen(doc,'selectionchange',()=>{const selection=window.getSelection();if(selection?.rangeCount&&editor.contains(selection.anchorNode)&&editor.contains(selection.focusNode))range=selection.getRangeAt(0).cloneRange();});
+    listen(editor,'compositionstart',()=>composing=true);listen(editor,'compositionend',()=>{composing=false;sync();});listen(editor,'input',()=>{if(!composing)sync();});
+    listen(editor,'paste',e=>{e.preventDefault();if(!e.clipboardData)return;const html=e.clipboardData.getData('text/html');if(html)command('insertHTML',sanitize(html));else command('insertText',e.clipboardData.getData('text/plain'));});
+    listen(editor,'drop',e=>{e.preventDefault();if(e.dataTransfer)command('insertText',e.dataTransfer.getData('text/plain'));});
+    listen(root,'ui:richtextset',e=>{if(e.target===root){load(e.detail?.html||'');sync();}});listen(source,'invalid',e=>{e.preventDefault();editor.focus();status.textContent='文章を入力してください。';});listen(source.form,'reset',e=>{clearTimeout(timer);timer=setTimeout(()=>{if(!e.defaultPrevented)load(source.value);},0);});
+    const observer=new MutationObserver(state);observer.observe(source,{attributes:true,attributeFilter:['disabled','readonly','required']});for(let p=source.parentElement;p;p=p.parentElement)if(p.tagName==='FIELDSET')observer.observe(p,{attributes:true,attributeFilter:['disabled']});
+    onDispose(root,()=>{clearTimeout(timer);observer.disconnect();toolbar.remove();editor.remove();status.remove();restore();richtextStates.delete(root);});load(source.value);state();
+  }
+
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-richtext]').forEach(initRichtext);
     scan('[data-ui-agent-flow]').forEach(initAgentFlow);
     scan('[data-ui-data-table]').forEach(initDataTable);
     scan('[data-ui-scroll-active]').forEach(initScrollActive);
