@@ -30,7 +30,7 @@ class DocumentationStructureTests(unittest.TestCase):
 
     def test_catalog_categories_are_consistent_and_group_related_components(self):
         expected = {
-            'ナビゲーション': {'navigation.html', 'sidebar.html', 'command.html', 'dropdown.html', 'disclosure.html'},
+            'ナビゲーション': {'navigation.html', 'sidebar.html', 'command.html', 'dropdown.html', 'disclosure.html', 'power-search.html', 'context-menu.html'},
             '通知・補助表示': {'alerts.html', 'banner.html', 'toasts.html', 'tips.html', 'popover.html', 'dialog.html', 'drawer.html'},
             'AI・ワークフロー': {'agent-workflow.html', 'ai-visuals.html'},
         }
