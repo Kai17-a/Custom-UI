@@ -2788,6 +2788,37 @@
     onDispose(root,()=>{disposed=true;observer?.disconnect();restore();agentFlowStates.delete(root);});
   }
 
+  const lightboxStates=new WeakSet();
+  function initLightbox(root){
+    if(lightboxStates.has(root))return;lightboxStates.add(root);
+    const listen=scopedEvents(root),panel=doc.createElement('dialog');panel.className='ui-dialog ui-lightbox';panel.setAttribute('aria-label',root.dataset.uiLightboxLabel||'画像ビューアー');
+    const toolbar=doc.createElement('div');toolbar.className='ui-lightbox-toolbar';
+    const button=(text,action)=>{const el=doc.createElement('button');el.type='button';el.className='btn btn-sm btn-outline-secondary';el.textContent=text;listen(el,'click',action);toolbar.append(el);return el;};
+    let index=0,entries=[],zoom=1,image=null,generation=0;
+    const previous=button('前の画像',()=>display(index-1)),next=button('次の画像',()=>display(index+1));
+    const increase=button('拡大',()=>scale(Math.min(4,zoom+.5))),reset=button('元の倍率',()=>scale(1));
+    button('閉じる',()=>hide(panel));
+    const viewport=doc.createElement('div');viewport.className='ui-lightbox-viewport';viewport.tabIndex=0;viewport.setAttribute('role','region');viewport.setAttribute('aria-label','画像（拡大時はスクロールできます）');
+    const caption=doc.createElement('p'),status=doc.createElement('p');status.setAttribute('role','status');panel.append(toolbar,viewport,caption,status);root.append(panel);
+    function scale(value){zoom=value;if(image)image.style.width=Math.min(image.naturalWidth,viewport.clientWidth)*zoom+'px';increase.disabled=!image||zoom>=4;reset.disabled=!image||zoom===1;viewport.scrollTo(0,0);}
+    function display(value){
+      if(value<0||value>=entries.length)return;index=value;const entry=entries[index],token=++generation;
+      image=null;zoom=1;viewport.replaceChildren();viewport.setAttribute('aria-busy','true');increase.disabled=reset.disabled=true;previous.disabled=index===0;next.disabled=index===entries.length-1;
+      caption.textContent=entry.dataset.uiLightboxCaption||entry.querySelector('img')?.alt||entry.textContent.trim();status.textContent=(index+1)+' / '+entries.length+'：読み込み中';
+      const img=doc.createElement('img');img.alt=entry.dataset.uiLightboxAlt||entry.querySelector('img')?.alt||caption.textContent;
+      img.addEventListener('load',()=>{if(token!==generation)return;image=img;viewport.replaceChildren(img);viewport.removeAttribute('aria-busy');scale(1);status.textContent=(index+1)+' / '+entries.length;});
+      const fail=()=>{if(token!==generation)return;viewport.removeAttribute('aria-busy');status.textContent='画像を読み込めませんでした。元のリンクや接続を確認してください。';};
+      img.addEventListener('error',fail);
+      try{const url=new URL(entry.getAttribute('href')||entry.dataset.uiLightboxSrc||'',doc.baseURI);if(!['https:','http:','file:','blob:'].includes(url.protocol)&&!(url.protocol==='data:'&&url.href.startsWith('data:image/')))throw Error('Unsupported image URL');img.src=url.href;}catch{fail();}
+      emit(root,'lightboxchange',{index,source:entry});
+    }
+    listen(root,'click',e=>{const entry=closest(e.target,'[data-ui-lightbox-item]');if(!entry||!root.contains(entry)||disabled(entry)||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;e.preventDefault();entries=owned(root,'[data-ui-lightbox-item]','[data-ui-lightbox]');show(panel,entry);display(entries.indexOf(entry));});
+    listen(panel,'keydown',e=>{if(e.target!==viewport&&e.target!==panel)return;if(e.key==='ArrowLeft'&&zoom===1){e.preventDefault();display(index-1);}if(e.key==='ArrowRight'&&zoom===1){e.preventDefault();display(index+1);}});
+    listen(panel,'close',()=>{generation++;viewport.replaceChildren();image=null;});
+    listen(window,'resize',()=>{if(panel.open)scale(zoom);});
+    onDispose(root,()=>{generation++;hide(panel);panel.remove();lightboxStates.delete(root);});
+  }
+
   const contextMenuStates=new WeakSet();
   function initContextMenu(root){
     if(contextMenuStates.has(root))return;
@@ -2993,6 +3024,7 @@
   function init(scope = doc) {
     scanIcons(scope);
     const scan = selector => [...(scope.matches?.(selector) ? [scope] : []), ...all(scope, selector)].filter(element=>scopeOwns(scope,element));
+    scan('[data-ui-lightbox]').forEach(initLightbox);
     scan('[data-ui-context-menu]').forEach(initContextMenu);
     scan('[data-ui-power-search]').forEach(initPowerSearch);
     scan('[data-ui-tree]').forEach(initTreeList);
