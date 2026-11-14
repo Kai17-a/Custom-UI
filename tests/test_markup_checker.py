@@ -70,7 +70,7 @@ class InventoryTests(unittest.TestCase):
             work = Path(directory)
             sheets = {}
             for name in ('cwd', 'app'):
-                sheet = work / name / 'node_modules/@kav-ui/core/dist/css/ui.css'
+                sheet = work / name / 'node_modules/@kai17-a/kav-ui-core/dist/css/ui.css'
                 sheet.parent.mkdir(parents=True)
                 sheet.write_text('.ui-' + name + ' {}')
                 sheets[name] = sheet
@@ -88,7 +88,7 @@ class InventoryTests(unittest.TestCase):
     def test_finds_package_and_html_distribution_inventories(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            package = root / 'node_modules/@kav-ui/core/dist'
+            package = root / 'node_modules/@kai17-a/kav-ui-core/dist'
             (package / 'css').mkdir(parents=True)
             sheet = package / 'css/ui.css'
             sheet.write_text('.ui-custom {}')

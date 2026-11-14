@@ -11,31 +11,38 @@ from test_release_publish import FAKE_GH
 ROOT = Path(__file__).resolve().parents[1]
 
 class LibraryPublishTests(unittest.TestCase):
-    def publish(self, directory, state='missing', version='1.2.3', fail='', tamper=False):
+    def publish(self, directory, state='missing', version='1.2.3', fail='', tamper=False, tag_override=None):
         root = Path(directory)
         (root / 'bin').mkdir()
         gh = root / 'bin/gh'; gh.write_text(FAKE_GH); gh.chmod(0o755)
         (root / 'scripts').mkdir()
         for name in ['library-release.mjs', 'publish-library-release.sh']:
             shutil.copyfile(ROOT / 'scripts' / name, root / 'scripts' / name)
+        (root / 'package.json').write_text(json.dumps({'version': version}))
         output = root / 'dist/packages'; output.mkdir(parents=True)
         for name in ['core', 'vue', 'astro']:
             package = root / 'packages' / name; package.mkdir(parents=True)
-            manifest = {'name': '@kav-ui/' + name, 'version': version,
-                        'dependencies': {} if name == 'core' else {'@kav-ui/core': version}}
+            manifest = {'name': '@kai17-a/kav-ui-' + name, 'version': version,
+                        'dependencies': {} if name == 'core' else {'@kai17-a/kav-ui-core': version}}
             (package / 'package.json').write_text(json.dumps(manifest))
-            (output / f'kav-ui-{name}-{version}.tgz').write_bytes(name.encode())
+            (output / f'kai17-a-kav-ui-{name}-{version}.tgz').write_bytes(name.encode())
         tag = 'libraries-v' + version
         subprocess.run(['node', 'scripts/library-release.mjs', 'checksums', tag], cwd=root, check=True)
         if tamper:
-            (output / f'kav-ui-core-{version}.tgz').write_bytes(b'tampered')
+            (output / f'kai17-a-kav-ui-core-{version}.tgz').write_bytes(b'tampered')
         log = root / 'calls.jsonl'
         env = {**os.environ, 'PATH':str(root / 'bin') + os.pathsep + os.environ['PATH'],
-               'RELEASE_TAG':tag, 'GH_REPO':'example/ui', 'GH_TOKEN':'test-placeholder',
+               'RELEASE_TAG':tag_override or tag, 'GH_REPO':'example/ui', 'GH_TOKEN':'test-placeholder',
                'FAKE_RELEASE_STATE':state, 'FAKE_FAIL_COMMAND':fail, 'FAKE_GH_LOG':str(log)}
         result = subprocess.run(['bash', 'scripts/publish-library-release.sh'], cwd=root, env=env, capture_output=True, text=True)
         calls = [json.loads(line) for line in log.read_text().splitlines()] if log.exists() else []
         return result, calls
+
+    def test_html_release_tag_cannot_publish_library_assets(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result, calls = self.publish(directory, tag_override='v1.2.3')
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(calls, [])
 
     def test_all_three_packages_and_checksums_are_attached_before_publication(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -43,7 +50,7 @@ class LibraryPublishTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual([call[1] for call in calls], ['view', 'create', 'edit'])
             for name in ['core','vue','astro']:
-                self.assertIn(f'dist/packages/kav-ui-{name}-1.2.3.tgz', calls[1])
+                self.assertIn(f'dist/packages/kai17-a-kav-ui-{name}-1.2.3.tgz', calls[1])
             self.assertIn('dist/packages/SHA256SUMS', calls[1])
             for flag in ['--draft', '--verify-tag', '--latest=false']:
                 self.assertIn(flag, calls[1])

@@ -1,4 +1,4 @@
-import {loadRuntime,mount} from '@kav-ui/core';
+import {loadRuntime,mount} from '@kai17-a/kav-ui-core';
 let installed;
 /** Astro client navigation reuses this module; listeners and pending mounts are owned once. */
 export function installAstro(){

@@ -1,12 +1,12 @@
 {
-  "name": "@kav-ui/example-astro",
-  "version": "0.1.0",
+  "name": "@kai17-a/kav-ui-example-astro",
+  "version": "0.0.5",
   "private": true,
   "type": "module",
   "dependencies": {
-    "@kav-ui/core": "0.1.0",
-    "@kav-ui/astro": "0.1.0",
-    "@kav-ui/vue": "0.1.0"
+    "@kai17-a/kav-ui-core": "0.0.5",
+    "@kai17-a/kav-ui-astro": "0.0.5",
+    "@kai17-a/kav-ui-vue": "0.0.5"
   },
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",

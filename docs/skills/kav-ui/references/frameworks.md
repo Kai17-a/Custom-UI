@@ -2,12 +2,12 @@
 
 ## 導入済みパッケージを使う
 
-利用先のpackage.jsonとロックファイルで導入版を確認する。coreとVue/Astroの版を揃え、既存のパッケージマネージャーを使う。公開npmレジストリへの配置は仮定しない。
+利用先のpackage.jsonとロックファイルで導入版を確認する。coreとVue/Astroの版を揃え、既存のパッケージマネージャーを使う。GitHub Packagesの非公開パッケージを使う場合は `packages/README.md` の `.npmrc`・read:packages認証手順を確認する。公開npmレジストリへの配置は仮定しない。
 
 未導入で利用者がtarballを用意している場合は、例えばVueなら次の組み合わせをアプリへ追加する。ファイルパスと版は実物へ合わせる。Kav-UI本体のワークスペースやビルドスクリプトは不要。
 
 ```bash
-npm install /path/to/kav-ui-core-0.1.0.tgz /path/to/kav-ui-vue-0.1.0.tgz
+npm install /path/to/kai17-a-kav-ui-core-0.0.5.tgz /path/to/kai17-a-kav-ui-vue-0.0.5.tgz
 ```
 
 Astroならvueの代わりにastroのtarballを使う。取得先が必要な場合だけ[GitHub Releases](https://github.com/Kai17-a/Custom-UI/releases)の配布状況を確認する。既存アプリへ新たなVue/Astro自体を導入するかは依頼範囲に従う。
@@ -19,8 +19,8 @@ Vue 3.5以降。CSSはアプリの入口で1回読み込む。
 ```vue
 <script setup>
 import {ref} from 'vue';
-import '@kav-ui/core/style.css';
-import {KavInput, KavButton, KavDialog} from '@kav-ui/vue';
+import '@kai17-a/kav-ui-core/style.css';
+import {KavInput, KavButton, KavDialog} from '@kai17-a/kav-ui-vue';
 const name = ref('');
 const open = ref(false);
 </script>
@@ -44,7 +44,7 @@ const open = ref(false);
 
 ```astro
 ---
-import {KavProvider, KavCard, KavSelect, KavButton, KavDialog} from '@kav-ui/astro';
+import {KavProvider, KavCard, KavSelect, KavButton, KavDialog} from '@kai17-a/kav-ui-astro';
 ---
 <html lang="ja">
   <body>
@@ -90,7 +90,7 @@ Vue/Astroでページを並べるときは、クラスを手で組み合わせ�
 | `KavSection` | `title`, `description`, `level=2` | default, actions |
 | `KavPage` | `asideLabel`, `railLabel`, `stickyAside` | default (body), aside, rail |
 
-型は `@kav-ui/core` からimportできます。
+型は `@kai17-a/kav-ui-core` からimportできます。
 
 - `Space = 0|1|2|3|4|6|8|12`、`Justify = 'start'|'center'|'end'|'between'|'around'|'evenly'`、`Align = 'start'|'center'|'end'|'stretch'|'baseline'`。
 - `Direction = 'row'|'column'`、wrapはboolean、`Columns = 1|2|3|4|6|12`、`Span = 1..12`、`HeadingLevel = 1..6`。
@@ -103,7 +103,7 @@ Vue/Astroでページを並べるときは、クラスを手で組み合わせ�
 
 ```vue
 <script setup lang="ts">
-import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kav-ui/vue';
+import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kai17-a/kav-ui-vue';
 </script>
 <template>
   <KavPage aside-label="ページ内ナビ">
@@ -120,7 +120,7 @@ import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kav-ui/vue';
 
 ```astro
 ---
-import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kav-ui/astro';
+import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kai17-a/kav-ui-astro';
 ---
 <KavPage asideLabel="ページ内ナビ">
   <nav slot="aside">プロジェクト</nav>

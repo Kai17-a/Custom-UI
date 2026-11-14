@@ -1,6 +1,6 @@
 {
   "name": "kav-ui-workspace",
-  "version": "0.1.0",
+  "version": "0.0.5",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -11,11 +11,12 @@
     "build:packages": "node scripts/build-packages.mjs",
     "test:packages": "node --test --test-isolation=none tests/packages/*.test.mjs",
     "check:packages": "tsc -p tests/packages/tsconfig.json --noEmit",
-    "build:examples": "npm run build --workspace @kav-ui/example-vue && npm run build --workspace @kav-ui/example-astro",
-    "dev:vue": "npm run dev --workspace @kav-ui/example-vue",
-    "dev:astro": "npm run dev --workspace @kav-ui/example-astro",
+    "build:examples": "npm run build --workspace @kai17-a/kav-ui-example-vue && npm run build --workspace @kai17-a/kav-ui-example-astro",
+    "dev:vue": "npm run dev --workspace @kai17-a/kav-ui-example-vue",
+    "dev:astro": "npm run dev --workspace @kai17-a/kav-ui-example-astro",
     "test:browser:packages": "node tests/run-packages-browser.mjs",
-    "pack:packages": "npm run build:packages && node scripts/pack-packages.mjs"
+    "pack:packages": "npm run build:packages && node scripts/pack-packages.mjs",
+    "version:packages": "node scripts/version-packages.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",

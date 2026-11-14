@@ -1,6 +1,6 @@
 import type {DefineComponent,HTMLAttributes} from 'vue';
-import type {Color,Variant,ChartConfig} from '@kav-ui/core';
-export {toast,setColorTheme,setDesignTheme,setPalette,setCustomPalette} from '@kav-ui/core';
+import type {Color,Variant,ChartConfig} from '@kai17-a/kav-ui-core';
+export {toast,setColorTheme,setDesignTheme,setPalette,setCustomPalette} from '@kai17-a/kav-ui-core';
 type Component<P=object> = DefineComponent<P&{class?:HTMLAttributes['class'];style?:HTMLAttributes['style']}>;
 type Model<T>={modelValue?:T;'onUpdate:modelValue'?:(value:T)=>void};
 export declare const KavIcon:Component<{name:string;label?:string}>;
@@ -11,7 +11,7 @@ export declare const KavSpinner:Component<{size?:'xs'|'sm'|'lg'|'xl';label?:stri
 export declare const KavProgress:Component<{value?:number;max?:number;label?:string}>;
 export declare const KavBadge:Component<{color?:Color}>;
 export declare const KavField:Component<{label?:string;for?:string;hint?:string;error?:string;hintId?:string;errorId?:string}>;
-export declare const KavWidget:Component<{html:string;as?:string;onReady?:(api:import('@kav-ui/core').KavUIRuntime)=>void;onError?:(error:Error)=>void}>;
+export declare const KavWidget:Component<{html:string;as?:string;onReady?:(api:import('@kai17-a/kav-ui-core').KavUIRuntime)=>void;onError?:(error:Error)=>void}>;
 export declare const KavInput:Component<Model<string|number>&{type?:string;label?:string;id?:string;name?:string;disabled?:boolean;required?:boolean;placeholder?:string;min?:string|number;max?:string|number;step?:string|number}>;
 export declare const KavTextarea:Component<Model<string>&{name?:string;id?:string;rows?:number;placeholder?:string;required?:boolean;disabled?:boolean;maxlength?:number;label?:string}>;
 export declare const KavCheckbox:Component<Model<boolean>&{label?:string;name?:string;id?:string;disabled?:boolean;required?:boolean;value?:string|number}>;
@@ -31,20 +31,20 @@ export type SidebarMobile='drawer'|'collapse'|'top'|'bottom';
 export type SidebarDesktop='expanded'|'rail'|'hidden'|'top'|'bottom';
 export declare const KavSidebar:Component<Model<boolean>&{title?:string;label?:string;items?:Array<{label:string;href:string;icon?:string;active?:boolean}>;mobile?:SidebarMobile;tablet?:SidebarDesktop;desktop?:SidebarDesktop;side?:'start'|'end'}>;
 
-export declare const KavStack:Component<import('@kav-ui/core').StackProps&HTMLAttributes>;
+export declare const KavStack:Component<import('@kai17-a/kav-ui-core').StackProps&HTMLAttributes>;
 
-export declare const KavCluster:Component<import('@kav-ui/core').ClusterProps&HTMLAttributes>;
+export declare const KavCluster:Component<import('@kai17-a/kav-ui-core').ClusterProps&HTMLAttributes>;
 
-export declare const KavFlex:Component<import('@kav-ui/core').FlexProps&HTMLAttributes>;
+export declare const KavFlex:Component<import('@kai17-a/kav-ui-core').FlexProps&HTMLAttributes>;
 
-export declare const KavGrid:Component<import('@kav-ui/core').GridProps&HTMLAttributes>;
+export declare const KavGrid:Component<import('@kai17-a/kav-ui-core').GridProps&HTMLAttributes>;
 
-export declare const KavGridItem:Component<import('@kav-ui/core').GridItemProps&HTMLAttributes>;
+export declare const KavGridItem:Component<import('@kai17-a/kav-ui-core').GridItemProps&HTMLAttributes>;
 
-export declare const KavPageHeader:Component<import('@kav-ui/core').PageHeaderProps&HTMLAttributes>;
+export declare const KavPageHeader:Component<import('@kai17-a/kav-ui-core').PageHeaderProps&HTMLAttributes>;
 
-export declare const KavToolbar:Component<import('@kav-ui/core').ToolbarProps&HTMLAttributes>;
+export declare const KavToolbar:Component<import('@kai17-a/kav-ui-core').ToolbarProps&HTMLAttributes>;
 
-export declare const KavSection:Component<import('@kav-ui/core').SectionProps&HTMLAttributes>;
+export declare const KavSection:Component<import('@kai17-a/kav-ui-core').SectionProps&HTMLAttributes>;
 
-export declare const KavPage:Component<import('@kav-ui/core').PageProps&HTMLAttributes>;
+export declare const KavPage:Component<import('@kai17-a/kav-ui-core').PageProps&HTMLAttributes>;

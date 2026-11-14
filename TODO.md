@@ -5,9 +5,9 @@
 - [x] 既存のnpm・ビルド不要のHTML版を維持し、Vue・Astro向けパッケージを追加する。
 - [x] 共通CSS・デザイントークン・テーマ・アイコン・共通処理を整理する。
 - [x] 以下のパッケージ構成を検討する（名前は仮）。
-  - `@kav-ui/core`：共通スタイルと処理。
-  - `@kav-ui/vue`：Vueコンポーネント。
-  - `@kav-ui/astro`：Astroコンポーネントとブラウザ側の処理。
+  - `@kai17-a/kav-ui-core`：共通スタイルと処理。
+  - `@kai17-a/kav-ui-vue`：Vueコンポーネント。
+  - `@kai17-a/kav-ui-astro`：Astroコンポーネントとブラウザ側の処理。
 - [x] Vue版を属性・スロット・イベント・`v-model`で操作できる形にする。
 - [x] Vueの描画と既存JSのDOM操作を整理し、初期化・更新・破棄、イベント解除に対応する。
 - [x] SSR・ハイドレーションに対応し、ブラウザ専用処理をサーバーで実行しないようにする。
@@ -25,7 +25,7 @@
 
 ## 実装・検証結果
 
-- `@kav-ui/core`・`@kav-ui/vue`・`@kav-ui/astro` を追加。バージョンは `0.1.0`、現在はローカルtarball用のprivateパッケージ。
+- `@kai17-a/kav-ui-core`・`@kai17-a/kav-ui-vue`・`@kai17-a/kav-ui-astro` を追加。バージョンはKav-UI Releaseと同じ `0.0.5`。GitHub Packagesの非公開配布設定とローカルtarball生成に対応（レジストリ未公開）。
 - Vueの専用部品24種、Astroの専用部品23種と、未専用化の既存部品を使う `KavWidget` を用意。
 - [導入・対応範囲・検証手順](packages/README.md)、[Vue例](examples/vue)、[Astro/Vue連携例](examples/astro) を追加。
 - パッケージテスト8件、型チェック、Vue SSR、Astroビルド、390/820/1440pxでの実操作、既存HTML版105件、ZIP配布テスト10件に成功。

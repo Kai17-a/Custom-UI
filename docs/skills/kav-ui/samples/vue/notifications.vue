@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import "@kav-ui/core/style.css";
-import { KavPage, KavPageHeader, KavStack, KavTabs } from "@kav-ui/vue";
+import "@kai17-a/kav-ui-core/style.css";
+import { KavPage, KavPageHeader, KavStack, KavTabs } from "@kai17-a/kav-ui-vue";
 const notificationFilter = ref("all");
 </script>
 

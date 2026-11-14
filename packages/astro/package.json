@@ -1,7 +1,6 @@
 {
-  "name": "@kav-ui/astro",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@kai17-a/kav-ui-astro",
+  "version": "0.0.5",
   "type": "module",
   "files": [
     "src",
@@ -17,7 +16,7 @@
     "directory": "packages/astro"
   },
   "dependencies": {
-    "@kav-ui/core": "0.1.0"
+    "@kai17-a/kav-ui-core": "0.0.5"
   },
   "exports": {
     ".": {
@@ -32,5 +31,8 @@
   },
   "peerDependencies": {
     "astro": ">=7.4.2 <8"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }

@@ -1,12 +1,12 @@
-# @kav-ui/vue
+# @kai17-a/kav-ui-vue
 
-Kav-UIのVue 3.5以降用コンポーネント。`@kav-ui/core` の同じバージョンとVueを使用します。
+Kav-UIのVue 3.5以降用コンポーネント。`@kai17-a/kav-ui-core` の同じバージョンとVueを使用します。
 
 ```vue
 <script setup>
 import {ref} from 'vue';
-import '@kav-ui/core/style.css';
-import {KavInput,KavField,KavButton,KavDialog} from '@kav-ui/vue';
+import '@kai17-a/kav-ui-core/style.css';
+import {KavInput,KavField,KavButton,KavDialog} from '@kai17-a/kav-ui-vue';
 const value=ref(''),open=ref(false);
 </script>
 <template>
@@ -58,7 +58,7 @@ Vue/Astroでページを並べるときは、クラスを手で組み合わせ�
 | `KavSection` | `title`, `description`, `level=2` | default, actions |
 | `KavPage` | `asideLabel`, `railLabel`, `stickyAside` | default (body), aside, rail |
 
-型は `@kav-ui/core` からimportできます。
+型は `@kai17-a/kav-ui-core` からimportできます。
 
 - `Space = 0|1|2|3|4|6|8|12`、`Justify = 'start'|'center'|'end'|'between'|'around'|'evenly'`、`Align = 'start'|'center'|'end'|'stretch'|'baseline'`。
 - `Direction = 'row'|'column'`、wrapはboolean、`Columns = 1|2|3|4|6|12`、`Span = 1..12`、`HeadingLevel = 1..6`。
@@ -71,7 +71,7 @@ Vue/Astroでページを並べるときは、クラスを手で組み合わせ�
 
 ```vue
 <script setup lang="ts">
-import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kav-ui/vue';
+import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kai17-a/kav-ui-vue';
 </script>
 <template>
   <KavPage aside-label="ページ内ナビ">

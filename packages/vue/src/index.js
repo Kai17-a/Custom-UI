@@ -1,6 +1,6 @@
 import {defineComponent as vueDefineComponent,cloneVNode,isVNode,h,ref,watch,onMounted,onUpdated,onBeforeUpdate,onBeforeUnmount,mergeProps,useId,Teleport,computed,nextTick} from 'vue';
-import {stackClass,clusterClass,flexClass,gridClass,gridItemClass,headingTag,buttonClass,badgeClass,semanticColor,escapeHTML,attributes,mdiPaths,mount,loadRuntime} from '@kav-ui/core';
-export {toast,setColorTheme,setDesignTheme,setPalette,setCustomPalette} from '@kav-ui/core';
+import {stackClass,clusterClass,flexClass,gridClass,gridItemClass,headingTag,buttonClass,badgeClass,semanticColor,escapeHTML,attributes,mdiPaths,mount,loadRuntime} from '@kai17-a/kav-ui-core';
+export {toast,setColorTheme,setDesignTheme,setPalette,setCustomPalette} from '@kai17-a/kav-ui-core';
 // Ancestor Astro/HTML adapters must not enhance DOM which Vue owns.
 function defineComponent(options){
  const setup=options.setup;

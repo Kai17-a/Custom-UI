@@ -1,7 +1,6 @@
 {
-  "name": "@kav-ui/vue",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@kai17-a/kav-ui-vue",
+  "version": "0.0.5",
   "type": "module",
   "files": [
     "src",
@@ -17,7 +16,7 @@
     "directory": "packages/vue"
   },
   "dependencies": {
-    "@kav-ui/core": "0.1.0"
+    "@kai17-a/kav-ui-core": "0.0.5"
   },
   "exports": {
     ".": {
@@ -27,5 +26,8 @@
   },
   "peerDependencies": {
     "vue": ">=3.5.0 <4"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }

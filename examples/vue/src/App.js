@@ -1,5 +1,5 @@
 import {defineComponent,h,ref} from 'vue';
-import {KavStack,KavCluster,KavFlex,KavGrid,KavGridItem,KavPageHeader,KavToolbar,KavSection,KavPage,KavButton,KavBanner,KavInput,KavSelect,KavCheckbox,KavField,KavCard,KavDialog,KavTabs,KavSidebar,KavWidget,KavCalendar,KavChart,toast,setColorTheme} from '@kav-ui/vue';
+import {KavStack,KavCluster,KavFlex,KavGrid,KavGridItem,KavPageHeader,KavToolbar,KavSection,KavPage,KavButton,KavBanner,KavInput,KavSelect,KavCheckbox,KavField,KavCard,KavDialog,KavTabs,KavSidebar,KavWidget,KavCalendar,KavChart,toast,setColorTheme} from '@kai17-a/kav-ui-vue';
 export default defineComponent({name:'KavExample',setup(){
  const name=ref('Kav-UI'),selection=ref(1),checked=ref(false),date=ref('2026-10-23'),open=ref(false),notice=ref(true),tab=ref('overview'),widget=ref(true);
  const bind=state=>({'modelValue':state.value,'onUpdate:modelValue':value=>state.value=value});

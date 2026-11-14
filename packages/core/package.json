@@ -1,7 +1,6 @@
 {
-  "name": "@kav-ui/core",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@kai17-a/kav-ui-core",
+  "version": "0.0.5",
   "type": "module",
   "files": [
     "src",
@@ -32,5 +31,8 @@
     "**/*.css",
     "./dist/runtime.js",
     "./dist/theme-init.js"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
 }

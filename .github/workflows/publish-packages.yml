@@ -1,0 +1,79 @@
+name: Publish Kav-UI packages
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing Kav-UI tag (e.g. v0.0.6)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: kav-ui-registry-${{ inputs.tag || github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'v')
+    name: Build, test and publish npm packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.event.release.tag_name }}
+      ASTRO_TELEMETRY_DISABLED: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the Kav-UI version tag
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: refs/tags/${{ inputs.tag || github.event.release.tag_name }}
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '>=24.13.0 <25'
+          registry-url: https://npm.pkg.github.com
+          scope: '@kai17-a'
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Validate Kav-UI tag and package versions
+        run: |
+          [[ "$RELEASE_TAG" == v* ]] || exit 1
+          node scripts/library-release.mjs validate "$RELEASE_TAG"
+
+      - name: Install locked development dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Build shared library assets
+        run: npm run build:packages
+
+      - name: Test package exports, SSR and release metadata
+        run: npm run test:packages
+
+      - name: Check public types
+        run: npm run check:packages
+
+      - name: Build Vue and Astro examples
+        run: npm run build:examples
+
+      - name: Test release orchestration without publishing
+        run: python3 -m unittest discover -s tests -p 'test_*release*.py'
+
+      - name: Pack libraries and write SHA-256 checksums
+        run: |
+          npm run pack:packages
+          node scripts/library-release.mjs checksums "$RELEASE_TAG"
+          node scripts/library-release.mjs verify "$RELEASE_TAG"
+
+      - name: Publish core, Vue and Astro (skip existing versions)
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+        run: node scripts/publish-packages.mjs "$RELEASE_TAG"

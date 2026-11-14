@@ -35,6 +35,14 @@ jobs:
           ref: refs/tags/${{ inputs.tag || github.ref_name }}
           persist-credentials: false
 
+      - name: Set up Node.js for release version validation
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '>=24.13.0 <25'
+
+      - name: Validate Kav-UI and package versions
+        run: node scripts/library-release.mjs validate "$RELEASE_TAG"
+
       - name: Test the distribution package
         run: python3 -m unittest discover -s tests -p 'test_release_*.py'
 
