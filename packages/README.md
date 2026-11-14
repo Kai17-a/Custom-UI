@@ -63,7 +63,7 @@ node scripts/library-release.mjs validate v0.0.6
 
 公開認証は `GITHUB_TOKEN` の `contents: read` / `packages: write` のみで、新しいシークレットは不要です。既存のRelease作成ワークフローが `GITHUB_TOKEN` で公開したReleaseは、GitHubのイベント再帰防止によりpublishedトリガーを起動しません。その場合はレビュー後に上記の手動実行を使います。今回の設定が入っていない古いタグ（既存の `v0.0.5` を含む）は対象にできません。既存Releaseやタグを改変せず、変更を含む新しい版のタグを用意してください。
 
-初回公開後は、オーナーの **Packages → 各パッケージ → Package settings** で可視性が **Private** になっていることを確認し、PublicならPrivateに変更してください。3パッケージとも `Kai17-a/Custom-UI` に紐付いていること、利用者とCIのアクセス権も確認します。リポジトリの可視性はPublicのまま変更しません。`private: true` はnpm公開自体を禁止するため外しており、アクセス制御はGitHubのパッケージ設定で管理します。
+初回公開後は、オーナーの **Packages → 各パッケージ → Package settings** で可視性が **Private** になっていることを確認してください。Privateを確認できるまでは利用者への配布を進めません。Publicだった場合は、[GitHubの仕様](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility)上Privateに戻せないため、追加の公開・配布を止め、管理者が公開済み内容と今後の対応を確認してください。3パッケージとも `Kai17-a/Custom-UI` に紐付いていること、利用者とCIのアクセス権も確認します。リポジトリの可視性はPublicのまま変更しません。`private: true` はnpm公開自体を禁止するため外しており、アクセス制御はGitHubのパッケージ設定で管理します。
 
 参考：[GitHub npmレジストリ](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry) / [Actionsによる公開](https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions)
 
