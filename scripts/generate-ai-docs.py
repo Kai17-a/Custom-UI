@@ -237,7 +237,7 @@ def outputs():
         title = next((node.text() for node in document.root.walk() if node.tag == 'h1'), page.stem)
         lines.append('- [' + compact(title) + '](templates/' + page.name + '.md)')
     lines.extend(['', '## Optional', '',
-                  '- [Vue/Astroパッケージ](packages/README.md): ローカルtarball・GitHub Releases向けの導入と対応範囲。',
+                  '- [Vue/Astroパッケージ](packages/README.md): GitHub Packages（非公開）からの導入と対応範囲。',
                   '- [Vue](packages/vue/README.md): props、slots、v-modelとKavWidget。',
                   '- [Astro](packages/astro/README.md): Provider、静的HTMLとクライアント遷移。',
                   '- [テンプレート](templates.html.md): ドキュメント・ダッシュボード・changelog・エラー画面。',

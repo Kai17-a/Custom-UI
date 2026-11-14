@@ -4,13 +4,16 @@
 
 利用先のpackage.jsonとロックファイルで導入版を確認する。coreとVue/Astroの版を揃え、既存のパッケージマネージャーを使う。GitHub Packagesの非公開パッケージを使う場合は `packages/README.md` の `.npmrc`・read:packages認証手順を確認する。公開npmレジストリへの配置は仮定しない。
 
-未導入で利用者がtarballを用意している場合は、例えばVueなら次の組み合わせをアプリへ追加する。ファイルパスと版は実物へ合わせる。Kav-UI本体のワークスペースやビルドスクリプトは不要。
+未導入なら、`packages/README.md` の `.npmrc` とトークンを設定してGitHub Packagesからインストールする。版は利用するリリースに合わせる。Kav-UI本体のワークスペースやビルドスクリプトは不要。
 
 ```bash
-npm install /path/to/kai17-a-kav-ui-core-0.0.5.tgz /path/to/kai17-a-kav-ui-vue-0.0.5.tgz
+# Vue（coreは依存として導入される）
+npm install @kai17-a/kav-ui-vue@0.0.5
+# Astro
+npm install @kai17-a/kav-ui-astro@0.0.5
 ```
 
-Astroならvueの代わりにastroのtarballを使う。取得先が必要な場合だけ[GitHub Releases](https://github.com/Kai17-a/Custom-UI/releases)の配布状況を確認する。既存アプリへ新たなVue/Astro自体を導入するかは依頼範囲に従う。
+既存アプリへ新たなVue/Astro自体を導入するかは依頼範囲に従う。
 
 ## Vue
 

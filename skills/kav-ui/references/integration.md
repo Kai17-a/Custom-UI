@@ -55,7 +55,7 @@ KavUI.destroy(container);
 
 - Vueは`@kai17-a/kav-ui-core/style.css`と`@kai17-a/kav-ui-vue`の部品を利用する。通常HTMLを保持する境界には`KavWidget`を使うと初期化と破棄を任せられる。`html`へ渡す文字列は信頼できるマークアップに限り、利用者の値は適切にエスケープする。
 - Astroは既存の`KavProvider`とコンポーネントを使う。`KavProvider`はCSSを読み込む。対話的な部品は必要な初期化を持ち、クライアント遷移にも対応する。
-- パッケージはローカルtarballとGitHub Releases用の構成。公開npmレジストリから取得できるとは扱わない。アプリが既に導入済みならその依存を使い、通常HTML版の`ui.js`を重ねて読み込まない。
+- パッケージはGitHub Packagesの非公開配布用の構成。認証と導入は`packages/README.md`を参照する。公開npmレジストリから取得できるとは扱わない。アプリが既に導入済みならその依存を使い、通常HTML版の`ui.js`を重ねて読み込まない。
 
 ## 対応する版と調査の範囲
 

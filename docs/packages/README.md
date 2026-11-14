@@ -63,14 +63,14 @@ node scripts/library-release.mjs validate v0.0.6
 
 公開認証は `GITHUB_TOKEN` の `contents: read` / `packages: write` のみで、新しいシークレットは不要です。既存のRelease作成ワークフローが `GITHUB_TOKEN` で公開したReleaseは、GitHubのイベント再帰防止によりpublishedトリガーを起動しません。その場合はレビュー後に上記の手動実行を使います。今回の設定が入っていない古いタグ（既存の `v0.0.5` を含む）は対象にできません。既存Releaseやタグを改変せず、変更を含む新しい版のタグを用意してください。
 
-初回公開後は、オーナーの **Packages → 各パッケージ → Package settings** で可視性を **Private** に設定・確認してください（初期値もPrivateです）。3パッケージとも `Kai17-a/Custom-UI` に紐付いていること、利用者とCIのアクセス権も確認します。リポジトリの可視性はPublicのまま変更しません。`private: true` はnpm公開自体を禁止するため外しており、アクセス制御はGitHubのパッケージ設定で管理します。
+初回公開後は、オーナーの **Packages → 各パッケージ → Package settings** で可視性が **Private** になっていることを確認してください。Privateを確認できるまでは利用者への配布を進めません。Publicだった場合は、[GitHubの仕様](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility)上Privateに戻せないため、追加の公開・配布を止め、管理者が公開済み内容と今後の対応を確認してください。3パッケージとも `Kai17-a/Custom-UI` に紐付いていること、利用者とCIのアクセス権も確認します。リポジトリの可視性はPublicのまま変更しません。`private: true` はnpm公開自体を禁止するため外しており、アクセス制御はGitHubのパッケージ設定で管理します。
 
 参考：[GitHub npmレジストリ](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry) / [Actionsによる公開](https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions)
 
 
 Data table・Command menu・Carouselは既存の`KavWidget`内で`data-ui-data-table`・`data-ui-command`・`data-ui-carousel`を指定して利用できます。Timeline・Ratingはクラスを指定した標準HTMLで利用できます。専用のVue/Astroコンポーネント名は追加していません。[HTML例と属性一覧](../index.html)を参照してください。
 
-## 開発・配布ファイル作成
+## 開発・検証用ファイル作成
 
 リポジトリのルートで実行します。開発・検証環境にはNode 24.13以降とnpmを使用します。
 
@@ -84,16 +84,16 @@ npm run test:browser:packages
 npm run pack:packages
 ```
 
-ブラウザテストにはインストール済みChromiumを使用します。必要なら `CHROME_BIN` で実行ファイルを指定できます。配布ファイルは `dist/packages/kai17-a-kav-ui-{core,vue,astro}-0.0.5.tgz` に作成されます。公開処理やGitHub Actionsの起動は含みません。
+ブラウザテストにはインストール済みChromiumを使用します。必要なら `CHROME_BIN` で実行ファイルを指定できます。開発・検証用のtarballは `dist/packages/kai17-a-kav-ui-{core,vue,astro}-0.0.5.tgz` に作成されます。公開処理やGitHub Actionsの起動は含みません。
 
 coreのCSSとランタイムは既存の `assets` から、アイコンのSVGパスは既存JSのMDI一覧から生成します。生成物はGit管理せず、ソース変更後は `build:packages` を実行します。ZIPの配布方法は従来どおりです。
 
 ## Vue
 
-既存のVueアプリへ、作成したcoreとvueの両tarballをインストールします。Vue本体は利用側の依存関係です。
+上記の `.npmrc` と認証を設定し、GitHub Packagesから既存のVueアプリへインストールします。Vue本体は利用側の依存関係です。
 
 ```bash
-npm install /path/to/kai17-a-kav-ui-core-0.0.5.tgz /path/to/kai17-a-kav-ui-vue-0.0.5.tgz
+npm install @kai17-a/kav-ui-vue@0.0.5
 ```
 
 CSSはアプリの入口で1回読み込みます。パッケージJSをSSRでimportしてもwindow/documentにはアクセスしません。
@@ -158,10 +158,10 @@ const open=ref(false);
 
 ## Astro
 
-coreとastroのtarballをインストールします。Astro専用部品にVue本体は不要です。
+上記の `.npmrc` と認証を設定し、GitHub Packagesからインストールします。Astro専用部品にVue本体は不要です。
 
 ```bash
-npm install /path/to/kai17-a-kav-ui-core-0.0.5.tgz /path/to/kai17-a-kav-ui-astro-0.0.5.tgz
+npm install @kai17-a/kav-ui-astro@0.0.5
 ```
 
 ```astro
@@ -224,58 +224,6 @@ npm run test:browser:packages
 例の開発サーバーは `npm run dev:vue` / `npm run dev:astro` で起動します。サーバー環境でのimport、Vue SSR、型の不正な指定、配布CSS参照、モバイル・タブレット・PC、入力値、モーダル、破棄・再作成、Astroのページ遷移とVueハイドレーションを検証します。
 
 レジストリ公開、バージョンタグ作成、リリース用Actionsの実行は別の操作です。今回のパッケージ生成コマンドでは行いません。
-
-## GitHub Releasesへのライブラリ公開
-
-専用ワークフローは `.github/workflows/release-libraries.yml`（**Release Kav-UI libraries**）です。`core`・`vue`・`astro` の3つの `.tgz` と `SHA256SUMS` を同じリリースへ配置します。tarballのみの配布には、npmレジストリへの公開やnpmトークンは不要です。
-
-| 配布対象 | ワークフロー | タグ例 |
-| --- | --- | --- |
-| HTML版ZIP | `release.yml` | `v1.0.0` |
-| ライブラリ3種 | `release-libraries.yml` | `libraries-v0.0.5` |
-
-ライブラリ用タグはHTML版の公開を起動しません。ライブラリのリリースはGitHubの「Latest」に指定しないため、HTML版のLatest指定を変更しません。
-
-### 公開手順
-
-1. ワークフロー・スクリプト・パッケージ変更をコミットし、`main` に取り込みます。手動実行の一覧に表示するにはワークフローがデフォルトブランチ上に必要です。
-2. Kav-UIと同じ版を使用します。`npm run version:packages -- vVERSION` で一括更新し、lockfileを含めてコミットします。
-3. 対象コミットへライブラリ用タグを作成してpushします。現在のパッケージは `0.0.5` です。
-
-```bash
-git tag libraries-v0.0.5
-git push origin libraries-v0.0.5
-```
-
-タグpushで実行されます。既存タグから手動実行する場合は、GitHubの **Actions → Release Kav-UI libraries → Run workflow** で `tag` に `libraries-v0.0.5` を指定します。ブランチ名やHTML版用の `v0.0.5` は指定できません。
-
-Node 24で、タグとバージョンの一致確認、ロックファイルによる依存インストール、共通CSS/JSのビルド、SSR・配布・型の検査、導入例のビルド、公開処理のローカルテストを行います。すべて成功したら3パッケージを生成し、チェックサムを検証してからGitHub Releasesへ添付します。`GITHUB_TOKEN` の `contents: write` を使用し、別の公開トークンは必要ありません。
-
-`libraries-v0.2.0-rc.1` のようなタグはプレリリースにします。公開前のdraftなら再実行でアセットを再配置できます。公開済みの場合は上書きせず失敗するため、新しいバージョンとタグを使用してください。
-
-### ダウンロード後の確認と導入
-
-ライブラリのリリースから3つの `.tgz` と `SHA256SUMS` を同じディレクトリへダウンロードします。
-
-```bash
-sha256sum -c SHA256SUMS
-# Vueアプリの場合
-npm install ./kai17-a-kav-ui-core-0.0.5.tgz ./kai17-a-kav-ui-vue-0.0.5.tgz
-# Astroアプリの場合
-npm install ./kai17-a-kav-ui-core-0.0.5.tgz ./kai17-a-kav-ui-astro-0.0.5.tgz
-```
-
-公開せずに生成・検証する場合は、`npm run pack:packages` の後で次を実行します。`dist/packages` に古いバージョンの `.tgz` が残っている場合は別の場所へ移してから実行してください。
-
-```bash
-node scripts/library-release.mjs validate libraries-v0.0.5
-node scripts/library-release.mjs checksums libraries-v0.0.5
-node scripts/library-release.mjs verify libraries-v0.0.5
-```
-
-上記の生成・検証コマンドは、タグ作成・Actions起動・GitHubへの公開を行いません。
-
-参考：[GitHubの手動実行手順](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow) / [GitHub CLIのRelease作成](https://cli.github.com/manual/gh_release_create)
 
 ## Layout components
 

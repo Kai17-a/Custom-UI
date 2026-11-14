@@ -7,10 +7,10 @@ const project=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const names=['core','vue','astro'];
 const numeric='(?:0|[1-9][0-9]*)';
 const identifier='(?:0|[1-9][0-9]*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)';
-const tagPattern=new RegExp(`^(?:libraries-)?v(${numeric}\\.${numeric}\\.${numeric}(?:-${identifier}(?:\\.${identifier})*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?)$`);
+const tagPattern=new RegExp(`^v(${numeric}\\.${numeric}\\.${numeric}(?:-${identifier}(?:\\.${identifier})*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?)$`);
 export function releaseVersion(tag){
  const match=typeof tag==='string'&&tag.length<=128&&tag.match(tagPattern);
- if(!match||match[0]!==tag)throw new Error('Use vVERSION or libraries-vVERSION');
+ if(!match||match[0]!==tag)throw new Error('Use vVERSION');
  return match[1];
 }
 export function releasePlan(tag,root=project){
