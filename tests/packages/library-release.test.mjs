@@ -15,25 +15,25 @@ function fixture(version='1.2.3'){
  }
  return {root,output,clean:()=>rmSync(root,{recursive:true,force:true})};
 }
-test('library release: dedicated tag, package versions and core dependencies must agree',()=>{
+test('library release: Kav-UI tag, package versions and core dependencies must agree',()=>{
  const f=fixture();try{
-  assert.equal(releasePlan('libraries-v1.2.3',f.root).version,'1.2.3');
-  for(const tag of ['libraries-v2.0.0','libraries-v01.2.3','libraries-v1.2.3/extra','libraries-v1.2.3;echo bad','libraries-v1.2.3-01','libraries-v1.2.3\n'])assert.throws(()=>releasePlan(tag,f.root));
+  assert.equal(releasePlan('v1.2.3',f.root).version,'1.2.3');
+  for(const tag of ['v2.0.0','v01.2.3','v1.2.3/extra','v1.2.3;echo bad','v1.2.3-01','v1.2.3\n'])assert.throws(()=>releasePlan(tag,f.root));
   const path=join(f.root,'packages/vue/package.json'),manifest=JSON.parse(readFileSync(path));manifest.dependencies['@kai17-a/kav-ui-core']='0.0.1';writeFileSync(path,JSON.stringify(manifest));
-  assert.throws(()=>releasePlan('libraries-v1.2.3',f.root),/core/);
+  assert.throws(()=>releasePlan('v1.2.3',f.root),/core/);
  }finally{f.clean();}
 });
 test('library release: checksums cover exactly three packages and reject tampering/stale files',()=>{
  const f=fixture();try{
-  writeChecksums('libraries-v1.2.3',f.root,f.output);verifyChecksums('libraries-v1.2.3',f.root,f.output);
+  writeChecksums('v1.2.3',f.root,f.output);verifyChecksums('v1.2.3',f.root,f.output);
   assert.equal(readFileSync(join(f.output,'SHA256SUMS'),'utf8').trim().split('\n').length,3);
-  writeFileSync(join(f.output,'kai17-a-kav-ui-core-1.2.3.tgz'),'tampered');assert.throws(()=>verifyChecksums('libraries-v1.2.3',f.root,f.output),/checksum/i);
-  writeChecksums('libraries-v1.2.3',f.root,f.output);writeFileSync(join(f.output,'old.tgz'),'stale');assert.throws(()=>writeChecksums('libraries-v1.2.3',f.root,f.output),/three|unexpected/i);
+  writeFileSync(join(f.output,'kai17-a-kav-ui-core-1.2.3.tgz'),'tampered');assert.throws(()=>verifyChecksums('v1.2.3',f.root,f.output),/checksum/i);
+  writeChecksums('v1.2.3',f.root,f.output);writeFileSync(join(f.output,'old.tgz'),'stale');assert.throws(()=>writeChecksums('v1.2.3',f.root,f.output),/three|unexpected/i);
  }finally{f.clean();}
 });
 test('library release: prerelease is decided before build metadata',()=>{
  for(const version of ['1.2.3-rc.1','1.2.3+build-4']){
-  const f=fixture(version);try{assert.equal(releasePlan('libraries-v'+version,f.root).prerelease,version.includes('-rc.'));}finally{f.clean();}
+  const f=fixture(version);try{assert.equal(releasePlan('v'+version,f.root).prerelease,version.includes('-rc.'));}finally{f.clean();}
  }
 });
 test('release: Kav-UI tag, root version, every package and dependency agree',()=>{
@@ -45,6 +45,10 @@ test('release: Kav-UI tag, root version, every package and dependency agree',()=
   manifest.version='2.0.0';writeFileSync(path,JSON.stringify(manifest));
   assert.throws(()=>releasePlan('v1.2.3',f.root),/version/);
   writeFileSync(join(f.root,'package.json'),JSON.stringify({version:'2.0.0'}));
-  assert.throws(()=>releasePlan('libraries-v1.2.3',f.root),/version/);
+  assert.throws(()=>releasePlan('v1.2.3',f.root),/version/);
  }finally{f.clean();}
+});
+
+test('release: retired tag prefix is rejected',()=>{
+ assert.throws(()=>releasePlan('libraries-v1.2.3'),/vVERSION/);
 });

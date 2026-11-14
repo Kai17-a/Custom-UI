@@ -48,14 +48,15 @@
 ## 公開前に残す作業
 
 - [ ] npmスコープ・パッケージ名の利用権と、Kav-UI本体のライセンス・公開方針を確定する。
-- [ ] 公開する場合はprivate設定を変更し、レジストリ公開・バージョン管理の手順を整える。
+- [ ] 初回公開後、3パッケージの可視性がPrivateであることと、利用者・CIのアクセス権を確認する。
+- [x] GitHub Packagesへの非公開配布設定と版管理・公開手順を整える。
 
 レジストリへの公開、リリースActionsの実行は行っていない。
 
-## ライブラリ用GitHub Releasesワークフロー
+## GitHub Packagesへの非公開配布
 
-- [x] HTML版とは別に、`libraries-vVERSION` タグと手動実行による3パッケージ公開を追加。
-- [x] バージョン・依存一致、ビルド・テスト、SHA-256、draft経由の公開と再実行保護に対応。
-- [x] 操作手順とローカルの非公開テストを追加。
-- 公開先はGitHub Releases。npmレジストリへの公開、タグ作成、Actionsの実行、実リリースは行っていない。
-- GitHub Issue: https://github.com/Kai17-a/Custom-UI/issues/2
+- [x] 3パッケージの配布をGitHub Packages（Private運用）へ統一。HTML版のReleaseと開発・検証用のpackは維持。
+- [x] バージョン・依存一致、ビルド・テスト、SHA-256検証、公開済み版のスキップに対応。
+- [x] 認証・インストール・公開手順とローカルの公開処理テストを追加。
+- レジストリ公開、タグ作成、Actionsの実行、実リリースは行っていない。
+- GitHub Issue: https://github.com/Kai17-a/Custom-UI/issues/175
