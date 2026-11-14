@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { nextTick, ref } from "vue";
-import "@kav-ui/core/style.css";
+import "@kai17-a/kav-ui-core/style.css";
 import {
   KavButton,
   KavCluster,
@@ -10,7 +10,7 @@ import {
   KavPageHeader,
   KavStack,
   KavTabs,
-} from "@kav-ui/vue";
+} from "@kai17-a/kav-ui-vue";
 const step = ref("request-input");
 const requestTitle = ref("展示会の案内状");
 const requestDate = ref("2026-11-20");

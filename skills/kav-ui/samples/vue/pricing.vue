@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import "@kav-ui/core/style.css";
+import "@kai17-a/kav-ui-core/style.css";
 import {
   KavButton,
   KavCard,
@@ -7,7 +7,7 @@ import {
   KavPage,
   KavPageHeader,
   KavStack,
-} from "@kav-ui/vue";
+} from "@kai17-a/kav-ui-vue";
 </script>
 
 <template>

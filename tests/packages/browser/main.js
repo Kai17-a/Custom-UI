@@ -1,6 +1,6 @@
 import {createApp,h,ref,nextTick} from 'vue';
-import {KavInput,KavField,KavSelect,KavTabs,KavSidebar,KavTextarea,KavWidget,KavCheckbox,KavRadio,KavSwitch} from '@kav-ui/vue';
-import '@kav-ui/core/style.css';
+import {KavInput,KavField,KavSelect,KavTabs,KavSidebar,KavTextarea,KavWidget,KavCheckbox,KavRadio,KavSwitch} from '@kai17-a/kav-ui-vue';
+import '@kai17-a/kav-ui-core/style.css';
 const date=ref('2026-10-20'),choice=ref(1),items=ref([]),selected=ref(),overlay=ref(true),body=ref('Initial body'),tag=ref('div'),checked=ref(true),radio=ref('one'),enabled=ref(true),timeModel=ref('09:30');
 const extraVisible=ref(true);
 const extraHTML='<div data-ui-command><input data-ui-command-input aria-label=Search><div data-ui-command-list><button type=button data-ui-command-item data-ui-value=one>One</button><button type=button data-ui-command-item data-ui-value=two>Two</button></div></div><div class=ui-carousel data-ui-carousel aria-label=Slides><div class=ui-carousel-viewport data-ui-carousel-viewport><section class=ui-carousel-slide>First</section><section class=ui-carousel-slide>Second</section></div><button type=button data-ui-carousel-next>Next</button></div><div data-ui-data-table data-ui-page-size=0><input data-ui-table-search aria-label=Filter><table><thead><tr><th><button type=button data-ui-table-sort=number>Number</button></th></tr></thead><tbody><tr><td>10</td></tr><tr><td>2</td></tr></tbody></table></div>';

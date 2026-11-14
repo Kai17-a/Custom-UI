@@ -1,8 +1,8 @@
 import {h} from 'vue';
-import {KavButton,KavSelect,KavInput,KavSidebar,KavDialog,KavChart} from '@kav-ui/vue';
-import {mount,setColorTheme,mdiPaths,loadRuntime} from '@kav-ui/core';
-import {KavButton as AstroButton} from '@kav-ui/astro';
-import {installAstro} from '@kav-ui/astro/client';
+import {KavButton,KavSelect,KavInput,KavSidebar,KavDialog,KavChart} from '@kai17-a/kav-ui-vue';
+import {mount,setColorTheme,mdiPaths,loadRuntime} from '@kai17-a/kav-ui-core';
+import {KavButton as AstroButton} from '@kai17-a/kav-ui-astro';
+import {installAstro} from '@kai17-a/kav-ui-astro/client';
 h(KavButton,{color:'danger',variant:'outline',loading:true});
 h(KavInput,{modelValue:'hello','onUpdate:modelValue':value=>String(value)});
 h(KavSelect,{form:'external',modelValue:1,options:[{label:'個人',value:1}]});
@@ -19,9 +19,9 @@ if(typeof document!=='undefined'){void mount(document.body);void setColorTheme('
 async function runtimeAPIs(){const api=await loadRuntime();const button=document.createElement("button");const active:boolean=api.loading(button,true);const result:Promise<void>=api.copy("コピー");void active;await result;}
 void runtimeAPIs;
 
-import {KavStack,KavCluster,KavFlex,KavGrid,KavGridItem,KavPageHeader,KavToolbar,KavSection,KavPage} from '@kav-ui/vue';
-import type {Space,Responsive,FlexProps,GridProps,GridItemProps} from '@kav-ui/core';
-import {KavGrid as AstroGrid,KavStack as AstroStack} from '@kav-ui/astro';
+import {KavStack,KavCluster,KavFlex,KavGrid,KavGridItem,KavPageHeader,KavToolbar,KavSection,KavPage} from '@kai17-a/kav-ui-vue';
+import type {Space,Responsive,FlexProps,GridProps,GridItemProps} from '@kai17-a/kav-ui-core';
+import {KavGrid as AstroGrid,KavStack as AstroStack} from '@kai17-a/kav-ui-astro';
 h(KavStack,{gap:{base:4,tablet:3,mobile:0},align:'stretch',as:'section'});
 h(KavCluster,{gap:2,justify:'between',align:'baseline'});
 h(KavFlex,{direction:{base:'row',mobile:'column'},wrap:{base:false,tablet:true},align:{mobile:'stretch'}});
@@ -47,8 +47,8 @@ const invalidItem:GridItemProps={span:{base:13}};
 h(KavPageHeader,{level:7});
 void invalidFlex;void invalidGrid;void invalidItem;
 
-import {KavTextarea} from '@kav-ui/vue';
-import {KavTabs as AstroTabs,KavDrawer as AstroDrawer} from '@kav-ui/astro';
+import {KavTextarea} from '@kai17-a/kav-ui-vue';
+import {KavTabs as AstroTabs,KavDrawer as AstroDrawer} from '@kai17-a/kav-ui-astro';
 h(KavTextarea,{modelValue:'本文',name:'message',id:'message',rows:4,placeholder:'入力',required:true,disabled:false,maxlength:200,label:'メッセージ','onUpdate:modelValue':value=>value.toUpperCase()});
 // @ts-expect-error textarea label must be a string
 h(KavTextarea,{label:42});

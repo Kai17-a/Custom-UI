@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Existing library tag (e.g. libraries-v0.1.0 or libraries-v0.2.0-rc.1)'
+        description: 'Existing library tag (e.g. libraries-v0.0.6 or libraries-v0.0.6-rc.1)'
         required: true
         type: string
 
@@ -44,7 +44,9 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Validate tag and package versions
-        run: node scripts/library-release.mjs validate "$RELEASE_TAG"
+        run: |
+          [[ "$RELEASE_TAG" == libraries-v* ]] || exit 1
+          node scripts/library-release.mjs validate "$RELEASE_TAG"
 
       - name: Install locked development dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund

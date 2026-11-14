@@ -1,6 +1,6 @@
 ---
 import type {HTMLAttributes} from 'astro/types';
-import {buttonClass} from '@kav-ui/core';
+import {buttonClass} from '@kai17-a/kav-ui-core';
 import KavIcon from './KavIcon.astro';
 interface Props extends HTMLAttributes<'button'> {color?:string;variant?:string;size?:string;icon?:string;iconRight?:string;loading?:boolean;href?:string;}
 const {color='primary',variant='solid',size='md',icon,iconRight,loading=false,href,type='button',disabled=false,class:className,...rest}=Astro.props;

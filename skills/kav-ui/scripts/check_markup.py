@@ -6,8 +6,8 @@ Usage:
   python3 check_markup.py page.html --css public/assets/css/ui.css
   python3 check_markup.py src/ --app-css src/styles/app.css
 
-Kav-UI classes come from --css, the @kav-ui/core installed for the scanned paths, a
-ui.css found under the scanned paths, the @kav-ui/core of the current directory, or
+Kav-UI classes come from --css, the @kai17-a/kav-ui-core installed for the scanned paths, a
+ui.css found under the scanned paths, the @kai17-a/kav-ui-core of the current directory, or
 the class list bundled with this skill, in that order.
 Classes defined by --app-css or <style> blocks are treated as the app's own.
 Exit status: 0 = no errors, 1 = errors found, 2 = usage error.
@@ -169,7 +169,7 @@ def build_inventory(stylesheet):
     stylesheet = Path(stylesheet)
     css = read_stylesheet(stylesheet)
     classes, containers = css_inventory(css)
-    # HTML distribution: css/../js/ui.js; @kav-ui/core: dist/css/../runtime.js.
+    # HTML distribution: css/../js/ui.js; @kai17-a/kav-ui-core: dist/css/../runtime.js.
     javascript = next((path for path in (stylesheet.parent.parent / 'js/ui.js',
                                         stylesheet.parent.parent / 'runtime.js') if path.is_file()), None)
     attributes = set(re.findall(r'\bdata-ui-[a-z0-9]+(?:-[a-z0-9]+)*', css))
@@ -197,7 +197,7 @@ def find_kav_css(paths):
     def installed(start):
         start = start.resolve()
         for folder in [start, *start.parents]:
-            candidate = folder / 'node_modules/@kav-ui/core/dist/css/ui.css'
+            candidate = folder / 'node_modules/@kai17-a/kav-ui-core/dist/css/ui.css'
             if candidate.is_file():
                 return candidate
         return None

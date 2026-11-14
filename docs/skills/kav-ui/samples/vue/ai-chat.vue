@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import "@kav-ui/core/style.css";
+import "@kai17-a/kav-ui-core/style.css";
 import {
   KavButton,
   KavCluster,
@@ -8,7 +8,7 @@ import {
   KavPage,
   KavPageHeader,
   KavTextarea,
-} from "@kav-ui/vue";
+} from "@kai17-a/kav-ui-vue";
 const draft = ref("");
 const messages = ref<string[]>([]);
 function sendMessage() {

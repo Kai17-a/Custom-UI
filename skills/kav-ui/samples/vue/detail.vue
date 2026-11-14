@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import "@kav-ui/core/style.css";
+import "@kai17-a/kav-ui-core/style.css";
 import {
   KavBadge,
   KavButton,
@@ -9,7 +9,7 @@ import {
   KavPageHeader,
   KavStack,
   KavTabs,
-} from "@kav-ui/vue";
+} from "@kai17-a/kav-ui-vue";
 const detailTab = ref("overview");
 const shareOpen = ref(false);
 </script>

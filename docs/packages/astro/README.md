@@ -1,10 +1,10 @@
-# @kav-ui/astro
+# @kai17-a/kav-ui-astro
 
 Kav-UIのAstro用コンポーネント。静的HTMLと、必要な共通ブラウザJSを組み合わせます。Astro専用部品にVueは不要です。
 
 ```astro
 ---
-import {KavProvider,KavCard,KavField,KavSelect} from '@kav-ui/astro';
+import {KavProvider,KavCard,KavField,KavSelect} from '@kai17-a/kav-ui-astro';
 ---
 <KavProvider />
 <KavCard title="設定">
@@ -14,9 +14,9 @@ import {KavProvider,KavCard,KavField,KavSelect} from '@kav-ui/astro';
 </KavCard>
 ```
 
-`KavProvider` をレイアウトで1回利用するとCSSを読み込みます。Providerを使わない場合は `@kav-ui/core/style.css` をimportしてください。対話的な部品は自分の初期化スクリプトを含みます。クライアント遷移では旧ページを後始末し、新ページを再初期化します。
+`KavProvider` をレイアウトで1回利用するとCSSを読み込みます。Providerを使わない場合は `@kai17-a/kav-ui-core/style.css` をimportしてください。対話的な部品は自分の初期化スクリプトを含みます。クライアント遷移では旧ページを後始末し、新ページを再初期化します。
 
-単体importは `@kav-ui/astro/components/KavButton` のように拡張子なしで指定できます。全体のnamed exportも利用できます。
+単体importは `@kai17-a/kav-ui-astro/components/KavButton` のように拡張子なしで指定できます。全体のnamed exportも利用できます。
 
 Vue版も使う場合は公式の `@astrojs/vue` を導入し、Vueコンポーネントへ `client:load` 等を指定します。Astro専用部品に `v-model` はなく、通常のHTMLフォームやCustomEventを使います。
 
@@ -73,7 +73,7 @@ Vue/Astroでページを並べるときは、クラスを手で組み合わせ�
 | `KavSection` | `title`, `description`, `level=2` | default, actions |
 | `KavPage` | `asideLabel`, `railLabel`, `stickyAside` | default (body), aside, rail |
 
-型は `@kav-ui/core` からimportできます。
+型は `@kai17-a/kav-ui-core` からimportできます。
 
 - `Space = 0|1|2|3|4|6|8|12`、`Justify = 'start'|'center'|'end'|'between'|'around'|'evenly'`、`Align = 'start'|'center'|'end'|'stretch'|'baseline'`。
 - `Direction = 'row'|'column'`、wrapはboolean、`Columns = 1|2|3|4|6|12`、`Span = 1..12`、`HeadingLevel = 1..6`。
@@ -86,7 +86,7 @@ Vue/Astroでページを並べるときは、クラスを手で組み合わせ�
 
 ```astro
 ---
-import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kav-ui/astro';
+import {KavPage,KavPageHeader,KavButton,KavGrid,KavCard} from '@kai17-a/kav-ui-astro';
 ---
 <KavPage asideLabel="ページ内ナビ">
   <nav slot="aside">プロジェクト</nav>

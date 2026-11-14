@@ -5,12 +5,13 @@ set -euo pipefail
 : "${GH_REPO:?Set GH_REPO to owner/repository}"
 : "${GH_TOKEN:?Set GH_TOKEN to a token with contents:write}"
 
+[[ "$RELEASE_TAG" == libraries-v* ]] || { echo 'Library assets require a libraries-vVERSION tag.' >&2; exit 1; }
 version=$(node scripts/library-release.mjs validate "$RELEASE_TAG")
 node scripts/library-release.mjs verify "$RELEASE_TAG"
 assets=(
-  "dist/packages/kav-ui-core-${version}.tgz"
-  "dist/packages/kav-ui-vue-${version}.tgz"
-  "dist/packages/kav-ui-astro-${version}.tgz"
+  "dist/packages/kai17-a-kav-ui-core-${version}.tgz"
+  "dist/packages/kai17-a-kav-ui-vue-${version}.tgz"
+  "dist/packages/kai17-a-kav-ui-astro-${version}.tgz"
   'dist/packages/SHA256SUMS'
 )
 prerelease=false

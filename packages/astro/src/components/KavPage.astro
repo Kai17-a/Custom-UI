@@ -1,5 +1,5 @@
 ---
-import type {PageProps} from '@kav-ui/core';
+import type {PageProps} from '@kai17-a/kav-ui-core';
 import type {HTMLAttributes} from 'astro/types';
 interface Props extends PageProps, Omit<HTMLAttributes<'div'>,keyof PageProps> {[key:`data-${string}`]:unknown;}
 const {asideLabel,railLabel,stickyAside,class:className,...rest}=Astro.props;

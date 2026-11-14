@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import "@kav-ui/core/style.css";
+import "@kai17-a/kav-ui-core/style.css";
 import {
   KavButton,
   KavCluster,
@@ -10,7 +10,7 @@ import {
   KavPageHeader,
   KavSection,
   KavStack,
-} from "@kav-ui/vue";
+} from "@kai17-a/kav-ui-vue";
 const workspaceReady = ref(true);
 const rolesReady = ref(false);
 const projectReady = ref(false);

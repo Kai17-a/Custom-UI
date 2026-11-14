@@ -37,7 +37,7 @@ class FrameworkSampleTests(unittest.TestCase):
                     self.assertEqual(source.read_bytes(), (ROOT / 'docs/skills/kav-ui/samples' / framework / bundled.name).read_bytes())
                     imports = re.findall(r'(?:from\s+|import\s*)[\'\"]([^\'\"]+)', source.read_text())
                     self.assertTrue(imports)
-                    self.assertTrue(all(i in ('vue', '@kav-ui/vue', '@kav-ui/astro', '@kav-ui/core/style.css') for i in imports), imports)
+                    self.assertTrue(all(i in ('vue', '@kai17-a/kav-ui-vue', '@kai17-a/kav-ui-astro', '@kai17-a/kav-ui-core/style.css') for i in imports), imports)
                     self.assertNotRegex(source.read_text(), r'catalog-|data-demo-|<style|data-screen-sample|data-kav-ui-vue')
                     self.assertNotRegex(source.read_text(), r'<main[^>]*data-kav-ui-widget')
                     if framework == 'vue':

@@ -1,5 +1,5 @@
 ---
-import type {ToolbarProps} from '@kav-ui/core';
+import type {ToolbarProps} from '@kai17-a/kav-ui-core';
 import type {HTMLAttributes} from 'astro/types';
 interface Props extends ToolbarProps, Omit<HTMLAttributes<'div'>,keyof ToolbarProps> {[key:`data-${string}`]:unknown;}
 const {label,class:className,...rest}=Astro.props;

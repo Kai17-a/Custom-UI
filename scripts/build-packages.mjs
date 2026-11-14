@@ -27,4 +27,4 @@ await cp(join(root,'assets/icons/mdi/LICENSE'),join(output,'MDI-LICENSE'));
 await cp(join(root,'assets/icons/mdi/Apache-2.0.txt'),join(output,'Apache-2.0.txt'));
 await cp(join(root,'assets/icons/mdi/README.md'),join(output,'MDI-README.md'));
 await cp(join(root,'assets/vendor/material-color-utilities'),join(output,'licenses/material-color-utilities'),{recursive:true});
-console.log('Built @kav-ui/core from canonical CSS/runtime and '+Object.keys(paths).length+' MDI icons.');
+console.log('Built @kai17-a/kav-ui-core from canonical CSS/runtime and '+Object.keys(paths).length+' MDI icons.');

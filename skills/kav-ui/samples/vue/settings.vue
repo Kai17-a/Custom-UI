@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { nextTick, ref } from "vue";
-import "@kav-ui/core/style.css";
+import "@kai17-a/kav-ui-core/style.css";
 import {
   KavButton,
   KavCheckbox,
@@ -11,7 +11,7 @@ import {
   KavPageHeader,
   KavSection,
   KavSwitch,
-} from "@kav-ui/vue";
+} from "@kai17-a/kav-ui-vue";
 const workspaceName = ref("木の葉制作室");
 const contactEmail = ref("team@example.com");
 const weeklyReport = ref(true);

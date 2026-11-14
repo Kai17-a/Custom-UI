@@ -7,16 +7,20 @@ const project=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const names=['core','vue','astro'];
 const numeric='(?:0|[1-9][0-9]*)';
 const identifier='(?:0|[1-9][0-9]*|[0-9A-Za-z-]*[A-Za-z-][0-9A-Za-z-]*)';
-const tagPattern=new RegExp(`^libraries-v(${numeric}\\.${numeric}\\.${numeric}(?:-${identifier}(?:\\.${identifier})*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?)$`);
-export function releasePlan(tag,root=project){
+const tagPattern=new RegExp(`^(?:libraries-)?v(${numeric}\\.${numeric}\\.${numeric}(?:-${identifier}(?:\\.${identifier})*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?)$`);
+export function releaseVersion(tag){
  const match=typeof tag==='string'&&tag.length<=128&&tag.match(tagPattern);
- if(!match||match[0]!==tag)throw new Error('Use a library tag such as libraries-v0.1.0 or libraries-v0.1.0-rc.1');
- const version=match[1];
+ if(!match||match[0]!==tag)throw new Error('Use vVERSION or libraries-vVERSION');
+ return match[1];
+}
+export function releasePlan(tag,root=project){
+ const version=releaseVersion(tag);
+ if(JSON.parse(readFileSync(join(root,'package.json'),'utf8')).version!==version)throw new Error('Root version must match '+tag);
  const packages=names.map(name=>{
   const manifest=JSON.parse(readFileSync(join(root,'packages',name,'package.json'),'utf8'));
-  if(manifest.name!==`@kav-ui/${name}`||manifest.version!==version)throw new Error(`${name}: package name/version must match ${tag}`);
-  if(name!=='core'&&manifest.dependencies?.['@kav-ui/core']!==version)throw new Error(`${name}: @kav-ui/core dependency must be ${version}`);
-  return {name:manifest.name,file:`kav-ui-${name}-${version}.tgz`};
+  if(manifest.name!==`@kai17-a/kav-ui-${name}`||manifest.version!==version)throw new Error(`${name}: package name/version must match ${tag}`);
+  if(name!=='core'&&manifest.dependencies?.['@kai17-a/kav-ui-core']!==version)throw new Error(`${name}: @kai17-a/kav-ui-core dependency must be ${version}`);
+  return {name:manifest.name,file:`kai17-a-kav-ui-${name}-${version}.tgz`};
  });
  return {version,packages,prerelease:version.split('+')[0].includes('-')};
 }
@@ -43,6 +47,6 @@ if(process.argv[1]&&pathToFileURL(resolve(process.argv[1])).href===import.meta.u
   if(command==='validate')console.log(releasePlan(tag).version);
   else if(command==='checksums')writeChecksums(tag);
   else if(command==='verify')verifyChecksums(tag);
-  else throw new Error('Usage: node scripts/library-release.mjs validate|checksums|verify libraries-vVERSION');
+  else throw new Error('Usage: node scripts/library-release.mjs validate|checksums|verify vVERSION');
  }catch(error){console.error(error.message);process.exitCode=1;}
 }

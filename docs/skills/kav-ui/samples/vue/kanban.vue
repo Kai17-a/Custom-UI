@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import "@kav-ui/core/style.css";
-import { KavPage, KavPageHeader, KavWidget } from "@kav-ui/vue";
+import "@kai17-a/kav-ui-core/style.css";
+import { KavPage, KavPageHeader, KavWidget } from "@kai17-a/kav-ui-vue";
 // 開発者が管理する固定HTML。利用者の入力を連結しない。
 const boardMarkup = `
   <div class="ui-board" data-ui-board aria-label="制作タスク">
