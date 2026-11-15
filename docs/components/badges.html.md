@@ -21,6 +21,66 @@
   </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavBadge } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="ui-cluster">
+    <KavBadge class="badge badge-neutral">
+      進行中
+    </KavBadge>
+    <KavBadge class="badge text-bg-warning" color="warning">
+      確認待ち
+    </KavBadge>
+    <KavBadge class="badge text-bg-success" color="success">
+      完了
+    </KavBadge>
+    <KavBadge class="badge text-bg-danger" color="danger">
+      エラー
+    </KavBadge>
+    <KavBadge class="badge badge-neutral rounded-pill fw-normal border">
+      デザイン
+    </KavBadge>
+    <span class="small">
+      更新：10月22日
+    </span>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavBadge } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="ui-cluster">
+  <KavBadge class="badge badge-neutral">
+    進行中
+  </KavBadge>
+  <KavBadge class="badge text-bg-warning" color="warning">
+    確認待ち
+  </KavBadge>
+  <KavBadge class="badge text-bg-success" color="success">
+    完了
+  </KavBadge>
+  <KavBadge class="badge text-bg-danger" color="danger">
+    エラー
+  </KavBadge>
+  <KavBadge class="badge badge-neutral rounded-pill fw-normal border">
+    デザイン
+  </KavBadge>
+  <span class="small">
+    更新：10月22日
+  </span>
+</div>
+```
+
 使用ファイル・取り込み方
 
 共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。

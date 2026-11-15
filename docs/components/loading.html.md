@@ -17,6 +17,54 @@
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavSpinner } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-6 fx-items-center">
+    <span class="ui-loading-status" role="status">
+      <KavSpinner class="ui-spinner ui-spinner-sm" aria-hidden="true" size="sm" label="読み込み中" />
+      <span>
+        読み込み中…
+      </span>
+    </span>
+    <span class="ui-loading-status ui-loading-primary" role="status">
+      <KavSpinner class="ui-spinner ui-spinner-lg" aria-hidden="true" size="lg" label="読み込み中" />
+      <span>
+        データを取得中…
+      </span>
+    </span>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavSpinner } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-6 fx-items-center">
+  <span class="ui-loading-status" role="status">
+    <KavSpinner class="ui-spinner ui-spinner-sm" aria-hidden="true" size="sm" label="読み込み中" />
+    <span>
+      読み込み中…
+    </span>
+  </span>
+  <span class="ui-loading-status ui-loading-primary" role="status">
+    <KavSpinner class="ui-spinner ui-spinner-lg" aria-hidden="true" size="lg" label="読み込み中" />
+    <span>
+      データを取得中…
+    </span>
+  </span>
+</div>
+```
+
 ## サイズ・色
 
 標準の`ui-spinner`は20pxです。サイズを変える場合は、`ui-spinner-xs`（12px）・`ui-spinner-sm`（16px）・`ui-spinner-lg`（32px）・`ui-spinner-xl`（48px）を使います。
@@ -29,6 +77,50 @@
   <span class="ui-spinner ui-spinner-xl" aria-hidden="true"></span>
   <span class="ui-loading-success"><span class="ui-spinner ui-spinner-lg" aria-hidden="true"></span></span>
   <span class="ui-loading-danger"><span class="ui-spinner ui-spinner-lg" aria-hidden="true"></span></span>
+</div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavSpinner } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-6 fx-items-center" role="status" aria-label="読み込み中">
+    <KavSpinner class="ui-spinner ui-spinner-xs" aria-hidden="true" size="xs" label="読み込み中" />
+    <KavSpinner class="ui-spinner ui-spinner-sm" aria-hidden="true" size="sm" label="読み込み中" />
+    <KavSpinner class="ui-spinner ui-spinner-lg" aria-hidden="true" size="lg" label="読み込み中" />
+    <KavSpinner class="ui-spinner ui-spinner-xl" aria-hidden="true" size="xl" label="読み込み中" />
+    <span class="ui-loading-success">
+      <KavSpinner class="ui-spinner ui-spinner-lg" aria-hidden="true" size="lg" label="読み込み中" />
+    </span>
+    <span class="ui-loading-danger">
+      <KavSpinner class="ui-spinner ui-spinner-lg" aria-hidden="true" size="lg" label="読み込み中" />
+    </span>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavSpinner } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-6 fx-items-center" role="status" aria-label="読み込み中">
+  <KavSpinner class="ui-spinner ui-spinner-xs" aria-hidden="true" size="xs" label="読み込み中" />
+  <KavSpinner class="ui-spinner ui-spinner-sm" aria-hidden="true" size="sm" label="読み込み中" />
+  <KavSpinner class="ui-spinner ui-spinner-lg" aria-hidden="true" size="lg" label="読み込み中" />
+  <KavSpinner class="ui-spinner ui-spinner-xl" aria-hidden="true" size="xl" label="読み込み中" />
+  <span class="ui-loading-success">
+    <KavSpinner class="ui-spinner ui-spinner-lg" aria-hidden="true" size="lg" label="読み込み中" />
+  </span>
+  <span class="ui-loading-danger">
+    <KavSpinner class="ui-spinner ui-spinner-lg" aria-hidden="true" size="lg" label="読み込み中" />
+  </span>
 </div>
 ```
 
@@ -47,6 +139,48 @@
   </div>
 </div>
 <p class="dim small" role="status">タスクを読み込み中…</p>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div aria-busy="true" aria-label="タスク一覧">
+    <div aria-hidden="true">
+      <div class="skeleton skeleton-shimmer skeleton-title" style="width:60%"></div>
+      <div class="skeleton skeleton-shimmer" style="width:90%"></div>
+      <div class="skeleton skeleton-shimmer" style="width:75%"></div>
+    </div>
+  </div>
+  <p class="dim small" role="status">タスクを読み込み中…</p>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div aria-busy="true" aria-label="タスク一覧">
+    <div aria-hidden="true">
+      <div class="skeleton skeleton-shimmer skeleton-title" style="width:60%"></div>
+      <div class="skeleton skeleton-shimmer" style="width:90%"></div>
+      <div class="skeleton skeleton-shimmer" style="width:75%"></div>
+    </div>
+  </div>
+  <p class="dim small" role="status">タスクを読み込み中…</p>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 skeletonだけなら静止表示です。シマーはJavaScript不要で動作し、動きを減らすOS設定では静止表示になります。
@@ -78,6 +212,102 @@ skeletonだけなら静止表示です。シマーはJavaScript不要で動作�
 <p class="dim small" role="status">記事とプロフィールを読み込み中…</p>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavCard } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx-grid fx-grid-md-2 fx-gap-4">
+    <KavCard class="ui-card" aria-busy="true" aria-label="記事カード">
+      <div class="skeleton skeleton-shimmer skeleton-media">
+
+      </div>
+      <div class="skeleton skeleton-shimmer skeleton-title" style="width:70%">
+
+      </div>
+      <div class="skeleton skeleton-shimmer">
+
+      </div>
+      <div class="skeleton skeleton-shimmer" style="width:80%">
+
+      </div>
+    </KavCard>
+    <KavCard class="ui-card" aria-busy="true" aria-label="プロフィールカード">
+      <div class="fx fx-items-center fx-gap-3">
+        <div class="skeleton skeleton-shimmer skeleton-circle">
+
+        </div>
+        <div class="skeleton skeleton-shimmer skeleton-title" style="width:50%">
+
+        </div>
+      </div>
+      <div class="skeleton skeleton-shimmer">
+
+      </div>
+      <div class="skeleton skeleton-shimmer" style="width:85%">
+
+      </div>
+      <div class="skeleton skeleton-shimmer" style="width:65%">
+
+      </div>
+    </KavCard>
+  </div>
+  <p class="dim small" role="status">
+    記事とプロフィールを読み込み中…
+  </p>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavCard } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx-grid fx-grid-md-2 fx-gap-4">
+  <KavCard class="ui-card" aria-busy="true" aria-label="記事カード">
+    <div class="skeleton skeleton-shimmer skeleton-media">
+
+    </div>
+    <div class="skeleton skeleton-shimmer skeleton-title" style="width:70%">
+
+    </div>
+    <div class="skeleton skeleton-shimmer">
+
+    </div>
+    <div class="skeleton skeleton-shimmer" style="width:80%">
+
+    </div>
+  </KavCard>
+  <KavCard class="ui-card" aria-busy="true" aria-label="プロフィールカード">
+    <div class="fx fx-items-center fx-gap-3">
+      <div class="skeleton skeleton-shimmer skeleton-circle">
+
+      </div>
+      <div class="skeleton skeleton-shimmer skeleton-title" style="width:50%">
+
+      </div>
+    </div>
+    <div class="skeleton skeleton-shimmer">
+
+    </div>
+    <div class="skeleton skeleton-shimmer" style="width:85%">
+
+    </div>
+    <div class="skeleton skeleton-shimmer" style="width:65%">
+
+    </div>
+  </KavCard>
+</div>
+<p class="dim small" role="status">
+  記事とプロフィールを読み込み中…
+</p>
+```
+
 見出しは`skeleton-title`、円形は`skeleton-circle`、画像枠は`skeleton-media`を併用します。円のサイズは`--skeleton-size`、横幅は`width`で調整できます。
 
 取得完了後はプレースホルダーを実際の内容に置き換え、`aria-hidden`を外し、親の`aria-busy`をfalseにします。読み込み結果を伝える`role="status"`は、その領域の外で更新してください。
@@ -104,6 +334,72 @@ skeletonだけなら静止表示です。シマーはJavaScript不要で動作�
 <p class="dim small" role="status">保存中… ボタンの幅を保ったまま、ラベルをスピナーに切り替えます。</p>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavButton, KavSpinner } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+    <KavButton type="button" class="btn btn-primary ui-loading-button" aria-busy="true" disabled color="primary">
+      <span class="ui-loading-label">
+        保存する
+      </span>
+      <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-secondary ui-loading-button" aria-busy="true" disabled color="secondary" variant="outline">
+      <span class="ui-loading-label">
+        変更を保存
+      </span>
+      <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+    </KavButton>
+    <KavButton type="button" class="btn btn-sm btn-primary ui-loading-button" aria-busy="true" disabled size="sm" color="primary">
+      <span class="ui-loading-label">
+        再計算
+      </span>
+      <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+    </KavButton>
+  </div>
+  <p class="dim small" role="status">
+    保存中… ボタンの幅を保ったまま、ラベルをスピナーに切り替えます。
+  </p>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton, KavSpinner } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <KavButton type="button" class="btn btn-primary ui-loading-button" aria-busy="true" disabled color="primary">
+    <span class="ui-loading-label">
+      保存する
+    </span>
+    <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-secondary ui-loading-button" aria-busy="true" disabled color="secondary" variant="outline">
+    <span class="ui-loading-label">
+      変更を保存
+    </span>
+    <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+  </KavButton>
+  <KavButton type="button" class="btn btn-sm btn-primary ui-loading-button" aria-busy="true" disabled size="sm" color="primary">
+    <span class="ui-loading-label">
+      再計算
+    </span>
+    <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+  </KavButton>
+</div>
+<p class="dim small" role="status">
+  保存中… ボタンの幅を保ったまま、ラベルをスピナーに切り替えます。
+</p>
+```
+
 ## アイコンボタン
 
 ```html
@@ -118,6 +414,76 @@ skeletonだけなら静止表示です。シマーはJavaScript不要で動作�
 </button>
 </div>
 <p class="dim small">通常時 → 更新中。アイコンだけのボタンにはaria-labelで名前を指定します。</p>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavButton, KavSpinner } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+    <KavButton type="button" class="btn btn-outline-secondary ui-loading-button ui-loading-icon" aria-label="データを更新" color="secondary" variant="outline">
+      <span class="ui-loading-label">
+        <svg viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.75 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h8V3z">
+
+          </path>
+        </svg>
+      </span>
+      <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-secondary ui-loading-button ui-loading-icon" aria-label="データを更新中" aria-busy="true" disabled color="secondary" variant="outline">
+      <span class="ui-loading-label">
+        <svg viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.75 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h8V3z">
+
+          </path>
+        </svg>
+      </span>
+      <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+    </KavButton>
+  </div>
+  <p class="dim small">
+    通常時 → 更新中。アイコンだけのボタンにはaria-labelで名前を指定します。
+  </p>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton, KavSpinner } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <KavButton type="button" class="btn btn-outline-secondary ui-loading-button ui-loading-icon" aria-label="データを更新" color="secondary" variant="outline">
+    <span class="ui-loading-label">
+      <svg viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.75 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h8V3z">
+
+        </path>
+      </svg>
+    </span>
+    <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-secondary ui-loading-button ui-loading-icon" aria-label="データを更新中" aria-busy="true" disabled color="secondary" variant="outline">
+    <span class="ui-loading-label">
+      <svg viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.75 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h8V3z">
+
+        </path>
+      </svg>
+    </span>
+    <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+  </KavButton>
+</div>
+<p class="dim small">
+  通常時 → 更新中。アイコンだけのボタンにはaria-labelで名前を指定します。
+</p>
 ```
 
 ## ボーダーのローディング
@@ -135,6 +501,62 @@ ui-loading-borderをカードやパネルに追加します。枠線は操作を
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavCard } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx-grid fx-grid-md-2 fx-gap-4">
+    <KavCard class="ui-card ui-loading-border" aria-busy="true">
+      <h3 class="ui-card-title">
+        レポートを作成中
+      </h3>
+      <p class="ui-card-description">
+        枠線に沿ってアークが移動します。
+      </p>
+    </KavCard>
+    <KavCard class="ui-card ui-loading-border" aria-busy="false">
+      <h3 class="ui-card-title">
+        レポートの作成完了
+      </h3>
+      <p class="ui-card-description">
+        aria-busyをfalseにすると枠線が通常の状態に戻ります。
+      </p>
+    </KavCard>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavCard } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx-grid fx-grid-md-2 fx-gap-4">
+  <KavCard class="ui-card ui-loading-border" aria-busy="true">
+    <h3 class="ui-card-title">
+      レポートを作成中
+    </h3>
+    <p class="ui-card-description">
+      枠線に沿ってアークが移動します。
+    </p>
+  </KavCard>
+  <KavCard class="ui-card ui-loading-border" aria-busy="false">
+    <h3 class="ui-card-title">
+      レポートの作成完了
+    </h3>
+    <p class="ui-card-description">
+      aria-busyをfalseにすると枠線が通常の状態に戻ります。
+    </p>
+  </KavCard>
+</div>
+```
+
 ## 進捗バー（進捗が分かる処理）
 
 標準のprogress要素を使用します。value / maxで進捗を指定し、結果は文字でも伝えます。
@@ -149,12 +571,178 @@ ui-loading-borderをカードやパネルに追加します。枠線は操作を
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavProgress } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="stack">
+    <div>
+      <div class="ui-progress-heading">
+        <label for="loading-upload">
+          ファイルをアップロード中
+        </label>
+        <span>
+          60%
+        </span>
+      </div>
+      <KavProgress id="loading-upload" class="ui-progress" :value="60" :max="100" />
+    </div>
+    <div>
+      <div class="ui-progress-heading">
+        <label for="loading-complete">
+          アップロード完了
+        </label>
+        <span>
+          100%
+        </span>
+      </div>
+      <KavProgress id="loading-complete" class="ui-progress ui-progress-success" :value="100" :max="100" />
+    </div>
+    <div>
+      <div class="ui-progress-heading">
+        <label for="loading-failed">
+          アップロードに失敗 — 再試行してください
+        </label>
+        <span>
+          40%
+        </span>
+      </div>
+      <KavProgress id="loading-failed" class="ui-progress ui-progress-danger" :value="40" :max="100" />
+    </div>
+    <div>
+      <div class="ui-progress-heading">
+        <label for="loading-small">
+          細いバー
+        </label>
+        <span>
+          25%
+        </span>
+      </div>
+      <KavProgress id="loading-small" class="ui-progress ui-progress-sm" :value="25" :max="100" />
+    </div>
+    <div>
+      <div class="ui-progress-heading">
+        <label for="loading-large">
+          太いバー
+        </label>
+        <span>
+          75%
+        </span>
+      </div>
+      <KavProgress id="loading-large" class="ui-progress ui-progress-lg ui-progress-warning" :value="75" :max="100" />
+    </div>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavProgress } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="stack">
+  <div>
+    <div class="ui-progress-heading">
+      <label for="loading-upload">
+        ファイルをアップロード中
+      </label>
+      <span>
+        60%
+      </span>
+    </div>
+    <KavProgress id="loading-upload" class="ui-progress" value={60} max={100} />
+  </div>
+  <div>
+    <div class="ui-progress-heading">
+      <label for="loading-complete">
+        アップロード完了
+      </label>
+      <span>
+        100%
+      </span>
+    </div>
+    <KavProgress id="loading-complete" class="ui-progress ui-progress-success" value={100} max={100} />
+  </div>
+  <div>
+    <div class="ui-progress-heading">
+      <label for="loading-failed">
+        アップロードに失敗 — 再試行してください
+      </label>
+      <span>
+        40%
+      </span>
+    </div>
+    <KavProgress id="loading-failed" class="ui-progress ui-progress-danger" value={40} max={100} />
+  </div>
+  <div>
+    <div class="ui-progress-heading">
+      <label for="loading-small">
+        細いバー
+      </label>
+      <span>
+        25%
+      </span>
+    </div>
+    <KavProgress id="loading-small" class="ui-progress ui-progress-sm" value={25} max={100} />
+  </div>
+  <div>
+    <div class="ui-progress-heading">
+      <label for="loading-large">
+        太いバー
+      </label>
+      <span>
+        75%
+      </span>
+    </div>
+    <KavProgress id="loading-large" class="ui-progress ui-progress-lg ui-progress-warning" value={75} max={100} />
+  </div>
+</div>
+```
+
 ## 進捗バー（進捗が分からない処理）
 
 value属性を省略すると、往復するバーになります。進捗が不明な場合に架空の割合を表示する必要はありません。
 
 ```html
 <div><label for="loading-indeterminate">接続を確認中…</label><progress id="loading-indeterminate" class="ui-progress" max="100">処理中</progress></div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavProgress } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div>
+    <label for="loading-indeterminate">
+      接続を確認中…
+    </label>
+    <KavProgress id="loading-indeterminate" class="ui-progress" :max="100" />
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavProgress } from "@kai17-a/kav-ui-astro";
+---
+
+<div>
+  <label for="loading-indeterminate">
+    接続を確認中…
+  </label>
+  <KavProgress id="loading-indeterminate" class="ui-progress" max={100} />
+</div>
 ```
 
 ## 動作を試す
@@ -180,6 +768,86 @@ value属性を省略すると、往復するバーになります。進捗が不
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavButton, KavCard, KavProgress, KavSpinner } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="stack" data-demo-loading>
+    <div class="fx fx-wrap fx-gap-3">
+      <KavButton type="button" class="btn btn-primary ui-loading-button" data-demo-loading-start="success" color="primary">
+        <span class="ui-loading-label">
+          保存を試す（デモ）
+        </span>
+        <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+      </KavButton>
+      <KavButton type="button" class="btn btn-outline-secondary ui-loading-button" data-demo-loading-start="error" color="secondary" variant="outline">
+        <span class="ui-loading-label">
+          失敗・再試行を試す（デモ）
+        </span>
+        <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+      </KavButton>
+    </div>
+    <KavCard class="ui-card ui-loading-border" data-demo-loading-panel="">
+      <div class="ui-progress-heading">
+        <label for="loading-demo-progress">
+          データの保存
+        </label>
+        <span data-demo-loading-percent>
+          0%
+        </span>
+      </div>
+      <KavProgress id="loading-demo-progress" class="ui-progress" :value="0" :max="100" />
+    </KavCard>
+    <p role="status" data-demo-loading-result>
+      ボタンを押すと、進捗と結果を確認できます。
+    </p>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton, KavCard, KavProgress, KavSpinner } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="stack" data-demo-loading>
+  <div class="fx fx-wrap fx-gap-3">
+    <KavButton type="button" class="btn btn-primary ui-loading-button" data-demo-loading-start="success" color="primary">
+      <span class="ui-loading-label">
+        保存を試す（デモ）
+      </span>
+      <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-secondary ui-loading-button" data-demo-loading-start="error" color="secondary" variant="outline">
+      <span class="ui-loading-label">
+        失敗・再試行を試す（デモ）
+      </span>
+      <KavSpinner class="ui-spinner ui-spinner-sm ui-loading-indicator" aria-hidden="true" size="sm" label="読み込み中" />
+    </KavButton>
+  </div>
+  <KavCard class="ui-card ui-loading-border" data-demo-loading-panel="">
+    <div class="ui-progress-heading">
+      <label for="loading-demo-progress">
+        データの保存
+      </label>
+      <span data-demo-loading-percent>
+        0%
+      </span>
+    </div>
+    <KavProgress id="loading-demo-progress" class="ui-progress" value={0} max={100} />
+  </KavCard>
+  <p role="status" data-demo-loading-result>
+    ボタンを押すと、進捗と結果を確認できます。
+  </p>
+</div>
+```
+
 ## 画面の端に固定する進捗バー
 
 `ui-progress-top`を追加すると画面の上端に、`ui-progress-bottom`なら下端に、幅いっぱいの角のないバーを固定します。既定の高さは`ui-progress-sm`と同じ.25rem（通常4px）です。`ui-progress-lg`を併用すると.875rem（通常14px）になります。クラスを書く順序には依存しません。
@@ -192,6 +860,36 @@ value属性を省略すると、往復するバーになります。進捗が不
   <div class="ui-card-body">GitHub と同期中（上端・進捗未確定）</div>
   <progress class="ui-progress ui-progress-bottom" max="100" value="60" aria-label="ダウンロードの進捗">60%</progress>
 </div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavCard, KavProgress } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <KavCard class="ui-card" style="transform:translate(0);height:6rem;overflow:hidden">
+    <KavProgress class="ui-progress ui-progress-top" aria-label="GitHub と同期中" />
+    GitHub と同期中（上端・進捗未確定）
+    <KavProgress class="ui-progress ui-progress-bottom" aria-label="ダウンロードの進捗" :value="60" :max="100" />
+  </KavCard>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavCard, KavProgress } from "@kai17-a/kav-ui-astro";
+---
+
+<KavCard class="ui-card" style="transform:translate(0);height:6rem;overflow:hidden">
+  <KavProgress class="ui-progress ui-progress-top" aria-label="GitHub と同期中" />
+  GitHub と同期中（上端・進捗未確定）
+  <KavProgress class="ui-progress ui-progress-bottom" aria-label="ダウンロードの進捗" value={60} max={100} />
+</KavCard>
 ```
 
 ```html

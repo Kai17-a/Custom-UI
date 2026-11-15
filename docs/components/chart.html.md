@@ -60,6 +60,122 @@ SVGで描く折れ線・面・棒・ドーナツチャート。ライブラリ�
             </figure>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <figure class="ui-chart" data-ui-chart="line">
+                <figcaption>折れ線</figcaption>
+                <script type="application/json" data-ui-chart-data>
+  {
+    "label": "折れ線",
+    "labels": [
+      "月",
+      "火",
+      "水",
+      "木",
+      "金",
+      "土",
+      "日"
+    ],
+    "series": [
+      {
+        "name": "今週",
+        "values": [
+          24,
+          38,
+          32,
+          48,
+          42,
+          58,
+          64
+        ]
+      },
+      {
+        "name": "前週",
+        "values": [
+          20,
+          26,
+          30,
+          35,
+          31,
+          42,
+          48
+        ]
+      }
+    ],
+    "unit": "件"
+  }
+  <\/script>
+                <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
+              </figure>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <figure class="ui-chart" data-ui-chart="line">
+                <figcaption>折れ線</figcaption>
+                <script type="application/json" data-ui-chart-data>
+  {
+    "label": "折れ線",
+    "labels": [
+      "月",
+      "火",
+      "水",
+      "木",
+      "金",
+      "土",
+      "日"
+    ],
+    "series": [
+      {
+        "name": "今週",
+        "values": [
+          24,
+          38,
+          32,
+          48,
+          42,
+          58,
+          64
+        ]
+      },
+      {
+        "name": "前週",
+        "values": [
+          20,
+          26,
+          30,
+          35,
+          31,
+          42,
+          48
+        ]
+      }
+    ],
+    "unit": "件"
+  }
+  <\/script>
+                <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
+              </figure>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 <a id="chart-area"></a>
 
 ## 面：値の推移
@@ -98,6 +214,94 @@ SVGで描く折れ線・面・棒・ドーナツチャート。ライブラリ�
 </script>
               <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
             </figure>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <figure class="ui-chart" data-ui-chart="area">
+                <figcaption>面</figcaption>
+                <script type="application/json" data-ui-chart-data>
+  {
+    "label": "面",
+    "labels": [
+      "4月",
+      "5月",
+      "6月",
+      "7月",
+      "8月",
+      "9月"
+    ],
+    "series": [
+      {
+        "name": "利用者",
+        "values": [
+          120,
+          160,
+          145,
+          210,
+          240,
+          280
+        ]
+      }
+    ],
+    "unit": "人"
+  }
+  <\/script>
+                <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
+              </figure>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <figure class="ui-chart" data-ui-chart="area">
+                <figcaption>面</figcaption>
+                <script type="application/json" data-ui-chart-data>
+  {
+    "label": "面",
+    "labels": [
+      "4月",
+      "5月",
+      "6月",
+      "7月",
+      "8月",
+      "9月"
+    ],
+    "series": [
+      {
+        "name": "利用者",
+        "values": [
+          120,
+          160,
+          145,
+          210,
+          240,
+          280
+        ]
+      }
+    ],
+    "unit": "人"
+  }
+  <\/script>
+                <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
+              </figure>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 <a id="chart-bar"></a>
@@ -145,6 +349,104 @@ SVGで描く折れ線・面・棒・ドーナツチャート。ライブラリ�
             </figure>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <figure class="ui-chart" data-ui-chart="bar">
+                <figcaption>棒</figcaption>
+                <script type="application/json" data-ui-chart-data>
+  {
+    "label": "棒",
+    "labels": [
+      "企画",
+      "開発",
+      "運用",
+      "サポート"
+    ],
+    "series": [
+      {
+        "name": "計画",
+        "values": [
+          40,
+          80,
+          50,
+          30
+        ]
+      },
+      {
+        "name": "実績",
+        "values": [
+          35,
+          92,
+          45,
+          26
+        ]
+      }
+    ],
+    "unit": "時間"
+  }
+  <\/script>
+                <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
+              </figure>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <figure class="ui-chart" data-ui-chart="bar">
+                <figcaption>棒</figcaption>
+                <script type="application/json" data-ui-chart-data>
+  {
+    "label": "棒",
+    "labels": [
+      "企画",
+      "開発",
+      "運用",
+      "サポート"
+    ],
+    "series": [
+      {
+        "name": "計画",
+        "values": [
+          40,
+          80,
+          50,
+          30
+        ]
+      },
+      {
+        "name": "実績",
+        "values": [
+          35,
+          92,
+          45,
+          26
+        ]
+      }
+    ],
+    "unit": "時間"
+  }
+  <\/script>
+                <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
+              </figure>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 <a id="chart-donut"></a>
 
 ## ドーナツ：構成比
@@ -181,6 +483,86 @@ SVGで描く折れ線・面・棒・ドーナツチャート。ライブラリ�
             </figure>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <figure class="ui-chart" data-ui-chart="donut">
+                <figcaption>ドーナツ</figcaption>
+                <script type="application/json" data-ui-chart-data>
+  {
+    "label": "ドーナツ",
+    "labels": [
+      "検索",
+      "直接アクセス",
+      "紹介",
+      "その他"
+    ],
+    "series": [
+      {
+        "name": "訪問数",
+        "values": [
+          420,
+          280,
+          190,
+          110
+        ]
+      }
+    ],
+    "unit": "件"
+  }
+  <\/script>
+                <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
+              </figure>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <figure class="ui-chart" data-ui-chart="donut">
+                <figcaption>ドーナツ</figcaption>
+                <script type="application/json" data-ui-chart-data>
+  {
+    "label": "ドーナツ",
+    "labels": [
+      "検索",
+      "直接アクセス",
+      "紹介",
+      "その他"
+    ],
+    "series": [
+      {
+        "name": "訪問数",
+        "values": [
+          420,
+          280,
+          190,
+          110
+        ]
+      }
+    ],
+    "unit": "件"
+  }
+  <\/script>
+                <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
+              </figure>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 <a id="chart-update"></a>
 
 ## JavaScriptで更新する
@@ -212,6 +594,80 @@ SVGで描く折れ線・面・棒・ドーナツチャート。ライブラリ�
 </script>
             </figure>
             <p role="status" data-demo-chart-status>初期データ</p>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <button class="btn btn-outline-primary" type="button" data-demo-chart>データを切り替える</button>
+              <figure id="chart-live" class="ui-chart" data-ui-chart="bar">
+                <figcaption>チームの完了件数</figcaption>
+                <script type="application/json" data-ui-chart-data>
+  {
+    "labels": [
+      "Aチーム",
+      "Bチーム",
+      "Cチーム"
+    ],
+    "series": [
+      {
+        "name": "完了件数",
+        "values": [
+          12,
+          18,
+          9
+        ]
+      }
+    ]
+  }
+  <\/script>
+              </figure>
+              <p role="status" data-demo-chart-status>初期データ</p>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <button class="btn btn-outline-primary" type="button" data-demo-chart>データを切り替える</button>
+              <figure id="chart-live" class="ui-chart" data-ui-chart="bar">
+                <figcaption>チームの完了件数</figcaption>
+                <script type="application/json" data-ui-chart-data>
+  {
+    "labels": [
+      "Aチーム",
+      "Bチーム",
+      "Cチーム"
+    ],
+    "series": [
+      {
+        "name": "完了件数",
+        "values": [
+          12,
+          18,
+          9
+        ]
+      }
+    ]
+  }
+  <\/script>
+              </figure>
+              <p role="status" data-demo-chart-status>初期データ</p>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 ```
@@ -249,6 +705,56 @@ labelsまたはseriesが空のときは案内を表示します。JSONの構文�
 </script>
               <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
             </figure>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <figure class="ui-chart" data-ui-chart="line">
+                <figcaption>データ未登録</figcaption>
+                <script type="application/json" data-ui-chart-data>
+  {
+    "label": "データ未登録",
+    "labels": [],
+    "series": [],
+    "unit": ""
+  }
+  <\/script>
+                <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
+              </figure>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <figure class="ui-chart" data-ui-chart="line">
+                <figcaption>データ未登録</figcaption>
+                <script type="application/json" data-ui-chart-data>
+  {
+    "label": "データ未登録",
+    "labels": [],
+    "series": [],
+    "unit": ""
+  }
+  <\/script>
+                <noscript>チャートの表示にはJavaScriptを有効にしてください。</noscript>
+              </figure>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 <a id="chart-options"></a>

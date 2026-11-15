@@ -24,3 +24,5 @@ data-ui-diff-viewer内にtextarea[data-ui-diff-before]とtextarea[data-ui-diff-a
 行単位で比較し、変更前と変更後を左右に表示します。追加・削除は文字と色で区別します。入力はHTMLとして実行しません。行数の積が100万を超える場合は共通先頭以降を削除・追加として扱う簡易比較に切り替えます。最小差分や文字単位の強調、Git連携は対象外です。
 
 共通ui.cssとui.jsだけで利用できます。Vue・AstroではKavWidgetで同じHTMLを使用できます。参考：[Astryx DiffViewer](https://astryx.atmeta.com/storybook/?path=/story/lab-diffviewer--split)。
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)

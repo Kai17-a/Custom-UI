@@ -26,6 +26,54 @@
   </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="row sp-gap-4 fx-items-start">
+      <input type="search" class="form-control form-control-sm" aria-label="タスクを検索" placeholder="タスクを検索" style="max-width:18rem;">
+      <select class="form-select form-select-sm ui-w-auto" aria-label="tool">
+        <option>Claude</option><option>Codex</option><option>Cline</option>
+      </select>
+      <label class="form-check"><input type="checkbox" class="form-check-input" checked><span class="form-check-label">follow</span></label>
+      <label class="form-check"><input type="checkbox" class="form-check-input"><span class="form-check-label">failed only</span></label>
+    </div>
+    <div class="row">
+      <textarea class="form-control" rows="2" aria-label="メッセージ" placeholder="メッセージを入力（表示サンプル）" style="max-width:32rem;"></textarea>
+    </div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="row sp-gap-4 fx-items-start">
+      <input type="search" class="form-control form-control-sm" aria-label="タスクを検索" placeholder="タスクを検索" style="max-width:18rem;">
+      <select class="form-select form-select-sm ui-w-auto" aria-label="tool">
+        <option>Claude</option><option>Codex</option><option>Cline</option>
+      </select>
+      <label class="form-check"><input type="checkbox" class="form-check-input" checked><span class="form-check-label">follow</span></label>
+      <label class="form-check"><input type="checkbox" class="form-check-input"><span class="form-check-label">failed only</span></label>
+    </div>
+    <div class="row">
+      <textarea class="form-control" rows="2" aria-label="メッセージ" placeholder="メッセージを入力（表示サンプル）" style="max-width:32rem;"></textarea>
+    </div>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 <a id="select-box"></a>
 
 ## テーマに合わせたselect
@@ -45,6 +93,106 @@
   <div class="field"><label for="select-project">プロジェクト</label><select id="select-project" class="form-select" name="project" required><option value="">選択してください</option><optgroup label="進行中"><option value="catalog">デザインカタログ</option><option value="app">自作アプリ</option></optgroup><optgroup label="アーカイブ"><option value="old" disabled>旧プロジェクト（選択不可）</option></optgroup></select></div>
   <div class="field"><label for="select-disabled">変更不可</label><select id="select-disabled" class="form-select" disabled><option>現在は選択できません</option></select></div>
   <div class="ui-cluster"><button type="reset" class="btn btn-sm btn-outline-secondary">選択をリセット</button></div>
+</form>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <form class="ui-stack">
+    <div class="field">
+      <label for="select-project">
+        プロジェクト
+      </label>
+      <select id="select-project" class="form-select" name="project" required>
+        <option value>
+          選択してください
+        </option>
+        <optgroup label="進行中">
+          <option value="catalog">
+            デザインカタログ
+          </option>
+          <option value="app">
+            自作アプリ
+          </option>
+        </optgroup>
+        <optgroup label="アーカイブ">
+          <option value="old" disabled>
+            旧プロジェクト（選択不可）
+          </option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="field">
+      <label for="select-disabled">
+        変更不可
+      </label>
+      <select id="select-disabled" class="form-select" disabled>
+        <option>
+          現在は選択できません
+        </option>
+      </select>
+    </div>
+    <div class="ui-cluster">
+      <KavButton type="reset" class="btn btn-sm btn-outline-secondary" size="sm" color="secondary" variant="outline">
+        選択をリセット
+      </KavButton>
+    </div>
+  </form>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<form class="ui-stack">
+  <div class="field">
+    <label for="select-project">
+      プロジェクト
+    </label>
+    <select id="select-project" class="form-select" name="project" required>
+      <option value>
+        選択してください
+      </option>
+      <optgroup label="進行中">
+        <option value="catalog">
+          デザインカタログ
+        </option>
+        <option value="app">
+          自作アプリ
+        </option>
+      </optgroup>
+      <optgroup label="アーカイブ">
+        <option value="old" disabled>
+          旧プロジェクト（選択不可）
+        </option>
+      </optgroup>
+    </select>
+  </div>
+  <div class="field">
+    <label for="select-disabled">
+      変更不可
+    </label>
+    <select id="select-disabled" class="form-select" disabled>
+      <option>
+        現在は選択できません
+      </option>
+    </select>
+  </div>
+  <div class="ui-cluster">
+    <KavButton type="reset" class="btn btn-sm btn-outline-secondary" size="sm" color="secondary" variant="outline">
+      選択をリセット
+    </KavButton>
+  </div>
 </form>
 ```
 
@@ -68,6 +216,46 @@
   <option value="佐藤 太郎" data-ui-keywords="Osaka 大阪"></option>
   <option value="鈴木 葵" data-ui-keywords="Kyoto 京都"></option>
 </datalist></div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="field"><label for="autocomplete-assignee">担当者</label>
+  <input id="autocomplete-assignee" class="form-control" name="assignee" list="assignee-suggestions" data-ui-autocomplete placeholder="名前・拠点で検索">
+  <datalist id="assignee-suggestions">
+    <option value="田中 花子" data-ui-keywords="Tokyo 東京"></option>
+    <option value="佐藤 太郎" data-ui-keywords="Osaka 大阪"></option>
+    <option value="鈴木 葵" data-ui-keywords="Kyoto 京都"></option>
+  </datalist></div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="field"><label for="autocomplete-assignee">担当者</label>
+  <input id="autocomplete-assignee" class="form-control" name="assignee" list="assignee-suggestions" data-ui-autocomplete placeholder="名前・拠点で検索">
+  <datalist id="assignee-suggestions">
+    <option value="田中 花子" data-ui-keywords="Tokyo 東京"></option>
+    <option value="佐藤 太郎" data-ui-keywords="Osaka 大阪"></option>
+    <option value="鈴木 葵" data-ui-keywords="Kyoto 京都"></option>
+  </datalist></div>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 値・表示名（label）と `data-ui-keywords` をNFKCで正規化し、大文字小文字を区別せず部分一致で検索します。空白区切りの語をすべて含む候補を表示し、件数を日本語で通知します。disabled・hidden・空の候補は表示しません。
@@ -114,6 +302,90 @@
 </form>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <form class="ui-stack">
+    <div class="field"><label for="searchable-project">プロジェクトを検索して選択</label>
+    <select id="searchable-project" class="form-select" name="project" data-ui-searchable required>
+      <option value="">選択してください</option>
+      <optgroup label="プロジェクト">
+      <option value="catalog" data-ui-keywords="catalog design">デザインカタログ</option>
+      <option value="app" data-ui-keywords="app application">自作アプリ</option>
+      <option value="website" data-ui-keywords="website web">公式サイト</option>
+      <option value="dashboard" data-ui-keywords="dashboard admin">管理画面</option>
+      <option value="shop" data-ui-keywords="shop store">オンラインストア</option>
+      <option value="booking" data-ui-keywords="booking">予約システム</option>
+      <option value="help" data-ui-keywords="help support">ヘルプセンター</option>
+      <option value="blog" data-ui-keywords="blog">技術ブログ</option>
+      <option value="event" data-ui-keywords="event">イベント受付</option>
+      <option value="survey" data-ui-keywords="survey">アンケート</option>
+      <option value="crm" data-ui-keywords="crm customer">顧客管理</option>
+      <option value="tasks" data-ui-keywords="task">タスク管理</option>
+      <option value="files" data-ui-keywords="file">ファイル共有</option>
+      <option value="chat" data-ui-keywords="chat">社内チャット</option>
+      <option value="report" data-ui-keywords="report">レポート</option>
+      <option value="calendar" data-ui-keywords="calendar">カレンダー</option>
+      <option value="wiki" data-ui-keywords="wiki">社内Wiki</option>
+      <option value="photos" data-ui-keywords="photo">写真ギャラリー</option>
+      <option value="learning" data-ui-keywords="learning">学習ポータル</option>
+      <option value="archive" data-ui-keywords="archive" disabled>旧プロジェクト（選択不可）</option>
+      </optgroup>
+    </select></div>
+    <div class="ui-cluster"><button type="reset" class="btn btn-sm btn-outline-secondary">選択をリセット</button></div>
+  </form>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <form class="ui-stack">
+    <div class="field"><label for="searchable-project">プロジェクトを検索して選択</label>
+    <select id="searchable-project" class="form-select" name="project" data-ui-searchable required>
+      <option value="">選択してください</option>
+      <optgroup label="プロジェクト">
+      <option value="catalog" data-ui-keywords="catalog design">デザインカタログ</option>
+      <option value="app" data-ui-keywords="app application">自作アプリ</option>
+      <option value="website" data-ui-keywords="website web">公式サイト</option>
+      <option value="dashboard" data-ui-keywords="dashboard admin">管理画面</option>
+      <option value="shop" data-ui-keywords="shop store">オンラインストア</option>
+      <option value="booking" data-ui-keywords="booking">予約システム</option>
+      <option value="help" data-ui-keywords="help support">ヘルプセンター</option>
+      <option value="blog" data-ui-keywords="blog">技術ブログ</option>
+      <option value="event" data-ui-keywords="event">イベント受付</option>
+      <option value="survey" data-ui-keywords="survey">アンケート</option>
+      <option value="crm" data-ui-keywords="crm customer">顧客管理</option>
+      <option value="tasks" data-ui-keywords="task">タスク管理</option>
+      <option value="files" data-ui-keywords="file">ファイル共有</option>
+      <option value="chat" data-ui-keywords="chat">社内チャット</option>
+      <option value="report" data-ui-keywords="report">レポート</option>
+      <option value="calendar" data-ui-keywords="calendar">カレンダー</option>
+      <option value="wiki" data-ui-keywords="wiki">社内Wiki</option>
+      <option value="photos" data-ui-keywords="photo">写真ギャラリー</option>
+      <option value="learning" data-ui-keywords="learning">学習ポータル</option>
+      <option value="archive" data-ui-keywords="archive" disabled>旧プロジェクト（選択不可）</option>
+      </optgroup>
+    </select></div>
+    <div class="ui-cluster"><button type="reset" class="btn btn-sm btn-outline-secondary">選択をリセット</button></div>
+  </form>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 開くと検索欄にフォーカスします。上下キーで候補へ移動し、Enterで確定します。日本語変換中のEnterでは確定しません。Escapeで閉じると選択ボタンに戻ります。件数と一致なしを読み上げ、一致する項目がないグループ見出しは隠します。無効な項目は表示しますが選択できません。
 
 検索語は開くたびに空に戻ります。`name`・`required`・フォーム送信は元のselectを使い、値が変わった確定時だけ `change` を1回送ります。コードから値を変えたら `KavUI.sync(select)` で表示を同期できます。開いている間は検索語を保ちます。複数選択・非同期検索・自由入力は対象外です。
@@ -132,6 +404,46 @@
 <button type="submit" class="btn btn-sm btn-primary">検証する（デモ）</button><p data-demo-result role="status"></p></form>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <form data-ui-validate data-demo-form novalidate>
+  <div class="field" data-ui-field><label>プロジェクト名（必須）<input name="project" class="form-control form-control-sm" required maxlength="80" pattern=".*\\S.*" data-ui-message="プロジェクト名を1〜80文字で入力してください。" placeholder="例：My app"></label><small>80文字以内で入力してください。</small><small class="ui-invalid-feedback" data-ui-error hidden></small></div>
+  <div class="field"><label>プロジェクトID（読み取り専用）<input class="form-control form-control-sm" value="project_001" readonly aria-describedby="readonly-help"></label><small id="readonly-help">読み取り専用です。破線の枠で示し、文字の選択・コピーとキーボードでのフォーカスができます。編集や無効の欄とは表示を分けます。</small></div>
+  <div class="field"><label>プラン<input class="form-control form-control-sm" value="Free" disabled></label><small>このデモではプランを変更できません。</small></div>
+  <fieldset class="choice-list"><legend>公開範囲</legend><label class="form-check"><input type="radio" class="form-check-input" name="visibility" value="private" checked> 非公開</label><label class="form-check"><input type="radio" class="form-check-input" name="visibility" value="public"> 公開</label></fieldset>
+  <p><label class="switch"><input type="checkbox" role="switch" checked> メール通知</label></p>
+  <button type="submit" class="btn btn-sm btn-primary">検証する（デモ）</button><p data-demo-result role="status"></p></form>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <form data-ui-validate data-demo-form novalidate>
+  <div class="field" data-ui-field><label>プロジェクト名（必須）<input name="project" class="form-control form-control-sm" required maxlength="80" pattern=".*\\S.*" data-ui-message="プロジェクト名を1〜80文字で入力してください。" placeholder="例：My app"></label><small>80文字以内で入力してください。</small><small class="ui-invalid-feedback" data-ui-error hidden></small></div>
+  <div class="field"><label>プロジェクトID（読み取り専用）<input class="form-control form-control-sm" value="project_001" readonly aria-describedby="readonly-help"></label><small id="readonly-help">読み取り専用です。破線の枠で示し、文字の選択・コピーとキーボードでのフォーカスができます。編集や無効の欄とは表示を分けます。</small></div>
+  <div class="field"><label>プラン<input class="form-control form-control-sm" value="Free" disabled></label><small>このデモではプランを変更できません。</small></div>
+  <fieldset class="choice-list"><legend>公開範囲</legend><label class="form-check"><input type="radio" class="form-check-input" name="visibility" value="private" checked> 非公開</label><label class="form-check"><input type="radio" class="form-check-input" name="visibility" value="public"> 公開</label></fieldset>
+  <p><label class="switch"><input type="checkbox" role="switch" checked> メール通知</label></p>
+  <button type="submit" class="btn btn-sm btn-primary">検証する（デモ）</button><p data-demo-result role="status"></p></form>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 ## 日付を設定する
 
 ```html
@@ -142,6 +454,46 @@
   </div>
   <small class="ui-invalid-feedback" data-ui-error hidden></small>
 </div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="field" data-ui-field>
+    <label for="form-datepicker">実施日</label>
+    <div class="ui-datepicker" data-ui-datepicker >
+      <input class="form-control form-control-sm" type="date" id="form-datepicker" name="form-datepicker" >
+    </div>
+    <small class="ui-invalid-feedback" data-ui-error hidden></small>
+  </div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="field" data-ui-field>
+    <label for="form-datepicker">実施日</label>
+    <div class="ui-datepicker" data-ui-datepicker >
+      <input class="form-control form-control-sm" type="date" id="form-datepicker" name="form-datepicker" >
+    </div>
+    <small class="ui-invalid-feedback" data-ui-error hidden></small>
+  </div>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 <a id="checkbox-radio"></a>
@@ -168,6 +520,62 @@
 </form>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <form class="stack sp-gap-4" id="checks-demo">
+    <fieldset class="choice-list"><legend>Checkbox：複数選択</legend>
+      <label class="form-check"><input class="form-check-input" id="check-notice" type="checkbox" name="notice" value="email" checked><span class="form-check-label">メール通知</span></label>
+      <label class="form-check"><input class="form-check-input" id="check-report" type="checkbox" name="notice" value="report"><span class="form-check-label">週次レポート</span></label>
+      <label class="form-check"><input class="form-check-input" id="check-mixed" type="checkbox" data-ui-indeterminate><span class="form-check-label">一部選択</span></label>
+      <label class="form-check"><input class="form-check-input" type="checkbox" disabled><span class="form-check-label">無効</span></label>
+      <label class="form-check"><input class="form-check-input" type="checkbox" checked disabled><span class="form-check-label">選択済み・無効</span></label>
+    </fieldset>
+    <fieldset class="choice-list"><legend>Radio：1つ選択</legend>
+      <label class="form-check"><input class="form-check-input" id="radio-personal" type="radio" name="checks-plan" value="personal" checked><span class="form-check-label">個人用</span></label>
+      <label class="form-check"><input class="form-check-input" id="radio-team" type="radio" name="checks-plan" value="team"><span class="form-check-label">チーム用</span></label>
+      <label class="form-check"><input class="form-check-input" type="radio" name="checks-plan" value="disabled" disabled><span class="form-check-label">無効</span></label>
+    </fieldset>
+    <button class="btn btn-sm btn-outline-secondary" type="reset">初期状態に戻す</button>
+  </form>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <form class="stack sp-gap-4" id="checks-demo">
+    <fieldset class="choice-list"><legend>Checkbox：複数選択</legend>
+      <label class="form-check"><input class="form-check-input" id="check-notice" type="checkbox" name="notice" value="email" checked><span class="form-check-label">メール通知</span></label>
+      <label class="form-check"><input class="form-check-input" id="check-report" type="checkbox" name="notice" value="report"><span class="form-check-label">週次レポート</span></label>
+      <label class="form-check"><input class="form-check-input" id="check-mixed" type="checkbox" data-ui-indeterminate><span class="form-check-label">一部選択</span></label>
+      <label class="form-check"><input class="form-check-input" type="checkbox" disabled><span class="form-check-label">無効</span></label>
+      <label class="form-check"><input class="form-check-input" type="checkbox" checked disabled><span class="form-check-label">選択済み・無効</span></label>
+    </fieldset>
+    <fieldset class="choice-list"><legend>Radio：1つ選択</legend>
+      <label class="form-check"><input class="form-check-input" id="radio-personal" type="radio" name="checks-plan" value="personal" checked><span class="form-check-label">個人用</span></label>
+      <label class="form-check"><input class="form-check-input" id="radio-team" type="radio" name="checks-plan" value="team"><span class="form-check-label">チーム用</span></label>
+      <label class="form-check"><input class="form-check-input" type="radio" name="checks-plan" value="disabled" disabled><span class="form-check-label">無効</span></label>
+    </fieldset>
+    <button class="btn btn-sm btn-outline-secondary" type="reset">初期状態に戻す</button>
+  </form>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 一部選択の初期表示は `data-ui-indeterminate` で指定します。この初期化にはui.jsが必要です。実行中の変更は `input.indeterminate = true` で行えます。一部選択の見た目とcheckedの値は独立しており、送信の有無はcheckedで決まります。
 
 ## Checkbox・Radioのサイズと色
@@ -186,6 +594,58 @@
     <label class="form-check form-check-danger"><input class="form-check-input form-check-input-lg" type="radio" name="radio-color" value="danger"><span class="form-check-label">注意色・大</span></label>
   </div>
 </div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="stack sp-gap-3">
+    <div class="cluster sp-gap-4">
+      <label class="form-check"><input class="form-check-input form-check-input-sm" type="checkbox" checked><span class="form-check-label">小</span></label>
+      <label class="form-check"><input class="form-check-input" type="checkbox" checked><span class="form-check-label">標準</span></label>
+      <label class="form-check"><input class="form-check-input form-check-input-lg" type="checkbox" checked><span class="form-check-label">大</span></label>
+    </div>
+    <div class="cluster sp-gap-4">
+      <label class="form-check form-check-success"><input class="form-check-input" type="checkbox" checked><span class="form-check-label">成功色</span></label>
+      <label class="form-check form-check-danger"><input class="form-check-input" type="checkbox" checked><span class="form-check-label">注意色</span></label>
+      <label class="form-check form-check-success"><input class="form-check-input form-check-input-lg" type="radio" name="radio-color" value="success" checked><span class="form-check-label">成功色・大</span></label>
+      <label class="form-check form-check-danger"><input class="form-check-input form-check-input-lg" type="radio" name="radio-color" value="danger"><span class="form-check-label">注意色・大</span></label>
+    </div>
+  </div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="stack sp-gap-3">
+    <div class="cluster sp-gap-4">
+      <label class="form-check"><input class="form-check-input form-check-input-sm" type="checkbox" checked><span class="form-check-label">小</span></label>
+      <label class="form-check"><input class="form-check-input" type="checkbox" checked><span class="form-check-label">標準</span></label>
+      <label class="form-check"><input class="form-check-input form-check-input-lg" type="checkbox" checked><span class="form-check-label">大</span></label>
+    </div>
+    <div class="cluster sp-gap-4">
+      <label class="form-check form-check-success"><input class="form-check-input" type="checkbox" checked><span class="form-check-label">成功色</span></label>
+      <label class="form-check form-check-danger"><input class="form-check-input" type="checkbox" checked><span class="form-check-label">注意色</span></label>
+      <label class="form-check form-check-success"><input class="form-check-input form-check-input-lg" type="radio" name="radio-color" value="success" checked><span class="form-check-label">成功色・大</span></label>
+      <label class="form-check form-check-danger"><input class="form-check-input form-check-input-lg" type="radio" name="radio-color" value="danger"><span class="form-check-label">注意色・大</span></label>
+    </div>
+  </div>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 基本の見た目はui.cssだけで動作します。ライト・ダークと各デザインテーマに対応し、キーボードでのフォーカスを枠で示します。
@@ -212,6 +672,58 @@
 </form>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <form class="stack sp-gap-4" data-ui-validate data-demo-form>
+    <div class="ui-file-drop" data-ui-file-drop data-ui-max-size="5242880" data-ui-max-files="5">
+      <input type="file" class="form-control" id="drop-documents" name="documents" accept=".pdf,.txt,image/*" multiple aria-describedby="drop-documents-help">
+      <label class="ui-file-dropzone" data-ui-file-zone for="drop-documents">
+        <span icon="mdi-upload" aria-hidden="true"></span>
+        <strong>ファイルをドラッグ＆ドロップ</strong>
+        <span>またはクリックして選択</span>
+        <span class="ui-file-hint" id="drop-documents-help">PDF・TXT・画像 / 1件5MBまで / 最大5件</span>
+      </label>
+    </div>
+    <div class="buttons fx fx-wrap sp-gap-2"><button class="btn btn-primary" type="submit">入力を確認</button><button class="btn btn-outline-secondary" type="reset">選択をリセット</button></div>
+    <p data-demo-result role="status"></p>
+  </form>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <form class="stack sp-gap-4" data-ui-validate data-demo-form>
+    <div class="ui-file-drop" data-ui-file-drop data-ui-max-size="5242880" data-ui-max-files="5">
+      <input type="file" class="form-control" id="drop-documents" name="documents" accept=".pdf,.txt,image/*" multiple aria-describedby="drop-documents-help">
+      <label class="ui-file-dropzone" data-ui-file-zone for="drop-documents">
+        <span icon="mdi-upload" aria-hidden="true"></span>
+        <strong>ファイルをドラッグ＆ドロップ</strong>
+        <span>またはクリックして選択</span>
+        <span class="ui-file-hint" id="drop-documents-help">PDF・TXT・画像 / 1件5MBまで / 最大5件</span>
+      </label>
+    </div>
+    <div class="buttons fx fx-wrap sp-gap-2"><button class="btn btn-primary" type="submit">入力を確認</button><button class="btn btn-outline-secondary" type="reset">選択をリセット</button></div>
+    <p data-demo-result role="status"></p>
+  </form>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 新しい選択は一覧を置き換えます。形式・サイズ・件数に合わない選択はまとめて受け付けず、直前の選択を維持して理由を表示します。フォルダーの選択には対応していません。
 
 <a id="file-drop-single"></a>
@@ -233,6 +745,60 @@
   <input type="file" class="form-control" id="drop-disabled" name="disabled-attachment" disabled>
   <label class="ui-file-dropzone" data-ui-file-zone for="drop-disabled"><span icon="mdi-lock" aria-hidden="true"></span><strong>ファイルを選択できません</strong><span class="ui-file-hint">disabledによる無効状態</span></label>
 </div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <form class="stack sp-gap-4" data-ui-validate data-demo-form>
+    <div class="field" data-ui-field>
+      <div class="ui-file-drop" data-ui-file-drop>
+        <input type="file" class="form-control" id="drop-single" name="attachment" accept=".pdf" required>
+        <label class="ui-file-dropzone" data-ui-file-zone for="drop-single"><span icon="mdi-file-document" aria-hidden="true"></span><strong>PDFを1件選択（必須）</strong><span class="ui-file-hint">ドロップまたはクリックで選択</span></label>
+      </div>
+      <small class="ui-invalid-feedback" data-ui-error hidden></small>
+    </div>
+    <button class="btn btn-primary" type="submit">入力を確認</button><p data-demo-result role="status"></p>
+  </form>
+  <div class="ui-file-drop" data-ui-file-drop>
+    <input type="file" class="form-control" id="drop-disabled" name="disabled-attachment" disabled>
+    <label class="ui-file-dropzone" data-ui-file-zone for="drop-disabled"><span icon="mdi-lock" aria-hidden="true"></span><strong>ファイルを選択できません</strong><span class="ui-file-hint">disabledによる無効状態</span></label>
+  </div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <form class="stack sp-gap-4" data-ui-validate data-demo-form>
+    <div class="field" data-ui-field>
+      <div class="ui-file-drop" data-ui-file-drop>
+        <input type="file" class="form-control" id="drop-single" name="attachment" accept=".pdf" required>
+        <label class="ui-file-dropzone" data-ui-file-zone for="drop-single"><span icon="mdi-file-document" aria-hidden="true"></span><strong>PDFを1件選択（必須）</strong><span class="ui-file-hint">ドロップまたはクリックで選択</span></label>
+      </div>
+      <small class="ui-invalid-feedback" data-ui-error hidden></small>
+    </div>
+    <button class="btn btn-primary" type="submit">入力を確認</button><p data-demo-result role="status"></p>
+  </form>
+  <div class="ui-file-drop" data-ui-file-drop>
+    <input type="file" class="form-control" id="drop-disabled" name="disabled-attachment" disabled>
+    <label class="ui-file-dropzone" data-ui-file-zone for="drop-disabled"><span icon="mdi-lock" aria-hidden="true"></span><strong>ファイルを選択できません</strong><span class="ui-file-hint">disabledによる無効状態</span></label>
+  </div>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 <a id="file-drop-options"></a>
@@ -278,6 +844,34 @@ drop.addEventListener('ui:filereject', event => {
 
 ```html
 <form class="stack" data-ui-validate data-demo-form novalidate><div class="field" data-ui-field><label>テキスト (text)<input type="text" class="form-control form-control-sm" name="text" placeholder="任意のテキスト"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>パスワード (password)<input type="password" class="form-control form-control-sm" name="password" placeholder="••••••••"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>メールアドレス (email)<input type="email" class="form-control form-control-sm" name="email" placeholder="user@example.com" required></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>電話番号 (tel)<input type="tel" class="form-control form-control-sm" name="tel" placeholder="090-1234-5678"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>URL (url)<input type="url" class="form-control form-control-sm" name="url" placeholder="https://example.com"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>検索 (search)<input type="search" class="form-control form-control-sm" name="search" placeholder="検索キーワード"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>数値 (number)<input type="number" class="form-control form-control-sm" name="number" min="1" max="100" value="10"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label for="all-types-date">日付 (date)</label><div class="ui-datepicker" data-ui-datepicker><input type="date" class="form-control form-control-sm" id="all-types-date" name="date"></div><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>時刻 (time)<input type="time" class="form-control form-control-sm" name="time"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>日時 (datetime-local)<input type="datetime-local" class="form-control form-control-sm" name="datetime-local"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>月 (month)<input type="month" class="form-control form-control-sm" name="month"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>週 (week)<input type="week" class="form-control form-control-sm" name="week"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>色 (color)<input type="color" class="form-control" name="color" value="#007bff"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>スライダー (range)<input type="range" class="form-range" name="range" min="0" max="100" value="50"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>ファイル (file)<input type="file" class="form-control form-control-sm" name="file"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label class="form-check"><input type="checkbox" class="form-check-input" name="checkbox" checked><span class="form-check-label">同意します</span></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><fieldset class="choice-list" data-ui-field><legend>ラジオボタン (radio)</legend><label class="form-check"><input type="radio" class="form-check-input" name="radio" value="a" checked> A</label><label class="form-check"><input type="radio" class="form-check-input" name="radio" value="b"> B</label><small class="ui-invalid-feedback" data-ui-error hidden></small></fieldset><div class="buttons fx fx-wrap sp-gap-2"><button type="submit" class="btn btn-sm btn-primary">送信 (submit)</button><button type="reset" class="btn btn-sm btn-outline-secondary">リセット (reset)</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast="汎用ボタンが押されました" data-ui-variant="info">汎用 (button)</button></div><input type="hidden" name="hidden" value="hidden-value"><p class="dim small">type="hidden" は送信時に値（hidden-value）がフォームデータに含まれます。</p><p data-demo-result role="status"></p></form>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <form class="stack" data-ui-validate data-demo-form novalidate><div class="field" data-ui-field><label>テキスト (text)<input type="text" class="form-control form-control-sm" name="text" placeholder="任意のテキスト"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>パスワード (password)<input type="password" class="form-control form-control-sm" name="password" placeholder="••••••••"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>メールアドレス (email)<input type="email" class="form-control form-control-sm" name="email" placeholder="user@example.com" required></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>電話番号 (tel)<input type="tel" class="form-control form-control-sm" name="tel" placeholder="090-1234-5678"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>URL (url)<input type="url" class="form-control form-control-sm" name="url" placeholder="https://example.com"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>検索 (search)<input type="search" class="form-control form-control-sm" name="search" placeholder="検索キーワード"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>数値 (number)<input type="number" class="form-control form-control-sm" name="number" min="1" max="100" value="10"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label for="all-types-date">日付 (date)</label><div class="ui-datepicker" data-ui-datepicker><input type="date" class="form-control form-control-sm" id="all-types-date" name="date"></div><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>時刻 (time)<input type="time" class="form-control form-control-sm" name="time"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>日時 (datetime-local)<input type="datetime-local" class="form-control form-control-sm" name="datetime-local"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>月 (month)<input type="month" class="form-control form-control-sm" name="month"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>週 (week)<input type="week" class="form-control form-control-sm" name="week"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>色 (color)<input type="color" class="form-control" name="color" value="#007bff"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>スライダー (range)<input type="range" class="form-range" name="range" min="0" max="100" value="50"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>ファイル (file)<input type="file" class="form-control form-control-sm" name="file"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label class="form-check"><input type="checkbox" class="form-check-input" name="checkbox" checked><span class="form-check-label">同意します</span></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><fieldset class="choice-list" data-ui-field><legend>ラジオボタン (radio)</legend><label class="form-check"><input type="radio" class="form-check-input" name="radio" value="a" checked> A</label><label class="form-check"><input type="radio" class="form-check-input" name="radio" value="b"> B</label><small class="ui-invalid-feedback" data-ui-error hidden></small></fieldset><div class="buttons fx fx-wrap sp-gap-2"><button type="submit" class="btn btn-sm btn-primary">送信 (submit)</button><button type="reset" class="btn btn-sm btn-outline-secondary">リセット (reset)</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast="汎用ボタンが押されました" data-ui-variant="info">汎用 (button)</button></div><input type="hidden" name="hidden" value="hidden-value"><p class="dim small">type="hidden" は送信時に値（hidden-value）がフォームデータに含まれます。</p><p data-demo-result role="status"></p></form>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <form class="stack" data-ui-validate data-demo-form novalidate><div class="field" data-ui-field><label>テキスト (text)<input type="text" class="form-control form-control-sm" name="text" placeholder="任意のテキスト"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>パスワード (password)<input type="password" class="form-control form-control-sm" name="password" placeholder="••••••••"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>メールアドレス (email)<input type="email" class="form-control form-control-sm" name="email" placeholder="user@example.com" required></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>電話番号 (tel)<input type="tel" class="form-control form-control-sm" name="tel" placeholder="090-1234-5678"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>URL (url)<input type="url" class="form-control form-control-sm" name="url" placeholder="https://example.com"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>検索 (search)<input type="search" class="form-control form-control-sm" name="search" placeholder="検索キーワード"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>数値 (number)<input type="number" class="form-control form-control-sm" name="number" min="1" max="100" value="10"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label for="all-types-date">日付 (date)</label><div class="ui-datepicker" data-ui-datepicker><input type="date" class="form-control form-control-sm" id="all-types-date" name="date"></div><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>時刻 (time)<input type="time" class="form-control form-control-sm" name="time"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>日時 (datetime-local)<input type="datetime-local" class="form-control form-control-sm" name="datetime-local"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>月 (month)<input type="month" class="form-control form-control-sm" name="month"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>週 (week)<input type="week" class="form-control form-control-sm" name="week"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>色 (color)<input type="color" class="form-control" name="color" value="#007bff"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>スライダー (range)<input type="range" class="form-range" name="range" min="0" max="100" value="50"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label>ファイル (file)<input type="file" class="form-control form-control-sm" name="file"></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><div class="field" data-ui-field><label class="form-check"><input type="checkbox" class="form-check-input" name="checkbox" checked><span class="form-check-label">同意します</span></label><small class="ui-invalid-feedback" data-ui-error hidden></small></div><fieldset class="choice-list" data-ui-field><legend>ラジオボタン (radio)</legend><label class="form-check"><input type="radio" class="form-check-input" name="radio" value="a" checked> A</label><label class="form-check"><input type="radio" class="form-check-input" name="radio" value="b"> B</label><small class="ui-invalid-feedback" data-ui-error hidden></small></fieldset><div class="buttons fx fx-wrap sp-gap-2"><button type="submit" class="btn btn-sm btn-primary">送信 (submit)</button><button type="reset" class="btn btn-sm btn-outline-secondary">リセット (reset)</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toast="汎用ボタンが押されました" data-ui-variant="info">汎用 (button)</button></div><input type="hidden" name="hidden" value="hidden-value"><p class="dim small">type="hidden" は送信時に値（hidden-value）がフォームデータに含まれます。</p><p data-demo-result role="status"></p></form>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 日付は既存のDate picker、時刻・日時・月・週・色は共通の選択パネルを使います。`input.form-control` にそれぞれのtypeを指定し、ui.jsを読み込むと自動で適用されます。選択して「適用」で確定し、キャンセル・Escapeでは元の値を維持します。色は候補と任意の6桁カラーコードで指定できます。`min`・`max`・`step` に合わない値はパネル内でエラーを表示します。

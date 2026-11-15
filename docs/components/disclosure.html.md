@@ -12,6 +12,34 @@
 <div class="accordion"><details open><summary>アプリへの取り込み方</summary><p>HTMLをコピーし、共通トークンと対象コンポーネントのCSSを読み込んでください。</p></details><details><summary>npmやサーバーは必要ですか？</summary><p>不要です。HTMLファイルを直接ブラウザで開けます。</p></details><details><summary>ダークモードに対応していますか？</summary><p>html要素の data-bs-theme を dark にすると、共通トークンが切り替わります。</p></details></div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="accordion"><details open><summary>アプリへの取り込み方</summary><p>HTMLをコピーし、共通トークンと対象コンポーネントのCSSを読み込んでください。</p></details><details><summary>npmやサーバーは必要ですか？</summary><p>不要です。HTMLファイルを直接ブラウザで開けます。</p></details><details><summary>ダークモードに対応していますか？</summary><p>html要素の data-bs-theme を dark にすると、共通トークンが切り替わります。</p></details></div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="accordion"><details open><summary>アプリへの取り込み方</summary><p>HTMLをコピーし、共通トークンと対象コンポーネントのCSSを読み込んでください。</p></details><details><summary>npmやサーバーは必要ですか？</summary><p>不要です。HTMLファイルを直接ブラウザで開けます。</p></details><details><summary>ダークモードに対応していますか？</summary><p>html要素の data-bs-theme を dark にすると、共通トークンが切り替わります。</p></details></div>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 使用ファイル・取り込み方
 
 共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。

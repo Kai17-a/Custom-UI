@@ -21,3 +21,5 @@ data-ui-richtext内のtextarea[data-ui-richtext-source]を編集画面へ拡張�
 読み込み・貼り付け・送信値は許可した要素だけに制限します。許可要素はp・div・br・h2・h3・strong・b・em・i・ul・ol・li・aです。属性はリンクのhref以外を除去し、リンクはhttp・https・mailtoに制限します。画像・スタイル・スクリプトは取り込みません。保存先でも入力の検証を行ってください。
 
 外部依存・追加容量・追加ライセンスはありません。ブラウザ標準のcontenteditableとexecCommandを使うため、装飾と履歴の動作はブラウザに依存します。共同編集・画像アップロードは対象外です。共通CSS/JSと通常HTMLで利用し、Vue・AstroではKavWidgetを使えます。参考：[Astryx RichTextEditor](https://astryx.atmeta.com/storybook/?path=/story/richtext-richtexteditor--with-toolbar)。
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)

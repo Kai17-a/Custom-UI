@@ -82,3 +82,5 @@ JavaScriptがない場合も横スクロールで内容を確認できます。�
 ```
 
 [ui.css](../assets/ui/css/ui.css) / [ui.js](../assets/ui/js/ui.js)。Vue・Astroでは既存の`KavWidget`に同じHTMLを渡して利用できます。[パッケージの使い方](../packages/README.md)も参照してください。
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)

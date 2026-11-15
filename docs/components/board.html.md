@@ -47,3 +47,5 @@ glass・glassmorphism テーマでは、実行中以外のタスクカードも 
 assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。
 
 ui.js はHTML上のカードを移動し、ui:move イベントを発行します。データの保存や通信はアプリ側で実装してください。
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)

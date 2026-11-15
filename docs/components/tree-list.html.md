@@ -25,3 +25,5 @@ ulまたはolにdata-ui-tree、liに一意の値を持つdata-ui-tree-itemを付
 共通のui.cssとui.jsを読み込みます。動的に追加したHTMLはKavUI.init、破棄時はKavUI.destroyを呼びます。Vue・AstroではKavWidgetに同じHTMLを渡せます。
 
 [Astryxの参考Story](https://astryx.atmeta.com/storybook/?path=/story/core-treelist--basic) / [パッケージの使い方](../packages/README.md)
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)

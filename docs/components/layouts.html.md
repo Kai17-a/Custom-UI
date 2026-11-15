@@ -22,6 +22,78 @@ PCは1024px以上、タブレットは768px以上1024px未満、スマートフ�
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavCard } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx-grid fx-grid-3 tablet:fx-grid-2 mobile:fx-grid-1 fx-gap-4 tablet:sp-gap-3 mobile:sp-gap-2" id="device-grid-demo">
+    <KavCard class="ui-card">
+      <h3 class="ui-card-title">
+        プロジェクト
+      </h3>
+      <p class="type-color-muted">
+        PCは3列、タブレットは2列、スマートフォンは1列です。
+      </p>
+    </KavCard>
+    <KavCard class="ui-card">
+      <h3 class="ui-card-title">
+        メンバー
+      </h3>
+      <p class="type-color-muted">
+        ブラウザの幅を変えて並び方を確認できます。
+      </p>
+    </KavCard>
+    <KavCard class="ui-card">
+      <h3 class="ui-card-title">
+        アクティビティ
+      </h3>
+      <p class="type-color-muted">
+        色・角丸・影は既存テーマを引き継ぎます。
+      </p>
+    </KavCard>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavCard } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx-grid fx-grid-3 tablet:fx-grid-2 mobile:fx-grid-1 fx-gap-4 tablet:sp-gap-3 mobile:sp-gap-2" id="device-grid-demo">
+  <KavCard class="ui-card">
+    <h3 class="ui-card-title">
+      プロジェクト
+    </h3>
+    <p class="type-color-muted">
+      PCは3列、タブレットは2列、スマートフォンは1列です。
+    </p>
+  </KavCard>
+  <KavCard class="ui-card">
+    <h3 class="ui-card-title">
+      メンバー
+    </h3>
+    <p class="type-color-muted">
+      ブラウザの幅を変えて並び方を確認できます。
+    </p>
+  </KavCard>
+  <KavCard class="ui-card">
+    <h3 class="ui-card-title">
+      アクティビティ
+    </h3>
+    <p class="type-color-muted">
+      色・角丸・影は既存テーマを引き継ぎます。
+    </p>
+  </KavCard>
+</div>
+```
+
 `tablet:`はタブレット幅だけ、`mobile:`はスマートフォン幅だけに適用します。指定のない幅では通常クラスが適用されます。従来の`md:`・`lg:`や`fx-*-md-*`は「その幅以上」の指定として引き続き使えます。同じプロパティでは端末別指定とmd/lg指定を混在させないでください。
 
 <a id="responsive-utilities"></a>
@@ -38,6 +110,52 @@ PCは1024px以上、タブレットは768px以上1024px未満、スマートフ�
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavButton, KavCard } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <KavCard class="ui-card sp-p-6 tablet:sp-p-4 mobile:sp-p-3" id="device-utilities-demo">
+    <h3 class="type-size-2xl tablet:type-size-xl mobile:type-size-lg type-weight-bold">
+      端末に合わせた見出し
+    </h3>
+    <div class="fx fx-row tablet:fx-row mobile:fx-column fx-justify-between mobile:fx-items-stretch fx-gap-4">
+      <p class="m-0">
+        スマートフォンでは操作を縦に並べます。
+      </p>
+      <KavButton class="btn btn-primary ui-w-auto mobile:ui-w-full" href="forms.html" color="primary">
+        フォームを見る
+      </KavButton>
+    </div>
+  </KavCard>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton, KavCard } from "@kai17-a/kav-ui-astro";
+---
+
+<KavCard class="ui-card sp-p-6 tablet:sp-p-4 mobile:sp-p-3" id="device-utilities-demo">
+  <h3 class="type-size-2xl tablet:type-size-xl mobile:type-size-lg type-weight-bold">
+    端末に合わせた見出し
+  </h3>
+  <div class="fx fx-row tablet:fx-row mobile:fx-column fx-justify-between mobile:fx-items-stretch fx-gap-4">
+    <p class="m-0">
+      スマートフォンでは操作を縦に並べます。
+    </p>
+    <KavButton class="btn btn-primary ui-w-auto mobile:ui-w-full" href="forms.html" color="primary">
+      フォームを見る
+    </KavButton>
+  </div>
+</KavCard>
+```
+
 Flexboxの方向・折り返し・整列・伸縮・列数・列幅、`sp-*`の余白、`type-*`の文字指定にプレフィックスを付けられます。例：`mobile:fx-column`、`tablet:fx-col-6`、`mobile:sp-gap-2`、`tablet:type-size-xl`。基本クラスの一覧は[Flexbox](flex.html.md)・[Flex grid](flex-grid.html.md)・[Spacing](spacing.html.md)・[Typography](typography.html.md)を参照してください。
 
 <a id="responsive-visibility"></a>
@@ -48,6 +166,38 @@ Flexboxの方向・折り返し・整列・伸縮・列数・列幅、`sp-*`の�
 <p class="tablet:ui-hidden mobile:ui-hidden">PCで表示しています。</p>
 <p class="ui-hidden tablet:ui-block">タブレットで表示しています。</p>
 <p class="ui-hidden mobile:ui-block">スマートフォンで表示しています。</p>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <p class="tablet:ui-hidden mobile:ui-hidden">PCで表示しています。</p>
+  <p class="ui-hidden tablet:ui-block">タブレットで表示しています。</p>
+  <p class="ui-hidden mobile:ui-block">スマートフォンで表示しています。</p>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <p class="tablet:ui-hidden mobile:ui-hidden">PCで表示しています。</p>
+  <p class="ui-hidden tablet:ui-block">タブレットで表示しています。</p>
+  <p class="ui-hidden mobile:ui-block">スマートフォンで表示しています。</p>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 `ui-hidden`・`ui-block`・`ui-inline`・`ui-flex`・`ui-inline-flex`・`ui-grid`で表示方法、`ui-w-full`・`ui-w-auto`で幅、`ui-overflow-x-auto`で横スクロールを指定できます。これらもtablet:・mobile:に対応します。HTMLの`hidden`属性は表示クラスでは解除されません。
@@ -86,6 +236,116 @@ Flexboxの方向・折り返し・整列・伸縮・列数・列幅、`sp-*`の�
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavButton, KavContainer } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="ui-stack">
+    <header class="ui-header">
+      <KavContainer class="ui-container ui-header-inner">
+        <a class="ui-brand" href="../index.html">
+          My workspace
+        </a>
+        <nav class="ui-header-nav" aria-label="アプリのメインメニュー">
+          <a href="layouts.html" aria-current="page">
+            概要
+          </a>
+          <a href="board.html">
+            タスク
+          </a>
+        </nav>
+        <div class="ui-header-actions">
+          <KavButton class="btn btn-sm btn-outline-secondary" href="forms.html" size="sm" color="secondary" variant="outline">
+            設定
+          </KavButton>
+        </div>
+      </KavContainer>
+    </header>
+    <KavContainer class="ui-app-main ui-container">
+      <h2 class="ui-page-title">
+        ワークスペース
+      </h2>
+      <p class="ui-page-description">
+        チームの作業をひとつの場所にまとめます。
+      </p>
+    </KavContainer>
+    <footer class="ui-footer">
+      <KavContainer class="ui-container ui-footer-inner">
+        <p>
+          © My workspace
+        </p>
+        <nav class="ui-cluster" aria-label="フッター">
+          <a href="tips.html">
+            ヘルプ
+          </a>
+          <a href="forms.html">
+            お問い合わせ
+          </a>
+        </nav>
+      </KavContainer>
+    </footer>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton, KavContainer } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="ui-stack">
+  <header class="ui-header">
+    <KavContainer class="ui-container ui-header-inner">
+      <a class="ui-brand" href="../index.html">
+        My workspace
+      </a>
+      <nav class="ui-header-nav" aria-label="アプリのメインメニュー">
+        <a href="layouts.html" aria-current="page">
+          概要
+        </a>
+        <a href="board.html">
+          タスク
+        </a>
+      </nav>
+      <div class="ui-header-actions">
+        <KavButton class="btn btn-sm btn-outline-secondary" href="forms.html" size="sm" color="secondary" variant="outline">
+          設定
+        </KavButton>
+      </div>
+    </KavContainer>
+  </header>
+  <KavContainer class="ui-app-main ui-container">
+    <h2 class="ui-page-title">
+      ワークスペース
+    </h2>
+    <p class="ui-page-description">
+      チームの作業をひとつの場所にまとめます。
+    </p>
+  </KavContainer>
+  <footer class="ui-footer">
+    <KavContainer class="ui-container ui-footer-inner">
+      <p>
+        © My workspace
+      </p>
+      <nav class="ui-cluster" aria-label="フッター">
+        <a href="tips.html">
+          ヘルプ
+        </a>
+        <a href="forms.html">
+          お問い合わせ
+        </a>
+      </nav>
+    </KavContainer>
+  </footer>
+</div>
+```
+
 <a id="layout-container"></a>
 
 ## コンテンツ幅
@@ -94,6 +354,46 @@ Flexboxの方向・折り返し・整列・伸縮・列数・列幅、`sp-*`の�
 
 ```html
 <div class="ui-container ui-container-sm"><div class="ui-section"><h2 class="ui-section-title">読みやすい幅の設定画面</h2><p class="ui-section-description">長文やフォームには小さなコンテナ、一覧や管理画面には標準・全幅を選べます。</p></div></div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavContainer } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <KavContainer class="ui-container ui-container-sm" size="sm">
+    <div class="ui-section">
+      <h2 class="ui-section-title">
+        読みやすい幅の設定画面
+      </h2>
+      <p class="ui-section-description">
+        長文やフォームには小さなコンテナ、一覧や管理画面には標準・全幅を選べます。
+      </p>
+    </div>
+  </KavContainer>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavContainer } from "@kai17-a/kav-ui-astro";
+---
+
+<KavContainer class="ui-container ui-container-sm" size="sm">
+  <div class="ui-section">
+    <h2 class="ui-section-title">
+      読みやすい幅の設定画面
+    </h2>
+    <p class="ui-section-description">
+      長文やフォームには小さなコンテナ、一覧や管理画面には標準・全幅を選べます。
+    </p>
+  </div>
+</KavContainer>
 ```
 
 <a id="layout-page-header"></a>
@@ -118,6 +418,162 @@ Flexboxの方向・折り返し・整列・伸縮・列数・列幅、`sp-*`の�
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="ui-stack">
+    <header class="ui-page-header">
+      <div class="ui-page-heading">
+        <p class="ui-page-eyebrow">
+          ワークスペース / プロジェクト
+        </p>
+        <h2 class="ui-page-title">
+          プロジェクト一覧
+        </h2>
+        <p class="ui-page-description">
+          進行中のプロジェクトと担当者を確認できます。
+        </p>
+      </div>
+      <div class="ui-page-actions">
+        <KavButton class="btn btn-sm btn-outline-secondary" href="table.html" size="sm" color="secondary" variant="outline">
+          一覧を見る
+        </KavButton>
+        <KavButton class="btn btn-sm btn-primary" href="forms.html" size="sm" color="primary">
+          新規作成
+        </KavButton>
+      </div>
+    </header>
+    <div class="ui-toolbar" role="group" aria-label="プロジェクトの操作">
+      <div class="ui-toolbar-group">
+        <label for="layout-search">
+          検索
+        </label>
+        <input class="form-control form-control-sm" id="layout-search" type="search" placeholder="プロジェクト名" />
+      </div>
+      <div class="ui-toolbar-group">
+        <label for="layout-view">
+          表示
+        </label>
+        <select id="layout-view" class="form-select form-select-sm ui-w-auto">
+          <option value="list">
+            一覧
+          </option>
+          <option value="stack">
+            重ねて表示
+          </option>
+        </select>
+      </div>
+      <div class="ui-toolbar-group">
+        <label for="layout-source">
+          取得元
+        </label>
+        <select id="layout-source" class="form-select form-select-sm ui-w-auto">
+          <option value="all">
+            すべて
+          </option>
+          <option value="github" selected>
+            GitHub: API-PF/rd2026_agent_skills（3）
+          </option>
+        </select>
+      </div>
+      <div class="ui-toolbar-group ui-toolbar-end">
+        <span class="type-caption">
+          3件
+        </span>
+        <KavButton class="btn btn-sm btn-outline-secondary" href="table.html" size="sm" color="secondary" variant="outline">
+          一覧表示
+        </KavButton>
+      </div>
+    </div>
+    <p class="type-caption">
+      検索処理はアプリ側で接続します。狭い領域ではツールバーとアクションが折り返されます。
+    </p>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="ui-stack">
+  <header class="ui-page-header">
+    <div class="ui-page-heading">
+      <p class="ui-page-eyebrow">
+        ワークスペース / プロジェクト
+      </p>
+      <h2 class="ui-page-title">
+        プロジェクト一覧
+      </h2>
+      <p class="ui-page-description">
+        進行中のプロジェクトと担当者を確認できます。
+      </p>
+    </div>
+    <div class="ui-page-actions">
+      <KavButton class="btn btn-sm btn-outline-secondary" href="table.html" size="sm" color="secondary" variant="outline">
+        一覧を見る
+      </KavButton>
+      <KavButton class="btn btn-sm btn-primary" href="forms.html" size="sm" color="primary">
+        新規作成
+      </KavButton>
+    </div>
+  </header>
+  <div class="ui-toolbar" role="group" aria-label="プロジェクトの操作">
+    <div class="ui-toolbar-group">
+      <label for="layout-search">
+        検索
+      </label>
+      <input class="form-control form-control-sm" id="layout-search" type="search" placeholder="プロジェクト名" />
+    </div>
+    <div class="ui-toolbar-group">
+      <label for="layout-view">
+        表示
+      </label>
+      <select id="layout-view" class="form-select form-select-sm ui-w-auto">
+        <option value="list">
+          一覧
+        </option>
+        <option value="stack">
+          重ねて表示
+        </option>
+      </select>
+    </div>
+    <div class="ui-toolbar-group">
+      <label for="layout-source">
+        取得元
+      </label>
+      <select id="layout-source" class="form-select form-select-sm ui-w-auto">
+        <option value="all">
+          すべて
+        </option>
+        <option value="github" selected>
+          GitHub: API-PF/rd2026_agent_skills（3）
+        </option>
+      </select>
+    </div>
+    <div class="ui-toolbar-group ui-toolbar-end">
+      <span class="type-caption">
+        3件
+      </span>
+      <KavButton class="btn btn-sm btn-outline-secondary" href="table.html" size="sm" color="secondary" variant="outline">
+        一覧表示
+      </KavButton>
+    </div>
+  </div>
+  <p class="type-caption">
+    検索処理はアプリ側で接続します。狭い領域ではツールバーとアクションが折り返されます。
+  </p>
+</div>
+```
+
 <a id="layout-columns"></a>
 
 ## 2・3カラム：ナビゲーション・本文・補足
@@ -137,6 +593,52 @@ Flexboxの方向・折り返し・整列・伸縮・列数・列幅、`sp-*`の�
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="ui-layout" id="layout-columns-demo">
+    <div class="ui-page ui-page-with-aside ui-page-with-rail">
+      <aside class="ui-page-aside" aria-label="プロジェクトメニュー"><h2 class="ui-aside-title">プロジェクト</h2><nav class="ui-aside-nav" aria-label="プロジェクト内"><a href="layouts.html" aria-current="page">概要</a><a href="board.html">タスク</a><a href="calendar.html">予定</a></nav></aside>
+      <div class="ui-page-body">
+        <header class="ui-page-header"><div class="ui-page-heading"><h2 class="ui-page-title">カタログの整備</h2><p class="ui-page-description">共通UIの使い方と進捗をまとめます。</p></div></header>
+        <section class="ui-section"><h3 class="ui-section-title">作業内容</h3><p>コンポーネントの確認、使用例の作成、アプリへの取り込みを進めます。</p><p class="type-caption">長い識別子も折り返します：project_design_catalog_shared_components_2026_implementation_review</p></section>
+      </div>
+      <aside class="ui-page-rail" aria-label="プロジェクトの補足"><h2 class="ui-aside-title">詳細</h2><div class="ui-stack"><span class="type-caption">担当：デザインチーム</span><span class="type-caption">更新：2026年10月21日</span><a href="../getting-started.html">導入手順を見る</a></div></aside>
+    </div>
+  </div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="ui-layout" id="layout-columns-demo">
+    <div class="ui-page ui-page-with-aside ui-page-with-rail">
+      <aside class="ui-page-aside" aria-label="プロジェクトメニュー"><h2 class="ui-aside-title">プロジェクト</h2><nav class="ui-aside-nav" aria-label="プロジェクト内"><a href="layouts.html" aria-current="page">概要</a><a href="board.html">タスク</a><a href="calendar.html">予定</a></nav></aside>
+      <div class="ui-page-body">
+        <header class="ui-page-header"><div class="ui-page-heading"><h2 class="ui-page-title">カタログの整備</h2><p class="ui-page-description">共通UIの使い方と進捗をまとめます。</p></div></header>
+        <section class="ui-section"><h3 class="ui-section-title">作業内容</h3><p>コンポーネントの確認、使用例の作成、アプリへの取り込みを進めます。</p><p class="type-caption">長い識別子も折り返します：project_design_catalog_shared_components_2026_implementation_review</p></section>
+      </div>
+      <aside class="ui-page-rail" aria-label="プロジェクトの補足"><h2 class="ui-aside-title">詳細</h2><div class="ui-stack"><span class="type-caption">担当：デザインチーム</span><span class="type-caption">更新：2026年10月21日</span><a href="../getting-started.html">導入手順を見る</a></div></aside>
+    </div>
+  </div>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 <a id="layout-sections"></a>
 
 ## セクション・縦積み・折り返し・区切り
@@ -147,6 +649,124 @@ Flexboxの方向・折り返し・整列・伸縮・列数・列幅、`sp-*`の�
   <section class="ui-section"><header class="ui-section-header"><h2 class="ui-section-title">通知設定</h2></header><p class="ui-section-description">セクションの間は余白と細い罫線で区切ります。</p></section>
   <div class="ui-divider">関連情報</div>
   <div class="ui-cluster"><a href="spacing.html">余白を調整</a><a href="flex.html">整列を調整</a><a href="cards.html">カードを使う</a></div>
+</div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavBadge } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="ui-stack">
+    <section class="ui-section">
+      <header class="ui-section-header">
+        <div>
+          <h2 class="ui-section-title">
+            基本設定
+          </h2>
+          <p class="ui-section-description">
+            公開する情報を設定します。
+          </p>
+        </div>
+        <a href="forms.html">
+          編集する
+        </a>
+      </header>
+      <div class="ui-cluster">
+        <KavBadge class="badge text-bg-success" color="success">
+          公開中
+        </KavBadge>
+        <span class="type-caption">
+          最終更新：今日
+        </span>
+      </div>
+    </section>
+    <section class="ui-section">
+      <header class="ui-section-header">
+        <h2 class="ui-section-title">
+          通知設定
+        </h2>
+      </header>
+      <p class="ui-section-description">
+        セクションの間は余白と細い罫線で区切ります。
+      </p>
+    </section>
+    <div class="ui-divider">
+      関連情報
+    </div>
+    <div class="ui-cluster">
+      <a href="spacing.html">
+        余白を調整
+      </a>
+      <a href="flex.html">
+        整列を調整
+      </a>
+      <a href="cards.html">
+        カードを使う
+      </a>
+    </div>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavBadge } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="ui-stack">
+  <section class="ui-section">
+    <header class="ui-section-header">
+      <div>
+        <h2 class="ui-section-title">
+          基本設定
+        </h2>
+        <p class="ui-section-description">
+          公開する情報を設定します。
+        </p>
+      </div>
+      <a href="forms.html">
+        編集する
+      </a>
+    </header>
+    <div class="ui-cluster">
+      <KavBadge class="badge text-bg-success" color="success">
+        公開中
+      </KavBadge>
+      <span class="type-caption">
+        最終更新：今日
+      </span>
+    </div>
+  </section>
+  <section class="ui-section">
+    <header class="ui-section-header">
+      <h2 class="ui-section-title">
+        通知設定
+      </h2>
+    </header>
+    <p class="ui-section-description">
+      セクションの間は余白と細い罫線で区切ります。
+    </p>
+  </section>
+  <div class="ui-divider">
+    関連情報
+  </div>
+  <div class="ui-cluster">
+    <a href="spacing.html">
+      余白を調整
+    </a>
+    <a href="flex.html">
+      整列を調整
+    </a>
+    <a href="cards.html">
+      カードを使う
+    </a>
+  </div>
 </div>
 ```
 
@@ -161,6 +781,108 @@ Flexboxの方向・折り返し・整列・伸縮・列数・列幅、`sp-*`の�
   <article class="ui-card"><div class="ui-card-body"><h2 class="ui-card-title">デザインカタログ</h2><p class="ui-card-description">共通コンポーネントの追加と整理。</p></div><div class="ui-card-footer"><a href="../index.html">カタログを見る</a></div></article>
   <article class="ui-card"><div class="ui-card-body"><h2 class="ui-card-title">タスク管理</h2><p class="ui-card-description">担当と進捗をひと目で確認。</p></div><div class="ui-card-footer"><a href="board.html">ボードを見る</a></div></article>
   <article class="ui-card"><div class="ui-card-body"><h2 class="ui-card-title">チームの予定</h2><p class="ui-card-description">日程と作業の見通しを共有。</p></div><div class="ui-card-footer"><a href="calendar.html">予定を見る</a></div></article>
+</div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavCard } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="ui-page-grid">
+    <KavCard class="ui-card">
+      <h2 class="ui-card-title">
+        デザインカタログ
+      </h2>
+      <p class="ui-card-description">
+        共通コンポーネントの追加と整理。
+      </p>
+      <div class="ui-card-footer">
+        <a href="../index.html">
+          カタログを見る
+        </a>
+      </div>
+    </KavCard>
+    <KavCard class="ui-card">
+      <h2 class="ui-card-title">
+        タスク管理
+      </h2>
+      <p class="ui-card-description">
+        担当と進捗をひと目で確認。
+      </p>
+      <div class="ui-card-footer">
+        <a href="board.html">
+          ボードを見る
+        </a>
+      </div>
+    </KavCard>
+    <KavCard class="ui-card">
+      <h2 class="ui-card-title">
+        チームの予定
+      </h2>
+      <p class="ui-card-description">
+        日程と作業の見通しを共有。
+      </p>
+      <div class="ui-card-footer">
+        <a href="calendar.html">
+          予定を見る
+        </a>
+      </div>
+    </KavCard>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavCard } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="ui-page-grid">
+  <KavCard class="ui-card">
+    <h2 class="ui-card-title">
+      デザインカタログ
+    </h2>
+    <p class="ui-card-description">
+      共通コンポーネントの追加と整理。
+    </p>
+    <div class="ui-card-footer">
+      <a href="../index.html">
+        カタログを見る
+      </a>
+    </div>
+  </KavCard>
+  <KavCard class="ui-card">
+    <h2 class="ui-card-title">
+      タスク管理
+    </h2>
+    <p class="ui-card-description">
+      担当と進捗をひと目で確認。
+    </p>
+    <div class="ui-card-footer">
+      <a href="board.html">
+        ボードを見る
+      </a>
+    </div>
+  </KavCard>
+  <KavCard class="ui-card">
+    <h2 class="ui-card-title">
+      チームの予定
+    </h2>
+    <p class="ui-card-description">
+      日程と作業の見通しを共有。
+    </p>
+    <div class="ui-card-footer">
+      <a href="calendar.html">
+        予定を見る
+      </a>
+    </div>
+  </KavCard>
 </div>
 ```
 
@@ -182,6 +904,54 @@ Flexboxの方向・折り返し・整列・伸縮・列数・列幅、`sp-*`の�
     </section>
   </div>
 </div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="ui-stack">
+    <div class="ui-toolbar"><strong>My workspace</strong><div class="ui-toolbar-end"><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="sidebar" data-ui-target="#layout-dashboard-sidebar" data-ui-label-open="メニューを閉じる" data-ui-label-closed="メニューを開く">メニューを閉じる</button></div></div>
+    <div class="app-shell">
+      <aside class="app-sidebar" id="layout-dashboard-sidebar" aria-label="管理画面のメニュー"><h2 class="app-sidebar-title">管理メニュー</h2><nav class="app-sidebar-group" aria-label="管理画面"><a href="layouts.html" aria-current="page">概要</a><a href="table.html">プロジェクト</a><a href="forms.html">設定</a></nav><p class="app-sidebar-footer">個人用ワークスペース</p></aside>
+      <section class="app-content ui-stack" aria-labelledby="layout-dashboard-title">
+        <header class="ui-page-header"><div class="ui-page-heading"><h2 class="ui-page-title" id="layout-dashboard-title">概要</h2><p class="ui-page-description">今日の作業状況</p></div></header>
+        <div class="ui-page-grid"><article class="ui-card"><div class="ui-card-body"><h3 class="ui-card-title">進行中</h3><p class="ui-card-stat">12</p><p class="ui-card-description">プロジェクト</p></div></article><article class="ui-card"><div class="ui-card-body"><h3 class="ui-card-title">完了</h3><p class="ui-card-stat">8</p><p class="ui-card-description">今週のタスク</p></div></article></div>
+        <section class="ui-section"><h3 class="ui-section-title">次の作業</h3><p class="ui-section-description">コンポーネントの使い方を確認して、アプリに取り込みましょう。</p><a href="../getting-started.html">導入手順へ →</a></section>
+      </section>
+    </div>
+  </div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="ui-stack">
+    <div class="ui-toolbar"><strong>My workspace</strong><div class="ui-toolbar-end"><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="sidebar" data-ui-target="#layout-dashboard-sidebar" data-ui-label-open="メニューを閉じる" data-ui-label-closed="メニューを開く">メニューを閉じる</button></div></div>
+    <div class="app-shell">
+      <aside class="app-sidebar" id="layout-dashboard-sidebar" aria-label="管理画面のメニュー"><h2 class="app-sidebar-title">管理メニュー</h2><nav class="app-sidebar-group" aria-label="管理画面"><a href="layouts.html" aria-current="page">概要</a><a href="table.html">プロジェクト</a><a href="forms.html">設定</a></nav><p class="app-sidebar-footer">個人用ワークスペース</p></aside>
+      <section class="app-content ui-stack" aria-labelledby="layout-dashboard-title">
+        <header class="ui-page-header"><div class="ui-page-heading"><h2 class="ui-page-title" id="layout-dashboard-title">概要</h2><p class="ui-page-description">今日の作業状況</p></div></header>
+        <div class="ui-page-grid"><article class="ui-card"><div class="ui-card-body"><h3 class="ui-card-title">進行中</h3><p class="ui-card-stat">12</p><p class="ui-card-description">プロジェクト</p></div></article><article class="ui-card"><div class="ui-card-body"><h3 class="ui-card-title">完了</h3><p class="ui-card-stat">8</p><p class="ui-card-description">今週のタスク</p></div></article></div>
+        <section class="ui-section"><h3 class="ui-section-title">次の作業</h3><p class="ui-section-description">コンポーネントの使い方を確認して、アプリに取り込みましょう。</p><a href="../getting-started.html">導入手順へ →</a></section>
+      </section>
+    </div>
+  </div>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 ## クラスの組み合わせ方

@@ -54,7 +54,14 @@
   function formatExample(example) {
     return [...example.childNodes].map(node => formatNode(node)).filter(Boolean).join('\n');
   }
-  document.querySelectorAll('[data-example]').forEach(example => {
+  const sampleData = window.KavComponentCodeSamples?.[location.pathname.split('/').pop()] || {};
+  if (sampleData.widget) {
+    const note = document.createElement('p');
+    note.className = 'dim';
+    note.innerHTML = 'Vue・Astro では <code>KavWidget</code> で囲んで使えます。<a href="../vue.html#scope">Vueの使い方</a>・<a href="../astro.html#scope">Astroの使い方</a>';
+    document.querySelector('main .page-heading')?.after(note);
+  }
+  document.querySelectorAll('[data-example]').forEach((example, index) => {
     const details = document.createElement('details');
     details.className = 'source';
     const summary = document.createElement('summary');
@@ -72,7 +79,59 @@
     status.className = 'ui-copy-status'; status.dataset.uiCopyStatus = '';
     status.setAttribute('role','status');
     clipboard.append(copy,status);
-    details.append(summary, clipboard, pre);
+    const samples = sampleData.examples?.[index];
+    if (samples) {
+      summary.textContent = 'コードを表示';
+      const group = document.createElement('div');
+      group.dataset.uiTabs = '';
+      group.dataset.codeTabs = '';
+      const bar = document.createElement('div');
+      bar.className = 'tabs';
+      bar.setAttribute('role', 'tablist');
+      bar.setAttribute('aria-label', 'コードの言語');
+      group.append(bar);
+      for (const [language, source] of Object.entries({html: code.textContent, ...samples})) {
+        const key = 'code-' + index + '-' + language;
+        const tab = document.createElement('button');
+        tab.type = 'button';
+        tab.className = 'tab' + (language === 'html' ? ' active' : '');
+        tab.dataset.uiToggle = 'tab';
+        tab.dataset.uiTarget = key;
+        tab.dataset.codeLanguage = language;
+        tab.textContent = language === 'html' ? 'HTML' : language === 'vue' ? 'Vue' : 'Astro';
+        tab.setAttribute('aria-selected', String(language === 'html'));
+        bar.append(tab);
+        const panel = document.createElement('div');
+        panel.dataset.uiPanel = key;
+        panel.hidden = language !== 'html';
+        const sourcePre = document.createElement('pre');
+        const sourceCode = document.createElement('code');
+        sourceCode.textContent = source;
+        sourcePre.append(sourceCode);
+        const actions = clipboard.cloneNode(true);
+        const button = actions.querySelector('button');
+        button.textContent = tab.textContent + 'をコピー';
+        button.dataset.uiCopy = source;
+        panel.append(actions, sourcePre);
+        group.append(panel);
+      }
+      details.append(summary, group);
+    } else {
+      details.append(summary, clipboard, pre);
+    }
     example.after(details);
+  });
+  // ui.js owns activation, ARIA and keyboard handling; synchronize through it.
+  let syncing = false;
+  document.addEventListener('ui:tabchange', event => {
+    if (syncing || !event.target.matches('[data-code-tabs]')) return;
+    const language = event.detail.tab.dataset.codeLanguage;
+    syncing = true;
+    try {
+      document.querySelectorAll('[data-code-tabs]').forEach(group => {
+        const tab = group.querySelector('[data-code-language="' + language + '"]');
+        if (tab && tab.getAttribute('aria-selected') !== 'true') tab.click();
+      });
+    } finally { syncing = false; }
   });
 })();

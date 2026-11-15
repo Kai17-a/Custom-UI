@@ -14,6 +14,34 @@
 <div class="ui-calendar" data-ui-calendar aria-label="日付を選択"></div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="ui-calendar" data-ui-calendar aria-label="日付を選択"></div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="ui-calendar" data-ui-calendar aria-label="日付を選択"></div>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 ## 予定付きの月表示
 
 ```html
@@ -26,6 +54,50 @@
     <li data-ui-date="2026-10-28" data-ui-variant="danger">17:00 提出期限</li>
   </ul>
 </div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="ui-calendar" data-ui-calendar data-ui-month="2026-10" data-ui-value="2026-10-21" aria-label="プロジェクトの予定">
+    <ul data-ui-calendar-events>
+      <li data-ui-date="2026-10-08" data-ui-variant="success">10:00 リリース準備</li>
+      <li data-ui-date="2026-10-14" data-ui-variant="warning">15:00 仕様の確認</li>
+      <li data-ui-date="2026-10-21" data-ui-variant="info">10:00 デザインレビュー</li>
+      <li data-ui-date="2026-10-21" data-ui-variant="success">14:00 コンポーネントの動作確認と、長いプロジェクト名を含む打ち合わせ</li>
+      <li data-ui-date="2026-10-28" data-ui-variant="danger">17:00 提出期限</li>
+    </ul>
+  </div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="ui-calendar" data-ui-calendar data-ui-month="2026-10" data-ui-value="2026-10-21" aria-label="プロジェクトの予定">
+    <ul data-ui-calendar-events>
+      <li data-ui-date="2026-10-08" data-ui-variant="success">10:00 リリース準備</li>
+      <li data-ui-date="2026-10-14" data-ui-variant="warning">15:00 仕様の確認</li>
+      <li data-ui-date="2026-10-21" data-ui-variant="info">10:00 デザインレビュー</li>
+      <li data-ui-date="2026-10-21" data-ui-variant="success">14:00 コンポーネントの動作確認と、長いプロジェクト名を含む打ち合わせ</li>
+      <li data-ui-date="2026-10-28" data-ui-variant="danger">17:00 提出期限</li>
+    </ul>
+  </div>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 <a id="calendar-modal"></a>
@@ -42,6 +114,46 @@
     <li data-ui-date="2026-10-23" data-ui-variant="warning">16:00 次週の予定を確認</li>
   </ul>
 </div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div id="calendar-day-modal-demo" class="ui-calendar" data-ui-calendar data-ui-calendar-modal data-ui-month="2026-10" data-ui-value="2026-10-21" aria-label="日付から予定を開く">
+    <ul data-ui-calendar-events>
+      <li data-ui-date="2026-10-21" data-ui-variant="info">10:00 デザインレビュー</li>
+      <li data-ui-date="2026-10-21" data-ui-variant="success">14:00 コンポーネントの動作確認。長い予定名もモーダル内で折り返して確認できます。</li>
+      <li data-ui-date="2026-10-23" data-ui-variant="warning">16:00 次週の予定を確認</li>
+    </ul>
+  </div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div id="calendar-day-modal-demo" class="ui-calendar" data-ui-calendar data-ui-calendar-modal data-ui-month="2026-10" data-ui-value="2026-10-21" aria-label="日付から予定を開く">
+    <ul data-ui-calendar-events>
+      <li data-ui-date="2026-10-21" data-ui-variant="info">10:00 デザインレビュー</li>
+      <li data-ui-date="2026-10-21" data-ui-variant="success">14:00 コンポーネントの動作確認。長い予定名もモーダル内で折り返して確認できます。</li>
+      <li data-ui-date="2026-10-23" data-ui-variant="warning">16:00 次週の予定を確認</li>
+    </ul>
+  </div>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 閉じるボタン・Escapeで閉じると、選択した日付にフォーカスが戻ります。属性を省略するか `data-ui-calendar-modal="false"` にすると従来の下部表示になります。
@@ -62,6 +174,50 @@
 </dialog>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div id="calendar-custom-modal-demo" class="ui-calendar ui-calendar-compact" data-ui-calendar data-ui-calendar-modal="#calendar-custom-dialog" data-ui-month="2026-10" aria-label="カスタムモーダルの予定">
+    <ul data-ui-calendar-events><li data-ui-date="2026-10-21" data-ui-variant="info">13:00 チームミーティング</li></ul>
+  </div>
+  <dialog id="calendar-custom-dialog" class="ui-dialog" data-ui-dialog aria-labelledby="calendar-custom-title">
+    <h2 id="calendar-custom-title" data-ui-calendar-modal-title>選択日の予定</h2>
+    <div data-ui-calendar-modal-events></div>
+    <p class="small dim">予定の追加・編集など、アプリ固有の操作もここへ配置できます。</p>
+    <div class="buttons"><button type="button" class="btn btn-outline-secondary" data-ui-dismiss="dialog">閉じる</button></div>
+  </dialog>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div id="calendar-custom-modal-demo" class="ui-calendar ui-calendar-compact" data-ui-calendar data-ui-calendar-modal="#calendar-custom-dialog" data-ui-month="2026-10" aria-label="カスタムモーダルの予定">
+    <ul data-ui-calendar-events><li data-ui-date="2026-10-21" data-ui-variant="info">13:00 チームミーティング</li></ul>
+  </div>
+  <dialog id="calendar-custom-dialog" class="ui-dialog" data-ui-dialog aria-labelledby="calendar-custom-title">
+    <h2 id="calendar-custom-title" data-ui-calendar-modal-title>選択日の予定</h2>
+    <div data-ui-calendar-modal-events></div>
+    <p class="small dim">予定の追加・編集など、アプリ固有の操作もここへ配置できます。</p>
+    <div class="buttons"><button type="button" class="btn btn-outline-secondary" data-ui-dismiss="dialog">閉じる</button></div>
+  </dialog>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 ## コンパクト版・月曜始まり・選択範囲・フォームの値
 
 ```html
@@ -70,6 +226,42 @@
   data-ui-min="2026-10-10" data-ui-max="2026-11-15"
   data-ui-name="scheduled_date" aria-label="実施日の選択">
 </div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="ui-calendar ui-calendar-compact" data-ui-calendar
+    data-ui-week-start="monday" data-ui-value="2026-10-21"
+    data-ui-min="2026-10-10" data-ui-max="2026-11-15"
+    data-ui-name="scheduled_date" aria-label="実施日の選択">
+  </div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="ui-calendar ui-calendar-compact" data-ui-calendar
+    data-ui-week-start="monday" data-ui-value="2026-10-21"
+    data-ui-min="2026-10-10" data-ui-max="2026-11-15"
+    data-ui-name="scheduled_date" aria-label="実施日の選択">
+  </div>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 予定がある日は件数を表示し、選択した日の予定を下部に表示します。狭い画面では予定名を省略し、下部で全文を確認できます。曜日の色分けは土日を示すもので、祝日判定は行いません。

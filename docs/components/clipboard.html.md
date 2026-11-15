@@ -107,3 +107,5 @@ APIはPromiseを返し、失敗時はrejectします。ボタン操作から呼�
 assetsフォルダの構造を維持してコピーしてください。npmは不要です。
 
 [clipboard.css](../assets/ui/css/components/clipboard.css) / [導入手順](../getting-started.html.md)
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)

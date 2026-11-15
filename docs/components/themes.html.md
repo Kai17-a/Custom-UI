@@ -234,3 +234,5 @@ document.addEventListener('ui:designchange', event => {
 [themes.css](../assets/ui/css/themes.css)はui.cssから自動で読み込まれます。assetsフォルダの構造を維持してコピーしてください。npm不要です。
 
 [導入手順](../getting-started.html.md)
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)

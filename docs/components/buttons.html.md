@@ -21,6 +21,66 @@
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+    <KavButton type="button" class="btn btn-primary" color="primary">
+      新規作成
+    </KavButton>
+    <KavButton type="button" class="btn btn-secondary" color="secondary">
+      キャンセル
+    </KavButton>
+    <KavButton type="button" class="btn btn-success" color="success">
+      承認
+    </KavButton>
+    <KavButton type="button" class="btn btn-danger" color="danger">
+      削除
+    </KavButton>
+    <KavButton type="button" class="btn btn-warning" color="warning">
+      注意事項
+    </KavButton>
+    <KavButton type="button" class="btn btn-info" color="info">
+      詳細情報
+    </KavButton>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <KavButton type="button" class="btn btn-primary" color="primary">
+    新規作成
+  </KavButton>
+  <KavButton type="button" class="btn btn-secondary" color="secondary">
+    キャンセル
+  </KavButton>
+  <KavButton type="button" class="btn btn-success" color="success">
+    承認
+  </KavButton>
+  <KavButton type="button" class="btn btn-danger" color="danger">
+    削除
+  </KavButton>
+  <KavButton type="button" class="btn btn-warning" color="warning">
+    注意事項
+  </KavButton>
+  <KavButton type="button" class="btn btn-info" color="info">
+    詳細情報
+  </KavButton>
+</div>
+```
+
 ## アウトライン
 
 `btn`に`btn-outline-色名`を組み合わせます。塗りつぶしより控えめに、操作できる範囲を枠線で示します。
@@ -33,6 +93,66 @@
 <button type="button" class="btn btn-outline-danger" >削除</button>
 <button type="button" class="btn btn-outline-warning" >注意事項</button>
 <button type="button" class="btn btn-outline-info" >詳細情報</button>
+</div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+    <KavButton type="button" class="btn btn-outline-primary" color="primary" variant="outline">
+      新規作成
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-secondary" color="secondary" variant="outline">
+      キャンセル
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-success" color="success" variant="outline">
+      承認
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-danger" color="danger" variant="outline">
+      削除
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-warning" color="warning" variant="outline">
+      注意事項
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-info" color="info" variant="outline">
+      詳細情報
+    </KavButton>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <KavButton type="button" class="btn btn-outline-primary" color="primary" variant="outline">
+    新規作成
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-secondary" color="secondary" variant="outline">
+    キャンセル
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-success" color="success" variant="outline">
+    承認
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-danger" color="danger" variant="outline">
+    削除
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-warning" color="warning" variant="outline">
+    注意事項
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-info" color="info" variant="outline">
+    詳細情報
+  </KavButton>
 </div>
 ```
 
@@ -51,6 +171,66 @@
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+    <KavButton type="button" class="btn btn-soft-primary" color="primary" variant="soft">
+      新規作成
+    </KavButton>
+    <KavButton type="button" class="btn btn-soft-secondary" color="secondary" variant="soft">
+      キャンセル
+    </KavButton>
+    <KavButton type="button" class="btn btn-soft-success" color="success" variant="soft">
+      承認
+    </KavButton>
+    <KavButton type="button" class="btn btn-soft-danger" color="danger" variant="soft">
+      削除
+    </KavButton>
+    <KavButton type="button" class="btn btn-soft-warning" color="warning" variant="soft">
+      注意事項
+    </KavButton>
+    <KavButton type="button" class="btn btn-soft-info" color="info" variant="soft">
+      詳細情報
+    </KavButton>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <KavButton type="button" class="btn btn-soft-primary" color="primary" variant="soft">
+    新規作成
+  </KavButton>
+  <KavButton type="button" class="btn btn-soft-secondary" color="secondary" variant="soft">
+    キャンセル
+  </KavButton>
+  <KavButton type="button" class="btn btn-soft-success" color="success" variant="soft">
+    承認
+  </KavButton>
+  <KavButton type="button" class="btn btn-soft-danger" color="danger" variant="soft">
+    削除
+  </KavButton>
+  <KavButton type="button" class="btn btn-soft-warning" color="warning" variant="soft">
+    注意事項
+  </KavButton>
+  <KavButton type="button" class="btn btn-soft-info" color="info" variant="soft">
+    詳細情報
+  </KavButton>
+</div>
+```
+
 ## 枠なし（Ghost）
 
 `btn`に`btn-ghost-色名`を組み合わせます。ツールバーなど、同じ領域に複数の操作を並べる場合に使えます。
@@ -63,6 +243,66 @@
 <button type="button" class="btn btn-ghost-danger" >削除</button>
 <button type="button" class="btn btn-ghost-warning" >注意事項</button>
 <button type="button" class="btn btn-ghost-info" >詳細情報</button>
+</div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+    <KavButton type="button" class="btn btn-ghost-primary" color="primary" variant="ghost">
+      新規作成
+    </KavButton>
+    <KavButton type="button" class="btn btn-ghost-secondary" color="secondary" variant="ghost">
+      キャンセル
+    </KavButton>
+    <KavButton type="button" class="btn btn-ghost-success" color="success" variant="ghost">
+      承認
+    </KavButton>
+    <KavButton type="button" class="btn btn-ghost-danger" color="danger" variant="ghost">
+      削除
+    </KavButton>
+    <KavButton type="button" class="btn btn-ghost-warning" color="warning" variant="ghost">
+      注意事項
+    </KavButton>
+    <KavButton type="button" class="btn btn-ghost-info" color="info" variant="ghost">
+      詳細情報
+    </KavButton>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <KavButton type="button" class="btn btn-ghost-primary" color="primary" variant="ghost">
+    新規作成
+  </KavButton>
+  <KavButton type="button" class="btn btn-ghost-secondary" color="secondary" variant="ghost">
+    キャンセル
+  </KavButton>
+  <KavButton type="button" class="btn btn-ghost-success" color="success" variant="ghost">
+    承認
+  </KavButton>
+  <KavButton type="button" class="btn btn-ghost-danger" color="danger" variant="ghost">
+    削除
+  </KavButton>
+  <KavButton type="button" class="btn btn-ghost-warning" color="warning" variant="ghost">
+    注意事項
+  </KavButton>
+  <KavButton type="button" class="btn btn-ghost-info" color="info" variant="ghost">
+    詳細情報
+  </KavButton>
 </div>
 ```
 
@@ -80,6 +320,110 @@ SVGにbtn-iconを付けると、大きさ・間隔・色がボタンに揃いま
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+    <KavButton type="button" class="btn btn-primary" color="primary">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+        </path>
+      </svg>
+      新規作成
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-primary" color="primary" variant="outline">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M19 9h-4V3H9v6H5l7 7 7-7M5 18v3h14v-3H5z">
+
+        </path>
+      </svg>
+      ダウンロード
+    </KavButton>
+    <KavButton type="button" class="btn btn-soft-success" color="success" variant="soft">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z">
+
+        </path>
+      </svg>
+      変更を保存
+    </KavButton>
+    <KavButton type="button" class="btn btn-ghost-secondary" color="secondary" variant="ghost">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+        </path>
+      </svg>
+      編集
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-secondary" color="secondary" variant="outline">
+      次へ
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 4 10.6 5.4 16.2 11H4v2h12.2l-5.6 5.6L12 20l8-8z">
+
+        </path>
+      </svg>
+    </KavButton>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <KavButton type="button" class="btn btn-primary" color="primary">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+      </path>
+    </svg>
+    新規作成
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-primary" color="primary" variant="outline">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M19 9h-4V3H9v6H5l7 7 7-7M5 18v3h14v-3H5z">
+
+      </path>
+    </svg>
+    ダウンロード
+  </KavButton>
+  <KavButton type="button" class="btn btn-soft-success" color="success" variant="soft">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z">
+
+      </path>
+    </svg>
+    変更を保存
+  </KavButton>
+  <KavButton type="button" class="btn btn-ghost-secondary" color="secondary" variant="ghost">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+      </path>
+    </svg>
+    編集
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-secondary" color="secondary" variant="outline">
+    次へ
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 4 10.6 5.4 16.2 11H4v2h12.2l-5.6 5.6L12 20l8-8z">
+
+      </path>
+    </svg>
+  </KavButton>
+</div>
+```
+
 ## アイコン付きでもデザインを選ぶ
 
 ```html
@@ -88,6 +432,94 @@ SVGにbtn-iconを付けると、大きさ・間隔・色がボタンに揃いま
 <button type="button" class="btn btn-outline-primary" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> 編集</button>
 <button type="button" class="btn btn-soft-primary" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> 編集</button>
 <button type="button" class="btn btn-ghost-primary" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg> 編集</button>
+</div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+    <KavButton type="button" class="btn btn-primary" color="primary">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+        </path>
+      </svg>
+      編集
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-primary" color="primary" variant="outline">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+        </path>
+      </svg>
+      編集
+    </KavButton>
+    <KavButton type="button" class="btn btn-soft-primary" color="primary" variant="soft">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+        </path>
+      </svg>
+      編集
+    </KavButton>
+    <KavButton type="button" class="btn btn-ghost-primary" color="primary" variant="ghost">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+        </path>
+      </svg>
+      編集
+    </KavButton>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <KavButton type="button" class="btn btn-primary" color="primary">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+      </path>
+    </svg>
+    編集
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-primary" color="primary" variant="outline">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+      </path>
+    </svg>
+    編集
+  </KavButton>
+  <KavButton type="button" class="btn btn-soft-primary" color="primary" variant="soft">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+      </path>
+    </svg>
+    編集
+  </KavButton>
+  <KavButton type="button" class="btn btn-ghost-primary" color="primary" variant="ghost">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+      </path>
+    </svg>
+    編集
+  </KavButton>
 </div>
 ```
 
@@ -101,6 +533,86 @@ btn-icon-onlyで正方形にします。aria-labelで操作名を付け、title�
 <button type="button" class="btn btn-outline-secondary btn-icon-only" aria-label="編集" title="編集" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
 <button type="button" class="btn btn-soft-primary btn-icon-only" aria-label="検索" title="検索" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.5 3a6.5 6.5 0 1 0 4.1 11.54L19.06 20 20.5 18.56l-5.46-5.46A6.5 6.5 0 0 0 9.5 3m0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z"/></svg></button>
 <button type="button" class="btn btn-ghost-danger btn-icon-only" aria-label="削除" title="削除" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+</div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+    <KavButton type="button" class="btn btn-primary btn-icon-only" aria-label="追加" title="追加" color="primary">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+        </path>
+      </svg>
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-secondary btn-icon-only" aria-label="編集" title="編集" color="secondary" variant="outline">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+        </path>
+      </svg>
+    </KavButton>
+    <KavButton type="button" class="btn btn-soft-primary btn-icon-only" aria-label="検索" title="検索" color="primary" variant="soft">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M9.5 3a6.5 6.5 0 1 0 4.1 11.54L19.06 20 20.5 18.56l-5.46-5.46A6.5 6.5 0 0 0 9.5 3m0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z">
+
+        </path>
+      </svg>
+    </KavButton>
+    <KavButton type="button" class="btn btn-ghost-danger btn-icon-only" aria-label="削除" title="削除" color="danger" variant="ghost">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z">
+
+        </path>
+      </svg>
+    </KavButton>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <KavButton type="button" class="btn btn-primary btn-icon-only" aria-label="追加" title="追加" color="primary">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+      </path>
+    </svg>
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-secondary btn-icon-only" aria-label="編集" title="編集" color="secondary" variant="outline">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+      </path>
+    </svg>
+  </KavButton>
+  <KavButton type="button" class="btn btn-soft-primary btn-icon-only" aria-label="検索" title="検索" color="primary" variant="soft">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M9.5 3a6.5 6.5 0 1 0 4.1 11.54L19.06 20 20.5 18.56l-5.46-5.46A6.5 6.5 0 0 0 9.5 3m0 2a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9z">
+
+      </path>
+    </svg>
+  </KavButton>
+  <KavButton type="button" class="btn btn-ghost-danger btn-icon-only" aria-label="削除" title="削除" color="danger" variant="ghost">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z">
+
+      </path>
+    </svg>
+  </KavButton>
 </div>
 ```
 
@@ -119,6 +631,122 @@ btn-icon-onlyで正方形にします。aria-labelで操作名を付け、title�
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+    <KavButton type="button" class="btn btn-outline-primary btn-sm" color="primary" variant="outline" size="sm">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+        </path>
+      </svg>
+      追加
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-primary" color="primary" variant="outline">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+        </path>
+      </svg>
+      追加
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-primary btn-lg" color="primary" variant="outline" size="lg">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+        </path>
+      </svg>
+      追加
+    </KavButton>
+    <KavButton type="button" class="btn btn-primary btn-pill" color="primary">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+        </path>
+      </svg>
+      追加
+    </KavButton>
+    <KavButton type="button" class="btn btn-soft-primary btn-icon-only btn-sm" aria-label="追加" title="追加" color="primary" variant="soft" size="sm">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+        </path>
+      </svg>
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-primary btn-icon-only btn-lg btn-pill" aria-label="追加" title="追加" color="primary" variant="outline" size="lg">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+        </path>
+      </svg>
+    </KavButton>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <KavButton type="button" class="btn btn-outline-primary btn-sm" color="primary" variant="outline" size="sm">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+      </path>
+    </svg>
+    追加
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-primary" color="primary" variant="outline">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+      </path>
+    </svg>
+    追加
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-primary btn-lg" color="primary" variant="outline" size="lg">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+      </path>
+    </svg>
+    追加
+  </KavButton>
+  <KavButton type="button" class="btn btn-primary btn-pill" color="primary">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+      </path>
+    </svg>
+    追加
+  </KavButton>
+  <KavButton type="button" class="btn btn-soft-primary btn-icon-only btn-sm" aria-label="追加" title="追加" color="primary" variant="soft" size="sm">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+      </path>
+    </svg>
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-primary btn-icon-only btn-lg btn-pill" aria-label="追加" title="追加" color="primary" variant="outline" size="lg">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+
+      </path>
+    </svg>
+  </KavButton>
+</div>
+```
+
 ## 無効状態
 
 操作できないボタンにはdisabledを指定します。
@@ -132,10 +760,130 @@ btn-icon-onlyで正方形にします。aria-labelで操作名を付け、title�
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+    <KavButton type="button" class="btn btn-primary" disabled color="primary">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z">
+
+        </path>
+      </svg>
+      保存
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-primary" disabled color="primary" variant="outline">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z">
+
+        </path>
+      </svg>
+      保存
+    </KavButton>
+    <KavButton type="button" class="btn btn-soft-primary btn-icon-only" aria-label="編集" title="編集" disabled color="primary" variant="soft">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+        </path>
+      </svg>
+    </KavButton>
+    <KavButton type="button" class="btn btn-ghost-danger btn-icon-only" aria-label="削除" title="削除" disabled color="danger" variant="ghost">
+      <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z">
+
+        </path>
+      </svg>
+    </KavButton>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <KavButton type="button" class="btn btn-primary" disabled color="primary">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z">
+
+      </path>
+    </svg>
+    保存
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-primary" disabled color="primary" variant="outline">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z">
+
+      </path>
+    </svg>
+    保存
+  </KavButton>
+  <KavButton type="button" class="btn btn-soft-primary btn-icon-only" aria-label="編集" title="編集" disabled color="primary" variant="soft">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z">
+
+      </path>
+    </svg>
+  </KavButton>
+  <KavButton type="button" class="btn btn-ghost-danger btn-icon-only" aria-label="削除" title="削除" disabled color="danger" variant="ghost">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12M19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z">
+
+      </path>
+    </svg>
+  </KavButton>
+</div>
+```
+
 ## 横幅いっぱいのボタン
 
 ```html
 <button type="button" class="btn btn-primary btn-block" ><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> 変更を保存</button>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <KavButton type="button" class="btn btn-primary btn-block" color="primary">
+    <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z">
+
+      </path>
+    </svg>
+    変更を保存
+  </KavButton>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<KavButton type="button" class="btn btn-primary btn-block" color="primary">
+  <svg class="btn-icon" viewbox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z">
+
+    </path>
+  </svg>
+  変更を保存
+</KavButton>
 ```
 
 ## 操作を試す
@@ -146,6 +894,38 @@ btn-icon-onlyで正方形にします。aria-labelで操作名を付け、title�
 <div class="fx fx-wrap fx-gap-3 fx-items-center">
 <button type="button" class="btn btn-outline-primary" data-ui-toast="アイコン付きボタンを操作しました（デモ）。"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> サンプル通知を表示</button>
 </div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <button type="button" class="btn btn-outline-primary" data-ui-toast="アイコン付きボタンを操作しました（デモ）。"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> サンプル通知を表示</button>
+  </div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="fx fx-wrap fx-gap-3 fx-items-center">
+  <button type="button" class="btn btn-outline-primary" data-ui-toast="アイコン付きボタンを操作しました（デモ）。"><svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg> サンプル通知を表示</button>
+  </div>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 ## クラス一覧

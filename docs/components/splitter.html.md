@@ -154,3 +154,5 @@ KavUI.init(root);
 ```
 
 [ui.css](../assets/ui/css/ui.css) / [ui.js](../assets/ui/js/ui.js)。後から追加した要素にはKavUI.init()を呼びます。
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)
