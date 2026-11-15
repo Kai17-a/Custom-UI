@@ -132,7 +132,7 @@
 
 ## Optional
 
-- [Vue/Astroパッケージ](packages/README.md): GitHub Packages（非公開）からの導入と対応範囲。
+- [Vue/Astroパッケージ](packages/README.md): GitHub Packages（Public・read:packages認証必須）からの導入と対応範囲。
 - [Vue](packages/vue/README.md): props、slots、v-modelとKavWidget。
 - [Astro](packages/astro/README.md): Provider、静的HTMLとクライアント遷移。
 - [テンプレート](templates.html.md): ドキュメント・ダッシュボード・changelog・エラー画面。

@@ -12,7 +12,7 @@ Astro 7.4.2以上、8未満のアプリに、Kav-UIのコンポーネントと�
 
 `@kai17-a/kav-ui-astro`を使います。共通CSS・ブラウザAPIの`@kai17-a/kav-ui-core`は依存として導入されます。coreとフレームワーク用パッケージの版を揃えてください。
 
-利用側プロジェクトの`.npmrc`に次を記述します。トークン値は書かず、環境変数`NODE_AUTH_TOKEN`へ設定します。personal access token (classic)の`read:packages`と、対象パッケージの読み取り権限が必要です。
+利用側プロジェクトの`.npmrc`に次を記述します。トークン値は書かず、環境変数`NODE_AUTH_TOKEN`へ設定します。Publicパッケージでも認証が必要です。personal access token (classic)に`read:packages`を付与してください。
 
 ```
 @kai17-a:registry=https://npm.pkg.github.com
@@ -23,7 +23,7 @@ Astro 7.4.2以上、8未満のアプリに、Kav-UIのコンポーネントと�
 npm install @kai17-a/kav-ui-astro
 ```
 
-利用するリリース版を指定してください。公開状況とCIでの認証・アクセス権の設定は[パッケージREADME](packages/README.md#github-packagesからインストール)で確認できます。Astro専用部品だけならVueは不要です。
+利用するリリース版を指定してください。公開状況とCIでの認証設定は[パッケージREADME](packages/README.md#github-packagesからインストール)で確認できます。Astro専用部品だけならVueは不要です。
 
 <a id="start"></a>
 
