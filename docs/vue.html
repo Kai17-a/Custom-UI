@@ -143,26 +143,46 @@
 <main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / Vueで使う</p><h1>Vueで使う</h1></header><p class="lede">Vue 3.5以降のアプリに、Kav-UIのコンポーネントと共通スタイルを組み込む手順です。</p><section class="specimen" id="install"><h2>1. GitHub Packagesから導入</h2><p><code>@kai17-a/kav-ui-vue</code>を使います。共通CSS・ブラウザAPIの<code>@kai17-a/kav-ui-core</code>は依存として導入されます。coreとフレームワーク用パッケージの版を揃えてください。</p><p>利用側プロジェクトの<code>.npmrc</code>に次を記述します。トークン値は書かず、環境変数<code>NODE_AUTH_TOKEN</code>へ設定します。personal access token (classic)の<code>read:packages</code>と、対象パッケージの読み取り権限が必要です。</p><pre class="setup-code"><code>@kai17-a:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}</code></pre><pre class="setup-code"><code>npm install @kai17-a/kav-ui-vue</code></pre><p>利用するリリース版を指定してください。公開状況とCIでの認証・アクセス権の設定は<a href="packages/README.md#github-packagesからインストール">パッケージREADME</a>で確認できます。Vue本体は利用側の依存関係です。</p></section>
 <section class="specimen" id="start"><h2>2. CSSと最小の使用例</h2><p>アプリの入口で共通CSSを1回読み込みます。次はVueワークスペースの<code>examples/vue/src/main.js</code>と同じ読み込みです。</p><pre class="setup-code"><code>import &#x27;@kai17-a/kav-ui-core/style.css&#x27;;</code></pre><p>次のSFCはビルド対象の<code>examples/astro/src/components/VueDemo.vue</code>と同じコードです（表示用に改行）。通常のVueアプリでも使用できます。</p><pre class="setup-code"><code>&lt;script setup&gt;
-import {ref} from &#x27;vue&#x27;;
-import {KavInput,KavSelect,KavField,KavButton,KavDialog} from &#x27;@kai17-a/kav-ui-vue&#x27;;
-const value=ref(&#x27;AstroのVueアイランド&#x27;),open=ref(false),plan=ref(1);
+import { ref } from &#x27;vue&#x27;;
+import {
+  KavInput,
+  KavSelect,
+  KavField,
+  KavButton,
+  KavDialog
+} from &#x27;@kai17-a/kav-ui-vue&#x27;;
+const value = ref(&#x27;AstroのVueアイランド&#x27;),
+  open = ref(false),
+  plan = ref(1);
 &lt;/script&gt;
 &lt;template&gt;
-&lt;section data-kav-ui-vue data-testid=&quot;astro-vue&quot;&gt;
-&lt;h2&gt;Vue版をAstroで利用&lt;/h2&gt;
-&lt;KavField label=&quot;アイランドの入力&quot; for=&quot;island-value&quot;&gt;
-&lt;KavInput id=&quot;island-value&quot; v-model=&quot;value&quot; aria-label=&quot;アイランドの入力&quot;/&gt;
-&lt;/KavField&gt;
-&lt;output&gt;{{ value }}&lt;/output&gt;
-&lt;KavField label=&quot;Vueアイランドのプラン&quot; for=&quot;island-plan&quot;&gt;
-&lt;KavSelect id=&quot;island-plan&quot; v-model=&quot;plan&quot; label=&quot;Vueアイランドのプラン&quot; :options=&quot;[{value:1,label:&#x27;個人&#x27;},{value:2,label:&#x27;チーム&#x27;}]&quot;/&gt;
-&lt;/KavField&gt;
-&lt;KavButton @click=&quot;open=true&quot;&gt;確認する&lt;/KavButton&gt;
-&lt;KavDialog v-model=&quot;open&quot; title=&quot;Vueアイランド&quot;&gt;
-&lt;p&gt;{{ value }}&lt;/p&gt;
-&lt;KavButton @click=&quot;open=false&quot;&gt;閉じる&lt;/KavButton&gt;
-&lt;/KavDialog&gt;
-&lt;/section&gt;
+  &lt;section data-kav-ui-vue data-testid=&quot;astro-vue&quot;&gt;
+    &lt;h2&gt;Vue版をAstroで利用&lt;/h2&gt;
+    &lt;KavField label=&quot;アイランドの入力&quot; for=&quot;island-value&quot;&gt;
+      &lt;KavInput
+        id=&quot;island-value&quot;
+        v-model=&quot;value&quot;
+        aria-label=&quot;アイランドの入力&quot;
+      /&gt;
+    &lt;/KavField&gt;
+    &lt;output&gt;{{ value }}&lt;/output&gt;
+    &lt;KavField label=&quot;Vueアイランドのプラン&quot; for=&quot;island-plan&quot;&gt;
+      &lt;KavSelect
+        id=&quot;island-plan&quot;
+        v-model=&quot;plan&quot;
+        label=&quot;Vueアイランドのプラン&quot;
+        :options=&quot;[
+          { value: 1, label: &#x27;個人&#x27; },
+          { value: 2, label: &#x27;チーム&#x27; }
+        ]&quot;
+      /&gt;
+    &lt;/KavField&gt;
+    &lt;KavButton @click=&quot;open = true&quot;&gt;確認する&lt;/KavButton&gt;
+    &lt;KavDialog v-model=&quot;open&quot; title=&quot;Vueアイランド&quot;&gt;
+      &lt;p&gt;{{ value }}&lt;/p&gt;
+      &lt;KavButton @click=&quot;open = false&quot;&gt;閉じる&lt;/KavButton&gt;
+    &lt;/KavDialog&gt;
+  &lt;/section&gt;
 &lt;/template&gt;</code></pre></section>
 <section class="specimen" id="components"><h2>3. 主要コンポーネントと指定方法</h2><div class="ui-table-scroll"><table class="table"><thead><tr><th scope="col">部品</th><th scope="col">指定・使い方</th></tr></thead><tbody><tr><td>KavButton</td><td><code>color</code>、<code>variant="solid|outline|ghost"</code>、<code>size="sm|md|lg"</code>、<code>icon</code>。操作は<code>@click</code>。</td></tr><tr><td>KavField / Input / Select / Textarea</td><td>Fieldは<code>label</code>と<code>for</code>。入力は<code>v-model</code>、Selectは<code>options: {value,label}[]</code>。フォームreset時もモデルを同期。</td></tr><tr><td>KavDialog / Drawer</td><td>真偽値の<code>v-model</code>、<code>title</code>、通常・<code>footer</code>スロット。Drawerの<code>placement</code>はstart/end/top/bottom。</td></tr><tr><td>KavCard / Banner</td><td>Cardは<code>header</code>・通常・<code>footer</code>。Bannerは通常・<code>actions</code>。</td></tr><tr><td>KavTabs</td><td><code>items: {value,label,disabled?}[]</code>、<code>v-model</code>、valueと同名のスロット。左右・Home・Endキーで移動。</td></tr><tr><td>KavSidebar</td><td><code>mobile</code>・<code>tablet</code>・<code>desktop</code>、<code>items</code>または<code>menu</code>スロット、通常スロットの本文、<code>footer</code>。<code>toggle</code>スロットは<code>{open,toggle}</code>を受け取る。</td></tr></tbody></table></div><p>レイアウトはKavStack / Cluster / Flex / Grid / GridItem / PageHeader / Toolbar / Section / Pageを利用できます。例：Gridの<code>cols</code>に<code>{base:3,tablet:2,mobile:1}</code>、<code>gap</code>に数値を渡せます。対応するprops・スロットの詳細は<a href="packages/README.md#layout-components">レイアウト一覧</a>を参照してください。</p></section>
 <section class="specimen" id="lifecycle"><h2>4. SPA・SSRとページの後始末</h2><p>パッケージJSをサーバーでimportしてもwindow/documentへアクセスしません。ただし<code>loadRuntime()</code>・<code>toast()</code>・配色関数はブラウザ用の非同期APIです。SSR中には呼びません。<code>mount</code>は<code>@kai17-a/kav-ui-core</code>からimportします。</p><p>自前のHTMLを初期化する場合は<code>onMounted</code>で描画後の要素へ<code>mount(root)</code>を呼び、Promiseが返す後始末関数を<code>onUnmounted</code>で呼びます。待機中にアンマウントされる場合は<code>AbortController</code>のsignalを渡し、破棄時にabortしてください。KavコンポーネントとWidgetは自身で初期化・破棄するため、同じ領域へ重ねてmountしません。</p><p>Vueの描画とDOM操作を競合させないため、アプリ全体のマウント先には<code>data-kav-ui-vue</code>を付けられます。その範囲のアイコンはKavIconまたはicon propsを使います。Dialogは初期SSRでは閉じたHTMLを出力し、マウント後にモデルを反映します。</p><p>パッケージを使うページへ通常HTML版の<code>ui.js</code>を追加しないでください。</p></section>
