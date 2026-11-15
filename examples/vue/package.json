@@ -1,11 +1,11 @@
 {
   "name": "@kai17-a/kav-ui-example-vue",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "private": true,
   "type": "module",
   "dependencies": {
-    "@kai17-a/kav-ui-core": "0.0.5",
-    "@kai17-a/kav-ui-vue": "0.0.5"
+    "@kai17-a/kav-ui-core": "0.0.6",
+    "@kai17-a/kav-ui-vue": "0.0.6"
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",

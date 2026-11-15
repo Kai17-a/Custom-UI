@@ -1,6 +1,6 @@
 {
   "name": "@kai17-a/kav-ui-astro",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "type": "module",
   "files": [
     "src",
@@ -16,7 +16,7 @@
     "directory": "packages/astro"
   },
   "dependencies": {
-    "@kai17-a/kav-ui-core": "0.0.5"
+    "@kai17-a/kav-ui-core": "0.0.6"
   },
   "exports": {
     ".": {
