@@ -98,11 +98,28 @@ class DocumentationStructureTests(unittest.TestCase):
             self.assertLess(main.index('href="' + href + '"'), first_group)
 
     def test_top_level_overview_marks_only_current_page(self):
-        for name in ('index.html', 'getting-started.html', 'installation.html', 'ai-agents.html', 'templates.html'):
+        for name in ('index.html', 'getting-started.html', 'installation.html', 'vue.html', 'astro.html', 'ai-agents.html', 'templates.html'):
             source = (DOCS / name).read_text()
             links = re.findall(r'<a class="overview-link" href="([^"]+)"([^>]*)>', source)
             self.assertTrue(all(attrs.count('aria-current="page"') <= 1 for _, attrs in links), name)
             self.assertEqual([href for href, attrs in links if 'aria-current="page"' in attrs], [name], name)
+
+    def test_framework_guides_are_discoverable_and_use_compiled_examples(self):
+        from html import unescape
+        for framework, example in [('vue', 'examples/astro/src/components/VueDemo.vue'),
+                                   ('astro', 'examples/astro/src/pages/second.astro')]:
+            name = framework + '.html'
+            source = (DOCS / name).read_text()
+            for entry in ['index.html', 'installation.html', 'getting-started.html',
+                          'ai-agents.html', 'components/forms.html']:
+                self.assertIn(name + '"', (DOCS / entry).read_text(), entry)
+            snippets = [unescape(code) for code in re.findall(r'<pre[^>]*><code[^>]*>(.*?)</code></pre>', source, re.S)]
+            normalize = lambda text: re.sub(r'\s+', '', text)
+            self.assertIn(normalize((ROOT / example).read_text()), [normalize(code) for code in snippets])
+            self.assertNotIn('<style', source)
+            self.assertNotIn(' style=', source)
+            self.assertIn(name + '.md', (DOCS / 'llms.txt').read_text())
+            self.assertIn('"' + name + '"', (DOCS / 'assets/js/catalog-search.js').read_text())
 
     def test_internal_catalog_links_do_not_use_external_arrow(self):
         for page in [*DOCS.glob('*.html'), *(DOCS / 'components').glob('*.html')]:

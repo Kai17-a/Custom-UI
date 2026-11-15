@@ -397,7 +397,7 @@ try {
   console.log('Catalog search: Japanese aliases, full-width normalization and multiple words agree across index/sidebar');
   // Audit file:// loading and responsive overflow across every catalog page.
   const componentDestinations=readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')).sort();
-  const pages=['index.html','ai-agents.html','installation.html','getting-started.html','templates.html',...readdirSync(join(site,'templates')).filter(name=>name.endsWith('.html')).map(name=>'templates/'+name),...readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')).map(name=>'components/'+name)];
+  const pages=['index.html','ai-agents.html','vue.html','astro.html','installation.html','getting-started.html','templates.html',...readdirSync(join(site,'templates')).filter(name=>name.endsWith('.html')).map(name=>'templates/'+name),...readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')).map(name=>'components/'+name)];
   let checks=0; let sourceChecks=0;
   for(const width of [320,767,768,1023,1024,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
@@ -1023,7 +1023,7 @@ try {
   if(!await evaluate('document.getElementById("wide-table-test").scrollLeft>0 && document.documentElement.scrollWidth<=innerWidth+1'))throw new Error('Wide table must scroll by keyboard inside its region');
   console.log('Device responsiveness: PC/tablet/mobile CSS-only grid/gap/type/padding/stack/full-width across 8 widths × light/dark, 767/768 and 1023/1024 boundaries, keyboard horizontal table scrolling');
 
-  const headerPages=['index.html','ai-agents.html','installation.html','getting-started.html','templates.html',...readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')).map(name=>'components/'+name)];
+  const headerPages=['index.html','ai-agents.html','vue.html','astro.html','installation.html','getting-started.html','templates.html',...readdirSync(join(site,'components')).filter(name=>name.endsWith('.html')).map(name=>'components/'+name)];
   for(const width of [320,1440]) {
     await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
     for(const path of headerPages) {
