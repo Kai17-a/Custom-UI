@@ -213,6 +213,8 @@ def outputs():
              '以下は本文・コード例のMarkdown版です。必要な部品だけを読み、外部フレームワークのクラスや未確認のAPIを推測で追加しないでください。リンクはこのファイルからの相対パスです。', '', '## 導入とAIエージェント', '',
              '- [ダウンロード・導入](installation.html.md): ZIPの入手、assets配置、最小HTML、テーマ復元。',
              '- [使い方・属性一覧](getting-started.html.md): data属性とイベント、初期化、アプリとの組み合わせ。',
+             '- [Vueで使う](vue.html.md): GitHub Packages導入、v-model・スロット、SPA/SSR。',
+             '- [Astroで使う](astro.html.md): Provider、静的HTMLとページ遷移。',
              '- [AIエージェント用ガイド](ai-agents.html.md): スキルの持ち出し方と資料の更新方法。',
              '- [Kav-UIスキル](skills/kav-ui/SKILL.md): 別プロジェクトで使える同梱資料付きスキル。元ソース・通信なしでHTML/Vue/Astroの実装を案内。',
              '- [組み込みリファレンス](skills/kav-ui/references/integration.md): 持ち出せる基本HTMLと連携の例。',

@@ -211,6 +211,8 @@
 
 ## 使い方
 
+[Vueで使う](vue.html.md)[Astroで使う](astro.html.md)
+
 [ダウンロード・導入ガイドを開く](installation.html.md)
 
 1. assetsフォルダをアプリにコピーします。

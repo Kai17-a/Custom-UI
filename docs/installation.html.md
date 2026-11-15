@@ -30,7 +30,7 @@ GitHubのソースZIPには、CSS・JavaScriptを含む`assets`フォルダが�
 
 [GitHub Releases](https://github.com/Kai17-a/Custom-UI/releases)の対象バージョンを開き、「Assets」から`kav-ui-vX.Y.Z.zip`をダウンロードします。展開した`kav-ui/assets`フォルダを使います。`vX.Y.Z`はバージョンの表記例です。
 
-Releaseがまだない場合や、必要なZIPが見つからない場合は、上のソースZIPから導入できます。Vue・Astro向けパッケージはGitHub Packagesからインストールします。`.npmrc`とトークンの設定は[パッケージREADME](packages/README.md#github-packagesからインストール)を参照してください。HTML版は`kav-ui-vX.Y.Z.zip`を選びます。
+Releaseがまだない場合や、必要なZIPが見つからない場合は、上のソースZIPから導入できます。[Vue](vue.html.md)・[Astro](astro.html.md)向けパッケージはGitHub Packagesからインストールします。`.npmrc`とトークンの設定は[パッケージREADME](packages/README.md#github-packagesからインストール)を参照してください。HTML版は`kav-ui-vX.Y.Z.zip`を選びます。
 
 <a id="installation-files"></a>
 

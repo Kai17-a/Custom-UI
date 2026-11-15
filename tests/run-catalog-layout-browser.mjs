@@ -72,7 +72,7 @@ try {
   const home=await evaluate(`({height:document.documentElement.scrollHeight,top:document.querySelector('h1').getBoundingClientRect().top})`);
   console.log('390px home',home);
   check(home.height<=7500,'390px home must be at least 25% shorter than the 10,000px baseline');
-  for(const path of ['index.html','getting-started.html','components/forms.html','components/splitter.html']) {
+  for(const path of ['index.html','vue.html','astro.html','getting-started.html','components/forms.html','components/splitter.html']) {
     await navigate(path);
     const top=await evaluate(`document.querySelector('h1').getBoundingClientRect().top`);
     // Touch emulation enlarges the header controls to 44px and the theme labels stay visible.
@@ -158,7 +158,7 @@ try {
   if(failures.length)throw new Error(failures.join('\n'));
   if(process.env.CATALOG_SCREENSHOTS) {
     const dir=resolve(process.env.CATALOG_SCREENSHOTS);mkdirSync(dir,{recursive:true});
-    for(const path of ['index.html','getting-started.html','components/forms.html','components/splitter.html']) {
+    for(const path of ['index.html','vue.html','astro.html','getting-started.html','components/forms.html','components/splitter.html']) {
       for(const width of (path.includes('splitter')?[320,390,820,1440]:[390,820,1440]))for(const mode of ['light','dark']) {
         await send('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
         await navigate(path);await evaluate(`KavUI.setColorTheme('${mode}')`);await delay(80);
