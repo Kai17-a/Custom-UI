@@ -21,6 +21,26 @@
 </dialog>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <button type="button" class="btn btn-outline-secondary" data-ui-toggle="dialog" data-ui-target="#drawer-end">右から開く</button>
+  <dialog id="drawer-end" class="ui-dialog ui-drawer ui-drawer-end" data-ui-dialog aria-labelledby="drawer-end-title">
+    <header class="ui-drawer-header"><h2 id="drawer-end-title">プロジェクトの設定</h2><button type="button" class="btn btn-outline-secondary btn-icon-only" data-ui-dismiss="dialog" aria-label="閉じる"><span icon="mdi-close" aria-hidden="true"></span></button></header>
+    <div class="ui-drawer-body"><div class="ui-stack"><p>画面の端から設定パネルを開きます。背景の操作は停止し、このパネル内で操作できます。</p><label for="drawer-end-name">プロジェクト名</label><input class="form-control" id="drawer-end-name" value="Design catalog"><label for="drawer-end-scope">公開範囲</label><select class="form-select" id="drawer-end-scope"><option>自分のみ</option><option>チーム</option></select><p>内容が長い場合は、この領域をスクロールできます。</p></div></div>
+    <footer class="ui-drawer-footer"><button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button></footer>
+  </dialog>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
 <a id="drawer-start-example"></a>
 
 ## 左から開く
@@ -32,6 +52,26 @@
   <div class="ui-drawer-body"><div class="ui-stack"><p>画面の端から設定パネルを開きます。背景の操作は停止し、このパネル内で操作できます。</p><label for="drawer-start-name">プロジェクト名</label><input class="form-control" id="drawer-start-name" value="Design catalog"><label for="drawer-start-scope">公開範囲</label><select class="form-select" id="drawer-start-scope"><option>自分のみ</option><option>チーム</option></select><p>内容が長い場合は、この領域をスクロールできます。</p></div></div>
   <footer class="ui-drawer-footer"><button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button></footer>
 </dialog>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <button type="button" class="btn btn-outline-secondary" data-ui-toggle="dialog" data-ui-target="#drawer-start">左から開く</button>
+  <dialog id="drawer-start" class="ui-dialog ui-drawer ui-drawer-start" data-ui-dialog aria-labelledby="drawer-start-title">
+    <header class="ui-drawer-header"><h2 id="drawer-start-title">プロジェクトの設定</h2><button type="button" class="btn btn-outline-secondary btn-icon-only" data-ui-dismiss="dialog" aria-label="閉じる"><span icon="mdi-close" aria-hidden="true"></span></button></header>
+    <div class="ui-drawer-body"><div class="ui-stack"><p>画面の端から設定パネルを開きます。背景の操作は停止し、このパネル内で操作できます。</p><label for="drawer-start-name">プロジェクト名</label><input class="form-control" id="drawer-start-name" value="Design catalog"><label for="drawer-start-scope">公開範囲</label><select class="form-select" id="drawer-start-scope"><option>自分のみ</option><option>チーム</option></select><p>内容が長い場合は、この領域をスクロールできます。</p></div></div>
+    <footer class="ui-drawer-footer"><button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button></footer>
+  </dialog>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
 ```
 
 <a id="drawer-bottom-example"></a>
@@ -47,6 +87,26 @@
 </dialog>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <button type="button" class="btn btn-outline-secondary" data-ui-toggle="dialog" data-ui-target="#drawer-bottom">下から開く</button>
+  <dialog id="drawer-bottom" class="ui-dialog ui-drawer ui-drawer-bottom" data-ui-dialog aria-labelledby="drawer-bottom-title">
+    <header class="ui-drawer-header"><h2 id="drawer-bottom-title">プロジェクトの設定</h2><button type="button" class="btn btn-outline-secondary btn-icon-only" data-ui-dismiss="dialog" aria-label="閉じる"><span icon="mdi-close" aria-hidden="true"></span></button></header>
+    <div class="ui-drawer-body"><div class="ui-stack"><p>画面の端から設定パネルを開きます。背景の操作は停止し、このパネル内で操作できます。</p><label for="drawer-bottom-name">プロジェクト名</label><input class="form-control" id="drawer-bottom-name" value="Design catalog"><label for="drawer-bottom-scope">公開範囲</label><select class="form-select" id="drawer-bottom-scope"><option>自分のみ</option><option>チーム</option></select><p>内容が長い場合は、この領域をスクロールできます。</p></div></div>
+    <footer class="ui-drawer-footer"><button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button></footer>
+  </dialog>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
 <a id="drawer-top-example"></a>
 
 ## 上から開く
@@ -58,6 +118,26 @@
   <div class="ui-drawer-body"><div class="ui-stack"><p>画面の端から設定パネルを開きます。背景の操作は停止し、このパネル内で操作できます。</p><label for="drawer-top-name">プロジェクト名</label><input class="form-control" id="drawer-top-name" value="Design catalog"><label for="drawer-top-scope">公開範囲</label><select class="form-select" id="drawer-top-scope"><option>自分のみ</option><option>チーム</option></select><p>内容が長い場合は、この領域をスクロールできます。</p></div></div>
   <footer class="ui-drawer-footer"><button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button></footer>
 </dialog>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <button type="button" class="btn btn-outline-secondary" data-ui-toggle="dialog" data-ui-target="#drawer-top">上から開く</button>
+  <dialog id="drawer-top" class="ui-dialog ui-drawer ui-drawer-top" data-ui-dialog aria-labelledby="drawer-top-title">
+    <header class="ui-drawer-header"><h2 id="drawer-top-title">プロジェクトの設定</h2><button type="button" class="btn btn-outline-secondary btn-icon-only" data-ui-dismiss="dialog" aria-label="閉じる"><span icon="mdi-close" aria-hidden="true"></span></button></header>
+    <div class="ui-drawer-body"><div class="ui-stack"><p>画面の端から設定パネルを開きます。背景の操作は停止し、このパネル内で操作できます。</p><label for="drawer-top-name">プロジェクト名</label><input class="form-control" id="drawer-top-name" value="Design catalog"><label for="drawer-top-scope">公開範囲</label><select class="form-select" id="drawer-top-scope"><option>自分のみ</option><option>チーム</option></select><p>内容が長い場合は、この領域をスクロールできます。</p></div></div>
+    <footer class="ui-drawer-footer"><button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button></footer>
+  </dialog>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
 ```
 
 <a id="drawer-accessibility"></a>

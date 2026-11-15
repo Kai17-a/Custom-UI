@@ -2,6 +2,8 @@
 """Generate llms.txt and main-content Markdown from the HTML catalog (stdlib only)."""
 from __future__ import annotations
 import argparse
+import importlib.util
+import sys
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
 import os
@@ -15,6 +17,11 @@ LLMS = DOCS / 'llms.txt'
 VOID = set('area base br col embed hr img input link meta param source track wbr'.split())
 SKIP = {'script', 'style', 'svg', 'noscript', 'template'}
 MARKER = re.compile(r'\n?<!-- Kav-UI AI discovery -->.*?<!-- /Kav-UI AI discovery -->\n?', re.S)
+
+
+_spec = importlib.util.spec_from_file_location('component_code_samples', ROOT / 'scripts/component-code-samples.py')
+component_samples = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(component_samples)
 
 
 @dataclass
@@ -127,7 +134,11 @@ class Markdown:
             return ''
         if 'data-example' in node.attrs:
             # Preserve authored markup, not runtime-generated state or source widgets.
-            return fence(self.document.source[node.inner_start:node.inner_end].strip(), 'html')
+            result = fence(self.document.source[node.inner_start:node.inner_end].strip(), 'html')
+            if self.page.parent.name == 'components':
+                for language in component_samples.languages(self.page.stem):
+                    result += '\n\n### ' + language.title() + '\n\n' + fence(component_samples.sample(self.document, node, language), language)
+            return result
         if 'hidden' in node.attrs or node.has_class('eyebrow'):
             return ''
         if node.has_class('mdi-icon-card'):
@@ -202,6 +213,8 @@ def outputs():
         documents[page] = (document, main)
         generated[page] = discovery(page, source)
         body = Markdown(page, document, page_set).blocks(main)
+        if page.parent.name == 'components' and component_samples.page_data(page.stem, document).get('widget'):
+            body += '\n\nVue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)'
         sample = re.search(r'<!-- kav-sample:start -->(.*?)<!-- kav-sample:end -->', source, re.S)
         if sample:
             body += '\n\n## コピー用HTML（共通ui.css / ui.jsを使用）\n\n' + fence(sample[1].strip())

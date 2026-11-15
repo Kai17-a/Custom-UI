@@ -83,3 +83,5 @@ Coordinatorが3つの作業を並列に委任し、すべての結果をReviewer
 - `ui-agent-tasks`：`details / summary` と `checkbox` によるタスクツリー。アプリ側では標準の `toggle` / `change` イベントで処理を接続します。
 
 図はHTMLに記述した状態を表示します。実際のエージェント実行・自動レイアウト・データ保存はアプリ側で実装してください。グラフを変更するときは、入れ子と説明文を実際の依存関係に合わせて更新します。
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)

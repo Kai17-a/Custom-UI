@@ -120,3 +120,5 @@ Escapeで閉じ、Tabで別の項目へ移動できます。矢印・PageUp / Pa
 ```
 
 [導入手順](../getting-started.html.md) / [予定表示用のカレンダー](calendar.html.md)
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)

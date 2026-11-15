@@ -126,3 +126,5 @@ APIはpersist省略時には保存しません。表示モードはlight / dark 
 ## 使用ファイル・取り込み方
 
 `assets/css/ui.css` と `assets/js/ui.js` を読み込み、上記のHTMLを配置してください。npmや追加のJavaScriptは不要です。
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)

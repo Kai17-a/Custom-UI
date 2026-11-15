@@ -20,6 +20,46 @@
 <div class="alert alert-danger"><h3 class="alert-title">ファイルを保存できませんでした</h3><p>接続が切れました。編集内容をコピーしてから、接続を確認してください。</p></div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="alert alert-success"><h3 class="alert-title">変更を保存しました</h3><p>プロジェクトの設定は最新の状態です。</p></div>
+  <br>
+  <div class="alert alert-info"><h3 class="alert-title">メンテナンスのお知らせ</h3><p>本日22:00から10分間、ファイルのアップロードを停止します。</p></div>
+  <br>
+  <div class="alert alert-warning"><h3 class="alert-title">ストレージの残容量が少なくなっています</h3><p>残りは500MBです。不要なファイルを整理してください。</p></div>
+  <br>
+  <div class="alert alert-danger"><h3 class="alert-title">ファイルを保存できませんでした</h3><p>接続が切れました。編集内容をコピーしてから、接続を確認してください。</p></div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="alert alert-success"><h3 class="alert-title">変更を保存しました</h3><p>プロジェクトの設定は最新の状態です。</p></div>
+  <br>
+  <div class="alert alert-info"><h3 class="alert-title">メンテナンスのお知らせ</h3><p>本日22:00から10分間、ファイルのアップロードを停止します。</p></div>
+  <br>
+  <div class="alert alert-warning"><h3 class="alert-title">ストレージの残容量が少なくなっています</h3><p>残りは500MBです。不要なファイルを整理してください。</p></div>
+  <br>
+  <div class="alert alert-danger"><h3 class="alert-title">ファイルを保存できませんでした</h3><p>接続が切れました。編集内容をコピーしてから、接続を確認してください。</p></div>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 ## 閉じられるアラート
 
 ```html
@@ -30,10 +70,74 @@
 <p><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="show" data-ui-target="#dismissible-alert">アラートを再表示</button></p>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div id="dismissible-alert" class="alert alert-info alert-dismissible">
+    <div><h3 class="alert-title">通知設定を確認してください</h3><p>メール通知の頻度は<a href="forms.html">基本設定</a>から変更できます。</p></div>
+    <button type="button" class="btn-close" data-ui-dismiss="alert" aria-label="通知設定の案内を閉じる"></button>
+  </div>
+  <p><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="show" data-ui-target="#dismissible-alert">アラートを再表示</button></p>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div id="dismissible-alert" class="alert alert-info alert-dismissible">
+    <div><h3 class="alert-title">通知設定を確認してください</h3><p>メール通知の頻度は<a href="forms.html">基本設定</a>から変更できます。</p></div>
+    <button type="button" class="btn-close" data-ui-dismiss="alert" aria-label="通知設定の案内を閉じる"></button>
+  </div>
+  <p><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-toggle="show" data-ui-target="#dismissible-alert">アラートを再表示</button></p>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 ## 控えめな案内
 
 ```html
 <div class="alert alert-neutral"><h3 class="alert-title">読み取り専用モード</h3><p>このプロジェクトの編集権限がありません。変更するには管理者へ連絡してください。</p></div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="alert alert-neutral"><h3 class="alert-title">読み取り専用モード</h3><p>このプロジェクトの編集権限がありません。変更するには管理者へ連絡してください。</p></div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="alert alert-neutral"><h3 class="alert-title">読み取り専用モード</h3><p>このプロジェクトの編集権限がありません。変更するには管理者へ連絡してください。</p></div>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 このページのアラートは静的な表示例です。動的に出す重要なエラーには role="alert"、完了通知には role="status" を付けてください。

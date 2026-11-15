@@ -30,7 +30,7 @@ class StandaloneDocsBuildTests(unittest.TestCase):
                 shutil.copytree(ROOT / 'examples/astro/src' / directory,
                                 copied / 'examples/astro/src' / directory)
             (copied / 'scripts').mkdir()
-            for name in ('build-docs.py', 'generate-ai-docs.py'):
+            for name in ('build-docs.py', 'generate-ai-docs.py', 'component-code-samples.py'):
                 shutil.copy2(ROOT / 'scripts' / name, copied / 'scripts' / name)
             for name in ('README.md', 'vue/README.md', 'astro/README.md'):
                 target = copied / 'packages' / name

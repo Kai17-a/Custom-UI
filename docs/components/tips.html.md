@@ -48,3 +48,5 @@ assetsフォルダごとコピーするとCSS内の相対参照も維持でき�
 ```html
 <div class="fx fx-wrap fx-gap-3"><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-tooltip="サーバーへの送信前に入力を確認します。">検証の説明</button><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-tooltip="表示を切り替えても入力内容は保持されます。">表示の説明</button></div>
 ```
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)

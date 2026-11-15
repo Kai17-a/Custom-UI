@@ -22,6 +22,58 @@
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavIcon } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="ui-banner ui-banner-info" role="note">
+    <div class="ui-banner-inner">
+      <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-information-outline" />
+      <p class="ui-banner-content">
+        新しいコンポーネントが利用できます。
+        <a href="../getting-started.html">
+          導入方法を確認
+        </a>
+      </p>
+      <div class="ui-banner-actions">
+        <a class="ui-banner-action" href="../index.html">
+          カタログを見る
+        </a>
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavIcon } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="ui-banner ui-banner-info" role="note">
+  <div class="ui-banner-inner">
+    <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-information-outline" />
+    <p class="ui-banner-content">
+      新しいコンポーネントが利用できます。
+      <a href="../getting-started.html">
+        導入方法を確認
+      </a>
+    </p>
+    <div class="ui-banner-actions">
+      <a class="ui-banner-action" href="../index.html">
+        カタログを見る
+      </a>
+    </div>
+  </div>
+</div>
+```
+
 <a id="banner-colors"></a>
 
 ## 意味に応じた色
@@ -37,6 +89,122 @@
 <div class="ui-banner ui-banner-neutral ui-banner-inset" role="note"><div class="ui-banner-inner"><span class="ui-banner-icon" icon="mdi-information-outline" aria-hidden="true"></span><p class="ui-banner-content">このワークスペースは読み取り専用です。</p></div></div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavIcon } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="ui-banner ui-banner-primary ui-banner-inset" role="note">
+    <div class="ui-banner-inner">
+      <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-information-outline" />
+      <p class="ui-banner-content">
+        新しいテンプレートを公開しました。
+      </p>
+    </div>
+  </div>
+  <div class="ui-banner ui-banner-info ui-banner-inset" role="note">
+    <div class="ui-banner-inner">
+      <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-information-outline" />
+      <p class="ui-banner-content">
+        本日22:00からメンテナンスを行います。
+      </p>
+    </div>
+  </div>
+  <div class="ui-banner ui-banner-success ui-banner-inset" role="note">
+    <div class="ui-banner-inner">
+      <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-check-circle-outline" />
+      <p class="ui-banner-content">
+        すべてのデータの同期が完了しました。
+      </p>
+    </div>
+  </div>
+  <div class="ui-banner ui-banner-warning ui-banner-inset" role="note">
+    <div class="ui-banner-inner">
+      <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-alert-outline" />
+      <p class="ui-banner-content">
+        ストレージの残容量を確認してください。
+      </p>
+    </div>
+  </div>
+  <div class="ui-banner ui-banner-danger ui-banner-inset" role="note">
+    <div class="ui-banner-inner">
+      <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-alert-outline" />
+      <p class="ui-banner-content">
+        接続が切れました。ネットワークを確認してください。
+      </p>
+    </div>
+  </div>
+  <div class="ui-banner ui-banner-neutral ui-banner-inset" role="note">
+    <div class="ui-banner-inner">
+      <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-information-outline" />
+      <p class="ui-banner-content">
+        このワークスペースは読み取り専用です。
+      </p>
+    </div>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavIcon } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="ui-banner ui-banner-primary ui-banner-inset" role="note">
+  <div class="ui-banner-inner">
+    <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-information-outline" />
+    <p class="ui-banner-content">
+      新しいテンプレートを公開しました。
+    </p>
+  </div>
+</div>
+<div class="ui-banner ui-banner-info ui-banner-inset" role="note">
+  <div class="ui-banner-inner">
+    <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-information-outline" />
+    <p class="ui-banner-content">
+      本日22:00からメンテナンスを行います。
+    </p>
+  </div>
+</div>
+<div class="ui-banner ui-banner-success ui-banner-inset" role="note">
+  <div class="ui-banner-inner">
+    <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-check-circle-outline" />
+    <p class="ui-banner-content">
+      すべてのデータの同期が完了しました。
+    </p>
+  </div>
+</div>
+<div class="ui-banner ui-banner-warning ui-banner-inset" role="note">
+  <div class="ui-banner-inner">
+    <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-alert-outline" />
+    <p class="ui-banner-content">
+      ストレージの残容量を確認してください。
+    </p>
+  </div>
+</div>
+<div class="ui-banner ui-banner-danger ui-banner-inset" role="note">
+  <div class="ui-banner-inner">
+    <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-alert-outline" />
+    <p class="ui-banner-content">
+      接続が切れました。ネットワークを確認してください。
+    </p>
+  </div>
+</div>
+<div class="ui-banner ui-banner-neutral ui-banner-inset" role="note">
+  <div class="ui-banner-inner">
+    <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-information-outline" />
+    <p class="ui-banner-content">
+      このワークスペースは読み取り専用です。
+    </p>
+  </div>
+</div>
+```
+
 <a id="banner-variants"></a>
 
 ## 塗りつぶし・枠線
@@ -44,6 +212,36 @@
 ```html
 <div class="ui-banner ui-banner-primary ui-banner-solid ui-banner-inset" role="note"><div class="ui-banner-inner"><p class="ui-banner-content">最新版の利用を開始できます。</p><div class="ui-banner-actions"><a class="ui-banner-action" href="../getting-started.html">使い方を見る</a></div></div></div>
 <div class="ui-banner ui-banner-info ui-banner-outline ui-banner-inset" role="note"><div class="ui-banner-inner"><p class="ui-banner-content">操作の前にドキュメントを確認してください。</p><a href="../templates.html">テンプレート一覧</a></div></div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="ui-banner ui-banner-primary ui-banner-solid ui-banner-inset" role="note"><div class="ui-banner-inner"><p class="ui-banner-content">最新版の利用を開始できます。</p><div class="ui-banner-actions"><a class="ui-banner-action" href="../getting-started.html">使い方を見る</a></div></div></div>
+  <div class="ui-banner ui-banner-info ui-banner-outline ui-banner-inset" role="note"><div class="ui-banner-inner"><p class="ui-banner-content">操作の前にドキュメントを確認してください。</p><a href="../templates.html">テンプレート一覧</a></div></div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="ui-banner ui-banner-primary ui-banner-solid ui-banner-inset" role="note"><div class="ui-banner-inner"><p class="ui-banner-content">最新版の利用を開始できます。</p><div class="ui-banner-actions"><a class="ui-banner-action" href="../getting-started.html">使い方を見る</a></div></div></div>
+  <div class="ui-banner ui-banner-info ui-banner-outline ui-banner-inset" role="note"><div class="ui-banner-inner"><p class="ui-banner-content">操作の前にドキュメントを確認してください。</p><a href="../templates.html">テンプレート一覧</a></div></div>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 <a id="banner-title"></a>
@@ -56,6 +254,68 @@
     <span class="ui-banner-icon" icon="mdi-alert-outline" aria-hidden="true"></span>
     <div class="ui-banner-content"><h3 class="ui-banner-title" id="banner-maintenance-title">メンテナンスを予定しています</h3><p class="ui-banner-description">10月25日 22:00〜22:30は保存機能を停止します。作業中の内容は開始前に保存してください。</p></div>
     <div class="ui-banner-actions"><a class="ui-banner-action" href="../templates/changelog.html">詳細を見る</a><a href="../templates/docs.html">ヘルプ</a></div>
+  </div>
+</div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavIcon } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="ui-banner ui-banner-warning ui-banner-inset" role="note" aria-labelledby="banner-maintenance-title">
+    <div class="ui-banner-inner">
+      <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-alert-outline" />
+      <div class="ui-banner-content">
+        <h3 class="ui-banner-title" id="banner-maintenance-title">
+          メンテナンスを予定しています
+        </h3>
+        <p class="ui-banner-description">
+          10月25日 22:00〜22:30は保存機能を停止します。作業中の内容は開始前に保存してください。
+        </p>
+      </div>
+      <div class="ui-banner-actions">
+        <a class="ui-banner-action" href="../templates/changelog.html">
+          詳細を見る
+        </a>
+        <a href="../templates/docs.html">
+          ヘルプ
+        </a>
+      </div>
+    </div>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavIcon } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="ui-banner ui-banner-warning ui-banner-inset" role="note" aria-labelledby="banner-maintenance-title">
+  <div class="ui-banner-inner">
+    <KavIcon class="ui-banner-icon" aria-hidden="true" name="mdi-alert-outline" />
+    <div class="ui-banner-content">
+      <h3 class="ui-banner-title" id="banner-maintenance-title">
+        メンテナンスを予定しています
+      </h3>
+      <p class="ui-banner-description">
+        10月25日 22:00〜22:30は保存機能を停止します。作業中の内容は開始前に保存してください。
+      </p>
+    </div>
+    <div class="ui-banner-actions">
+      <a class="ui-banner-action" href="../templates/changelog.html">
+        詳細を見る
+      </a>
+      <a href="../templates/docs.html">
+        ヘルプ
+      </a>
+    </div>
   </div>
 </div>
 ```
@@ -76,6 +336,46 @@
 <p><button type="button" class="btn btn-outline-secondary" data-ui-toggle="show" data-ui-target="#banner-dismissible">バナーを再表示</button></p>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <div class="ui-banner ui-banner-info ui-banner-inset" id="banner-dismissible" role="note">
+    <div class="ui-banner-inner">
+      <p class="ui-banner-content">バナーを閉じても、下のボタンから再表示できます。</p>
+      <button type="button" class="ui-banner-close" data-ui-dismiss="banner" icon="mdi-close" aria-label="再表示できる案内を閉じる"></button>
+    </div>
+  </div>
+  <p><button type="button" class="btn btn-outline-secondary" data-ui-toggle="show" data-ui-target="#banner-dismissible">バナーを再表示</button></p>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <div class="ui-banner ui-banner-info ui-banner-inset" id="banner-dismissible" role="note">
+    <div class="ui-banner-inner">
+      <p class="ui-banner-content">バナーを閉じても、下のボタンから再表示できます。</p>
+      <button type="button" class="ui-banner-close" data-ui-dismiss="banner" icon="mdi-close" aria-label="再表示できる案内を閉じる"></button>
+    </div>
+  </div>
+  <p><button type="button" class="btn btn-outline-secondary" data-ui-toggle="show" data-ui-target="#banner-dismissible">バナーを再表示</button></p>
+`;
+---
+
+<KavWidget html={html} />
+```
+
 <a id="banner-floating"></a>
 
 ## 画面下に固定
@@ -92,6 +392,50 @@
     <button type="button" class="ui-banner-close" data-ui-dismiss="banner" icon="mdi-close" aria-label="画面下の案内を閉じる"></button>
   </div>
 </div>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavWidget } from "@kai17-a/kav-ui-vue";
+const html = `
+  <button type="button" class="btn btn-outline-secondary" data-ui-toggle="show" data-ui-target="#banner-floating-example">画面下のバナーを表示</button>
+  <div class="ui-banner ui-banner-info ui-banner-floating" id="banner-floating-example" role="status" hidden>
+    <div class="ui-banner-inner">
+      <span class="ui-banner-icon" icon="mdi-information-outline" aria-hidden="true"></span>
+      <p class="ui-banner-content">ドキュメントを更新しました。新しい使い方を確認できます。</p>
+      <div class="ui-banner-actions"><a class="ui-banner-action" href="../getting-started.html">確認する</a></div>
+      <button type="button" class="ui-banner-close" data-ui-dismiss="banner" icon="mdi-close" aria-label="画面下の案内を閉じる"></button>
+    </div>
+  </div>
+`;
+</script>
+
+<template>
+  <KavWidget :html="html" />
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavWidget } from "@kai17-a/kav-ui-astro";
+const html = `
+  <button type="button" class="btn btn-outline-secondary" data-ui-toggle="show" data-ui-target="#banner-floating-example">画面下のバナーを表示</button>
+  <div class="ui-banner ui-banner-info ui-banner-floating" id="banner-floating-example" role="status" hidden>
+    <div class="ui-banner-inner">
+      <span class="ui-banner-icon" icon="mdi-information-outline" aria-hidden="true"></span>
+      <p class="ui-banner-content">ドキュメントを更新しました。新しい使い方を確認できます。</p>
+      <div class="ui-banner-actions"><a class="ui-banner-action" href="../getting-started.html">確認する</a></div>
+      <button type="button" class="ui-banner-close" data-ui-dismiss="banner" icon="mdi-close" aria-label="画面下の案内を閉じる"></button>
+    </div>
+  </div>
+`;
+---
+
+<KavWidget html={html} />
 ```
 
 <a id="banner-usage"></a>

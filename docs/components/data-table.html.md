@@ -214,3 +214,5 @@ Vue・Astroでは、既存の`KavWidget`で同じHTMLを利用できます。[�
 ```
 
 [ダウンロード・導入](../installation.html.md) / [静的なTable](table.html.md) / [ui.css](../assets/ui/css/ui.css) / [ui.js](../assets/ui/js/ui.js)
+
+Vue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)

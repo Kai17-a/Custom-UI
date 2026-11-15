@@ -25,6 +25,48 @@
 </div>
 ```
 
+### Vue
+
+```vue
+<script setup>
+import { KavButton, KavIcon } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <div class="ui-cluster">
+    <KavIcon class="ui-icon-md" style="color:var(--bs-primary)" name="mdi-home" label="ホーム" />
+    <KavIcon class="ui-icon-lg" style="color:var(--bs-danger)" aria-hidden="true" name="mdi-heart" />
+    <KavButton type="button" class="btn btn-primary" color="primary">
+      <KavIcon class="btn-icon" name="mdi-content-save" />
+      保存
+    </KavButton>
+    <KavButton type="button" class="btn btn-outline-secondary" aria-label="設定" color="secondary" variant="outline">
+      <KavIcon class="btn-icon" name="mdi-cog" />
+    </KavButton>
+  </div>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton, KavIcon } from "@kai17-a/kav-ui-astro";
+---
+
+<div class="ui-cluster">
+  <KavIcon class="ui-icon-md" style="color:var(--bs-primary)" name="mdi-home" label="ホーム" />
+  <KavIcon class="ui-icon-lg" style="color:var(--bs-danger)" aria-hidden="true" name="mdi-heart" />
+  <KavButton type="button" class="btn btn-primary" color="primary">
+    <KavIcon class="btn-icon" name="mdi-content-save" />
+    保存
+  </KavButton>
+  <KavButton type="button" class="btn btn-outline-secondary" aria-label="設定" color="secondary" variant="outline">
+    <KavIcon class="btn-icon" name="mdi-cog" />
+  </KavButton>
+</div>
+```
+
 標準サイズは周囲の文字と同じ1emです。`ui-icon-sm / md / lg / xl`で16 / 24 / 32 / 48pxを指定できます。任意のサイズは`--ui-icon-size`で調整できます。色は文字色を引き継ぎます。サイドバーには`class="sidebar-icon"`を併用できます。
 
 属性はspan・i・button・aなど、子要素を配置できるHTML要素に指定してください。子要素の先頭に装飾用SVGを挿入し、既存の文字やイベントは維持します。アイコンだけのボタンにはボタンの`aria-label`を指定します。単体のアイコンに意味を持たせる場合は、上のホームの例のように要素へ`role="img" aria-label="説明"`を指定してください。
@@ -357,6 +399,70 @@ icon.setAttribute("icon", "mdi-star");
 <a class="btn btn-outline-primary" href="sidebar.html"><svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
   <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"></path>
 </svg>サイドバーを見る</a>
+```
+
+### Vue
+
+```vue
+<script setup>
+import { KavButton } from "@kai17-a/kav-ui-vue";
+</script>
+
+<template>
+  <aside class="app-sidebar" aria-label="MDIを使ったメニュー">
+    <nav class="app-sidebar-group" aria-label="MDIの使用例">
+      <a href="mdi-icons.html" aria-current="page">
+        <svg xmlns="http://www.w3.org/2000/svg" class="sidebar-icon" width="24" height="24" viewbox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+          <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z">
+
+          </path>
+        </svg>
+        <span class="sidebar-label">
+          アイコン一覧
+        </span>
+      </a>
+    </nav>
+  </aside>
+  <KavButton class="btn btn-outline-primary" href="sidebar.html" color="primary" variant="outline">
+    <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" width="24" height="24" viewbox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+      <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z">
+
+      </path>
+    </svg>
+    サイドバーを見る
+  </KavButton>
+</template>
+```
+
+### Astro
+
+```astro
+---
+import { KavButton } from "@kai17-a/kav-ui-astro";
+---
+
+<aside class="app-sidebar" aria-label="MDIを使ったメニュー">
+  <nav class="app-sidebar-group" aria-label="MDIの使用例">
+    <a href="mdi-icons.html" aria-current="page">
+      <svg xmlns="http://www.w3.org/2000/svg" class="sidebar-icon" width="24" height="24" viewbox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+        <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z">
+
+        </path>
+      </svg>
+      <span class="sidebar-label">
+        アイコン一覧
+      </span>
+    </a>
+  </nav>
+</aside>
+<KavButton class="btn btn-outline-primary" href="sidebar.html" color="primary" variant="outline">
+  <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" width="24" height="24" viewbox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+    <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z">
+
+    </path>
+  </svg>
+  サイドバーを見る
+</KavButton>
 ```
 
 コピーするSVGは装飾用として`aria-hidden="true"`を付けています。アイコンのみのボタンではボタンに`aria-label`を指定してください。SVG自体に意味を持たせる場合は`aria-hidden`を外し、`role="img" aria-label="説明"`を指定できます。
