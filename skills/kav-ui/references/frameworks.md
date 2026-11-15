@@ -2,7 +2,7 @@
 
 ## 導入済みパッケージを使う
 
-利用先のpackage.jsonとロックファイルで導入版を確認する。coreとVue/Astroの版を揃え、既存のパッケージマネージャーを使う。GitHub Packagesの非公開パッケージを使う場合は `packages/README.md` の `.npmrc`・read:packages認証手順を確認する。公開npmレジストリへの配置は仮定しない。
+利用先のpackage.jsonとロックファイルで導入版を確認する。coreとVue/Astroの版を揃え、既存のパッケージマネージャーを使う。GitHub PackagesのPublicパッケージでも認証が必要なため、 `packages/README.md` の `.npmrc`・read:packages認証手順を確認する。公開npmレジストリへの配置は仮定しない。
 
 未導入なら、`packages/README.md` の `.npmrc` とトークンを設定してGitHub Packagesからインストールする。版は利用するリリースに合わせる。Kav-UI本体のワークスペースやビルドスクリプトは不要。
 

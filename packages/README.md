@@ -8,11 +8,11 @@
 | `@kai17-a/kav-ui-vue` | Vue 3.5以降用のコンポーネント、v-model、スロット、イベント |
 | `@kai17-a/kav-ui-astro` | Astroコンポーネント、静的HTML、ページ遷移対応のブラウザ処理 |
 
-GitHub Packagesのnpmレジストリへ配布する構成です。パッケージは非公開で運用し、リポジトリはPublicのまま維持します。MDIとMaterial Color Utilitiesのライセンス・クレジットはcoreに同梱します。
+GitHub Packagesのnpmレジストリで3パッケージの0.0.6をPublicとして配布しています。中身はPublicリポジトリのソースからのビルド物です。MDIとMaterial Color Utilitiesのライセンス・クレジットはcoreに同梱します。
 
 ## GitHub Packagesからインストール
 
-利用するプロジェクトの `.npmrc` に次を記述します。トークン値をファイルへ書かず、環境変数 `NODE_AUTH_TOKEN` に設定してください。GitHubのpersonal access token (classic)には `read:packages` と対象パッケージへの読み取り権限が必要です。
+利用するプロジェクトの `.npmrc` に次を記述します。トークン値をファイルへ書かず、環境変数 `NODE_AUTH_TOKEN` に設定してください。Publicパッケージでもインストールには認証が必要です。GitHubのpersonal access token (classic)に `read:packages` を付与してください。
 
 ```ini
 @kai17-a:registry=https://npm.pkg.github.com
@@ -21,12 +21,12 @@ GitHub Packagesのnpmレジストリへ配布する構成です。パッケー�
 
 ```bash
 # Vue（coreは依存として導入されます）
-npm install @kai17-a/kav-ui-vue@0.0.5
+npm install @kai17-a/kav-ui-vue@0.0.6
 # Astro
-npm install @kai17-a/kav-ui-astro@0.0.5
+npm install @kai17-a/kav-ui-astro@0.0.6
 ```
 
-以下は初回公開後に利用できる例です。現時点ではレジストリ未公開です。利用するリリース版に置き換えてください。
+上記は公開済みの0.0.6を導入する例です。
 
 利用側のGitHub Actionsでは、上記 `.npmrc` を管理し、次のように設定します。
 
@@ -44,11 +44,11 @@ steps:
       NODE_AUTH_TOKEN: ${{ github.token }}
 ```
 
-利用側リポジトリにはパッケージ設定の **Manage Actions access** でRead権限を付与します。ローカルや他のCIでは `read:packages` のトークンをCIの秘密変数から `NODE_AUTH_TOKEN` へ渡します。lockfileも利用するレジストリに合わせて更新します。
+Publicパッケージのため、利用者やCIへの個別のRead権限付与は不要です。ローカルや他のCIでは `read:packages` のトークンをCIの秘密変数から `NODE_AUTH_TOKEN` へ渡します。lockfileも利用するレジストリに合わせて更新します。
 
 ### 保守者：版上げとレジストリ公開
 
-現在の版はKav-UIの最新Release `v0.0.5` に合わせた `0.0.5` です。今後はリリースタグを作る前に次を実行し、差分をコミットします。
+公開済みのパッケージ版は `0.0.6` です。今後はリリースタグを作る前に次を実行し、差分をコミットします。
 
 ```bash
 npm run version:packages -- v0.0.6
@@ -63,7 +63,7 @@ node scripts/library-release.mjs validate v0.0.6
 
 公開認証は `GITHUB_TOKEN` の `contents: read` / `packages: write` のみで、新しいシークレットは不要です。既存のRelease作成ワークフローが `GITHUB_TOKEN` で公開したReleaseは、GitHubのイベント再帰防止によりpublishedトリガーを起動しません。その場合はレビュー後に上記の手動実行を使います。今回の設定が入っていない古いタグ（既存の `v0.0.5` を含む）は対象にできません。既存Releaseやタグを改変せず、変更を含む新しい版のタグを用意してください。
 
-初回公開後は、オーナーの **Packages → 各パッケージ → Package settings** で可視性が **Private** になっていることを確認してください。Privateを確認できるまでは利用者への配布を進めません。Publicだった場合は、[GitHubの仕様](https://docs.github.com/en/packages/learn-github-packages/configuring-a-packages-access-control-and-visibility)上Privateに戻せないため、追加の公開・配布を止め、管理者が公開済み内容と今後の対応を確認してください。3パッケージとも `Kai17-a/Custom-UI` に紐付いていること、利用者とCIのアクセス権も確認します。リポジトリの可視性はPublicのまま変更しません。`private: true` はnpm公開自体を禁止するため外しており、アクセス制御はGitHubのパッケージ設定で管理します。
+パッケージはPublicとして配布します。オーナーの **Packages → 各パッケージ → Package settings** で、3パッケージとも `Kai17-a/Custom-UI` に紐付いていることを確認してください。`private: true` はnpm公開自体を禁止するため外しています。
 
 参考：[GitHub npmレジストリ](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry) / [Actionsによる公開](https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions)
 
@@ -93,7 +93,7 @@ coreのCSSとランタイムは既存の `assets` から、アイコンのSVGパ
 上記の `.npmrc` と認証を設定し、GitHub Packagesから既存のVueアプリへインストールします。Vue本体は利用側の依存関係です。
 
 ```bash
-npm install @kai17-a/kav-ui-vue@0.0.5
+npm install @kai17-a/kav-ui-vue@0.0.6
 ```
 
 CSSはアプリの入口で1回読み込みます。パッケージJSをSSRでimportしてもwindow/documentにはアクセスしません。
@@ -161,7 +161,7 @@ const open=ref(false);
 上記の `.npmrc` と認証を設定し、GitHub Packagesからインストールします。Astro専用部品にVue本体は不要です。
 
 ```bash
-npm install @kai17-a/kav-ui-astro@0.0.5
+npm install @kai17-a/kav-ui-astro@0.0.6
 ```
 
 ```astro

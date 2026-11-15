@@ -25,7 +25,7 @@
 
 ## 実装・検証結果
 
-- `@kai17-a/kav-ui-core`・`@kai17-a/kav-ui-vue`・`@kai17-a/kav-ui-astro` を追加。バージョンはKav-UI Releaseと同じ `0.0.5`。GitHub Packagesの非公開配布設定とローカルtarball生成に対応（レジストリ未公開）。
+- `@kai17-a/kav-ui-core`・`@kai17-a/kav-ui-vue`・`@kai17-a/kav-ui-astro` を追加。バージョンはKav-UI Releaseと同じ `0.0.5`。GitHub PackagesのPublic配布とローカルtarball生成に対応（0.0.6はPublicとして公開済み）。
 - Vueの専用部品24種、Astroの専用部品23種と、未専用化の既存部品を使う `KavWidget` を用意。
 - [導入・対応範囲・検証手順](packages/README.md)、[Vue例](examples/vue)、[Astro/Vue連携例](examples/astro) を追加。
 - パッケージテスト8件、型チェック、Vue SSR、Astroビルド、390/820/1440pxでの実操作、既存HTML版105件、ZIP配布テスト10件に成功。
@@ -48,15 +48,15 @@
 ## 公開前に残す作業
 
 - [ ] npmスコープ・パッケージ名の利用権と、Kav-UI本体のライセンス・公開方針を確定する。
-- [ ] 初回公開後、3パッケージの可視性がPrivateであることと、利用者・CIのアクセス権を確認する。
-- [x] GitHub Packagesへの非公開配布設定と版管理・公開手順を整える。
+- [ ] Publicの3パッケージがリポジトリに紐付いていることを確認する。
+- [x] GitHub PackagesへのPublic配布設定と版管理・公開手順を整える。
 
-レジストリへの公開、リリースActionsの実行は行っていない。
+上記の実装時点ではレジストリへの公開、リリースActionsの実行は行っていない。現在は0.0.6をPublicとして配布している。
 
-## GitHub Packagesへの非公開配布
+## GitHub PackagesへのPublic配布
 
-- [x] 3パッケージの配布をGitHub Packages（Private運用）へ統一。HTML版のReleaseと開発・検証用のpackは維持。
+- [x] 3パッケージの配布をGitHub Packages（Public）へ統一。HTML版のReleaseと開発・検証用のpackは維持。
 - [x] バージョン・依存一致、ビルド・テスト、SHA-256検証、公開済み版のスキップに対応。
 - [x] 認証・インストール・公開手順とローカルの公開処理テストを追加。
-- レジストリ公開、タグ作成、Actionsの実行、実リリースは行っていない。
+- 上記の実装時点ではレジストリ公開、タグ作成、Actionsの実行、実リリースは行っていない。現在は0.0.6をPublicとして配布している。
 - GitHub Issue: https://github.com/Kai17-a/Custom-UI/issues/175

@@ -153,7 +153,7 @@ python3 scripts/build-release.py --version v1.0.0 --output dist
 
 ## Vue・Astro向けパッケージ
 
-既存のHTML/ZIP版に加えて、`@kai17-a/kav-ui-core`・`@kai17-a/kav-ui-vue`・`@kai17-a/kav-ui-astro` をGitHub Packagesの非公開パッケージとして配布する構成です。Vueのprops・スロット・v-model、Astroの静的出力とクライアント遷移に対応しています。
+既存のHTML/ZIP版に加えて、`@kai17-a/kav-ui-core`・`@kai17-a/kav-ui-vue`・`@kai17-a/kav-ui-astro` をGitHub PackagesのPublicパッケージとして配布しています。Vueのprops・スロット・v-model、Astroの静的出力とクライアント遷移に対応しています。
 
 [導入・対応範囲・検証手順](packages/README.md) / [Vueの例](examples/vue) / [AstroとVue連携の例](examples/astro)
 
@@ -163,9 +163,9 @@ npm run build:packages
 npm run pack:packages
 ```
 
-パッケージ開発時のみNode/npmを使用します。HTML版の利用手順とZIP配布は変わりません。GitHub Packagesでの非公開配布設定と導入手順は[パッケージガイド](packages/README.md#github-packagesからインストール)を参照してください（現在は未公開）。
+パッケージ開発時のみNode/npmを使用します。HTML版の利用手順とZIP配布は変わりません。GitHub PackagesでのPublic配布とread:packages認証の導入手順は[パッケージガイド](packages/README.md#github-packagesからインストール)を参照してください。
 
-Vue/Astroの配布経路はGitHub Packages（Private運用）です。[認証・インストール・公開手順](packages/README.md#github-packagesからインストール)を参照してください。ローカルtarballの生成は開発・検証用です。
+Vue/Astroの配布経路はGitHub Packages（Public・read:packages認証必須）です。[認証・インストール・公開手順](packages/README.md#github-packagesからインストール)を参照してください。ローカルtarballの生成は開発・検証用です。
 
 ## AI向けの表示パターン
 
