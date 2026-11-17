@@ -1,3 +1,5 @@
+import {check as checkSortableBehavior} from './sortable-behavior.mjs';
+import {check as checkSortable} from './sortable-browser.mjs';
 import {check as checkRichtext} from './richtext-browser.mjs';
 import {check as checkLogStream} from './log-stream-browser.mjs';
 import {check as checkDiffViewer} from './diff-viewer-browser.mjs';
@@ -114,6 +116,8 @@ try {
   await checkTreeList({navigate,evaluate,click,key,send});
   await checkDateRange({navigate,evaluate,click,key,send});
   await checkTokenizer({navigate,evaluate,click,key,send});
+  await checkSortableBehavior({navigate,evaluate,click,key,send});
+  await checkSortable({navigate,evaluate,click,key,send});
   await checkFixedProgress({navigate,evaluate,send,click});
   await checkReviewState({navigate,evaluate,send});
   await checkAutocomplete({navigate,evaluate,click,key,send});

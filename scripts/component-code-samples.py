@@ -1,7 +1,7 @@
 """Central framework sample rules. Preserve complex authored widgets verbatim.
 
-Only the README's dedicated-component pages get language tabs. Other pages
-with runtime data-ui-* hooks get Widget guidance; CSS-only examples do not.
+Dedicated-component pages and explicit Widget examples get language tabs.
+Other runtime pages get Widget guidance; CSS-only examples do not.
 """
 import json
 import re
@@ -9,10 +9,11 @@ from html import escape
 
 PAGES = set('icons mdi-icons buttons cards layouts badges forms alerts banner loading dialog disclosure calendar chart sidebar'.split())
 VUE_ONLY = {'drawer', 'navigation'}
+WIDGET_PAGES = {'sortable'}
 
 
 def languages(page):
-    return ('vue', 'astro') if page in PAGES else ('vue',) if page in VUE_ONLY else ()
+    return ('vue', 'astro') if page in PAGES | WIDGET_PAGES else ('vue',) if page in VUE_ONLY else ()
 
 
 def widget(markup, framework):

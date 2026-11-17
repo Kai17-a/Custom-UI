@@ -1020,6 +1020,119 @@
     }
     return valid;
   }
+  // Board and Sortable share DOM relocation motion; motion() handles reduced motion.
+  function relocateItem(item, place) {
+    const before=item.getBoundingClientRect();
+    elementMotions.get(item)?.cancel();
+    place();
+    const after=item.getBoundingClientRect();
+    motion(item,[{translate:(before.left-after.left)+'px '+(before.top-after.top)+'px',opacity:.6},{translate:'0 0',opacity:1}], 'slow');
+  }
+  const sortableStates=new WeakSet();
+  function initSortable(root) {
+    if(sortableStates.has(root))return;
+    sortableStates.add(root);
+    const listen=scopedEvents(root),restores=new Map();
+    const status=doc.createElement('div'),instructions=doc.createElement('span');
+    status.className=instructions.className='visually-hidden';
+    status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.setAttribute('aria-atomic','true');
+    status.setAttribute('data-ui-sortable-status','');
+    instructions.id='ui-sortable-help-'+(++sequence);
+    instructions.textContent='Space または Enter で持ち上げ・確定、矢印キーで移動、Escape でキャンセルします。';
+    // Keep list children exclusively items (including for ul/ol).
+    root.after(instructions,status);
+    const items=()=>[...root.children];
+    const control=item=>all(item,'[data-ui-sortable-handle]').find(el=>el.closest('[data-ui-sortable]')===root)||item;
+    const prepare=()=>items().forEach(item=>{
+      const el=control(item);if(restores.has(el))return;
+      restores.set(el,rememberAttributes(el,['tabindex','aria-describedby']));
+      if(el.tabIndex<0)el.tabIndex=0;
+      el.setAttribute('aria-describedby',((el.getAttribute('aria-describedby')||'')+' '+instructions.id).trim());
+    });
+    let active=null,pointer=null,announcement=0,relocating=false;
+    const announce=text=>{clearTimeout(announcement);status.textContent='';announcement=setTimeout(()=>{status.textContent=text;},0);};
+    const label=item=>control(item).getAttribute('aria-label')||item.textContent.trim();
+    const clearIndicator=()=>items().forEach(el=>el.removeAttribute('data-ui-sortable-drop'));
+    const move=to=>{
+      const order=items(),from=order.indexOf(active.item);to=Math.max(0,Math.min(order.length-1,to));
+      if(from===to)return;
+      relocating=true;
+      relocateItem(active.item,()=>root.insertBefore(active.item,to>from?order[to].nextSibling:order[to]));
+      active.focus.focus({preventScroll:true});relocating=false;
+      announce(label(active.item)+'を'+(to+1)+' / '+order.length+'番目に移動しました。');
+    };
+    const pickup=(item,focus)=>{
+      active={item,focus,from:items().indexOf(item),next:item.nextSibling};
+      item.setAttribute('data-ui-sortable-active','');focus.focus({preventScroll:true});
+      announce(label(item)+'を持ち上げました。'+instructions.textContent);
+    };
+    const finish=(cancel,restoreFocus=true)=>{
+      const previous=active,drag=pointer;pointer=null;active=null;clearIndicator();
+      if(drag?.capture.hasPointerCapture?.(drag.id))drag.capture.releasePointerCapture(drag.id);
+      if(!previous)return;
+      const {item,from,focus,next}=previous;
+      item.removeAttribute('data-ui-sortable-active');
+      if(cancel&&item.parentElement===root)root.insertBefore(item,next?.parentElement===root?next:null);
+      if(restoreFocus)focus.focus({preventScroll:true});
+      const order=items(),to=order.indexOf(item);
+      announce(label(item)+(cancel?'の移動をキャンセルしました。':'を'+(to+1)+' / '+order.length+'番目に確定しました。'));
+      if(!cancel&&to!==from&&to>=0)emit(root,'sortable-change',{item,from,to,order});
+    };
+    const target=event=>{
+      if(closest(event.target,'[data-ui-sortable]')!==root)return null;
+      const item=items().find(el=>el.contains(event.target));if(!item)return null;
+      const focus=control(item);
+      if(disabled(focus)||disabled(item))return null;
+      if(focus!==item&&!focus.contains(event.target))return null;
+      if(focus===item&&event.target!==item&&closest(event.target,'button,a,input,textarea,select,[contenteditable]'))return null;
+      return {item,focus};
+    };
+    prepare();
+    listen(root,'keydown',event=>{
+      if(event.isComposing||event.altKey||event.ctrlKey||event.metaKey)return;
+      const hit=target(event);if(!hit)return;
+      if(event.key==='Escape'&&(active||pointer)){event.preventDefault();finish(true);return;}
+      if(pointer)return;
+      if(event.key===' '||event.key==='Enter'){
+        event.preventDefault();if(event.repeat)return;
+        if(!active)pickup(hit.item,hit.focus);else if(active.item===hit.item)finish(false);
+      }else if(active?.item===hit.item&&['ArrowUp','ArrowLeft','ArrowDown','ArrowRight'].includes(event.key)){
+        event.preventDefault();move(items().indexOf(active.item)+(['ArrowUp','ArrowLeft'].includes(event.key)?-1:1));
+      }
+    });
+    listen(root,'pointerdown',event=>{
+      if(active||pointer||event.button!==0||!event.isPrimary)return;
+      const hit=target(event);if(!hit)return;
+      event.preventDefault();
+      pointer={...hit,id:event.pointerId,x:event.clientX,y:event.clientY,capture:hit.focus,to:null};
+      try{hit.focus.setPointerCapture(event.pointerId);}catch{/* Synthetic events have no active pointer. */}
+      hit.focus.focus({preventScroll:true});
+    });
+    listen(doc,'pointermove',event=>{
+      if(!pointer||event.pointerId!==pointer.id)return;
+      if(!active&&Math.hypot(event.clientX-pointer.x,event.clientY-pointer.y)<5)return;
+      event.preventDefault();if(!active)pickup(pointer.item,pointer.focus);
+      const rest=items().filter(el=>el!==active.item);
+      const before=rest.find(el=>{const r=el.getBoundingClientRect();return event.clientY<r.top+r.height/2;});
+      pointer.to=before?rest.indexOf(before):rest.length;clearIndicator();
+      const marker=before||rest.at(-1)||active.item;
+      marker.setAttribute('data-ui-sortable-drop',before?'before':'after');
+    },{passive:false});
+    listen(doc,'pointerup',event=>{
+      if(!pointer||event.pointerId!==pointer.id)return;
+      if(active&&pointer.to!==null)move(pointer.to);
+      finish(false);
+    });
+    listen(doc,'pointercancel',event=>{if(pointer?.id===event.pointerId)finish(true);});
+    listen(root,'lostpointercapture',event=>{if(pointer?.id===event.pointerId)finish(true);});
+    listen(root,'click',event=>{if(closest(event.target,'[data-ui-sortable-handle]')?.closest('[data-ui-sortable]')===root)event.preventDefault();});
+    listen(root,'dragstart',event=>{if(target(event))event.preventDefault();});
+    listen(root,'focusout',event=>{if(active&&!pointer&&!relocating&&!root.contains(event.relatedTarget))finish(true,false);});
+    onDispose(root,()=>{
+      finish(true,false);clearTimeout(announcement);status.remove();instructions.remove();
+      restores.forEach(restore=>restore());sortableStates.delete(root);
+    });
+  }
   function updateBoard(board) {
     for (const column of owned(board, '[data-ui-column]', '[data-ui-board]')) {
       const cards = all(column, '[data-ui-card]').filter(card => card.closest('[data-ui-column]') === column);
@@ -1041,12 +1154,10 @@
     const board = card.closest('[data-ui-board]');
     const from = card.closest('[data-ui-column]');
     if (!board || column.closest('[data-ui-board]') !== board || column === from) return;
-    const before = card.getBoundingClientRect();
-    elementMotions.get(card)?.cancel();
-    (column.querySelector('[data-ui-cards]') || column).append(card);
-    updateBoard(board);
-    const after = card.getBoundingClientRect();
-    motion(card,[{translate:(before.left-after.left)+'px '+(before.top-after.top)+'px',opacity:.6},{translate:'0 0',opacity:1}], 'slow');
+    relocateItem(card, () => {
+      (column.querySelector('[data-ui-cards]') || column).append(card);
+      updateBoard(board);
+    });
     emit(board, 'move', {card, from:from?.dataset.uiColumn, to:column.dataset.uiColumn});
   }
   function endDrag() {
@@ -3280,6 +3391,7 @@
     scan('input[type="checkbox"][data-ui-indeterminate]').forEach(initMixedCheckbox);
     scan('form[data-ui-validate]').forEach(form => { form.noValidate = true; });
     scan('[data-ui-board]').forEach(updateBoard);
+    scan('[data-ui-sortable]').forEach(initSortable);
     scan('[data-ui-calendar]').forEach(root => renderCalendar(root));
     scan('[data-ui-datepicker]').forEach(initDatepicker);
     scan('input.form-control[type="time"], input.form-control[type="datetime-local"], input.form-control[type="month"], input.form-control[type="week"], input.form-control[type="color"]').forEach(initInputPicker);

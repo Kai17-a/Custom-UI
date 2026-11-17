@@ -418,6 +418,7 @@ glass・glassmorphismには任意の背景画像を指定できます。CSSク�
 | `data-ui-tabs / data-ui-panel="名前"` | タブの状態をグループ内に限定します。同じ名前を別グループでも使用できます。 |
 | `data-ui-validate / data-ui-field / data-ui-error` | 標準HTML制約で検証します。data-ui-messageでエラー文言を指定できます。 |
 | `data-ui-pagination / data-ui-page-size="8"` | data-ui-page-itemを分割表示します。data-ui-pageとdata-ui-page-stepで移動、data-ui-page-statusで件数表示。 |
+| `data-ui-sortable / data-ui-sortable-handle` | 直下の項目をドラッグ・タッチ・キーボードで並べ替えます。[使い方とイベント](components/sortable.html.md) |
 | `data-ui-board / data-ui-column="状態"` | HTMLのカンバン。data-ui-cardをドラッグ、またはdata-ui-moveのselectで移動します。 |
 | `data-ui-target="#任意のID"` | 別の要素を参照します。IDは利用側で自由に決め、ページ内で重複させないでください。 |
 | `data-ui-focus="#任意のID"` | 閉じる際のフォーカス移動先を明示できます。通常は関連ボタンまたは近くの操作へ戻ります。 |
@@ -428,7 +429,7 @@ glass・glassmorphismには任意の背景画像を指定できます。CSSク�
 
 共通UIは表示や操作だけを担当します。フォームは入力が有効なら通常のsubmitを続けます。保存・送信先・通信・ページ遷移はアプリ側で指定してください。カンバンの移動はページ内のDOMのみを更新します。
 
-`ui:valid`（キャンセル可能）、`ui:tabchange`、`ui:pagechange`、`ui:move`、`ui:shown`、`ui:hidden`のイベントでアプリの処理を接続できます。
+`ui:valid`（キャンセル可能）、`ui:tabchange`、`ui:pagechange`、`ui:move`、`ui:sortable-change`、`ui:shown`、`ui:hidden`のイベントでアプリの処理を接続できます。
 
 ```
 document.addEventListener('ui:valid', event => {

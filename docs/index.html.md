@@ -151,6 +151,8 @@
 
 - [Table column settings](components/table-columns.html.md): 一覧で表示する列を選択し、既定の表示に戻せます。
 
+- [Sortable list](components/sortable.html.md): ドラッグ・タッチ・キーボードでリストを並べ替え
+
 - [Kanban board](components/board.html.md): タスクと進捗管理
 
 - [Calendar](components/calendar.html.md): カレンダー・月切替・日付選択・予定
