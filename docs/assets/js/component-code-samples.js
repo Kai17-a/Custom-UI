@@ -531,6 +531,18 @@ window.KavComponentCodeSamples = {
       }
     ]
   },
+  "sortable.html": {
+    "examples": [
+      {
+        "vue": "<script setup>\nimport { KavWidget } from \"@kai17-a/kav-ui-vue\";\nconst html = `\n  <ul data-ui-sortable aria-label=\"作業の順序\">\n    <li data-id=\"plan\">要件を整理する</li>\n    <li data-id=\"implement\">実装する</li>\n    <li data-id=\"review\">レビューする</li>\n  </ul>\n`;\n</script>\n\n<template>\n  <KavWidget :html=\"html\" />\n</template>",
+        "astro": "---\nimport { KavWidget } from \"@kai17-a/kav-ui-astro\";\nconst html = `\n  <ul data-ui-sortable aria-label=\"作業の順序\">\n    <li data-id=\"plan\">要件を整理する</li>\n    <li data-id=\"implement\">実装する</li>\n    <li data-id=\"review\">レビューする</li>\n  </ul>\n`;\n---\n\n<KavWidget html={html} />"
+      },
+      {
+        "vue": "<script setup>\nimport { KavWidget } from \"@kai17-a/kav-ui-vue\";\nconst html = `\n  <ol data-ui-sortable aria-label=\"公開までの順序\">\n    <li data-id=\"draft\"><button type=\"button\" class=\"btn btn-sm btn-outline-secondary\" data-ui-sortable-handle aria-label=\"下書きを移動\">移動</button> 下書きを作る</li>\n    <li data-id=\"check\"><button type=\"button\" class=\"btn btn-sm btn-outline-secondary\" data-ui-sortable-handle aria-label=\"確認を移動\">移動</button> 内容を確認する</li>\n    <li data-id=\"publish\"><button type=\"button\" class=\"btn btn-sm btn-outline-secondary\" data-ui-sortable-handle aria-label=\"公開を移動\">移動</button> 公開する</li>\n  </ol>\n`;\n</script>\n\n<template>\n  <KavWidget :html=\"html\" />\n</template>",
+        "astro": "---\nimport { KavWidget } from \"@kai17-a/kav-ui-astro\";\nconst html = `\n  <ol data-ui-sortable aria-label=\"公開までの順序\">\n    <li data-id=\"draft\"><button type=\"button\" class=\"btn btn-sm btn-outline-secondary\" data-ui-sortable-handle aria-label=\"下書きを移動\">移動</button> 下書きを作る</li>\n    <li data-id=\"check\"><button type=\"button\" class=\"btn btn-sm btn-outline-secondary\" data-ui-sortable-handle aria-label=\"確認を移動\">移動</button> 内容を確認する</li>\n    <li data-id=\"publish\"><button type=\"button\" class=\"btn btn-sm btn-outline-secondary\" data-ui-sortable-handle aria-label=\"公開を移動\">移動</button> 公開する</li>\n  </ol>\n`;\n---\n\n<KavWidget html={html} />"
+      }
+    ]
+  },
   "spacing.html": {},
   "splitter.html": {
     "widget": true

@@ -15,13 +15,22 @@ def samples():
 class ComponentCodeSamplesTests(unittest.TestCase):
     def test_readme_scope_and_page_alignment(self):
         data = samples()
-        self.assertEqual(len([p for p in data.values() if 'examples' in p]), 17)
+        self.assertEqual(len([p for p in data.values() if 'examples' in p]), 18)
         self.assertEqual(set(data['drawer.html']['examples'][0]), {'vue'})
         self.assertEqual(set(data['navigation.html']['examples'][0]), {'vue'})
         for name in ('rating', 'timeline', 'typography', 'spacing'):
             self.assertEqual(data[name + '.html'], {})
         for name in ('data-table', 'command', 'carousel', 'clipboard', 'splitter'):
             self.assertTrue(data[name + '.html']['widget'])
+
+    def test_sortable_uses_widget_tabs(self):
+        examples = samples()['sortable.html']['examples']
+        self.assertEqual(len(examples), 2)
+        for example in examples:
+            self.assertEqual(set(example), {'vue', 'astro'})
+            for source in example.values():
+                self.assertIn('KavWidget', source)
+                self.assertIn('data-ui-sortable', source)
 
     def test_components_and_props_are_declared(self):
         vue = (ROOT / 'packages/vue/src/index.d.ts').read_text()
