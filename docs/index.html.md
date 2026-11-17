@@ -117,6 +117,8 @@
 
 - [Transfer list](components/transfer-list.html.md): 候補と選択済みの一覧間で項目を移動します。
 
+- [Sortable list](components/sortable.html.md): ドラッグ・タッチ・キーボードでリストを並べ替え
+
 - [Date picker](components/datepicker.html.md): 日付フォーム・日付入力・選択・必須・範囲指定
 
 - [Date range](components/date-range.html.md): 開始日・終了日とプリセットで期間を指定します。
@@ -150,8 +152,6 @@
 - [Data table](components/data-table.html.md): データテーブル・検索・ソート・ページ送り・行選択
 
 - [Table column settings](components/table-columns.html.md): 一覧で表示する列を選択し、既定の表示に戻せます。
-
-- [Sortable list](components/sortable.html.md): ドラッグ・タッチ・キーボードでリストを並べ替え
 
 - [Kanban board](components/board.html.md): タスクと進捗管理
 
