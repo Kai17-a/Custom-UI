@@ -16,6 +16,18 @@ Kav-UIを組み合わせたサービス画面。HTMLを直接開いて確認で�
 
 - [Changelog](templates/changelog.html.md): 日付・バージョン・更新内容。種類とキーワードによる絞り込み。
 
+<a id="template-monitoring"></a>
+
+## サービス監視
+
+- [ログ集計](templates/monitoring-logs.html.md): レベル別の件数推移とイベント一覧。期間・サービス・レベル・検索語で絞り込み。
+
+- [メトリクス](templates/monitoring-metrics.html.md): リクエスト数・エラー率・p95応答時間を時系列で確認。期間とサービスを切り替えて比較。
+
+- [LLM Gateway メトリクス](templates/llm-gateway.html.md): 入出力トークン、キャッシュ利用率、モデル別の料金推移、ユーザー別の推定料金。
+
+各画面は固定のサンプルデータを使用します。取り込むときは、HTMLとあわせて画面が読み込む[monitoring.js](assets/js/monitoring.js)または[llm-gateway.js](assets/js/llm-gateway.js)をコピーしてください。
+
 <a id="template-errors"></a>
 
 ## エラー画面
