@@ -192,6 +192,15 @@
             <a class="catalog-card" href="templates/changelog.html"><h3>Changelog</h3><p>日付・バージョン・更新内容。種類とキーワードによる絞り込み。</p><span class="card-link">画面を開く →</span></a>
           </div>
         </section>
+        <section class="specimen" id="template-monitoring">
+          <h2>サービス監視</h2>
+          <div class="catalog-grid">
+            <a class="catalog-card" href="templates/monitoring-logs.html"><h3>ログ集計</h3><p>レベル別の件数推移とイベント一覧。期間・サービス・レベル・検索語で絞り込み。</p><span class="card-link">画面を開く →</span></a>
+            <a class="catalog-card" href="templates/monitoring-metrics.html"><h3>メトリクス</h3><p>リクエスト数・エラー率・p95応答時間を時系列で確認。期間とサービスを切り替えて比較。</p><span class="card-link">画面を開く →</span></a>
+            <a class="catalog-card" href="templates/llm-gateway.html"><h3>LLM Gateway メトリクス</h3><p>入出力トークン、キャッシュ利用率、モデル別の料金推移、ユーザー別の推定料金。</p><span class="card-link">画面を開く →</span></a>
+          </div>
+          <p>各画面は固定のサンプルデータを使用します。取り込むときは、HTMLとあわせて画面が読み込む<a href="assets/js/monitoring.js">monitoring.js</a>または<a href="assets/js/llm-gateway.js">llm-gateway.js</a>をコピーしてください。</p>
+        </section>
         <section class="specimen" id="template-errors">
           <h2>エラー画面</h2>
           <p>原因に合った案内と復帰先を持つ独立したHTMLです。既存のテーマ・カラーパレット・ライト／ダークと、PC・タブレット・スマートフォンに対応します。</p>

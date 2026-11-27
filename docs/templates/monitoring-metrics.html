@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f3f0" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1b1c1e" media="(prefers-color-scheme: dark)">
+    <title>メトリクス — サービス監視</title>
+    <!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+    <script src="../assets/ui/js/theme-init.js"></script>
+    <link rel="stylesheet" href="../assets/ui/css/ui.css">
+    <link rel="stylesheet" href="../assets/css/templates.css">
+    <script defer src="../assets/ui/js/ui.js"></script>
+    <script defer src="../assets/js/templates.js"></script>
+    <script defer src="../assets/js/monitoring.js"></script>
+
+<!-- Kav-UI AI discovery -->
+<link rel="describedby" type="text/plain" href="../llms.txt">
+<link rel="alternate" type="text/markdown" href="monitoring-metrics.html.md">
+<!-- /Kav-UI AI discovery -->
+</head>
+  <body class="ui-app service-template" data-template="monitoring-metrics" data-ui-theme-persist>
+    <a class="template-skip" href="#main">コンテンツへ移動</a>
+    <header class="ui-header ui-header-sticky">
+      <div class="ui-container ui-header-inner">
+        <a class="ui-brand" href="../templates.html"><span class="template-brand-mark" icon="mdi-chart-line" aria-hidden="true"></span> サービス監視</a>
+        <nav class="ui-header-nav nav-nowrap" aria-label="サービス監視">
+          <a href="monitoring-logs.html">ログ集計</a>
+          <a href="monitoring-metrics.html" aria-current="page">メトリクス</a>
+        </nav>
+        <div class="ui-header-actions sp-gap-1">
+          <label class="monitor-theme-control small">
+            <span>デザイン</span>
+            <select class="form-select form-select-sm" data-ui-theme-select>
+              <option value="default">標準</option>
+              <option value="glass">ガラス</option>
+              <option value="glassmorphism">グラスモーフィズム</option>
+              <option value="flat">フラット</option>
+              <option value="soft">ソフト</option>
+            </select>
+          </label>
+          <label class="monitor-theme-control small">
+            <span>配色</span>
+            <select class="form-select form-select-sm" data-ui-palette-select>
+              <option value="default">標準</option>
+              <option value="slate">スレート</option>
+              <option value="sage">セージ</option>
+              <option value="teal">ティール</option>
+              <option value="mauve">モーブ</option>
+              <option value="sand">サンド</option>
+              <option value="clay">クレイ</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button>
+        </div>
+      </div>
+    </header>
+    <main id="main" class="ui-container ui-app-main template-monitor ui-page-body">
+      <header class="ui-page-header">
+        <div class="ui-page-heading">
+          <h1 class="ui-page-title">メトリクス</h1>
+          <p class="ui-page-description">リクエスト数・エラー率・応答時間の推移をサービス別に確認します。</p>
+        </div>
+      </header>
+      <div class="monitor-toolbar">
+        <div class="ui-cluster monitor-filters">
+          <div class="field sp-m-0">
+            <label for="monitor-range">集計期間</label>
+            <select id="monitor-range" class="form-select form-select-sm">
+              <option value="30">直近30分</option>
+              <option value="60">直近1時間</option>
+            </select>
+          </div>
+          <div class="field sp-m-0">
+            <label for="monitor-service">サービス</label>
+            <select id="monitor-service" class="form-select form-select-sm">
+              <option value="all">すべて</option>
+              <option value="gateway">gateway</option>
+              <option value="worker">worker</option>
+            </select>
+          </div>
+        </div>
+        <p class="monitor-note">サンプルデータ · 2026年11月27日 14:30 JST 時点</p>
+      </div>
+      <noscript>このサンプルの集計や絞り込みにはJavaScriptが必要です。</noscript>
+      <dl class="monitor-summary" aria-label="選択期間の集計" aria-live="polite">
+        <div><dt>リクエスト総数</dt><dd id="monitor-requests">—</dd></div>
+        <div><dt>エラー率</dt><dd id="monitor-error-rate">—</dd></div>
+        <div><dt>最大 p95 応答時間</dt><dd id="monitor-latency">—</dd></div>
+      </dl>
+      <div class="monitor-metric-charts">
+        <section class="ui-card">
+          <div class="ui-card-body">
+            <h2 class="ui-card-title">リクエスト数</h2>
+            <p class="monitor-note">5分ごとの処理件数</p>
+            <figure class="ui-chart" id="monitor-requests-chart"></figure>
+          </div>
+        </section>
+        <section class="ui-card">
+          <div class="ui-card-body">
+            <h2 class="ui-card-title">エラー率</h2>
+            <p class="monitor-note">各区間の失敗件数 ÷ 処理件数</p>
+            <figure class="ui-chart" id="monitor-error-rate-chart"></figure>
+          </div>
+        </section>
+        <section class="ui-card">
+          <div class="ui-card-body">
+            <h2 class="ui-card-title">p95 応答時間</h2>
+            <p class="monitor-note">各区間で95%の処理が完了した時間</p>
+            <figure class="ui-chart" id="monitor-latency-chart"></figure>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer class="ui-footer">
+      <div class="ui-container ui-footer-inner">
+        <p>サービス監視 · Kav-UI サービステンプレート</p>
+        <div class="ui-cluster">
+          <a href="../templates.html">テンプレート一覧</a>
+          <a href="../index.html">UIカタログ</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
