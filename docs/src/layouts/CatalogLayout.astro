@@ -1,0 +1,37 @@
+---
+import Document from './Document.astro';
+import CatalogHeader from '../components/CatalogHeader.astro';
+import CatalogSidebar from '../components/CatalogSidebar.astro';
+
+interface Props {
+  title: string;
+  stylesheet?: string;
+  script?: string;
+}
+const { title, stylesheet, script } = Astro.props;
+const segments = Astro.url.pathname.split('/').filter(Boolean);
+const filename = segments.at(-1) || 'index.html';
+const page = filename.endsWith('.html') ? filename : filename + '.html';
+const component = segments.at(-2) === 'components';
+const prefix = component ? '../' : '';
+const assets = import.meta.env.BASE_URL.replace(/\/$/, '') + '/assets/';
+const scripts = assets + 'js/';
+---
+<Document title={title}>
+  <Fragment slot="head">
+    <link rel="stylesheet" href={assets + 'css/catalog.css'}>
+    {stylesheet && <link rel="stylesheet" href={assets + 'css/' + stylesheet}>}
+    <script is:inline defer src={scripts + 'catalog-search.js'}></script>
+    {component && <script is:inline defer src={scripts + 'component-code-samples.js'}></script>}
+    <script is:inline defer src={scripts + 'catalog.js'}></script>
+    <script is:inline defer src={scripts + 'catalog-navigation.js'}></script>
+    <script is:inline defer src={scripts + 'catalog-demo.js'}></script>
+    {script && <script is:inline defer src={scripts + script}></script>}
+  </Fragment>
+  <a class="skip-link" href="#main">コンテンツへ移動</a>
+  <CatalogHeader prefix={prefix} wideThemeSelect={page === 'theme-switcher.html'} />
+  <div class="catalog-layout">
+    <CatalogSidebar page={page} component={component} />
+    <slot />
+  </div>
+</Document>

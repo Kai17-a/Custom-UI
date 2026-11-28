@@ -1,0 +1,17 @@
+---
+import CatalogLayout from '../../layouts/CatalogLayout.astro';
+---
+<CatalogLayout title="Badges — Kav-UI design catalog">
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / データ表示</p><h1>Badges</h1></header><p class="lede">ステータスとラベル。下の「HTMLを表示」からマークアップをコピーできます。</p><section class="specimen"><h2>状態とタグ</h2><p>状態の色は意味で決め、画面をまたいで同じ色を使います。進行中・処理中・準備中は <code>badge-neutral</code>、確認待ち・レビューは <code>text-bg-warning</code>、完了は <code>text-bg-success</code>、エラーは <code>text-bg-danger</code> です。分類やタグには、枠付きのピル型を使います。</p><div class="example" data-example>
+  <div class="ui-cluster">
+    <span class="badge badge-neutral">進行中</span>
+    <span class="badge text-bg-warning">確認待ち</span>
+    <span class="badge text-bg-success">完了</span>
+    <span class="badge text-bg-danger">エラー</span>
+    <span class="badge badge-neutral rounded-pill fw-normal border">デザイン</span>
+    <span class="small">更新：10月22日</span>
+  </div>
+
+</div></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/ui/css/ui.css">ui.css</a> / <a href="../assets/ui/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main>
+</CatalogLayout>

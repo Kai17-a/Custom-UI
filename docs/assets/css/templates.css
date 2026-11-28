@@ -5,6 +5,9 @@
 .service-template .ui-header { background:var(--ui-theme-overlay,var(--bs-body-bg)); backdrop-filter:var(--ui-theme-blur,none); }
 .service-template .ui-header-inner { gap:var(--space-4); }
 .service-template .ui-brand { display:inline-flex; align-items:center; gap:var(--space-2); flex:none; }
+.service-template .ui-header-actions { flex-wrap:nowrap; align-items:end; }
+.service-template .ui-header-actions label { display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; }
+.service-template .ui-header-actions :is(.ui-select, .form-select) { width:100%; min-width:0; }
 .template-brand-mark { color:var(--bs-primary); }
 .template-skip { position:fixed; inset-block-start:var(--space-2); inset-inline-start:var(--space-2); z-index:100; transform:translateY(-200%); padding:var(--space-3); background:var(--bs-body-bg); border:2px solid var(--bs-primary); border-radius:var(--bs-border-radius); }
 .template-skip:focus { transform:none; }
@@ -52,6 +55,10 @@
 @media (width >= 768px) {
   .template-dashboard-bottom table { min-width:34rem; }
   .service-template .ui-header-nav { flex-wrap:wrap; overflow:visible; padding-block:0; }
+  .service-template .ui-header-actions .ui-select:has([data-ui-theme-select]),
+  .service-template .ui-header-actions select[data-ui-theme-select] { inline-size:10rem; }
+  .service-template .ui-header-actions .ui-select:has([data-ui-palette-select]),
+  .service-template .ui-header-actions select[data-ui-palette-select] { inline-size:7rem; }
 }
 .template-order-state { white-space:nowrap; }
 .template-activity { list-style:none; padding:0; margin:0 0 var(--space-6); display:grid; gap:var(--space-6); }
@@ -82,18 +89,26 @@
   .template-dashboard-charts { grid-template-columns:minmax(0,3fr) minmax(14rem,2fr); }
   .template-dashboard-bottom { grid-template-columns:minmax(0,1fr); }
 }
+@media (width < 1024px) {
+  .service-template .ui-header-inner { display:grid; grid-template-columns:auto minmax(0,1fr); }
+  .service-template .ui-header-actions { grid-column:2; grid-row:1; }
+  .service-template .ui-header-nav { grid-column:1 / -1; }
+}
 @media (width < 768px) {
   .service-template .ui-container { padding-inline:var(--space-4); }
   .service-template .ui-header-inner { gap:var(--space-2); padding-block:var(--space-2); }
   .service-template .ui-brand { font-size:var(--text-sm); min-height:var(--ui-touch-target); }
-  .service-template .ui-header-actions { flex-wrap:nowrap; flex:1; justify-content:flex-end; }
-  .service-template .ui-header-actions label { min-width:0; max-width:6rem; }
+  .service-template .ui-header-actions {
+    display:grid; grid-template-columns:repeat(2,minmax(0,6rem)) auto;
+    justify-content:end; margin-inline-start:0;
+  }
   /* Both selects read 「標準」 by default, so their labels stay visible above them. */
-  .service-template .ui-header-actions label { display:grid; gap:2px; }
+  .service-template .ui-header-actions label { grid-template-columns:minmax(0,1fr); min-width:0; gap:2px; }
   .service-template .ui-header-actions label > span:first-child { font-size:var(--text-xs); line-height:1.2; }
-  .service-template .ui-header-actions .ui-select { width:100%; }
-  .service-template .ui-header-actions .form-select { width:100%; }
-  .service-template .ui-header-nav { order:3; width:100%; flex-wrap:nowrap; gap:var(--space-1); padding-block:0; font-size:var(--text-xs); }
+  .service-template .ui-header-actions label :is(.ui-select, select, .ui-select-trigger) { inline-size:100%; }
+  .service-template .ui-header-actions :is(.form-select, [data-ui-theme-icon]) { min-height:var(--ui-touch-target); }
+  .service-template .ui-header-actions [data-ui-theme-icon] { min-width:var(--ui-touch-target); }
+  .service-template .ui-header-nav { min-width:0; flex-wrap:nowrap; gap:var(--space-1); padding-block:0; font-size:var(--text-xs); }
   .service-template .ui-header-nav a { padding:var(--space-2); }
   .template-doc-layout { grid-template-columns:minmax(0,1fr); gap:var(--space-6); padding-block:var(--space-6); }
   .template-doc-aside, .template-doc-toc { position:static; max-height:none; overflow:visible; }
@@ -114,6 +129,9 @@
 @media (width < 768px) {
   .service-template .ui-header-actions { gap:var(--space-2); }
   .service-template .ui-header-actions .form-select { font-size:12px; }
+}
+@media (width <= 360px) {
+  .service-template .ui-header-actions { grid-column:1 / -1; grid-row:2; justify-content:start; }
 }
 
 /* Standalone recovery pages use the same shared card, links and theme controls. */

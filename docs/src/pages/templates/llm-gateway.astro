@@ -1,0 +1,130 @@
+---
+import TemplateLayout from '../../layouts/TemplateLayout.astro';
+---
+<TemplateLayout title="LLM Gateway メトリクス" bodyClass="ui-app service-template" template="llm-gateway" script="llm-gateway.js">
+<a class="template-skip" href="#main">コンテンツへ移動</a>
+    <header class="ui-header ui-header-sticky">
+      <div class="ui-container ui-header-inner">
+        <a class="ui-brand" href="../templates.html"><span class="template-brand-mark" icon="mdi-chart-line" aria-hidden="true"></span> LLM Gateway</a>
+        <div class="ui-header-actions sp-gap-1">
+          <label class="monitor-theme-control small">
+            <span>デザイン</span>
+            <select class="form-select form-select-sm" data-ui-theme-select>
+              <option value="default">標準</option>
+              <option value="glass">ガラス</option>
+              <option value="glassmorphism">グラスモーフィズム</option>
+              <option value="flat">フラット</option>
+              <option value="soft">ソフト</option>
+            </select>
+          </label>
+          <label class="monitor-theme-control small">
+            <span>配色</span>
+            <select class="form-select form-select-sm" data-ui-palette-select>
+              <option value="default">標準</option>
+              <option value="slate">スレート</option>
+              <option value="sage">セージ</option>
+              <option value="teal">ティール</option>
+              <option value="mauve">モーブ</option>
+              <option value="sand">サンド</option>
+              <option value="clay">クレイ</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button>
+        </div>
+      </div>
+    </header>
+    <main id="main" class="ui-container ui-app-main template-monitor ui-page-body">
+      <header class="ui-page-header">
+        <div class="ui-page-heading">
+          <h1 class="ui-page-title">LLM Gateway メトリクス</h1>
+          <p class="ui-page-description">モデル別のトークン消費と料金の推移を確認し、ユーザーごとの利用内訳を比較します。</p>
+        </div>
+      </header>
+      <div class="monitor-toolbar">
+        <div class="ui-cluster monitor-filters">
+          <div class="field sp-m-0">
+            <label for="llm-period">集計期間</label>
+            <select id="llm-period" class="form-select form-select-sm">
+              <option value="7">直近7日間</option>
+              <option value="14">直近14日間</option>
+            </select>
+          </div>
+          <div class="field sp-m-0">
+            <label for="llm-model">モデル</label>
+            <select id="llm-model" class="form-select form-select-sm">
+              <option value="all">すべて</option>
+              <option value="atlas-mini">Atlas Mini</option>
+              <option value="atlas-pro">Atlas Pro</option>
+            </select>
+          </div>
+        </div>
+        <p class="monitor-note">サンプルデータ · 2026年11月27日まで (JST) · USD</p>
+      </div>
+      <noscript>集計の表示と切り替えにはJavaScriptが必要です。</noscript>
+      <dl class="monitor-summary" aria-label="選択期間の集計" aria-live="polite">
+        <div><dt>消費トークン</dt><dd id="llm-tokens">—</dd></div>
+        <div><dt>推定料金 (USD)</dt><dd id="llm-cost">—</dd></div>
+        <div><dt>リクエスト数</dt><dd id="llm-requests">—</dd></div>
+        <div><dt>入力キャッシュ率</dt><dd id="llm-cache">—</dd></div>
+        <div><dt>エラー率</dt><dd id="llm-errors">—</dd></div>
+      </dl>
+      <div class="monitor-metric-charts llm-charts">
+        <section class="ui-card">
+          <div class="ui-card-body">
+            <h2 class="ui-card-title">トークン消費の推移</h2>
+            <p class="monitor-note">日別の通常入力・キャッシュ入力・出力</p>
+            <figure class="ui-chart" id="llm-token-chart"></figure>
+          </div>
+        </section>
+        <section class="ui-card">
+          <div class="ui-card-body">
+            <h2 class="ui-card-title">モデル別の推定料金</h2>
+            <p class="monitor-note">日別のトークン料金 (USD)</p>
+            <figure class="ui-chart" id="llm-cost-chart"></figure>
+          </div>
+        </section>
+      </div>
+      <section class="ui-card">
+        <div class="ui-card-body">
+          <h2 class="ui-card-title" id="llm-users-title">ユーザー別の利用料金</h2>
+          <p class="monitor-note">料金の高い順。入力トークンにはキャッシュ入力を含みます。</p>
+          <div class="ui-table-scroll llm-table" tabindex="0" role="region" aria-labelledby="llm-users-title">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">ユーザー</th>
+                  <th scope="col" class="template-number">リクエスト</th>
+                  <th scope="col" class="template-number">入力トークン</th>
+                  <th scope="col" class="template-number">キャッシュ入力</th>
+                  <th scope="col" class="template-number">出力トークン</th>
+                  <th scope="col" class="template-number" aria-sort="descending">推定料金 (USD)</th>
+                </tr>
+              </thead>
+              <tbody id="llm-users"></tbody>
+            </table>
+          </div>
+          <details class="llm-pricing">
+            <summary>サンプル単価と集計方法</summary>
+            <p class="monitor-note">単価は架空のモデルに設定したサンプル値です。通常入力、キャッシュ入力、出力にそれぞれの単価を適用し、合計をセント単位で表示します。</p>
+            <p class="monitor-note">入力キャッシュ率は全入力トークンに占めるキャッシュ入力の割合です。リクエスト数には失敗を含み、エラー率はそのうち失敗したリクエストの割合です。</p>
+            <div class="ui-table-scroll llm-table" tabindex="0" role="region" aria-label="サンプル単価">
+              <table class="table">
+                <caption>100万トークンあたりの単価 (USD)</caption>
+                <thead><tr><th scope="col">モデル</th><th scope="col" class="template-number">通常入力</th><th scope="col" class="template-number">キャッシュ入力</th><th scope="col" class="template-number">出力</th></tr></thead>
+                <tbody id="llm-prices"></tbody>
+              </table>
+            </div>
+          </details>
+        </div>
+      </section>
+    </main>
+    <footer class="ui-footer">
+      <div class="ui-container ui-footer-inner">
+        <p>LLM Gateway · Kav-UI サービステンプレート</p>
+        <div class="ui-cluster">
+          <a href="../templates.html">テンプレート一覧</a>
+          <a href="../index.html">UIカタログ</a>
+        </div>
+      </div>
+    </footer>
+</TemplateLayout>

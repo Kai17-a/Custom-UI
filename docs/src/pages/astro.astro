@@ -1,0 +1,57 @@
+---
+import CatalogLayout from '../layouts/CatalogLayout.astro';
+---
+<CatalogLayout title="Astroで使う — Kav-UI">
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / Astroで使う</p><h1>Astroで使う</h1></header><p class="lede">Astro 7.4.2以上、8未満のアプリに、Kav-UIのコンポーネントと共通スタイルを組み込む手順です。</p><section class="specimen" id="install"><h2>1. GitHub Packagesから導入</h2><p><code>@kai17-a/kav-ui-astro</code>を使います。共通CSS・ブラウザAPIの<code>@kai17-a/kav-ui-core</code>は依存として導入されます。coreとフレームワーク用パッケージの版を揃えてください。</p><p>利用側プロジェクトの<code>.npmrc</code>に次を記述します。トークン値は書かず、環境変数<code>NODE_AUTH_TOKEN</code>へ設定します。Publicパッケージでも認証が必要です。personal access token (classic)に<code>read:packages</code>を付与してください。</p><pre class="setup-code"><code>@kai17-a:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=$&#123;NODE_AUTH_TOKEN&#125;</code></pre><pre class="setup-code"><code>npm install @kai17-a/kav-ui-astro</code></pre><p>利用するリリース版を指定してください。公開状況とCIでの認証設定は<a href="packages/README.md#github-packagesからインストール">パッケージREADME</a>で確認できます。Astro専用部品だけならVueは不要です。</p></section>
+<section class="specimen" id="start"><h2>2. Providerと最小の使用例</h2><p>レイアウトに<code>KavProvider</code>を1回置くとCSSと共通JSを読み込みます。次はビルド対象の<code>examples/astro/src/pages/second.astro</code>と同じコードです（表示用に改行）。<code>ClientRouter</code>でページ遷移を使う例になっています。</p><pre class="setup-code"><code>---
+import &#123; ClientRouter &#125; from &#x27;astro:transitions&#x27;;
+import &#123;
+  KavProvider,
+  KavContainer,
+  KavSelect,
+  KavButton,
+  KavDialog
+&#125; from &#x27;@kai17-a/kav-ui-astro&#x27;;
+---
+&lt;!doctype html&gt;
+&lt;html lang=&quot;ja&quot;&gt;
+  &lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot; /&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot; /&gt;
+    &lt;title&gt;Kav-UI / ページ遷移&lt;/title&gt;
+    &lt;ClientRouter /&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;KavProvider /&gt;
+    &lt;KavContainer&gt;
+      &lt;h1&gt;遷移後のページ&lt;/h1&gt;
+      &lt;p&gt;ページを再読み込みせずに移動した後も、選択欄とモーダルを利用できます。&lt;/p&gt;
+      &lt;KavSelect
+        label=&quot;遷移後の選択&quot;
+        options=&#123;[
+          &#123; value: &#x27;one&#x27;, label: &#x27;項目1&#x27; &#125;,
+          &#123; value: &#x27;two&#x27;, label: &#x27;項目2&#x27; &#125;
+        ]&#125;
+      /&gt;
+      &lt;KavButton
+        data-ui-toggle=&quot;dialog&quot;
+        data-ui-target=&quot;#second-dialog&quot;
+        data-testid=&quot;astro-open&quot;
+      &gt;
+        開く
+      &lt;/KavButton&gt;
+      &lt;KavDialog id=&quot;second-dialog&quot; title=&quot;遷移後の確認&quot;&gt;
+        &lt;p&gt;二重に初期化せず開きます。&lt;/p&gt;
+        &lt;KavButton data-ui-dismiss=&quot;dialog&quot;&gt;閉じる&lt;/KavButton&gt;
+      &lt;/KavDialog&gt;
+      &lt;a href=&quot;/&quot; data-testid=&quot;astro-back&quot;&gt;最初のページへ戻る&lt;/a&gt;
+    &lt;/KavContainer&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre><p>対話的な部品も初期化スクリプトを持つため、Providerの代わりに<code>import '@kai17-a/kav-ui-core/style.css';</code>でCSSを直接読み込むこともできます。</p></section>
+<section class="specimen" id="components"><h2>3. 主要コンポーネントと指定方法</h2><div class="ui-table-scroll"><table class="table"><thead><tr><th scope="col">部品</th><th scope="col">指定・使い方</th></tr></thead><tbody><tr><td>KavButton / Dialog / Drawer</td><td>Buttonの<code>variant</code>はsolid/outline/ghost。Dialog/Drawerの必須<code>id</code>を<code>data-ui-target="#ID"</code>で指定し、<code>data-ui-toggle="dialog"</code>で開き、<code>data-ui-dismiss="dialog"</code>で閉じる。Drawerは<code>placement</code>。</td></tr><tr><td>KavInput / Select / Textarea</td><td><code>name</code>・<code>value</code>・<code>label</code>で標準HTMLフォームとして使用。Selectは<code>options: &#123;value,label&#125;[]</code>。Vueのv-modelは使わない。</td></tr><tr><td>KavCard / Banner</td><td>Cardは<code>header</code>・通常・<code>footer</code>スロット。Bannerは<code>title</code>・<code>closable</code>と<code>actions</code>スロット。</td></tr><tr><td>KavTabs</td><td><code>items: &#123;value,label,disabled?&#125;[]</code>、<code>value</code>で初期選択。value名のスロットを使用。複数配置するときは異なる<code>id</code>を指定。</td></tr><tr><td>KavSidebar</td><td><code>menu</code>スロットにナビゲーション、通常スロットに本文。<code>data-ui-toggle="sidebar-responsive"</code>と<code>data-ui-target="#ID"</code>で開閉。</td></tr></tbody></table></div><p>レイアウトはKavStack / Cluster / Flex / Grid / GridItem / PageHeader / Toolbar / Section / Pageを利用できます。例：Gridの<code>cols</code>に<code>&#123;base:3,tablet:2,mobile:1&#125;</code>、<code>gap</code>に数値を渡せます。対応するprops・スロットの詳細は<a href="packages/README.md#layout-components">レイアウト一覧</a>を参照してください。</p></section>
+<section class="specimen" id="lifecycle"><h2>4. SPA・SSRとページの後始末</h2><p>パッケージJSをサーバーでimportしてもwindow/documentへアクセスしません。ただし<code>loadRuntime()</code>・<code>toast()</code>・配色関数はブラウザ用の非同期APIです。SSR中には呼びません。<code>mount</code>は<code>@kai17-a/kav-ui-core</code>からimportします。</p><p>旧ページは<code>astro:before-swap</code>で後始末し、新ページは<code>astro:page-load</code>で初期化します。パッケージがイベントの重複登録を防ぎ、選択済みテーマも引き継ぎます。遷移先がテーマを明示した場合はその指定を優先します。</p><p>自前のHTMLへ動きを付ける場合も、描画後（<code>astro:page-load</code>）に<code>mount(root)</code>を呼び、Promiseが返す後始末関数を<code>astro:before-swap</code>で呼びます。待機中の遷移には<code>AbortController</code>のsignalとabortで対応します。イベントは1回だけ登録し、ProviderやWidgetが初期化する領域との二重管理を避けてください。</p><p>フォーム送信は通常のHTMLと同じです。共通JSの<code>ui:datechange</code>・<code>ui:hidden</code>等はDOMのCustomEventとして取得できます。Vueアイランドを使う場合は<code>@astrojs/vue</code>と<code>client:load</code>等を設定します。<code>examples/astro/astro.config.mjs</code>とVueDemo.vueを参照してください。</p><p>パッケージを使うページへ通常HTML版の<code>ui.js</code>を追加しないでください。</p></section>
+<section class="specimen" id="scope"><h2>5. CSSだけの部品とコンポーネントの対応範囲</h2><p>文字・余白・カード・Timeline・Ratingなど、動きのない部品は共通CSSのクラスだけで使えます。Data table・Command menu・Carouselには専用コンポーネントを仮定せず、<code>KavWidget</code>内のHTMLへ、それぞれ<code>data-ui-data-table</code>・<code>data-ui-command</code>・<code>data-ui-carousel</code>を指定します。</p><pre class="setup-code"><code>&lt;KavWidget html=&#123;trustedMarkup&#125; /&gt;</code></pre><p><code>trustedMarkup</code>には開発者が管理する信頼済みHTMLだけを渡し、動的な値はエスケープします。各部品の構造は<a href="components/data-table.html">Data table</a>・<a href="components/command.html">Command menu</a>・<a href="components/carousel.html">Carousel</a>のHTML例を使用してください。</p><p>Icon・Button・Card・フォーム・Alert/Banner・Spinner/Progress・Dialog・Accordion・Calendar/Chart・Widget・Sidebar等に専用部品があり、レイアウト部品も共通です。VueにはDrawer/Tabs、AstroにはProviderがあり、現在の型定義ではAstroのDrawer/Tabsも利用できます。Splitter・Clipboard等の未専用化部品はWidgetで既存HTMLを使います。</p><p><a href="packages/README.md#コンポーネントの対応範囲">READMEの対応範囲</a>と<a href="skills/kav-ui/references/frameworks.md">フレームワーク用リファレンス</a>を参照してください。公開propsの正確な型は導入したパッケージの型定義で確認できます。</p></section>
+<section class="specimen" id="html"><h2>6. HTML版（ZIP）との使い分け</h2><p>HTML版はassets一式をコピーするだけで、npm・ビルドが不要です。Astroアプリではパッケージ版を選ぶと、既存のビルド環境でコンポーネントと共通CSSを利用できます。見た目のクラス・トークンは共通です。</p><p><a href="installation.html">HTML版の導入</a> · <a href="vue.html">Vueで使う</a></p></section>
+</main>
+</CatalogLayout>

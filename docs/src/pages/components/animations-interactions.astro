@@ -1,0 +1,49 @@
+---
+import CatalogLayout from '../../layouts/CatalogLayout.astro';
+---
+<CatalogLayout title="Animations · 操作時の動き — Kav-UI design catalog">
+<main id="main" class="catalog-main"><nav class="catalog-breadcrumb" aria-label="パンくず"><a href="animations.html">Animations</a><span aria-hidden="true"> / </span><span>操作時の動き</span></nav><header class="page-heading"><p class="eyebrow">Kav-UI / 状態・動き</p><h1>Animations · 操作時の動き</h1></header><p class="lede">モーダル・通知・開閉・タブなど、操作に自動で付く動きを確認できます。</p><section class="specimen"><h2>開く・閉じる・通知</h2><p class="dim">表示時のフェードと閉じる動きを確認できます。通常の流れにあるパネルは閉じるとすぐに隠れます。閉じる操作・フォーカス・イベントは即座に反映します。</p><div class="example" data-example>
+<div class="fx fx-wrap fx-gap-3">
+  <button type="button" class="btn btn-primary" data-ui-toggle="dialog" data-ui-target="#motion-dialog">モーダルを開く</button>
+  <button type="button" class="btn btn-outline-primary" data-ui-toast="追加した通知はフェードで現れ、閉じるときも短くフェードします。" data-ui-duration="0">トーストを表示</button>
+  <button type="button" class="btn btn-outline-secondary" data-ui-toggle="collapse" data-ui-target="#motion-panel">詳細を開閉</button>
+</div>
+<div id="motion-panel" class="inset" hidden>詳細を表示しました。続けて開閉しても、最新の操作が反映されます。</div>
+<dialog id="motion-dialog" class="ui-dialog" data-ui-dialog aria-labelledby="motion-dialog-title"><h2 id="motion-dialog-title">アニメーションを確認</h2><p>閉じるボタン・Escapeで閉じます。</p><div class="buttons"><button type="button" class="btn btn-primary" data-ui-dismiss="dialog">閉じる</button></div></dialog>
+</div></section>
+<section class="specimen"><h2>切り替え・コピー・選択</h2><div class="example" data-example>
+<div class="stack">
+  <div class="fx fx-wrap fx-gap-4 fx-items-center"><label class="switch"><input type="checkbox" role="switch" checked>通知を有効にする</label><div class="ui-clipboard"><button type="button" class="ui-copy-icon" data-ui-copy="Design catalog" aria-label="プロジェクト名をコピー"></button><span class="ui-copy-status" data-ui-copy-status role="status"></span></div></div>
+  <div data-ui-tabs><div class="tabs" role="tablist" aria-label="アニメーションの見本"><button type="button" data-ui-toggle="tab" data-ui-target="motion-overview">概要</button><button type="button" data-ui-toggle="tab" data-ui-target="motion-details">詳細</button></div><div class="tab-panel" data-ui-panel="motion-overview">タブを切り替えると、内容と選択状態が滑らかに変化します。</div><div class="tab-panel" data-ui-panel="motion-details" hidden>キー操作でも同じ動きになります。フォーカス移動は待たせません。</div></div>
+  <div class="accordion"><details><summary>アコーディオンを開閉する</summary><p>内容の表示と非表示にも短いアニメーションが付きます。</p></details></div>
+</div>
+</div></section>
+<section class="specimen"><h2>動きの共通トークン</h2>
+<p>時間とイージングは <code>tokens.css</code> にまとめています。<code>:root</code> または部品の親要素で上書きすると、CSS と JavaScript の動きに反映されます。</p>
+<div class="example"><table class="table"><thead><tr><th scope="col">トークン</th><th scope="col">初期値・用途</th></tr></thead><tbody>
+<tr><td><code>--motion-duration-fast</code></td><td>120ms：退場、押下、ホバー</td></tr>
+<tr><td><code>--motion-duration-base</code></td><td>180ms：入場、選択、折り畳み</td></tr>
+<tr><td><code>--motion-duration-slow</code></td><td>240ms：カードの移動</td></tr>
+<tr><td><code>--motion-ease-out</code></td><td>cubic-bezier(.16,1,.3,1)：入場・選択</td></tr>
+<tr><td><code>--motion-ease-in</code></td><td>cubic-bezier(.4,0,1,1)：退場</td></tr>
+<tr><td><code>--motion-ease-in-out</code> / <code>--motion-ease-linear</code></td><td>cubic-bezier(.4,0,.2,1) / linear：処理中の繰り返し</td></tr>
+<tr><td><code>--motion-duration-spin</code> / <code>--motion-duration-loading</code></td><td>800ms / 1600ms：スピナー・進捗</td></tr>
+<tr><td><code>--motion-duration-shimmer</code> / <code>--motion-duration-pulse</code></td><td>1800ms / 2400ms：スケルトン・処理中の表示</td></tr>
+</tbody></table></div>
+<pre><code>:root &#123;
+  --motion-duration-base: 200ms;
+  --motion-duration-fast: 120ms;
+&#125;</code></pre>
+<p>Dialog・Drawer・Command・Dropdown・Popover・Select・Date picker は、display と overlay の離散トランジションに対応したブラウザで CSS による開閉を行います。未対応では即座に閉じます。Tooltip・Toast は操作できないコピーで退場し、Toast のコピーは通知領域の外で残った通知の下に表示します。子孫が100個を超える場合はコピーを省略します。通常の流れのパネルは即座に隠れ、スクロールによって閉じるポップアップと Tooltip は退場の動きを省略します。閉じる操作・フォーカス・イベントは即座に反映します。Drawer は入ってきた方向へ戻り、テーマ切り替えではページ全体をフェードしません。</p>
+<p>折り畳みは <code>interpolate-size:allow-keywords</code> と <code>::details-content</code> で高さを補間します。未対応のブラウザは即座に切り替わります。OS の「動きを減らす」設定では補間も退場用表示もなくなり、待ち時間は発生しません。任意指定のアニメーションプリセットは従来どおりです。</p>
+</section>
+<section class="specimen"><h2>自動アニメーションの対象</h2><div class="example"><table class="table"><thead><tr><th scope="col">操作</th><th scope="col">動きとサンプル</th></tr></thead><tbody>
+<tr><th scope="row">開く・閉じる</th><td><a href="dialog.html">モーダル</a>・<a href="toasts.html">トースト</a>・<a href="alerts.html">アラート</a>・<a href="tips.html">ヒント</a>・<a href="datepicker.html">日付ポップアップ</a>のフェード。</td></tr>
+<tr><th scope="row">開閉・切り替え</th><td><a href="sidebar.html">サイドバー</a>の表示、<a href="disclosure.html">アコーディオン</a>、<a href="navigation.html">タブ・ページ送り</a>の切り替え。</td></tr>
+<tr><th scope="row">カード移動</th><td><a href="board.html">カンバンのカード移動</a>。</td></tr>
+<tr><th scope="row">入力・操作結果</th><td><a href="buttons.html">ボタンを押したとき</a>、<a href="forms.html">スイッチ・チェック・入力エラー</a>、<a href="clipboard.html">コピー成功のチェック</a>。</td></tr>
+<tr><th scope="row">処理・デザイン変更</th><td><a href="loading.html">進捗バー・ローディング</a>の更新、<a href="themes.html">明暗・デザインテーマ</a>の切り替え。</td></tr>
+</tbody></table></div><p>カレンダーの月切り替えと日付選択は、アニメーションなしで反映します。その他の動きは短く統一しています。アプリでは共通のui.css / ui.jsを使うだけで適用され、アニメーション用の属性は不要です。OSの「動きを減らす」設定では移動・フェードを止め、状態をすぐに切り替えます。</p></section>
+<details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/ui/css/ui.css">ui.css</a> / <a href="../assets/ui/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main>
+</CatalogLayout>

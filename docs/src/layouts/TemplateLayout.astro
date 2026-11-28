@@ -1,0 +1,23 @@
+---
+import Document from './Document.astro';
+
+interface Props {
+  title: string;
+  bodyClass: string;
+  template: string;
+  noindex?: boolean;
+  script?: string;
+}
+const { title, bodyClass, template, noindex, script } = Astro.props;
+const assets = import.meta.env.BASE_URL.replace(/\/$/, '') + '/assets/';
+const scripts = assets + 'js/';
+---
+<Document title={title} bodyClass={bodyClass} template={template} noindex={noindex}>
+  <Fragment slot="head">
+    <link rel="stylesheet" href={assets + 'ui/css/ui.css'}>
+    <link rel="stylesheet" href={assets + 'css/templates.css'}>
+    <script is:inline defer src={scripts + 'templates.js'}></script>
+    {script && <script is:inline defer src={scripts + script}></script>}
+  </Fragment>
+  <slot />
+</Document>

@@ -1,0 +1,21 @@
+---
+import CatalogLayout from '../../layouts/CatalogLayout.astro';
+---
+<CatalogLayout title="Animations · 処理中の表示 — Kav-UI design catalog">
+<main id="main" class="catalog-main"><nav class="catalog-breadcrumb" aria-label="パンくず"><a href="animations.html">Animations</a><span aria-hidden="true"> / </span><span>処理中の表示</span></nav><header class="page-heading"><p class="eyebrow">Kav-UI / 状態・動き</p><h1>Animations · 処理中の表示</h1></header><p class="lede">処理中のバナーと、カードの枠を光が巡るアニメーションです。</p><section class="specimen"><h2>パルスと光の流れ（バナー）</h2><div class="example" data-example>
+  <div class="planning-wrap">
+    <div class="planning-banner" role="status">
+      <div class="planning-banner-head"><span>Planning with Claude</span><span class="planning-banner-time dim small">3 min</span></div>
+      <div class="planning-banner-goal">Decide the tool of the chat from the question.</div>
+    </div>
+  </div>
+
+</div></section><section class="specimen"><h2>光が巡るリング（タスクカード）</h2><div class="example" data-example>
+  <div class="demo-grid">
+    <div class="task-card is-running"><div class="title">Fix the failing tests</div><div class="where">~/workspaces/agenttop</div></div>
+    <div class="task-card is-good"><div class="title">Add the docs</div><div class="where">done</div></div>
+  </div>
+
+</div></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/ui/css/ui.css">ui.css</a> / <a href="../assets/ui/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main>
+</CatalogLayout>

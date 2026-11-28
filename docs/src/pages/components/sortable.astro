@@ -1,0 +1,33 @@
+---
+import CatalogLayout from '../../layouts/CatalogLayout.astro';
+---
+<CatalogLayout title="Sortable list — Kav-UI design catalog">
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / 入力・操作</p><h1>Sortable list</h1></header>
+<p class="lede">ドラッグ、タッチ、キーボードでリストを並べ替えます。保存や通信はアプリ側で実装してください。</p>
+<p>Space または Enter で持ち上げ・確定、上下左右の矢印で移動、Escape で取り消します。ハンドルなしでは項目全体、ハンドル付きではハンドルからドラッグできます。タッチでページをスクロールする場合は、ハンドル付きリストの本文またはリスト外を使ってください。</p>
+<section class="specimen" id="basic"><h2>基本のリスト</h2><div class="example" data-example>
+<ul data-ui-sortable aria-label="作業の順序">
+  <li data-id="plan">要件を整理する</li>
+  <li data-id="implement">実装する</li>
+  <li data-id="review">レビューする</li>
+</ul>
+</div></section>
+<section class="specimen" id="handles"><h2>ハンドル付きリスト</h2><div class="example" data-example>
+<ol data-ui-sortable aria-label="公開までの順序">
+  <li data-id="draft"><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-sortable-handle aria-label="下書きを移動">移動</button> 下書きを作る</li>
+  <li data-id="check"><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-sortable-handle aria-label="確認を移動">移動</button> 内容を確認する</li>
+  <li data-id="publish"><button type="button" class="btn btn-sm btn-outline-secondary" data-ui-sortable-handle aria-label="公開を移動">移動</button> 公開する</li>
+</ol>
+</div></section>
+<section class="specimen" id="api"><h2>API</h2>
+<div class="ui-table-scroll" tabindex="0" role="region" aria-label="Sortable API表。横スクロール可能"><table class="table"><caption>属性・イベント</caption><thead><tr><th scope="col">API</th><th scope="col">動作</th></tr></thead><tbody>
+<tr><th scope="row"><code>data-ui-sortable</code></th><td>ul / ol / div の直下の要素を並べ替えます。縦方向のリストに使用します。</td></tr>
+<tr><th scope="row"><code>data-ui-sortable-handle</code></th><td>項目内の任意のハンドル。button type="button" と項目を識別できる名前を推奨します。省略時は項目自体がフォーカス可能になります。</td></tr>
+<tr><th scope="row"><code>ui:sortable-change</code></th><td>順序が変わって確定したときに発行。detail は &#123;item, from, to, order&#125;。from / to は0始まり、item はDOM要素、order は並べ替え後のDOM要素の配列です。キャンセル・変更なしでは発行しません。</td></tr>
+<tr><th scope="row"><code>init(scope) / destroy(scope)</code></th><td>既存の KavUI API で初期化と解除。パッケージの mount(root, &#123;signal&#125;) にも対応します。</td></tr>
+</tbody></table></div>
+<p>項目の永続IDは data-id などでアプリ側が管理してください。日本語のライブ通知と操作説明を自動付与します。動きを減らす設定を尊重します。</p>
+</section>
+<details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の <a href="../assets/ui/css/ui.css">ui.css</a> と <a href="../assets/ui/js/ui.js">ui.js</a> を読み込み、サンプルのHTMLを配置します。</p></details>
+</main>
+</CatalogLayout>

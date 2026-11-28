@@ -68,7 +68,7 @@ node scripts/library-release.mjs validate v0.0.6
 参考：[GitHub npmレジストリ](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry) / [Actionsによる公開](https://docs.github.com/en/packages/managing-github-packages-using-github-actions-workflows/publishing-and-installing-a-package-with-github-actions)
 
 
-Data table・Command menu・Carouselは既存の`KavWidget`内で`data-ui-data-table`・`data-ui-command`・`data-ui-carousel`を指定して利用できます。Timeline・Ratingはクラスを指定した標準HTMLで利用できます。専用のVue/Astroコンポーネント名は追加していません。[HTML例と属性一覧](../docs/index.html)を参照してください。
+Data table・Command menu・Carouselは既存の`KavWidget`内で`data-ui-data-table`・`data-ui-command`・`data-ui-carousel`を指定して利用できます。Timeline・Ratingはクラスを指定した標準HTMLで利用できます。専用のVue/Astroコンポーネント名は追加していません。[HTML例と属性一覧](../docs/src/pages/index.astro)を参照してください。
 
 ## 開発・検証用ファイル作成
 

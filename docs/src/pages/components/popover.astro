@@ -1,0 +1,32 @@
+---
+import CatalogLayout from '../../layouts/CatalogLayout.astro';
+---
+<CatalogLayout title="Popover — Kav-UI design catalog">
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / 通知・補助表示</p><h1>Popover</h1></header><p class="lede">操作を含む補足パネル・フォーム・画面端補正。既存の色・角丸・余白・テーマを引き継ぎます。</p>
+<section class="specimen" id="popover-basic"><h2>説明と操作をまとめる</h2><p>Tooltipと異なり、リンクやボタンなどの操作を配置できます。画面外クリックとEscapeで閉じます。モーダルではないため、背後の画面も操作できます。</p><div class="example" data-example>
+<button type="button" class="btn btn-outline-secondary" data-ui-toggle="popover" data-ui-target="#popover-project">プロジェクトの情報</button>
+<div id="popover-project" data-ui-popover popover aria-labelledby="popover-project-title">
+  <h3 class="ui-popup-title" id="popover-project-title">デザインカタログ</h3>
+  <p>共通UIの設定と使い方を確認できます。</p>
+  <a href="../getting-started.html">導入手順を見る</a>
+  <div class="ui-popup-actions"><button type="button" class="btn btn-outline-secondary" data-ui-dismiss="popover">閉じる</button></div>
+</div>
+</div></section>
+<section class="specimen" id="popover-form"><h2>フォームを配置する</h2><p>通常のフォームやカスタムselectを内側に配置できます。内容の送信・保存はアプリ側で実装します。下のフォームは入力確認のみのデモです。</p><div class="example" data-example>
+<button type="button" class="btn btn-outline-secondary" data-ui-toggle="popover" data-ui-target="#popover-form-panel" data-ui-placement="bottom-end">表示設定</button>
+<div id="popover-form-panel" data-ui-popover popover aria-labelledby="popover-form-title">
+  <h3 class="ui-popup-title" id="popover-form-title">表示設定</h3>
+  <form class="ui-stack" data-ui-validate data-demo-form>
+    <label for="popover-project-name">プロジェクト名</label><input class="form-control" id="popover-project-name" name="name" value="Design catalog" required autofocus>
+    <label for="popover-view">表示方法</label><select class="form-select" id="popover-view" name="view"><option>一覧</option><option>カード</option></select>
+    <div class="ui-popup-actions"><button type="submit" class="btn btn-primary">入力を確認</button><button type="button" class="btn btn-outline-secondary" data-ui-dismiss="popover">閉じる</button></div><p data-demo-result role="status"></p>
+  </form>
+</div>
+</div></section>
+<section class="specimen" id="popover-position"><h2>位置と幅</h2><p>Dropdownと同じ4方向のdata-ui-placementを使えます。幅はCSS変数<code>--ui-popover-width</code>（標準20rem）で調整できます。表示幅を超える内容はパネル内で折り返し・スクロールします。</p><pre class="setup-code"><code>/* 必要に応じてアプリのCSSで指定 */
+#popover-project &#123; --ui-popover-width: 24rem; &#125;</code></pre></section>
+<section class="specimen" id="popover-usage"><h2>使い分け・初期化</h2><p>単なる短い補足はTooltip、選択肢はDropdown、自由な内容はPopover、背景操作も止める場合はDialog・Drawerを使います。Popover API対応ブラウザで動作します。共通ui.jsを読み込むだけで初期化し、動的追加時はKavUI.init(element)を呼びます。</p><pre class="setup-code"><code>KavUI.show(&#x27;#popover-project&#x27;, document.querySelector(&#x27;[data-ui-target=&quot;#popover-project&quot;]&#x27;));
+KavUI.hide(&#x27;#popover-project&#x27;);</code></pre></section>
+<details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/ui/css/ui.css">ui.css</a> / <a href="../assets/ui/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main>
+</CatalogLayout>

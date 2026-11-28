@@ -1,0 +1,32 @@
+---
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title: string;
+  bodyClass?: string;
+  template?: string;
+  noindex?: boolean;
+}
+const { title, bodyClass, template, noindex } = Astro.props;
+const assets = import.meta.env.BASE_URL.replace(/\/$/, '') + '/assets/';
+---
+<!doctype html>
+<html lang="ja" data-bs-theme="light">
+<head>
+<meta charset="utf-8">
+{noindex && <meta name="robots" content="noindex">}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f4f3f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1b1c1e" media="(prefers-color-scheme: dark)">
+<title>{title}</title>
+<!-- Apply the saved theme before stylesheets or deferred UI scripts can paint. -->
+<script is:inline src={assets + 'ui/js/theme-init.js'}></script>
+<script is:inline defer src={assets + 'ui/js/ui.js'}></script>
+<script is:inline defer src={assets + 'js/page-lifecycle.js'}></script>
+<ClientRouter fallback="swap" />
+<slot name="head" />
+</head>
+<body class={bodyClass} data-template={template} data-ui-theme-persist>
+<slot />
+</body>
+</html>

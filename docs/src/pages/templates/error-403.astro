@@ -1,0 +1,60 @@
+---
+import TemplateLayout from '../../layouts/TemplateLayout.astro';
+---
+<TemplateLayout title="403 · このページにはアクセスできません — Workspace" bodyClass="ui-app service-template" template="error" noindex>
+<a class="template-skip" href="#main">コンテンツへ移動</a>
+    <header class="ui-header ui-header-sticky">
+      <div class="ui-container ui-header-inner">
+        <a class="ui-brand" href="dashboard.html"><span class="template-brand-mark" icon="mdi-view-dashboard" aria-hidden="true"></span> Workspace</a>
+
+        <div class="ui-header-actions sp-gap-1">
+          <label class="fx-inline fx-items-center small sp-gap-1 type-nowrap">
+            <span>デザイン</span>
+            <select class="form-select form-select-sm ui-w-auto" data-ui-theme-select>
+              <option value="default">標準</option>
+              <option value="glass">ガラス</option>
+              <option value="glassmorphism">グラスモーフィズム</option>
+              <option value="flat">フラット</option>
+              <option value="soft">ソフト</option>
+            </select>
+          </label>
+          <label class="fx-inline fx-items-center small sp-gap-1 type-nowrap">
+            <span>配色</span>
+            <select class="form-select form-select-sm ui-w-auto" data-ui-palette-select>
+              <option value="default">標準</option>
+              <option value="slate">スレート</option>
+              <option value="sage">セージ</option>
+              <option value="teal">ティール</option>
+              <option value="mauve">モーブ</option>
+              <option value="sand">サンド</option>
+              <option value="clay">クレイ</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button>
+        </div>
+      </div>
+    </header>
+    <main id="main" tabindex="-1" class="ui-container ui-app-main template-error">
+      <article class="ui-card template-error-card" aria-labelledby="error-title" aria-describedby="error-description">
+        <div class="ui-card-body template-error-body">
+          <p class="template-error-code" aria-hidden="true">403</p>
+          <h1 id="error-title"><span class="visually-hidden">エラー403： </span>このページにはアクセスできません</h1>
+          <p id="error-description" class="template-error-description">このページを閲覧するための権限がありません。</p>
+          <div class="template-error-actions">
+              <a class="btn btn-primary" href="dashboard.html"><span icon="mdi-home-outline" aria-hidden="true"></span>ホームへ戻る</a>
+              <a class="btn btn-outline-secondary" href="docs.html#members">権限のガイドを見る</a>
+          </div>
+          <section class="template-error-help" aria-labelledby="error-help-title">
+            <h2 id="error-help-title">アクセスが必要な場合</h2>
+            <p>利用中のアカウントを確認し、ワークスペースの管理者にアクセス権を依頼してください。</p>
+          </section>
+        </div>
+      </article>
+    </main>
+    <footer class="ui-footer">
+      <div class="ui-container ui-footer-inner">
+        <p>Workspace</p>
+        <nav class="ui-cluster" aria-label="関連リンク"><a href="docs.html">ヘルプとガイド</a><a href="../templates.html#template-errors">テンプレート一覧</a></nav>
+      </div>
+    </footer>
+</TemplateLayout>

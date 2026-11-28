@@ -1,0 +1,140 @@
+---
+interface Props {
+  page: string;
+  component: boolean;
+}
+const { page, component } = Astro.props;
+const rootPrefix = component ? '../' : '';
+const componentPrefix = component ? '' : 'components/';
+const overviewCurrent = (file: string) => !component && page === file ? 'page' : undefined;
+const componentCurrent = (file: string) => component && page === file ? 'page' : undefined;
+---
+<aside class="catalog-sidebar">
+<a class="overview-link" href={rootPrefix + 'index.html'} aria-current={overviewCurrent('index.html')}>カタログ一覧</a>
+<a class="overview-link" href={rootPrefix + 'installation.html'} aria-current={overviewCurrent('installation.html')}>ダウンロード・導入</a>
+<a class="overview-link" href={rootPrefix + 'getting-started.html'} aria-current={overviewCurrent('getting-started.html')}>使い方・属性一覧</a>
+<a class="overview-link" href={rootPrefix + 'templates.html'} aria-current={overviewCurrent('templates.html')}>サービステンプレート →</a>
+<a class="overview-link" href={rootPrefix + 'ai-agents.html'} aria-current={overviewCurrent('ai-agents.html')}>AIエージェント向け</a>
+<a class="overview-link" href={rootPrefix + 'vue.html'} aria-current={overviewCurrent('vue.html')}>Vueで使う</a>
+<a class="overview-link" href={rootPrefix + 'astro.html'} aria-current={overviewCurrent('astro.html')}>Astroで使う</a>
+<p class="eyebrow">コンポーネント</p>
+<details class="catalog-navigation">
+<summary>コンポーネント一覧</summary>
+<nav aria-label="コンポーネント">
+  <div class="catalog-nav-group">
+    <h2>基本スタイル</h2>
+    <ul>
+      <li><a href={componentPrefix + 'foundations.html'} aria-current={componentCurrent('foundations.html')}>Foundations</a></li>
+      <li><a href={componentPrefix + 'themes.html'} aria-current={componentCurrent('themes.html')}>UI themes</a></li>
+      <li><a href={componentPrefix + 'theme-switcher.html'} aria-current={componentCurrent('theme-switcher.html')}>Theme switcher</a></li>
+      <li><a href={componentPrefix + 'color-palettes.html'} aria-current={componentCurrent('color-palettes.html')}>Color palettes</a></li>
+      <li><a href={componentPrefix + 'typography.html'} aria-current={componentCurrent('typography.html')}>Typography</a></li>
+      <li><a href={componentPrefix + 'spacing.html'} aria-current={componentCurrent('spacing.html')}>Spacing</a></li>
+      <li>
+<details class="catalog-nav-branch" data-catalog-family="icons">
+<summary>Icons</summary><ul>
+        <li><a href={componentPrefix + 'mdi-icons.html'} aria-current={componentCurrent('mdi-icons.html')}>MDIアイコン</a></li>
+        <li><a href={componentPrefix + 'icons.html'} aria-current={componentCurrent('icons.html')}>サイズ・色・組み合わせ</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>レイアウト</h2>
+    <ul>
+      <li><a href={componentPrefix + 'layouts.html'} aria-current={componentCurrent('layouts.html')}>Layouts</a></li>
+      <li><a href={componentPrefix + 'splitter.html'} aria-current={componentCurrent('splitter.html')}>Splitter</a></li>
+      <li><a href={componentPrefix + 'flex.html'} aria-current={componentCurrent('flex.html')}>Flexbox</a></li>
+      <li><a href={componentPrefix + 'flex-grid.html'} aria-current={componentCurrent('flex-grid.html')}>Flex grid</a></li>
+      <li><a href={componentPrefix + 'cards.html'} aria-current={componentCurrent('cards.html')}>Cards</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>入力・操作</h2>
+    <ul>
+      <li><a href={componentPrefix + 'buttons.html'} aria-current={componentCurrent('buttons.html')}>Buttons</a></li>
+      <li><a href={componentPrefix + 'button-group.html'} aria-current={componentCurrent('button-group.html')}>Button group</a></li>
+      <li><a href={componentPrefix + 'overflow-list.html'} aria-current={componentCurrent('overflow-list.html')}>Overflow list</a></li>
+      <li><a href={componentPrefix + 'forms.html'} aria-current={componentCurrent('forms.html')}>Forms</a></li>
+      <li><a href={componentPrefix + 'tokenizer.html'} aria-current={componentCurrent('tokenizer.html')}>Tokenizer</a></li>
+      <li><a href={componentPrefix + 'input-group.html'} aria-current={componentCurrent('input-group.html')}>Input group</a></li>
+      <li><a href={componentPrefix + 'transfer-list.html'} aria-current={componentCurrent('transfer-list.html')}>Transfer list</a></li>
+      <li><a href={componentPrefix + 'sortable.html'} aria-current={componentCurrent('sortable.html')}>Sortable list</a></li>
+      <li><a href={componentPrefix + 'datepicker.html'} aria-current={componentCurrent('datepicker.html')}>Date picker</a></li>
+      <li><a href={componentPrefix + 'date-range.html'} aria-current={componentCurrent('date-range.html')}>Date range</a></li>
+      <li><a href={componentPrefix + 'rating.html'} aria-current={componentCurrent('rating.html')}>Rating</a></li>
+      <li><a href={componentPrefix + 'clipboard.html'} aria-current={componentCurrent('clipboard.html')}>Clipboard</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>ナビゲーション</h2>
+    <ul>
+      <li><a href={componentPrefix + 'navigation.html'} aria-current={componentCurrent('navigation.html')}>Navigation</a></li>
+      <li><a href={componentPrefix + 'sidebar.html'} aria-current={componentCurrent('sidebar.html')}>Sidebar</a></li>
+      <li><a href={componentPrefix + 'command.html'} aria-current={componentCurrent('command.html')}>Command menu</a></li>
+      <li><a href={componentPrefix + 'power-search.html'} aria-current={componentCurrent('power-search.html')}>Power search</a></li>
+      <li><a href={componentPrefix + 'dropdown.html'} aria-current={componentCurrent('dropdown.html')}>Dropdown</a></li>
+      <li><a href={componentPrefix + 'context-menu.html'} aria-current={componentCurrent('context-menu.html')}>Context menu</a></li>
+      <li><a href={componentPrefix + 'disclosure.html'} aria-current={componentCurrent('disclosure.html')}>Accordion</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>データ表示</h2>
+    <ul>
+      <li><a href={componentPrefix + 'table.html'} aria-current={componentCurrent('table.html')}>Table</a></li>
+      <li><a href={componentPrefix + 'table-details.html'} aria-current={componentCurrent('table-details.html')}>Table row expansion</a></li>
+      <li><a href={componentPrefix + 'data-table.html'} aria-current={componentCurrent('data-table.html')}>Data table</a></li>
+      <li><a href={componentPrefix + 'table-columns.html'} aria-current={componentCurrent('table-columns.html')}>Table column settings</a></li>
+      <li><a href={componentPrefix + 'board.html'} aria-current={componentCurrent('board.html')}>Kanban board</a></li>
+      <li><a href={componentPrefix + 'calendar.html'} aria-current={componentCurrent('calendar.html')}>Calendar</a></li>
+      <li><a href={componentPrefix + 'list-group.html'} aria-current={componentCurrent('list-group.html')}>List group</a></li>
+      <li><a href={componentPrefix + 'tree-list.html'} aria-current={componentCurrent('tree-list.html')}>Tree list</a></li>
+      <li><a href={componentPrefix + 'avatar.html'} aria-current={componentCurrent('avatar.html')}>Avatar</a></li>
+      <li><a href={componentPrefix + 'badges.html'} aria-current={componentCurrent('badges.html')}>Badges</a></li>
+      <li><a href={componentPrefix + 'chart.html'} aria-current={componentCurrent('chart.html')}>Chart</a></li>
+      <li><a href={componentPrefix + 'carousel.html'} aria-current={componentCurrent('carousel.html')}>Carousel</a></li>
+      <li><a href={componentPrefix + 'lightbox.html'} aria-current={componentCurrent('lightbox.html')}>Lightbox</a></li>
+      <li><a href={componentPrefix + 'timeline.html'} aria-current={componentCurrent('timeline.html')}>Timeline</a></li>
+<li><a href={componentPrefix + 'log-stream.html'} aria-current={componentCurrent('log-stream.html')}>Log stream</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>通知・補助表示</h2>
+    <ul>
+      <li><a href={componentPrefix + 'alerts.html'} aria-current={componentCurrent('alerts.html')}>Alerts</a></li>
+      <li><a href={componentPrefix + 'banner.html'} aria-current={componentCurrent('banner.html')}>Banner</a></li>
+      <li><a href={componentPrefix + 'toasts.html'} aria-current={componentCurrent('toasts.html')}>Toasts & alerts</a></li>
+      <li><a href={componentPrefix + 'tips.html'} aria-current={componentCurrent('tips.html')}>Tips & tooltips</a></li>
+      <li><a href={componentPrefix + 'tour.html'} aria-current={componentCurrent('tour.html')}>Tour</a></li>
+      <li><a href={componentPrefix + 'popover.html'} aria-current={componentCurrent('popover.html')}>Popover</a></li>
+      <li><a href={componentPrefix + 'dialog.html'} aria-current={componentCurrent('dialog.html')}>Dialog</a></li>
+      <li><a href={componentPrefix + 'drawer.html'} aria-current={componentCurrent('drawer.html')}>Drawer</a></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>状態・動き</h2>
+    <ul>
+      <li><a href={componentPrefix + 'loading.html'} aria-current={componentCurrent('loading.html')}>Loading</a></li>
+      <li><a href={componentPrefix + 'states.html'} aria-current={componentCurrent('states.html')}>States</a></li>
+      <li>
+<details class="catalog-nav-branch" data-catalog-family="animations">
+<summary>Animations</summary><ul>
+        <li><a href={componentPrefix + 'animations.html'} aria-current={componentCurrent('animations.html')}>一覧・使い方</a></li>
+        <li><a href={componentPrefix + 'animations-entrances.html'} aria-current={componentCurrent('animations-entrances.html')}>表示・非表示</a></li>
+        <li><a href={componentPrefix + 'animations-movement.html'} aria-current={componentCurrent('animations-movement.html')}>移動・回転</a></li>
+        <li><a href={componentPrefix + 'animations-attention.html'} aria-current={componentCurrent('animations-attention.html')}>強調・揺れ</a></li>
+        <li><a href={componentPrefix + 'animations-interactions.html'} aria-current={componentCurrent('animations-interactions.html')}>操作時の動き</a></li>
+        <li><a href={componentPrefix + 'animations-processing.html'} aria-current={componentCurrent('animations-processing.html')}>処理中の表示</a></li>
+      </ul></details></li>
+    </ul>
+  </div>
+  <div class="catalog-nav-group">
+    <h2>AI・ワークフロー</h2>
+    <ul>
+      <li><a href={componentPrefix + 'agent-workflow.html'} aria-current={componentCurrent('agent-workflow.html')}>Agent workflow</a></li>
+      <li><a href={componentPrefix + 'ai-visuals.html'} aria-current={componentCurrent('ai-visuals.html')}>AI visuals</a></li>
+<li><a href={componentPrefix + 'richtext.html'} aria-current={componentCurrent('richtext.html')}>Rich text editor</a></li>
+<li><a href={componentPrefix + 'diff-viewer.html'} aria-current={componentCurrent('diff-viewer.html')}>DiffViewer</a></li>
+    </ul>
+  </div>
+</nav></details>
+<p class="sidebar-note">HTML · CSS · JavaScript<br>依存ライブラリなし</p></aside>

@@ -1,0 +1,8 @@
+---
+import CatalogLayout from '../../layouts/CatalogLayout.astro';
+---
+<CatalogLayout title="Transfer list — Kav-UI design catalog">
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / 入力・操作</p><h1>Transfer list</h1></header><p class="lede">候補と選択済みの一覧間で項目を移動します。</p><section class="specimen"><h2>対象メンバーを選ぶ</h2><div class="example" data-example><form><label for="transfer-members">メンバー</label><select id="transfer-members" name="members" multiple required data-ui-transfer><option value="aoki" selected>青木</option><option value="mori">森</option><option value="ito">伊藤</option><option value="admin" selected disabled>管理者（解除不可）</option></select><button class="btn btn-outline-secondary sp-mt-3" type="reset">リセット</button></form></div></section>
+<section class="specimen"><h2>属性と操作</h2><p>select multipleにdata-ui-transferを指定します。候補と選択済みをそれぞれ検索し、標準の複数選択リストで対象を選んでから移動ボタンを押します。Ctrl/CommandやShiftによる複数選択はOS標準の操作です。disabledの項目は移動できません。</p><p>元のselectが値を保持するため、FormData(form).getAll('members')で取得できます。変更時はinput・changeとui:transferchange（detail.values）が発生します。コードで選択値を変更したらKavUI.sync(select)で同期します。required・disabled・resetに対応します。選択済み項目は検索で隠れても解除されません。</p><p>labelまたはaria-labelを指定してください。optionのdata-ui-keywordsで検索語を補えます。JavaScriptなしでは標準の複数選択を使用できます。サーバー保存や実際の権限付与は利用側で実装してください。</p></section>
+<section class="specimen"><h2>導入と参考</h2><p>共通のui.cssとui.jsを読み込みます。動的に追加したHTMLはKavUI.init、破棄時はKavUI.destroyを呼びます。Vue・AstroではKavWidgetに同じHTMLを渡せます。</p><p><a href="https://astryx.atmeta.com/storybook/?path=/story/lab-transferlist--searchable">Astryxの参考Story</a> / <a href="../packages/README.md">パッケージの使い方</a></p></section></main>
+</CatalogLayout>
