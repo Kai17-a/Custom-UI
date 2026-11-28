@@ -1,0 +1,122 @@
+---
+import TemplateLayout from '../../layouts/TemplateLayout.astro';
+---
+<TemplateLayout title="ログ集計 — サービス監視" bodyClass="ui-app service-template" template="monitoring-logs" script="monitoring.js">
+<a class="template-skip" href="#main">コンテンツへ移動</a>
+    <header class="ui-header ui-header-sticky">
+      <div class="ui-container ui-header-inner">
+        <a class="ui-brand" href="../templates.html"><span class="template-brand-mark" icon="mdi-chart-line" aria-hidden="true"></span> サービス監視</a>
+        <nav class="ui-header-nav nav-nowrap" aria-label="サービス監視">
+          <a href="monitoring-logs.html" aria-current="page">ログ集計</a>
+          <a href="monitoring-metrics.html">メトリクス</a>
+        </nav>
+        <div class="ui-header-actions sp-gap-1">
+          <label class="monitor-theme-control small">
+            <span>デザイン</span>
+            <select class="form-select form-select-sm" data-ui-theme-select>
+              <option value="default">標準</option>
+              <option value="glass">ガラス</option>
+              <option value="glassmorphism">グラスモーフィズム</option>
+              <option value="flat">フラット</option>
+              <option value="soft">ソフト</option>
+            </select>
+          </label>
+          <label class="monitor-theme-control small">
+            <span>配色</span>
+            <select class="form-select form-select-sm" data-ui-palette-select>
+              <option value="default">標準</option>
+              <option value="slate">スレート</option>
+              <option value="sage">セージ</option>
+              <option value="teal">ティール</option>
+              <option value="mauve">モーブ</option>
+              <option value="sand">サンド</option>
+              <option value="clay">クレイ</option>
+            </select>
+          </label>
+          <button type="button" class="btn btn-sm btn-outline-secondary btn-icon-only" data-ui-toggle="theme" data-ui-theme-icon icon="mdi-weather-night" aria-label="ダークに切替" title="ダークに切替"></button>
+        </div>
+      </div>
+    </header>
+    <main id="main" class="ui-container ui-app-main template-monitor ui-page-body">
+      <header class="ui-page-header">
+        <div class="ui-page-heading">
+          <h1 class="ui-page-title">ログ集計</h1>
+          <p class="ui-page-description">ログの増加やエラーが発生した時間帯を確認し、個別のイベントを調べます。</p>
+        </div>
+      </header>
+      <div class="monitor-toolbar">
+        <div class="ui-cluster monitor-filters">
+          <div class="field sp-m-0">
+            <label for="monitor-range">集計期間</label>
+            <select id="monitor-range" class="form-select form-select-sm">
+              <option value="30">直近30分</option>
+              <option value="60">直近1時間</option>
+            </select>
+          </div>
+          <div class="field sp-m-0">
+            <label for="monitor-service">サービス</label>
+            <select id="monitor-service" class="form-select form-select-sm">
+              <option value="all">すべて</option>
+              <option value="gateway">gateway</option>
+              <option value="worker">worker</option>
+            </select>
+          </div>
+        </div>
+        <p class="monitor-note">サンプルデータ · 2026年11月27日 14:30 JST 時点</p>
+      </div>
+      <noscript>このサンプルの集計や絞り込みにはJavaScriptが必要です。</noscript>
+      <dl class="monitor-summary" aria-label="選択期間の集計">
+        <div><dt>ログ総数</dt><dd id="monitor-total">—</dd></div>
+        <div><dt>ERROR</dt><dd id="monitor-error">—</dd></div>
+        <div><dt>WARN</dt><dd id="monitor-warn">—</dd></div>
+        <div><dt>INFO</dt><dd id="monitor-info">—</dd></div>
+      </dl>
+      <div class="monitor-log-chart">
+        <section class="ui-card">
+          <div class="ui-card-body">
+            <h2 class="ui-card-title">レベル別ログ件数</h2>
+            <p class="monitor-note">5分ごとの件数。検索語とレベル指定は下のイベント一覧に適用されます。</p>
+            <figure class="ui-chart" id="monitor-logs-chart"></figure>
+          </div>
+        </section>
+      </div>
+      <section class="ui-card">
+        <div class="ui-card-body">
+          <h2 class="ui-card-title">ログイベント</h2>
+          <div class="ui-cluster monitor-filters">
+            <div class="field sp-m-0">
+              <label for="monitor-level">レベル</label>
+              <select id="monitor-level" class="form-select form-select-sm">
+                <option value="all">すべて</option>
+                <option>ERROR</option>
+                <option>WARN</option>
+                <option>INFO</option>
+              </select>
+            </div>
+            <div class="field sp-m-0 monitor-search">
+              <label for="monitor-query">ログを検索</label>
+              <input id="monitor-query" name="query" type="search" autocomplete="off" class="form-control form-control-sm" placeholder="メッセージ・イベントID">
+            </div>
+            <button type="button" id="monitor-clear" class="btn btn-sm btn-outline-secondary">検索条件をクリア</button>
+          </div>
+          <p class="monitor-note" id="monitor-result" role="status"></p>
+          <p id="monitor-empty" hidden>一致するログがありません。検索語やレベルを変更してください。</p>
+          <div class="ui-table-scroll" id="monitor-log-table" tabindex="0" role="region" aria-label="ログイベント一覧">
+            <table class="table">
+              <thead><tr><th scope="col">時刻 (JST)</th><th scope="col">レベル</th><th scope="col">サービス</th><th scope="col">メッセージ</th><th scope="col">イベントID</th></tr></thead>
+              <tbody id="monitor-log-rows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="ui-footer">
+      <div class="ui-container ui-footer-inner">
+        <p>サービス監視 · Kav-UI サービステンプレート</p>
+        <div class="ui-cluster">
+          <a href="../templates.html">テンプレート一覧</a>
+          <a href="../index.html">UIカタログ</a>
+        </div>
+      </div>
+    </footer>
+</TemplateLayout>

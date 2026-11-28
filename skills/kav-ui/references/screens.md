@@ -23,7 +23,7 @@ HTMLリンクは同梱のHTML断片です。ネットワークやカタログは
 
 カタログ版の背景画像・不透明度の操作にはdocs/assets/js/templates.js、ボードとダイアログの幅調整にはdocs/assets/css/templates.cssのtask-app用の短い処理を使います。この断片をアプリに組み込む際は同じ設定をアプリ側で接続してください。`KavUI.setSurfaceOpacity(value)` と `--ui-theme-background-image` / `--ui-theme-background-opacity` を使用し、保存・送信は行いません。親子の色帯はui-progress-smと同じグループ名で表しています。
 
-HTML版のコピー元はリポジトリのdocs/templates内にある同名HTMLのkav-sampleマーカー内です。配布版はbuild-docs.pyで抽出します。配布先で元リポジトリを探す必要はありません。
+HTML版の編集元はリポジトリの `docs/src/pages/templates/` にあるAstroページの `kav-sample` マーカー内です。配布版はドキュメントのビルド時に、出力されたHTMLから抽出します。
 
 Vue版はVue 3.5以降のSFC、Astro版はページとしてコピーします。公開パッケージを導入し、[組み込み方](frameworks.md)を参照してください。リンクは例のルート構成に合わせてあるため、コピー先のルートへ調整してください。ローカルの操作だけを実装し、フォームは送信を抑止しています。
 
@@ -31,4 +31,4 @@ Vueのタブ（認証・詳細・手順・通知）はKavTabsとv-model、手順
 
 Vue/Astro版のコピー元はexamples/astro/src/components/samples/*.vueとexamples/astro/src/pages/samples/*.astroです。Vue版を表示するpages/samples/vue/*.astroも設け、build:examplesが24画面を実際にコンパイルします。SFCはclient:loadでハイドレーションします。Astro側のstrict tsconfigはsrc以下を含み、astro checkで両形式を確認できます。追加のCSSや専用コンポーネントは不要です。
 
-build-docs.pyがコンパイル対象のソースをそのままskills内とdocs/skills内へコピーし、--checkで変更・欠落・余分なコピーを検出します。配布コピーを直接編集せず、examples内のソースを変更して同期してください。
+Vue版とAstro版は `examples/` 内のソースを編集します。リポジトリのルートで `npm run sync:docs-skill` を実行すると、ソースを配布用の `skills/` と公開サイトの `dist/docs/skills/` に同期できます。

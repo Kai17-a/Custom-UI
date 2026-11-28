@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Synchronize the standalone docs site. Python stdlib only; never uploads files."""
+"""Prepare public assets and generated guides for the Astro build."""
 from __future__ import annotations
 import argparse
 import json
@@ -10,10 +10,11 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-DOCS = ROOT / 'docs'
+SITE = ROOT / 'dist/docs'
+ASSETS = ROOT / 'docs/assets'
 SAMPLE_ROOT = ROOT / 'skills/kav-ui/samples'
 SAMPLES = SAMPLE_ROOT / 'html'
-MANAGED = (DOCS / 'assets/ui', DOCS / 'skills/kav-ui', DOCS / 'packages')
+MANAGED_DIRS = ('assets/ui', 'skills/kav-ui', 'packages')
 
 
 class CatalogSearch(HTMLParser):
@@ -40,11 +41,11 @@ class CatalogSearch(HTMLParser):
             self.card = None
 
 
-def catalog_search_script():
+def catalog_search_script(site_dir=SITE):
     parser = CatalogSearch()
-    parser.feed((DOCS / 'index.html').read_text())
+    parser.feed((site_dir / 'index.html').read_text())
     data = json.dumps(parser.cards, ensure_ascii=False, sort_keys=True)
-    return ('''/* Generated from docs/index.html by scripts/build-docs.py. */
+    return ('''/* Generated from the rendered catalog by scripts/build-docs.py. */
 (() => {
   const metadata = ''' + data + ''';
   const normalize = text => String(text || '').normalize('NFKC').toLowerCase().trim();
@@ -72,10 +73,10 @@ def class_inventory():
     return (json.dumps(checker.build_inventory(ROOT / 'assets/css/ui.css'), indent=1) + '\n').encode()
 
 
-def screen_samples():
+def screen_samples(site_dir=SITE):
     """Extract app-only fragments from marked template sources; no catalog assets."""
     files = {}
-    for page in sorted((DOCS / 'templates').glob('*.html')):
+    for page in sorted((site_dir / 'templates').glob('*.html')):
         source = page.read_text()
         start, end = '<!-- kav-sample:start -->', '<!-- kav-sample:end -->'
         if start not in source and end not in source:
@@ -100,10 +101,14 @@ def framework_samples():
     return files
 
 
-def public_files():
+def public_files(site_dir=SITE):
     files = {}
-    for source, destination in ((ROOT / 'assets', MANAGED[0]),
-                                (ROOT / 'skills/kav-ui', MANAGED[1])):
+    ui_dir, skill_dir, package_dir = (site_dir / name for name in MANAGED_DIRS)
+    for path in ASSETS.rglob('*'):
+        if path.is_file():
+            files[site_dir / 'assets' / path.relative_to(ASSETS)] = path.read_bytes()
+    for source, destination in ((ROOT / 'assets', ui_dir),
+                                (ROOT / 'skills/kav-ui', skill_dir)):
         for path in source.rglob('*'):
             # Importing the skill's checker leaves bytecode caches that are not part of the skill.
             if (path.is_file() and '__pycache__' not in path.relative_to(source).parts
@@ -112,58 +117,75 @@ def public_files():
     for name in ('README.md', 'vue/README.md', 'astro/README.md'):
         source = ROOT / 'packages' / name
         # The package guide links back to the catalog, which is now the site root.
-        text = source.read_text().replace('](../docs/index.html)', '](../index.html)')
-        files[MANAGED[2] / name] = text.encode()
-    files[DOCS / 'assets/js/catalog-search.js'] = catalog_search_script()
+        text = source.read_text().replace('](../docs/src/pages/index.astro)', '](../index.html)')
+        files[package_dir / name] = text.encode()
+    files[site_dir / 'assets/js/catalog-search.js'] = catalog_search_script(site_dir)
     inventory = class_inventory()
-    files[ROOT / 'skills/kav-ui/scripts/kav-ui-classes.json'] = inventory
-    files[MANAGED[1] / 'scripts/kav-ui-classes.json'] = inventory
-    # Override old copies in both trees in one pass, including --check mode.
-    for path, data in (screen_samples() | framework_samples()).items():
-        files[path] = data
-        files[MANAGED[1] / path.relative_to(ROOT / 'skills/kav-ui')] = data
+    files[skill_dir / 'scripts/kav-ui-classes.json'] = inventory
+    # Build public skill samples from their sources.
+    for path, data in (screen_samples(site_dir) | framework_samples()).items():
+        files[skill_dir / path.relative_to(ROOT / 'skills/kav-ui')] = data
     return files
+
+
+def sync_skill(site_dir):
+    """Refresh the generated files shipped with the standalone skill."""
+    public_skill = site_dir / 'skills/kav-ui'
+    skill = ROOT / 'skills/kav-ui'
+    inventory = 'scripts/kav-ui-classes.json'
+    files = {skill / inventory: (public_skill / inventory).read_bytes()}
+    for source in (public_skill / 'samples').rglob('*'):
+        if source.is_file():
+            files[skill / source.relative_to(public_skill)] = source.read_bytes()
+    for path, data in files.items():
+        if not path.is_file() or path.read_bytes() != data:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+    for path in SAMPLE_ROOT.rglob('*'):
+        if path.is_file() and path not in files:
+            path.unlink()
+    print('Refreshed generated skill files in skills/kav-ui.')
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true', help='Check without changing files')
+    parser.add_argument('--site-dir', type=Path, default=SITE, help='Directory containing rendered HTML')
+    parser.add_argument('--sync-skill', action='store_true', help='Refresh the standalone skill from the built site')
     args = parser.parse_args()
-    files = public_files()
-    spec_samples = importlib.util.spec_from_file_location('sample_docs', ROOT / 'scripts/generate-ai-docs.py')
-    sample_docs = importlib.util.module_from_spec(spec_samples)
-    sys.modules[spec_samples.name] = sample_docs
-    spec_samples.loader.exec_module(sample_docs)
-    data = {}
-    for page in sorted((DOCS / 'components').glob('*.html')):
-        source = page.read_text()
-        data[page.name] = sample_docs.component_samples.page_data(page.stem, sample_docs.Document(source))
-    files[DOCS / 'assets/js/component-code-samples.js'] = ('// Generated by scripts/build-docs.py.\nwindow.KavComponentCodeSamples = ' + json.dumps(data, ensure_ascii=False, indent=2) + ';\n').encode()
-    for page in sorted((DOCS / 'components').glob('*.html')):
-        source = page.read_text()
-        script = '<script defer src="../assets/js/component-code-samples.js"></script>\n'
-        if script not in source:
-            source = source.replace('<script defer src="../assets/js/catalog.js">', script + '<script defer src="../assets/js/catalog.js">')
-        files[page] = source.encode()
-    # These directories contain generated copies only; preserve every other docs file.
-    stale = [path for directory in (*MANAGED, SAMPLE_ROOT) for path in directory.rglob('*')
-             if path.is_file() and path not in files]
-    changed = [path for path, data in files.items()
-               if not path.is_file() or path.read_bytes() != data]
-
+    site_dir = args.site_dir.resolve()
+    if not (site_dir / 'index.html').is_file():
+        parser.error(f'No rendered index.html in {site_dir}')
+    if args.sync_skill:
+        if args.check:
+            parser.error('--sync-skill requires write mode')
+        sync_skill(site_dir)
+        return 0
+    files = public_files(site_dir)
     spec = importlib.util.spec_from_file_location('kav_ai_docs', ROOT / 'scripts/generate-ai-docs.py')
     generator = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = generator
     spec.loader.exec_module(generator)
-    generated = generator.outputs()
+    data = {}
+    for page in sorted((site_dir / 'components').glob('*.html')):
+        source = page.read_text()
+        data[page.name] = generator.component_samples.page_data(page.stem, generator.Document(source))
+    files[site_dir / 'assets/js/component-code-samples.js'] = ('// Generated by scripts/build-docs.py.\nwindow.KavComponentCodeSamples = ' + json.dumps(data, ensure_ascii=False, indent=2) + ';\n').encode()
+    managed = [site_dir / name for name in MANAGED_DIRS]
+    stale = [path for directory in managed for path in directory.rglob('*')
+             if path.is_file() and path not in files]
+    changed = [path for path, data in files.items()
+               if not path.is_file() or path.read_bytes() != data]
+
+    generated = generator.outputs(site_dir)
     markdown_changes = [path for path, value in generated.items()
                         if not path.is_file() or path.read_text() != value]
     if args.check:
         pending = [*changed, *stale, *markdown_changes]
         if pending:
-            print('Docs are out of date:\n' + '\n'.join(str(path.relative_to(ROOT)) for path in pending))
+            print('Docs are out of date:\n' + '\n'.join(str(path.relative_to(ROOT) if path.is_relative_to(ROOT) else path) for path in pending))
             return 1
-        print('Standalone docs are up to date.')
+        print('Generated docs are up to date.')
         return 0
     for path in stale:
         path.unlink()

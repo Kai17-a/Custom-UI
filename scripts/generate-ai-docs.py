@@ -12,7 +12,7 @@ import re
 from urllib.parse import unquote, urlsplit, urlunsplit
 
 ROOT = Path(__file__).resolve().parents[1]
-DOCS = ROOT / 'docs'
+DOCS = ROOT / 'dist/docs'
 LLMS = DOCS / 'llms.txt'
 VOID = set('area base br col embed hr img input link meta param source track wbr'.split())
 SKIP = {'script', 'style', 'svg', 'noscript', 'template'}
@@ -186,8 +186,8 @@ class Markdown:
         return result
 
 
-def discovery(page, source, markdown=True):
-    llms = Path(os.path.relpath(LLMS, page.parent)).as_posix()
+def discovery(page, source, markdown=True, *, llms_file=LLMS):
+    llms = Path(os.path.relpath(llms_file, page.parent)).as_posix()
     links = ['<!-- Kav-UI AI discovery -->', '<link rel="describedby" type="text/plain" href="' + llms + '">']
     if markdown:
         links.append('<link rel="alternate" type="text/markdown" href="' + page.name + '.md">')
@@ -198,29 +198,31 @@ def discovery(page, source, markdown=True):
     return source.replace('</head>', block + '</head>', 1)
 
 
-def outputs():
+def outputs(site_dir=DOCS):
+    site_dir = site_dir.resolve()
+    llms_file = site_dir / 'llms.txt'
     # Bundled skill samples are fragments, not standalone catalog pages.
-    pages = sorted(path.resolve() for path in DOCS.rglob('*.html')
-                   if not path.is_relative_to(DOCS / 'skills'))
+    pages = sorted(path.resolve() for path in site_dir.rglob('*.html')
+                   if not path.is_relative_to(site_dir / 'skills'))
     page_set = set(pages)
     documents, generated = {}, {}
     for page in pages:
+        relative = page.relative_to(site_dir).as_posix()
         source = page.read_text()
         document = Document(source)
         main = next((node for node in document.root.walk() if node.tag == 'main'), None)
         if main is None:
-            raise ValueError('Missing main content: ' + str(page.relative_to(ROOT)))
+            raise ValueError('Missing main content: ' + relative)
         documents[page] = (document, main)
-        generated[page] = discovery(page, source)
+        generated[page] = discovery(page, source, llms_file=llms_file)
         body = Markdown(page, document, page_set).blocks(main)
         if page.parent.name == 'components' and component_samples.page_data(page.stem, document).get('widget'):
             body += '\n\nVue・Astro では `KavWidget` で囲んで使えます。[Vueの使い方](../vue.html#scope)・[Astroの使い方](../astro.html#scope)'
         sample = re.search(r'<!-- kav-sample:start -->(.*?)<!-- kav-sample:end -->', source, re.S)
         if sample:
             body += '\n\n## コピー用HTML（共通ui.css / ui.jsを使用）\n\n' + fence(sample[1].strip())
-        relative = page.relative_to(ROOT).as_posix()
-        llms = Path(os.path.relpath(LLMS, page.parent)).as_posix()
-        generated[Path(str(page) + '.md')] = '<!-- Generated from ' + relative + '; run python3 scripts/generate-ai-docs.py. -->\n\n[HTML版](' + page.name + ') · [llms.txt](' + llms + ')\n\n' + body.strip() + '\n'
+        llms = Path(os.path.relpath(llms_file, page.parent)).as_posix()
+        generated[Path(str(page) + '.md')] = '<!-- Generated from ' + relative + '; run npm run build:docs. -->\n\n[HTML版](' + page.name + ') · [llms.txt](' + llms + ')\n\n' + body.strip() + '\n'
     lines = ['# Kav-UI', '', '> npm・ビルド不要のHTML/CSS/JavaScript UIフレームワーク。classで見た目、data-ui-*属性で操作を指定します。Vue/Astro向けの追加パッケージもあります。', '',
              '通常HTMLはassets/css/ui.cssとdefer付きのassets/js/ui.jsで自動初期化します。CSSはimport先を含めフォルダ一式を配置します。動的なDOMにはKavUI.init、置き換え前にはKavUI.destroyを使います。', '',
              '以下は本文・コード例のMarkdown版です。必要な部品だけを読み、外部フレームワークのクラスや未確認のAPIを推測で追加しないでください。リンクはこのファイルからの相対パスです。', '', '## 導入とAIエージェント', '',
@@ -232,22 +234,22 @@ def outputs():
              '- [Kav-UIスキル](skills/kav-ui/SKILL.md): 別プロジェクトで使える同梱資料付きスキル。元ソース・通信なしでHTML/Vue/Astroの実装を案内。',
              '- [組み込みリファレンス](skills/kav-ui/references/integration.md): 持ち出せる基本HTMLと連携の例。',
              '- [横並びのレイアウト例](skills/kav-ui/references/layout-recipes.md): 見出しと操作・ツールバー・カードの並びの正しい書き方と、書いたあとの検査。']
-    index = documents[(DOCS / 'index.html').resolve()][0]
+    index = documents[(site_dir / 'index.html').resolve()][0]
     for group in (node for node in index.root.walk() if node.has_class('catalog-nav-group')):
         title = next((node.text() for node in group.walk() if node.tag == 'h2'), 'コンポーネント')
         lines.extend(['', '## ' + compact(title), ''])
         for anchor in (node for node in group.walk() if node.tag == 'a'):
             value = anchor.attrs.get('href', '')
-            target = ((DOCS / 'index.html').parent / unquote(urlsplit(value).path)).resolve()
+            target = (site_dir / unquote(urlsplit(value).path)).resolve()
             if target not in documents:
                 continue
             _, main = documents[target]
             summary = next((compact(node.text()) for node in main.walk() if node.has_class('lede')), '')
             summary = re.split(r'。|\.\s', summary, maxsplit=1)[0].rstrip('.')
             summary = summary if len(summary) <= 100 else summary[:97] + '…'
-            lines.append('- [' + compact(anchor.text()) + '](' + target.relative_to(DOCS).as_posix() + '.md)' + (': ' + summary + '。' if summary else ''))
+            lines.append('- [' + compact(anchor.text()) + '](' + target.relative_to(site_dir).as_posix() + '.md)' + (': ' + summary + '。' if summary else ''))
     lines.extend(['', '## 画面サンプル', ''])
-    for page in sorted(path for path in pages if path.parent == DOCS / 'templates'):
+    for page in sorted(path for path in pages if path.parent == site_dir / 'templates'):
         document, _ = documents[page]
         title = next((node.text() for node in document.root.walk() if node.tag == 'h1'), page.stem)
         lines.append('- [' + compact(title) + '](templates/' + page.name + '.md)')
@@ -262,7 +264,7 @@ def outputs():
                   '- [ソースリポジトリ](https://github.com/Kai17-a/Custom-UI): 配布構成・開発・生成と検証。',
                   '- [MDIライセンス](assets/ui/icons/mdi/LICENSE): 同梱アイコンの出典。',
                   '- [Material Color Utilitiesライセンス](assets/ui/vendor/material-color-utilities/LICENSE): HCTの出典。', ''])
-    generated[LLMS] = '\n'.join(lines)
+    generated[llms_file] = '\n'.join(lines)
     return generated
 
 

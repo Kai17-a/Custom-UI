@@ -1,0 +1,8 @@
+---
+import CatalogLayout from '../../layouts/CatalogLayout.astro';
+---
+<CatalogLayout title="Log stream — Kav-UI design catalog">
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / データ表示</p><h1>Log stream</h1></header><p class="lede">追記されるログを表示し、末尾への追従を切り替えます。</p><section class="specimen"><h2>実行ログを追跡する</h2><div class="example" data-example><div data-ui-log-stream data-ui-log-limit="500"><pre data-ui-log-source hidden>ジョブを開始しました。
+設定を読み込みました。</pre><button type="button" class="btn btn-outline-secondary" data-ui-log-add="処理を続行しています。">見本のログを追加</button></div></div></section><section class="specimen"><h2>追記と保持件数</h2><p>data-ui-log-streamの要素へCustomEvent('ui:logappend', &#123;detail: &#123;text: 'ログ本文'&#125;&#125;)を送ります。複数行はdetail.linesに文字列配列を渡します。すべてテキストとして表示し、HTMLは実行しません。初期ログはpre[data-ui-log-source]に記載できます。</p><p>追従中は末尾に移動します。上へスクロールするか追従を停止すると現在位置を保持し、新着件数を表示します。末尾へ戻る・追従を再開で新着を確認できます。data-ui-log-limitは既定500件、最大10000件です。超過分は古い順に削除するため、保持範囲外のログは読めなくなります。</p><p>ui:logchangeのdetailはcount・unread・following・removedです。data-ui-log-addは固定文字列を追記する見本用ボタンです。通信・実行・保存は利用側で行います。共通CSS/JSだけで使用でき、Vue・AstroではKavWidgetを使えます。参考：<a href="https://astryx.atmeta.com/storybook/?path=/story/lab-logstream--controlled-follow">Astryx LogStream</a>。</p></section>
+</main>
+</CatalogLayout>

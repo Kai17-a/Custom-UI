@@ -238,6 +238,8 @@ html:not(.ui-scroll-smooth) .catalog-navigation:not([open]) > nav { display:none
   .catalog-theme-control > span { font-size:var(--text-xs); }
   .catalog-theme-control .ui-select { width:100%; min-width:0; }
   .catalog-theme-control .form-select { width:100%; min-width:0; font-size:12px; }
+  .catalog-theme-control :is(.form-select, .ui-select-trigger) { min-height:var(--ui-touch-target); }
+  .catalog-toolbar [data-ui-theme-icon] { min-width:var(--ui-touch-target); min-height:var(--ui-touch-target); }
 }
 
 /* Desktop keeps its navigation rails; mobile starts with the destination title. */

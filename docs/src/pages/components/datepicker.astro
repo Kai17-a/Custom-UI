@@ -1,0 +1,68 @@
+---
+import CatalogLayout from '../../layouts/CatalogLayout.astro';
+---
+<CatalogLayout title="Date picker — Kav-UI design catalog">
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / 入力・操作</p><h1>Date picker</h1></header><p class="lede">フォームに日付を設定する入力部品。直接入力と、カレンダーを開いて選択する操作に対応しています。</p><section class="specimen"><h2>日付を設定する（基本）</h2><div class="example" data-example>
+<div class="field" data-ui-field>
+  <label for="datepicker-basic">実施日</label>
+  <div class="ui-datepicker" data-ui-datepicker >
+    <input class="form-control form-control-sm" type="date" id="datepicker-basic" name="datepicker-basic" >
+  </div>
+  <small class="ui-invalid-feedback" data-ui-error hidden></small>
+</div>
+</div></section>
+<section class="specimen"><h2>アイコンボタンで開く</h2><div class="example" data-example>
+<div class="field" data-ui-field>
+  <label for="datepicker-icon">実施日</label>
+  <div class="ui-datepicker" data-ui-datepicker data-ui-datepicker-button="icon">
+    <input class="form-control form-control-sm" type="date" id="datepicker-icon" name="icon_date" value="2026-10-21">
+  </div>
+  <small class="ui-invalid-feedback" data-ui-error hidden></small>
+</div>
+</div></section>
+<section class="specimen"><h2>必須項目・フォームで入力を検証</h2><div class="example" data-example>
+<form data-ui-validate data-demo-form novalidate><div class="field" data-ui-field>
+  <label for="datepicker-required">締切日（必須）</label>
+  <div class="ui-datepicker" data-ui-datepicker >
+    <input class="form-control form-control-sm" type="date" id="datepicker-required" name="datepicker-required" required data-ui-message="締切日を入力してください。">
+  </div>
+  <small class="ui-invalid-feedback" data-ui-error hidden></small>
+</div><button type="submit" class="btn btn-sm btn-primary">入力を検証</button> <button type="reset" class="btn btn-sm btn-outline-secondary">リセット</button><p data-demo-result role="status"></p></form>
+</div></section>
+<section class="specimen"><h2>初期値・選択範囲・月曜始まり</h2><div class="example" data-example>
+<div class="field" data-ui-field>
+  <label for="datepicker-range">予約日</label>
+  <div class="ui-datepicker" data-ui-datepicker data-ui-week-start="monday">
+    <input class="form-control form-control-sm" type="date" id="datepicker-range" name="datepicker-range" value="2026-10-21" min="2026-10-10" max="2026-11-15">
+  </div>
+  <small class="ui-invalid-feedback" data-ui-error hidden></small>
+</div><p class="dim small">2026年10月10日〜11月15日を選択できます。</p>
+</div></section>
+<section class="specimen"><h2>読み取り専用・無効</h2><div class="example" data-example>
+<div class="field" data-ui-field>
+  <label for="datepicker-readonly">確定済みの日付（読み取り専用）</label>
+  <div class="ui-datepicker" data-ui-datepicker >
+    <input class="form-control form-control-sm" type="date" id="datepicker-readonly" name="datepicker-readonly" value="2026-10-21" readonly>
+  </div>
+  <small class="ui-invalid-feedback" data-ui-error hidden></small>
+</div><div class="field" data-ui-field>
+  <label for="datepicker-disabled">受付終了（日付変更不可）</label>
+  <div class="ui-datepicker" data-ui-datepicker >
+    <input class="form-control form-control-sm" type="date" id="datepicker-disabled" name="datepicker-disabled" value="2026-10-21" disabled>
+  </div>
+  <small class="ui-invalid-feedback" data-ui-error hidden></small>
+</div><p class="dim small">読み取り専用の値は送信対象です。disabledの値は送信対象になりません。</p>
+</div></section>
+<section class="specimen"><h2>ブラウザ標準の日付入力だけを使う</h2><div class="example" data-example>
+<div class="field"><label for="native-date">開始日</label><input class="form-control form-control-sm" type="date" id="native-date" name="start_date"></div>
+</div></section>
+<p class="dim small">入力欄はブラウザ標準の日付入力です。表示形式はブラウザや言語設定に従い、送信する値はYYYY-MM-DDになります。共通カレンダーは右側のボタンまたはAlt＋↓で開けます。</p><section class="specimen"><h2>設定一覧</h2><div class="example"><table class="table"><thead><tr><th scope="col">属性</th><th scope="col">使い方</th></tr></thead><tbody><tr><th scope="row"><code>data-ui-datepicker</code></th><td>input type=&quot;date&quot;を囲む要素に指定します。開くボタンとカレンダーを自動生成します。</td></tr><tr><th scope="row"><code>data-ui-datepicker-button="icon"</code></th><td>ラッパーに指定すると、開くボタンをカレンダーアイコンにします。読み上げ用ラベルは自動設定されます。省略時は文字ボタンです。</td></tr><tr><th scope="row"><code>inputのname</code></th><td>FormDataや通常のフォーム送信に使う項目名。</td></tr><tr><th scope="row"><code>inputのvalue</code></th><td>初期値。YYYY-MM-DD形式です。</td></tr><tr><th scope="row"><code>inputのrequired</code></th><td>未入力の送信を止めます。data-ui-validateとも組み合わせられます。</td></tr><tr><th scope="row"><code>inputのmin / max</code></th><td>選択可能な日付の範囲。YYYY-MM-DD形式です。</td></tr><tr><th scope="row"><code>inputのreadonly / disabled</code></th><td>日付変更を止め、カレンダーボタンも無効にします。</td></tr><tr><th scope="row"><code>data-ui-week-start=&quot;monday&quot;</code></th><td>ラッパーに指定すると、カレンダーを月曜始まりにします。</td></tr></tbody></table></div></section><section class="specimen"><h2>アプリとの連携</h2><pre class="setup-code"><code>// 日付は通常のinput / changeイベントで取得できます。
+document.querySelector(&#x27;[name=&quot;due_date&quot;]&#x27;).addEventListener(&#x27;change&#x27;, event =&gt; &#123;
+  const date = event.target.value; // &#x27;2026-10-21&#x27; または &#x27;&#x27;
+&#125;);
+
+// フォーム送信時も通常の入力欄と同じです。
+const values = new FormData(formElement);
+const dueDate = values.get(&#x27;due_date&#x27;);</code></pre><p>カレンダーを開いてもフォームは送信されません。日付を選ぶと入力欄のinput / changeイベントが発生し、カレンダーが閉じます。クリアで未入力に戻せます。</p><p>Escapeで閉じ、Tabで別の項目へ移動できます。矢印・PageUp / PageDownで日付を移動し、EnterまたはSpaceで選択できます。</p></section><details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の2ファイルを読み込みます。assetsフォルダの構造は維持してください。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../getting-started.html">導入手順</a> / <a href="calendar.html">予定表示用のカレンダー</a></p></details></main>
+</CatalogLayout>

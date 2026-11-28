@@ -8,6 +8,9 @@
     "examples/*"
   ],
   "scripts": {
+    "build:docs": "astro build --root docs",
+    "preview:docs": "astro preview --root docs",
+    "sync:docs-skill": "npm run build:docs && python3 scripts/build-docs.py --sync-skill",
     "build:packages": "node scripts/build-packages.mjs",
     "test:packages": "node --test --test-isolation=none tests/packages/*.test.mjs",
     "check:packages": "tsc -p tests/packages/tsconfig.json --noEmit",

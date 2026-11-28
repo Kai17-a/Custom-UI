@@ -1,0 +1,23 @@
+---
+import CatalogLayout from '../../layouts/CatalogLayout.astro';
+---
+<CatalogLayout title="Avatar — Kav-UI design catalog">
+<main id="main" class="catalog-main"><header class="page-heading"><p class="eyebrow">Kav-UI / データ表示</p><h1>Avatar</h1></header><p class="lede">イニシャル・画像・サイズ・ステータス・グループ。既存の色・角丸・余白・テーマを引き継ぎます。</p>
+<section class="specimen" id="avatar-basic"><h2>イニシャル・アイコン</h2><p>役割を持つアバターにはrole="img"とaria-labelを付けます。隣に同じ名前を表示する場合はアバターをaria-hidden="true"にして重複を避けられます。</p><div class="example" data-example>
+<div class="ui-cluster"><span class="ui-avatar" role="img" aria-label="Kaito">KT</span><span class="ui-avatar" role="img" aria-label="ユーザー"><span icon="mdi-account" aria-hidden="true"></span></span><span class="ui-avatar ui-avatar-square" role="img" aria-label="プロジェクト">UI</span></div>
+</div></section>
+<section class="specimen" id="avatar-sizes"><h2>サイズ</h2><p>smは24px、標準は40px、lgは56px、xlは72pxです。任意のサイズは--ui-avatar-sizeで指定します。</p><div class="example" data-example>
+<div class="ui-cluster"><span class="ui-avatar ui-avatar-sm" role="img" aria-label="Kaito">KT</span><span class="ui-avatar" role="img" aria-label="Kaito">KT</span><span class="ui-avatar ui-avatar-lg" role="img" aria-label="Kaito">KT</span><span class="ui-avatar ui-avatar-xl" role="img" aria-label="Kaito">KT</span></div>
+</div></section>
+<section class="specimen" id="avatar-status"><h2>ステータス</h2><p>状態は色だけで伝えず、aria-labelや隣の文字でも表現してください。</p><div class="example" data-example>
+<div class="ui-cluster"><span class="ui-avatar" role="img" aria-label="Kaito、オンライン">KT<span class="ui-avatar-status" aria-hidden="true"></span></span><span class="ui-avatar" role="img" aria-label="Member、オフライン">MB<span class="ui-avatar-status ui-avatar-status-offline" aria-hidden="true"></span></span></div>
+</div></section>
+<section class="specimen" id="avatar-group"><h2>グループ</h2><p>アバターをui-avatar-groupに並べると重ねて表示します。リンクとしても使え、キーボードフォーカスが見えるようにしています。</p><div class="example" data-example>
+<div class="ui-avatar-group" role="group" aria-label="プロジェクトのメンバー"><a class="ui-avatar" href="forms.html" aria-label="Kaitoのプロフィール">KT</a><a class="ui-avatar" href="forms.html" aria-label="Memberのプロフィール">MB</a><span class="ui-avatar" role="img" aria-label="ほか3人">+3</span></div>
+</div></section>
+<section class="specimen" id="avatar-image"><h2>画像を使う</h2><p>imgを内側に配置すると円形・角丸に合わせて切り抜きます。画像には適切なaltを指定します。読み込み失敗時はブラウザのalt表示となるため、必要ならアプリ側でイニシャルへ切り替えてください。</p><pre class="setup-code"><code>&lt;span class=&quot;ui-avatar ui-avatar-lg&quot;&gt;
+  &lt;img src=&quot;assets/profile.jpg&quot; alt=&quot;Kaito&quot; width=&quot;56&quot; height=&quot;56&quot;&gt;
+&lt;/span&gt;</code></pre></section>
+<details class="source"><summary>使用ファイル・取り込み方</summary><p>共通の ui.css と ui.js を読み込み、サンプルのHTMLを配置します。必要な動作は data-ui-* 属性で指定します。</p><pre><code>&lt;link rel="stylesheet" href="assets/css/ui.css"&gt;
+&lt;script defer src="assets/js/ui.js"&gt;&lt;/script&gt;</code></pre><p><a href="../assets/ui/css/ui.css">ui.css</a> / <a href="../assets/ui/js/ui.js">ui.js</a> / <a href="../getting-started.html">属性一覧と導入例</a></p><p class="dim">assetsフォルダごとコピーするとCSS内の相対参照も維持できます。catalog.js、catalog-navigation.js、catalog-demo.js、layout.css はカタログ専用です。data-demo-* はアプリに取り込む際に外し、保存や通信はアプリ側で実装してください。</p></details></main>
+</CatalogLayout>
